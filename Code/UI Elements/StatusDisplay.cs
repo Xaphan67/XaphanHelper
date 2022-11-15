@@ -50,7 +50,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Sprite = new Sprite(GFX.Gui, spritePath + "/");
                 Sprite.AddLoop("on", spriteName, 0.05f, 0);
                 Sprite.Play("on");
-                Sprite.Scale = new Vector2(0.1f, 0.1f);
                 Sprite.Position = position + new Vector2(1, 1);
                 StatusScreen = level.Tracker.GetEntity<StatusScreen>();
                 LevelSet = level.Session.Area.GetLevelSet();

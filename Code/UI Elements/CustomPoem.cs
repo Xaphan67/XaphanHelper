@@ -104,6 +104,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (sprite != "")
             {
                 Sprite = new Sprite(GFX.Gui, sprite);
+                Sprite.Scale = new Vector2(10f);
                 Sprite.AddLoop("static", "", 0.08f, 0);
                 Sprite.Play("static");
                 Sprite.CenterOrigin();
@@ -113,6 +114,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (select)
             {
                 upgradeSprite = new Sprite(GFX.Gui, sprite);
+                upgradeSprite.Scale = new Vector2(1.5f);
                 upgradeSprite.AddLoop("static", "", 1f, 0);
                 upgradeSprite.Play("static");
                 upgradeSprite.CenterOrigin();
@@ -195,8 +197,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 string selectString = !XaphanModule.useMetroidGameplay ? Dialog.Clean("XaphanHelper_ToSelect") : Dialog.Clean("XaphanHelper_Select");
                 if (upgradeSprite != null)
                 {
-                    upgradeSprite.Scale = new Vector2(0.15f);
-                    spriteWidth = upgradeSprite.Width * 0.15f;
+                    spriteWidth = upgradeSprite.Width * 1.5f;
                 }
                 string inputActA = Dialog.Clean(inputActionA);
                 string inputActB = Dialog.Clean(inputActionB);
