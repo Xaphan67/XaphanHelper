@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
@@ -552,108 +553,70 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Draw.Rect(Position + new Vector2(140, 1004f), 1640f, 8f, Color.White);
                 if (SelectedDisplay != null)
                 {
-                    string drone = "";
-                    if ((SelectedDisplay.internalName == "LongBeam" || SelectedDisplay.internalName == "IceBeam" || SelectedDisplay.internalName == "WaveBeam") && !XaphanModule.useMetroidGameplay)
-                    {
-                        drone = "_drone";
-                    }
-                    string UpgDesc = Dialog.Clean("XaphanHelper_get_" + SelectedDisplay.internalName + "_Desc" + drone);
-                    string UpgDesc_b = Dialog.Clean("XaphanHelper_get_" + SelectedDisplay.internalName + "_Desc_b");
-                    object controlA = null;
-                    object controlB = null;
-                    string inputActionA = null;
-                    string inputActionB = null;
-                    bool select = false;
+                    string upgrade = SelectedDisplay.internalName;
+                    string upgradeKey = $"XaphanHelper_get_{upgrade}";
+                    bool droneUpgrade = !XaphanModule.useMetroidGameplay && (upgrade == "LongBeam" || upgrade == "IceBeam" || upgrade == "WaveBeam");
+                    string droneString = droneUpgrade ? "_drone" : "";
+
+                    string description = $"{upgradeKey}_Desc{droneString}".DialogCleanOrNull();
+                    string controls = $"{upgradeKey}_Controls".DialogCleanOrNull();
+
+                    VirtualButton buttonA = new();
+                    VirtualButton buttonB = new();
+
                     switch (SelectedDisplay.internalName)
                     {
                         case "PowerGrip":
-                            controlA = Input.Grab;
-                            inputActionA = "XaphanHelper_Press";
+                            buttonA = Input.Grab;
                             break;
                         case "ClimbingKit":
-                            controlA = Input.MenuUp;
-                            controlB = Input.MenuDown;
-                            inputActionA = "XaphanHelper_Hold";
-                            inputActionB = "XaphanHelper_Or";
+                            buttonA = Input.MenuUp;
+                            buttonB = Input.MenuDown;
                             break;
                         case "SpiderMagnet":
-                            controlA = Input.Grab;
-                            inputActionA = "XaphanHelper_Hold";
+                            buttonA = Input.Grab;
                             break;
                         case "DashBoots":
-                            controlA = Input.Dash;
-                            inputActionA = "XaphanHelper_Press";
+                            buttonA = Input.Dash;
                             break;
                         case "SpaceJump":
-                            controlA = Input.Jump;
-                            inputActionA = "XaphanHelper_Press";
+                            buttonA = Input.Jump;
                             break;
                         case "HoverBoots":
-                            controlA = Input.MenuUp;
-                            inputActionA = "XaphanHelper_Hold";
+                            buttonA = Input.MenuUp;
                             break;
                         case "LightningDash":
-                            controlA = Input.Dash;
-                            inputActionA = "XaphanHelper_ClingingPress";
-                            break;
-                        case "LongBeam":
-                            UpgDesc_b = null;
-                            break;
-                        case "IceBeam":
-                            UpgDesc_b = null;
-                            break;
-                        case "WaveBeam":
-                            UpgDesc_b = null;
+                            buttonA = Input.Dash;
                             break;
                         case "DroneTeleport":
-                            controlA = Settings.UseBagItemSlot;
-                            inputActionA = "XaphanHelper_Press";
-                            break;
-                        case "GravityJacket":
-                            UpgDesc_b = null;
+                            buttonA = Settings.UseBagItemSlot.Button;
                             break;
                         case "Bombs":
-                            select = true;
-                            controlA = Settings.SelectItem;
-                            controlB = Settings.UseBagItemSlot;
-                            inputActionA = "XaphanHelper_ThenHold";
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Settings.UseBagItemSlot.Button;
                             break;
                         case "MegaBombs":
-                            select = true;
-                            controlA = Settings.SelectItem;
-                            controlB = Settings.UseBagItemSlot;
-                            inputActionA = "XaphanHelper_ThenHold";
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Settings.UseBagItemSlot.Button;
                             break;
                         case "RemoteDrone":
-                            select = true;
-                            controlA = Settings.SelectItem;
-                            controlB = Settings.UseBagItemSlot;
-                            inputActionA = "XaphanHelper_ThenHold";
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Settings.UseBagItemSlot.Button;
                             break;
                         case "GoldenFeather":
-                            controlA = Input.Grab;
-                            inputActionA = "XaphanHelper_Hold";
-                            break;
-                        case "EtherealDash":
-                            UpgDesc_b = null;
+                            buttonA = Input.Grab;
                             break;
                         case "Binoculars":
-                            select = true;
-                            controlA = Settings.SelectItem;
-                            controlB = Settings.UseMiscItemSlot;
-                            inputActionA = "XaphanHelper_ThenPress";
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Settings.UseMiscItemSlot.Button;
                             break;
                         case "PortableStation":
-                            select = true;
-                            controlA = Settings.SelectItem;
-                            controlB = Settings.UseMiscItemSlot;
-                            inputActionA = "XaphanHelper_ThenPress";
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Settings.UseMiscItemSlot.Button;
                             break;
                         case "PulseRadar":
-                            select = true;
-                            controlA = Settings.SelectItem;
-                            controlB = Settings.UseMiscItemSlot;
-                            inputActionA = "XaphanHelper_ThenPress";
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Settings.UseMiscItemSlot.Button;
                             break;
                         /*case "JumpBoost":
                             controlA = Input.MenuUp;
@@ -662,180 +625,60 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         default:
                             break;
                     }
-                    if (select)
-                    {
-                        upgradeSprite = new Sprite(GFX.Gui, getCustomSpritePath(SelectedDisplay.internalName) + "/");
-                        upgradeSprite.AddLoop("static", SelectedDisplay.internalName, 1f, 0);
-                        upgradeSprite.Play("static");
-                        upgradeSprite.CenterOrigin();
-                        upgradeSprite.Position = upgradeSprite.Position + new Vector2(8, 8);
-                    }
-                    float buttonATextureWidth = 0;
-                    float buttonBTextureWidth = 0;
-                    float spriteWidth = 0f;
-                    if (controlA is VirtualButton)
-                    {
-                        MTexture buttonATexture = Input.GuiButton((VirtualButton)controlA, "controls/keyboard/oemquestion");
-                        buttonATextureWidth = buttonATexture.Width * 0.5f;
-                    }
-                    else if (controlA is ButtonBinding)
-                    {
-                        VirtualButton Button = new VirtualButton();
-                        ButtonBinding ControlA = (ButtonBinding)controlA;
-                        Button.Binding = ControlA.Binding;
-                        MTexture buttonATexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
-                        buttonATextureWidth = buttonATexture.Width * 0.5f;
-                    }
-                    if (controlB is VirtualButton)
-                    {
-                        MTexture buttonBTexture = Input.GuiButton((VirtualButton)controlB, "controls/keyboard/oemquestion");
-                        buttonBTextureWidth = buttonBTexture.Width * 0.5f;
-                    }
-                    else if (controlB is ButtonBinding)
-                    {
-                        VirtualButton Button = new VirtualButton();
-                        ButtonBinding ControlB = (ButtonBinding)controlB;
-                        Button.Binding = ControlB.Binding;
-                        MTexture buttonBTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
-                        buttonBTextureWidth = buttonBTexture.Width * 0.5f;
-                    }
-                    string selectHold = Dialog.Clean("XaphanHelper_Hold");
-                    string selectAndPress = Dialog.Clean("XaphanHelper_AndPress");
-                    string selectString = !XaphanModule.useMetroidGameplay ? Dialog.Clean("XaphanHelper_ToSelect") : Dialog.Clean("XaphanHelper_Select");
-                    if (upgradeSprite != null)
-                    {
-                        upgradeSprite.Scale = new Vector2(0.08f);
-                        spriteWidth = upgradeSprite.Width * 0.08f;
-                    }
-                    string inputActA = Dialog.Clean(inputActionA);
-                    string inputActB = Dialog.Clean(inputActionB);
-                    Vector2 vector = new Vector2(960f, 980f);
-                    float TotalLenght = 0;
 
-                    if (select)
-                    {
-                        if (!XaphanModule.useMetroidGameplay)
-                        {
-                            TotalLenght = ActiveFont.Measure(selectHold).X * 0.75f + buttonATextureWidth + ActiveFont.Measure(selectAndPress).X * 0.75f + buttonBTextureWidth + ActiveFont.Measure(selectString).X * 0.75f + spriteWidth + ActiveFont.Measure(inputActA).X * 0.75f + 10 + buttonATextureWidth + 10 + (controlB != null ? ActiveFont.Measure(inputActB).X * 0.75f + 10 + buttonBTextureWidth + 10 : 0) + ActiveFont.Measure(UpgDesc_b).X * 0.75f;
+                    float maxWidth = 1500f;
+                    float textScale = 0.75f;
+                    float buttonScale = 0.5f;
+                    float upgradeScale = 1f;
+
+                    float descLength = ActiveFont.Measure(description).X * textScale;
+                    float descScale = (descLength < maxWidth) ? 1f : maxWidth / descLength;
+                    ActiveFont.DrawOutline(description, Position + new Vector2(960f, controls == null ? 960f : 940f), new Vector2(0.5f, 0.5f), Vector2.One * textScale * descScale, Color.White, 2f, Color.Black);
+
+                    if (controls != null) {
+                        MTexture buttonATexture = Input.GuiButton(buttonA, "controls/keyboard/oemquestion");
+                        MTexture buttonBTexture = Input.GuiButton(buttonB, "controls/keyboard/oemquestion");
+                        string upgradeTexturePath = $"{getCustomSpritePath(upgrade)}/{upgrade}";
+                        MTexture upgradeTexture = GFX.Gui.GetAtlasSubtexturesAt(upgradeTexturePath, 0);
+
+                        string[] controlsSplit = Regex.Split(controls, @"(\(\w\))");
+
+                        float length = 0;
+                        foreach (string sub in controlsSplit) {
+                            length += sub switch {
+                                "(A)" => buttonATexture.Width * buttonScale,
+                                "(B)" => buttonBTexture.Width * buttonScale,
+                                "(U)" => upgradeTexture.Width * upgradeScale,
+                                _ => ActiveFont.Measure(sub).X * textScale
+                            };
                         }
-                        else
-                        {
-                            TotalLenght = ActiveFont.Measure(selectString).X * 0.75f + spriteWidth + ActiveFont.Measure(inputActA).X * 0.75f + 10 + buttonATextureWidth + 10 + (controlB != null ? ActiveFont.Measure(inputActB).X * 0.75f + 10 + buttonBTextureWidth + 10 : 0) + ActiveFont.Measure(UpgDesc_b).X * 0.75f;
-                        }
-                    }
-                    else
-                    {
-                        TotalLenght = ActiveFont.Measure(inputActA).X * 0.75f + 10 + buttonATextureWidth + 10 + (controlB != null ? ActiveFont.Measure(inputActB).X * 0.75f + 10 + buttonBTextureWidth + 10 : 0) + ActiveFont.Measure(UpgDesc_b).X * 0.75f;
-                    }
-                    float selectHoldPosition = 0;
-                    float selectAndPressPosition = 0;
-                    float selectPosition = 0;
-                    float SpritePosition = 0;
-                    float inputActAPosition = 0;
-                    float InputAPosition = 0;
-                    float inputActBPosition = 0;
-                    float InputBPosition = 0;
-                    float InputCPosition = 0f;
-                    float TextCPosition = 0;
-                    if (!select)
-                    {
-                        inputActAPosition = vector.X - TotalLenght / 2f + (ActiveFont.Measure(inputActA).X * 0.75f) / 2;
-                        InputAPosition = inputActAPosition + (ActiveFont.Measure(inputActA).X * 0.75f) / 2 + 10 + buttonATextureWidth / 2;
-                        inputActBPosition = InputAPosition + buttonATextureWidth / 2 + 10 + (ActiveFont.Measure(inputActB).X * 0.75f) / 2;
-                        InputBPosition = inputActBPosition + (ActiveFont.Measure(inputActB).X * 0.75f) / 2 + 10 + buttonBTextureWidth / 2;
-                        TextCPosition = (controlB == null ? -2 * 10 : 0) + InputBPosition + buttonBTextureWidth / 2 + 10 + (ActiveFont.Measure(UpgDesc_b).X * 0.75f) / 2;
-                    }
-                    else
-                    {
-                        if (!XaphanModule.useMetroidGameplay)
-                        {
-                            selectHoldPosition = vector.X - TotalLenght / 2f + (ActiveFont.Measure(selectHold).X * 0.75f) / 2;
-                            InputAPosition = selectHoldPosition + (ActiveFont.Measure(selectHold).X * 0.75f) / 2 + 10 + buttonATextureWidth / 2;
-                            selectAndPressPosition = InputAPosition + buttonATextureWidth / 2 + 10 + (ActiveFont.Measure(selectAndPress).X * 0.75f) / 2;
-                            InputCPosition = selectAndPressPosition + (ActiveFont.Measure(selectAndPress).X * 0.75f) / 2 + 10 + buttonBTextureWidth / 2;
-                            selectPosition = InputCPosition + buttonBTextureWidth / 2 + 10 + (ActiveFont.Measure(selectString).X * 0.75f) / 2;
-                            SpritePosition = selectPosition + (ActiveFont.Measure(selectString).X * 0.75f) / 2 + 10 + spriteWidth / 2;
-                            inputActAPosition = SpritePosition + spriteWidth / 2 + 10 + (ActiveFont.Measure(inputActA).X * 0.75f) / 2;
-                            InputBPosition = inputActAPosition + (ActiveFont.Measure(inputActA).X * 0.75f) / 2 + 10 + buttonBTextureWidth / 2;
-                            TextCPosition = (controlB == null ? -2 * 10 : 0) + InputBPosition + buttonBTextureWidth / 2 + 10 + (ActiveFont.Measure(UpgDesc_b).X * 0.75f) / 2;
-                        }
-                        else
-                        {
-                            selectPosition = vector.X - TotalLenght / 2f + (ActiveFont.Measure(selectString).X * 0.75f) / 2;
-                            SpritePosition = selectPosition + (ActiveFont.Measure(selectString).X * 0.75f) / 2 + 10 + spriteWidth / 2;
-                            inputActAPosition = SpritePosition + spriteWidth / 2 + 10 + (ActiveFont.Measure(inputActA).X * 0.75f) / 2;
-                            InputAPosition = inputActAPosition + (ActiveFont.Measure(inputActA).X * 0.75f) / 2 + 10 + buttonATextureWidth / 2;
-                            inputActBPosition = InputAPosition + buttonATextureWidth / 2 + 10 + (ActiveFont.Measure(inputActB).X * 0.75f) / 2;
-                            InputBPosition = inputActBPosition + (ActiveFont.Measure(inputActB).X * 0.75f) / 2 + 10 + buttonBTextureWidth / 2;
-                            TextCPosition = (controlB == null ? -2 * 10 : 0) + InputBPosition + buttonBTextureWidth / 2 + 10 + (ActiveFont.Measure(UpgDesc_b).X * 0.75f) / 2;
-                        }
-                    }
-                    ActiveFont.DrawOutline(UpgDesc, Position + new Vector2(960f, UpgDesc_b == null ? 960f : 940f), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White, 2f, Color.Black);
-                    if (select)
-                    {
-                        if (!XaphanModule.useMetroidGameplay)
-                        {
-                            ActiveFont.Draw(selectHold, new Vector2(selectHoldPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
-                            ActiveFont.Draw(selectAndPress, new Vector2(selectAndPressPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
-                            ActiveFont.Draw(selectString, new Vector2(selectPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
-                            upgradeSprite.Position = new Vector2(SpritePosition, vector.Y);
-                            if (controlB is VirtualButton)
-                            {
-                                MTexture buttonBTexture = Input.GuiButton((VirtualButton)controlB, "controls/keyboard/oemquestion");
-                                buttonBTexture.DrawCentered(new Vector2(InputCPosition, vector.Y), Color.White, 0.5f);
-                            }
-                            else if (controlB is ButtonBinding)
-                            {
-                                VirtualButton Button = new VirtualButton();
-                                ButtonBinding ControlB = (ButtonBinding)controlB;
-                                Button.Binding = ControlB.Binding;
-                                MTexture buttonBTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
-                                buttonATextureWidth = buttonBTexture.Width;
-                                buttonBTexture.DrawCentered(new Vector2(InputCPosition, vector.Y), Color.White, 0.5f);
+
+                        Vector2 pos = new(960f, 980f);
+
+                        float controlsScale = (length < maxWidth) ? 1f : maxWidth / length;
+                        pos.X -= length / 2 * controlsScale;
+                        Vector2 leftCenter = new(0f, 0.5f);
+                        foreach (string sub in controlsSplit) {
+                            switch (sub) {
+                                case "(A)":
+                                    buttonATexture.DrawOutlineJustified(pos, leftCenter, Color.White, buttonScale * controlsScale);
+                                    pos.X += buttonATexture.Width * buttonScale * controlsScale;
+                                    break;
+                                case "(B)":
+                                    buttonBTexture.DrawOutlineJustified(pos, leftCenter, Color.White, buttonScale);
+                                    pos.X += buttonBTexture.Width * buttonScale * controlsScale;
+                                    break;
+                                case "(U)":
+                                    upgradeTexture.DrawOutlineJustified(pos, leftCenter, Color.White);
+                                    pos.X += upgradeTexture.Width * upgradeScale * controlsScale;
+                                    break;
+                                default:
+                                    ActiveFont.DrawOutline(sub, pos, leftCenter, Vector2.One * textScale * controlsScale, Color.White, 2f, Color.Black);
+                                    pos.X += ActiveFont.Measure(sub).X * textScale * controlsScale;
+                                    break;
                             }
                         }
-                        else
-                        {
-                            ActiveFont.Draw(selectString, new Vector2(selectPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
-                            upgradeSprite.Position = new Vector2(SpritePosition, vector.Y);
-                        }
                     }
-                    ActiveFont.Draw(inputActA, new Vector2(inputActAPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
-                    if (controlA is VirtualButton)
-                    {
-                        MTexture buttonATexture = Input.GuiButton((VirtualButton)controlA, "controls/keyboard/oemquestion");
-                        buttonATexture.DrawCentered(new Vector2(InputAPosition, vector.Y), Color.White, 0.5f);
-                    }
-                    else if (controlA is ButtonBinding)
-                    {
-                        VirtualButton Button = new VirtualButton();
-                        ButtonBinding ControlA = (ButtonBinding)controlA;
-                        Button.Binding = ControlA.Binding;
-                        MTexture buttonATexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
-                        buttonATextureWidth = buttonATexture.Width;
-                        buttonATexture.DrawCentered(new Vector2(InputAPosition, vector.Y), Color.White, 0.5f);
-                    }
-                    ActiveFont.Draw(inputActB, new Vector2(inputActBPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
-                    if (controlB is VirtualButton)
-                    {
-                        MTexture buttonBTexture = Input.GuiButton((VirtualButton)controlB, "controls/keyboard/oemquestion");
-                        buttonBTexture.DrawCentered(new Vector2(InputBPosition, vector.Y), Color.White, 0.5f);
-                    }
-                    else if (controlB is ButtonBinding)
-                    {
-                        VirtualButton Button = new VirtualButton();
-                        ButtonBinding ControlB = (ButtonBinding)controlB;
-                        Button.Binding = ControlB.Binding;
-                        MTexture buttonBTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
-                        buttonATextureWidth = buttonBTexture.Width;
-                        buttonBTexture.DrawCentered(new Vector2(InputBPosition, vector.Y), Color.White, 0.5f);
-                    }
-                    if (select && upgradeSprite != null)
-                    {
-                        upgradeSprite.Play("static");
-                        upgradeSprite.Render();
-                    }
-                    ActiveFont.Draw(UpgDesc_b, new Vector2(TextCPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
                 }
             }
             else

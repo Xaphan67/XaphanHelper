@@ -24,15 +24,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Sprite collectable;
 
-        private string inputActionA;
+        private string name;
 
-        private string inputActionB;
+        private string description;
 
-        private string poemTextA;
-
-        private string poemTextB;
-
-        private string poemTextC;
+        private string controls;
 
         private string nameColor;
 
@@ -40,11 +36,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string particleColor;
 
-        private object controlA;
+        private VirtualButton buttonA;
 
-        private object controlB;
+        private VirtualButton buttonB;
 
-        private CustomPoem poem;
+        private UpgradeScreen upgradeScreen;
 
         private SoundEmitter sfx;
 
@@ -126,77 +122,58 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 metroidGameplay = "Met_";
             }
-            poemTextA = Dialog.Clean("XaphanHelper_get_" + metroidGameplay + ammo + "_Name");
-            poemTextB = Dialog.Clean("XaphanHelper_get_" + metroidGameplay + ammo + "_Desc");
-            AmmoDisplay ammoDisplay = SceneAs<Level>().Tracker.GetEntity<AmmoDisplay>();
-            if (ammo == "PowerBomb" && ammoDisplay.MaxPowerBombs == 0)
-            {
-                poemTextC = Dialog.Clean("XaphanHelper_MorphMode");
-            }
+
+            string upgradeKey = $"XaphanHelper_get_{metroidGameplay}{ammo}";
+            name = $"{upgradeKey}_Name".DialogCleanOrNull();
+            description = $"{upgradeKey}_Desc".DialogCleanOrNull();
+            controls = $"{upgradeKey}_Controls".DialogCleanOrNull();
+
             if (string.IsNullOrEmpty(particleColor))
             {
                 particleColor = "FFFFFF";
             }
-            switch (ammo)
-            {
-                case "Missile":
-                    if (ammoDisplay != null)
-                    {
-                        if (ammoDisplay.MaxMissiles == 0)
-                        {
-                            controlA = Settings.SelectItem;
-                            controlB = Input.Dash;
-                            inputActionA = "XaphanHelper_Select";
-                            inputActionB = "XaphanHelper_Fire";
+            AmmoDisplay ammoDisplay = SceneAs<Level>().Tracker.GetEntity<AmmoDisplay>();
+            if (ammoDisplay != null) {
+                switch (ammo) {
+                    case "Missile":
+                        if (ammoDisplay.MaxMissiles == 0) {
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Input.Dash;
+                        } else {
+                            name = Dialog.Clean("XaphanHelper_get_Missile_Name_b");
+                            description = Dialog.Clean("XaphanHelper_Increase_Missile");
+                            controls = null;
                         }
-                        else
-                        {
-                            poemTextA = Dialog.Clean("XaphanHelper_get_Missile_Name_b");
-                            poemTextB = Dialog.Clean("XaphanHelper_Increase_Missile");
+                        break;
+                    case "SuperMissile":
+                        if (ammoDisplay.MaxSuperMissiles == 0) {
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Input.Dash;
+                        } else {
+                            name = Dialog.Clean("XaphanHelper_get_SuperMissile_Name_b");
+                            description = Dialog.Clean("XaphanHelper_Increase_SuperMissile");
+                            controls = null;
                         }
-                    }
-                    break;
-                case "SuperMissile":
-                    if (ammoDisplay != null)
-                    {
-                        if (ammoDisplay.MaxSuperMissiles == 0)
-                        {
-                            controlA = Settings.SelectItem;
-                            controlB = Input.Dash;
-                            inputActionA = "XaphanHelper_Select";
-                            inputActionB = "XaphanHelper_Fire";
+                        break;
+                    case "PowerBomb":
+                        if (ammoDisplay.MaxPowerBombs == 0) {
+                            buttonA = Settings.SelectItem.Button;
+                            buttonB = Input.Dash;
+                        } else {
+                            name = Dialog.Clean("XaphanHelper_get_PowerBomb_Name_b");
+                            description = Dialog.Clean("XaphanHelper_Increase_PowerBomb");
+                            controls = null;
                         }
-                        else
-                        {
-                            poemTextA = Dialog.Clean("XaphanHelper_get_SuperMissile_Name_b");
-                            poemTextB = Dialog.Clean("XaphanHelper_Increase_SuperMissile");
-                        }
-                    }
-                    break;
-                case "PowerBomb":
-                    if (ammoDisplay != null)
-                    {
-                        if (ammoDisplay.MaxPowerBombs == 0)
-                        {
-                            controlA = Settings.SelectItem;
-                            controlB = Input.Dash;
-                            inputActionA = "XaphanHelper_Select_2";
-                            inputActionB = "XaphanHelper_Set";
-                        }
-                        else
-                        {
-                            poemTextA = Dialog.Clean("XaphanHelper_get_PowerBomb_Name_b");
-                            poemTextB = Dialog.Clean("XaphanHelper_Increase_PowerBomb");
-                        }
-                    }
-                    break;
+                        break;
+                }
             }
-            poem = new CustomPoem(inputActionA, poemTextA, inputActionB, poemTextB, poemTextC, nameColor, descColor, descColor, particleColor, sprite, 0.5f, controlA, controlB);
-            poem.Alpha = 0f;
-            Scene.Add(poem);
+
+            upgradeScreen = new UpgradeScreen(sprite, name, description, controls, nameColor, descColor, descColor, particleColor, buttonA, buttonB);
+            upgradeScreen.Alpha = 0f;
+            Scene.Add(upgradeScreen);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
             {
-                poem.Alpha = Ease.CubeOut(t2);
+                upgradeScreen.Alpha = Ease.CubeOut(t2);
                 yield return null;
             }
             while (!Input.MenuConfirm.Pressed && !Input.MenuCancel.Pressed)
@@ -208,7 +185,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level.FormationBackdrop.Display = false;
             for (float t = 0f; t < 1f; t += Engine.RawDeltaTime * 2f)
             {
-                poem.Alpha = Ease.CubeIn(1f - t);
+                upgradeScreen.Alpha = Ease.CubeIn(1f - t);
                 yield return null;
             }
             player.Depth = 0;
@@ -257,9 +234,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level.CanRetry = true;
             level.FormationBackdrop.Display = false;
             Engine.TimeRate = 1f;
-            if (poem != null)
+            if (upgradeScreen != null)
             {
-                poem.RemoveSelf();
+                upgradeScreen.RemoveSelf();
             }
             RemoveSelf();
         }

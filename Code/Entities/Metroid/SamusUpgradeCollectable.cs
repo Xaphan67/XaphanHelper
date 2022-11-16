@@ -55,13 +55,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Wiggler moveWiggler;
 
-        private string inputActionA;
+        private string name;
 
-        private string poemTextA;
+        private string description;
 
-        private string poemTextB;
-
-        private string poemTextC;
+        private string controls;
 
         private string nameColor;
 
@@ -69,9 +67,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string particleColor;
 
-        private object controlA;
+        private VirtualButton buttonA;
 
-        private CustomPoem poem;
+        private UpgradeScreen upgradeScreen;
 
         private SoundEmitter sfx;
 
@@ -185,70 +183,41 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 metroidGameplay = "Met_";
             }
-            poemTextA = Dialog.Clean("XaphanHelper_get_" + metroidGameplay + upgrade + "_Name");
-            poemTextB = Dialog.Clean("XaphanHelper_get_" + metroidGameplay + upgrade + "_Desc");
-            poemTextC = Dialog.Clean("XaphanHelper_get_" + metroidGameplay + upgrade + "_Desc_b");
+
+            string upgradeKey = $"XaphanHelper_get_{metroidGameplay}{upgrade}";
+
+            name = $"{upgradeKey}_Name".DialogCleanOrNull();
+            description = $"{upgradeKey}_Desc".DialogCleanOrNull();
+            controls = $"{upgradeKey}_Controls".DialogCleanOrNull();
+
             if (string.IsNullOrEmpty(particleColor))
             {
                 particleColor = "FFFFFF";
             }
-            bool select = false;
             switch (upgrade)
             {
-                case "LongBeam":
-                    poemTextC = null;
-                    break;
-                case "IceBeam":
-                    poemTextC = null;
-                    break;
-                case "WaveBeam":
-                    poemTextC = null;
-                    break;
-                case "Spazer":
-                    poemTextC = null;
-                    break;
-                case "PlasmaBeam":
-                    poemTextC = null;
-                    break;
-                case "VariaJacket":
-                    poemTextC = null;
-                    break;
-                case "GravityJacket":
-                    poemTextC = null;
-                    break;
                 case "MorphingBall":
-                    controlA = Input.MenuDown;
-                    inputActionA = "XaphanHelper_Press";
+                    buttonA = Input.MenuDown;
                     break;
                 case "MorphBombs":
-                    controlA = Input.Dash;
-                    inputActionA = "XaphanHelper_Press";
+                    buttonA = Input.Dash;
                     break;
                 case "SpringBall":
-                    controlA = Input.Jump;
-                    inputActionA = "XaphanHelper_Press";
-                    break;
-                case "ScrewAttack":
-                    poemTextC = null;
-                    break;
-                case "HighJumpBoots":
-                    poemTextC = null;
+                    buttonA = Input.Jump;
                     break;
                 case "SpaceJump":
-                    controlA = Input.Jump;
-                    inputActionA = "XaphanHelper_Press";
+                    buttonA = Input.Jump;
                     break;
                 case "SpeedBooster":
-                    controlA = Input.Grab;
-                    inputActionA = "XaphanHelper_Hold";
+                    buttonA = Input.Grab;
                     break;
             }
-            poem = new CustomPoem(inputActionA, poemTextA, null, poemTextB, poemTextC, nameColor, descColor, descColor, particleColor, sprite, 0.5f, controlA, null, select);
-            poem.Alpha = 0f;
-            Scene.Add(poem);
+            upgradeScreen = new UpgradeScreen(sprite, name, description, controls, nameColor, descColor, descColor, particleColor, buttonA);
+            upgradeScreen.Alpha = 0f;
+            Scene.Add(upgradeScreen);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
             {
-                poem.Alpha = Ease.CubeOut(t2);
+                upgradeScreen.Alpha = Ease.CubeOut(t2);
                 yield return null;
             }
             while (!Input.MenuConfirm.Pressed && !Input.MenuCancel.Pressed)
@@ -264,7 +233,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level.FormationBackdrop.Display = false;
             for (float t = 0f; t < 1f; t += Engine.RawDeltaTime * 2f)
             {
-                poem.Alpha = Ease.CubeIn(1f - t);
+                upgradeScreen.Alpha = Ease.CubeIn(1f - t);
                 yield return null;
             }
             player.Depth = 0;
@@ -342,9 +311,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level.CanRetry = true;
             level.FormationBackdrop.Display = false;
             Engine.TimeRate = 1f;
-            if (poem != null)
+            if (upgradeScreen != null)
             {
-                poem.RemoveSelf();
+                upgradeScreen.RemoveSelf();
             }
             RemoveSelf();
         }
