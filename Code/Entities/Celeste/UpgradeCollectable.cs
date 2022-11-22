@@ -54,15 +54,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Wiggler moveWiggler;
 
-        private string inputActionA;
+        private string upgradeName;
 
-        private string inputActionB;
+        private string upgradeDescription;
 
-        private string poemTextA;
-
-        private string poemTextB;
-
-        private string poemTextC;
+        private string upgradeControls;
 
         private string nameColor;
 
@@ -70,11 +66,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string particleColor;
 
-        private object controlA;
+        private VirtualButton buttonA;
 
-        private object controlB;
+        private VirtualButton buttonB;
 
-        private CustomPoem poem;
+        private UpgradeScreen upgradeScreen;
 
         private SoundEmitter sfx;
 
@@ -203,126 +199,75 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Engine.TimeRate = 1f;
             Tag = Tags.FrozenUpdate;
             level.Frozen = true;
-            if (string.IsNullOrEmpty(customName))
-            {
-                poemTextA = Dialog.Clean("XaphanHelper_get_" + upgrade + "_Name");
-            }
-            else
-            {
-                poemTextA = Dialog.Clean(customName);
-            }
-            string drone = "";
-            if ((upgrade == "LongBeam" || upgrade == "IceBeam" || upgrade == "WaveBeam") && !XaphanModule.useMetroidGameplay)
-            {
-                drone = "_drone";
-            }
-            poemTextB = Dialog.Clean("XaphanHelper_get_" + upgrade + "_Desc" + drone);
-            poemTextC = Dialog.Clean("XaphanHelper_get_" + upgrade + "_Desc_b");
+
+            string upgradeKey = $"XaphanHelper_get_{upgrade}";
+            bool droneUpgrade = !XaphanModule.useMetroidGameplay && (upgrade == "LongBeam" || upgrade == "IceBeam" || upgrade == "WaveBeam");
+            string droneString = droneUpgrade ? "_drone" : "";
+
+            upgradeName = string.IsNullOrEmpty(customName) ? $"{upgradeKey}_Name".DialogCleanOrNull() : customName.DialogCleanOrNull();
+            upgradeDescription = $"{upgradeKey}_Desc{droneString}".DialogCleanOrNull();
+            upgradeControls = $"{upgradeKey}_Controls".DialogCleanOrNull();
+
             if (string.IsNullOrEmpty(particleColor))
             {
                 particleColor = "FFFFFF";
             }
-            bool select = false;
             switch (upgrade)
             {
                 case "Map":
-                    controlA = Settings.OpenMap;
-                    inputActionA = "XaphanHelper_Press";
-                    break;
-                case "EnergyTank":
-                    poemTextC = null;
-                    break;
-                case "FireRateModule":
-                    poemTextC = null;
+                    buttonA = Settings.OpenMap.Button;
                     break;
                 case "PowerGrip":
-                    controlA = Input.Grab;
-                    inputActionA = "XaphanHelper_Press";
+                    buttonA = Input.Grab;
                     break;
                 case "ClimbingKit":
-                    controlA = Input.MenuUp;
-                    controlB = Input.MenuDown;
-                    inputActionA = "XaphanHelper_Hold";
-                    inputActionB = "XaphanHelper_Or";
+                    buttonA = Input.MenuUp;
+                    buttonB = Input.MenuDown;
                     break;
                 case "SpiderMagnet":
-                    controlA = Input.Grab;
-                    inputActionA = "XaphanHelper_Hold";
+                    buttonA = Input.Grab;
                     break;
                 case "DashBoots":
-                    controlA = Input.Dash;
-                    inputActionA = "XaphanHelper_Press";
+                    buttonA = Input.Dash;
                     break;
                 case "SpaceJump":
-                    controlA = Input.Jump;
-                    inputActionA = "XaphanHelper_Press";
+                    buttonA = Input.Jump;
                     break;
                 case "HoverBoots":
-                    controlA = Input.MenuUp;
-                    inputActionA = "XaphanHelper_Hold";
+                    buttonA = Input.MenuUp;
                     break;
                 case "LightningDash":
-                    controlA = Input.Dash;
-                    inputActionA = "XaphanHelper_ClingingPress";
-                    break;
-                case "LongBeam":
-                    poemTextC = null;
-                    break;
-                case "IceBeam":
-                    poemTextC = null;
-                    break;
-                case "WaveBeam":
-                    poemTextC = null;
+                    buttonA = Input.Dash;
                     break;
                 case "DroneTeleport":
-                    controlA = Settings.UseBagItemSlot;
-                    inputActionA = "XaphanHelper_Press";
-                    break;
-                case "GravityJacket":
-                    poemTextC = null;
+                    buttonA = Settings.UseBagItemSlot.Button;
                     break;
                 case "Bombs":
-                    select = true;
-                    controlA = Settings.SelectItem;
-                    controlB = Settings.UseBagItemSlot;
-                    inputActionA = "XaphanHelper_ThenHold";
+                    buttonA = Settings.SelectItem.Button;
+                    buttonB = Settings.UseBagItemSlot.Button;
                     break;
                 case "MegaBombs":
-                    select = true;
-                    controlA = Settings.SelectItem;
-                    controlB = Settings.UseBagItemSlot;
-                    inputActionA = "XaphanHelper_ThenHold";
+                    buttonA = Settings.SelectItem.Button;
+                    buttonB = Settings.UseBagItemSlot.Button;
                     break;
                 case "RemoteDrone":
-                    select = true;
-                    controlA = Settings.SelectItem;
-                    controlB = Settings.UseBagItemSlot;
-                    inputActionA = "XaphanHelper_ThenHold";
+                    buttonA = Settings.SelectItem.Button;
+                    buttonB = Settings.UseBagItemSlot.Button;
                     break;
                 case "GoldenFeather":
-                    controlA = Input.Grab;
-                    inputActionA = "XaphanHelper_Hold";
-                    break;
-                case "EtherealDash":
-                    poemTextC = null;
+                    buttonA = Input.Grab;
                     break;
                 case "Binoculars":
-                    select = true;
-                    controlA = Settings.SelectItem;
-                    controlB = Settings.UseMiscItemSlot;
-                    inputActionA = "XaphanHelper_ThenPress";
+                    buttonA = Settings.SelectItem.Button;
+                    buttonB = Settings.UseMiscItemSlot.Button;
                     break;
                 case "PortableStation":
-                    select = true;
-                    controlA = Settings.SelectItem;
-                    controlB = Settings.UseMiscItemSlot;
-                    inputActionA = "XaphanHelper_ThenPress";
+                    buttonA = Settings.SelectItem.Button;
+                    buttonB = Settings.UseMiscItemSlot.Button;
                     break;
                 case "PulseRadar":
-                    select = true;
-                    controlA = Settings.SelectItem;
-                    controlB = Settings.UseMiscItemSlot;
-                    inputActionA = "XaphanHelper_ThenPress";
+                    buttonA = Settings.SelectItem.Button;
+                    buttonB = Settings.UseMiscItemSlot.Button;
                     break;
                 /*case "JumpBoost":
                     controlA = Input.MenuUp;
@@ -331,12 +276,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 default:
                     break;
             }
-            poem = new CustomPoem(inputActionA, poemTextA, inputActionB, poemTextB, poemTextC, nameColor, descColor, descColor, particleColor, sprite, 0.5f, controlA, controlB, select);
-            poem.Alpha = 0f;
-            Scene.Add(poem);
+            upgradeScreen = new UpgradeScreen(sprite, upgradeName, upgradeDescription, upgradeControls, nameColor, descColor, descColor, particleColor, buttonA, buttonB);
+            upgradeScreen.Alpha = 0f;
+            Scene.Add(upgradeScreen);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
             {
-                poem.Alpha = Ease.CubeOut(t2);
+                upgradeScreen.Alpha = Ease.CubeOut(t2);
                 yield return null;
             }
             while (!Input.MenuConfirm.Pressed && !Input.MenuCancel.Pressed)
@@ -373,7 +318,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level.FormationBackdrop.Display = false;
             for (float t = 0f; t < 1f; t += Engine.RawDeltaTime * 2f)
             {
-                poem.Alpha = Ease.CubeIn(1f - t);
+                upgradeScreen.Alpha = Ease.CubeIn(1f - t);
                 yield return null;
             }
             player.Depth = 0;
@@ -476,9 +421,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level.CanRetry = true;
             level.FormationBackdrop.Display = false;
             Engine.TimeRate = 1f;
-            if (poem != null)
+            if (upgradeScreen != null)
             {
-                poem.RemoveSelf();
+                upgradeScreen.RemoveSelf();
             }
             RemoveSelf();
         }

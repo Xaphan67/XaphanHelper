@@ -51,7 +51,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Position = new Vector2(-200f, 26f);
             Depth = -10002;
             Sprite = new Sprite(GFX.Gui, "");
-            Sprite.Scale = new Vector2(0.15f);
+            Sprite.Scale = new Vector2(1.5f);
             borderColor = Calc.HexToColor("262626");
             Opacity = 1f;
             VirtualButton Button = new VirtualButton();

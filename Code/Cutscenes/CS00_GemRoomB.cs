@@ -14,7 +14,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private SoundEmitter sfx;
 
-        private CustomPoem poem;
+        private UpgradeScreen upgradeScreen;
 
         private NPC00_Theo theo;
 
@@ -56,16 +56,16 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             Engine.TimeRate = 1f;
             Tag = Tags.FrozenUpdate;
             level.Frozen = true;
-            string poemTextA = Dialog.Clean("XaphanHelper_get_Map_Name");
-            string poemTextB = Dialog.Clean("XaphanHelper_get_Map_Desc");
-            string poemTextC = Dialog.Clean("XaphanHelper_get_Map_Desc_b");
+            string name = Dialog.Clean("XaphanHelper_get_Map_Name");
+            string desc = Dialog.Clean("XaphanHelper_get_Map_Desc");
+            string controls = Dialog.Clean("XaphanHelper_get_Map_Controls");
             AreaKey area = level.Session.Area;
-            poem = new CustomPoem("XaphanHelper_Press", poemTextA, null, poemTextB, poemTextC, "AA00AA", "FFFFFF", "FFFFFF", "533467", "collectables/XaphanHelper/UpgradeCollectable/map", 0.5f, Settings.OpenMap);
-            poem.Alpha = 0f;
-            Scene.Add(poem);
+            upgradeScreen = new UpgradeScreen("collectables/XaphanHelper/UpgradeCollectable/map", name, desc, controls, "AA00AA", "FFFFFF", "FFFFFF", "533467", Settings.OpenMap.Button);
+            upgradeScreen.Alpha = 0f;
+            Scene.Add(upgradeScreen);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
             {
-                poem.Alpha = Ease.CubeOut(t2);
+                upgradeScreen.Alpha = Ease.CubeOut(t2);
                 yield return null;
             }
             while (!Input.MenuConfirm.Pressed && !Input.MenuCancel.Pressed)
@@ -76,7 +76,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.FormationBackdrop.Display = false;
             for (float t = 0f; t < 1f; t += Engine.RawDeltaTime * 2f)
             {
-                poem.Alpha = Ease.CubeIn(1f - t);
+                upgradeScreen.Alpha = Ease.CubeIn(1f - t);
                 yield return null;
             }
             player.Depth = 0;

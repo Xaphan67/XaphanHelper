@@ -18,87 +18,68 @@
 # {trigger x} this triggers an in-game event
 # {anchor} controls the visual position of the textbox in-game
 
-#Infos
-	XaphanHelper_ToSelect= to select
-	XaphanHelper_Press= Press
-	XaphanHelper_Hold= Hold
-	XaphanHelper_ThenHold= then hold
-	XaphanHelper_ThenPress= then press
-	XaphanHelper_AndPress= and press
-	XaphanHelper_Or= or
-	XaphanHelper_ClingingPress= While clinging to a wall, press
-
-#Metroid Infos
-	XaphanHelper_MorphMode= in Morph Ball form
-	XaphanHelper_Select= Select it with
-	XaphanHelper_Select_2= Select it with
-	XaphanHelper_Fire= and fire with
-	XaphanHelper_Set= and set it with
-
 #Celeste Upgrades
 	XaphanHelper_get_Map_Name= MAP
 	XaphanHelper_get_Map_Desc= Allows you to open the world map
-	XaphanHelper_get_Map_Desc_b= to open it
+	XaphanHelper_get_Map_Controls= Press (A) to open it
 	XaphanHelper_get_MapShard_Name= MAP FRAGMENT
-	XaphanHelper_get_MapShard_Desc= Reveal a part of this area
-	XaphanHelper_get_MapShard_Desc_b= on your map
+	XaphanHelper_get_MapShard_Desc= Reveal a part of this area on your map
 	XaphanHelper_get_EnergyTank_Name= ENERGY TANK
 	XaphanHelper_get_EnergyTank_Desc= Increases maximum Stamina
 	XaphanHelper_get_FireRateModule_Name= FIRE RATE MODULE
 	XaphanHelper_get_FireRateModule_Desc= Increases drone Fire rate
 	XaphanHelper_get_PowerGrip_Name= POWER GRIP
 	XaphanHelper_get_PowerGrip_Desc= Allows you to cling to walls for a short time
-	XaphanHelper_get_PowerGrip_Desc_b= near a wall to grab it
+	XaphanHelper_get_PowerGrip_Controls= Press (A) near a wall to grab it
 	XaphanHelper_get_ClimbingKit_Name= CLIMBING KIT
 	XaphanHelper_get_ClimbingKit_Desc= Allows you to climb walls
-	XaphanHelper_get_ClimbingKit_Desc_b= while clinging to a wall to climb it
+	XaphanHelper_get_ClimbingKit_Controls=Hold (A) or (B) while clinging to a wall to climb it
 	XaphanHelper_get_SpiderMagnet_Name= SPIDER MAGNET
 	XaphanHelper_get_SpiderMagnet_Desc= Allows you to grab onto magnetic ceilings
-	XaphanHelper_get_SpiderMagnet_Desc_b= under a magnetic ceiling to grab it
+	XaphanHelper_get_SpiderMagnet_Controls= Hold (A) under a magnetic ceiling to grab it
 	XaphanHelper_get_Bombs_Name= BOMBS
 	XaphanHelper_get_Bombs_Desc= Allows you to destroy some walls
-	XaphanHelper_get_Bombs_Desc_b= to place a bomb
+	XaphanHelper_get_Bombs_Controls= Hold (A) and press (B) to select (U) then hold (B) to place a bomb
 	XaphanHelper_get_MegaBombs_Name= MEGA BOMBS
 	XaphanHelper_get_MegaBombs_Desc= Allows you to destroy some walls and push some blocks
-	XaphanHelper_get_MegaBombs_Desc_b= to place a bomb
+	XaphanHelper_get_MegaBombs_Controls= Hold (A) and press (B) to select (U) then hold (B) to place a bomb
 	XaphanHelper_get_RemoteDrone_Name= REMOTE DRONE
 	XaphanHelper_get_RemoteDrone_Desc= Allows you to take control of a miniature drone
-	XaphanHelper_get_RemoteDrone_Desc_b= to deploy the drone
+	XaphanHelper_get_RemoteDrone_Controls= Hold (A) and press (B) to select (U) then press (B) to deploy the drone
 	XaphanHelper_get_GoldenFeather_Name= GOLDEN FEATHER
 	XaphanHelper_get_GoldenFeather_Desc= Allows you to glide freely or ride wind currents
-	XaphanHelper_get_GoldenFeather_Desc_b= while falling to use the feather
+	XaphanHelper_get_GoldenFeather_Controls= Hold (A) while falling to use the feather
 	XaphanHelper_get_Binoculars_Name= BINOCULARS
 	XaphanHelper_get_Binoculars_Desc= Allows you to preview the current room
-	XaphanHelper_get_Binoculars_Desc_b=  to use the binoculars
+	XaphanHelper_get_Binoculars_Controls= Hold (A) and press (B) to select (U) then press (B) to use the binoculars
 	XaphanHelper_get_EtherealDash_Name= ETHEREAL DASH
 	XaphanHelper_get_EtherealDash_Desc= Allows you to dash through thin walls
 	XaphanHelper_get_PortableStation_Name= PORTABLE STATION
 	XaphanHelper_get_PortableStation_Desc= Allows you to teleport to any unlocked Warp Station
-	XaphanHelper_get_PortableStation_Desc_b= to use the station
+	XaphanHelper_get_PortableStation_Controls= Hold (A) and press (B) to select (U) then press (B) to use the station
 	XaphanHelper_get_PulseRadar_Name= PULSE RADAR
-	XaphanHelper_get_PulseRadar_Desc= Allows you to reveal secret passages near your position
-	XaphanHelper_get_PulseRadar_Desc_b= to use the radar
+	XaphanHelper_get_PulseRadar_Desc= Allows you to reveal nearby secret passages
+	XaphanHelper_get_PulseRadar_Controls= Hold (A) and press (B) to select (U) then press (B) to use the radar
 	XaphanHelper_get_DroneTeleport_Name= DRONE TELEPORT
 	XaphanHelper_get_DroneTeleport_Desc= Allows you to teleport to the location of your drone
-	XaphanHelper_get_DroneTeleport_Desc_b= while you control the drone to teleport
+	XaphanHelper_get_DroneTeleport_Controls= Press (A) while you control the drone to teleport
 	XaphanHelper_get_JumpBoost_Name= JUMP BOOST
 	XaphanHelper_get_JumpBoost_Desc= Allows you to jump up to twice as high
-	XaphanHelper_get_JumpBoost_Desc_b= before jumping to activate
+	XaphanHelper_get_JumpBoost_Controls= Hold (A) before jumping to activate
 	XaphanHelper_get_ScrewAttack_Name= SCREW ATTACK
-	XaphanHelper_get_ScrewAttack_Desc= Destroy some walls, increase velocity and
-	XaphanHelper_get_ScrewAttack_Desc_b= allows you to go through some obstacles while jumping
+	XaphanHelper_get_ScrewAttack_Desc= Destroys some walls, increases velocity, and allows you to go through some obstacles while jumping
 	XaphanHelper_get_DashBoots_Name= DASH BOOTS
 	XaphanHelper_get_DashBoots_Desc= Allows you to dash in any direction
-	XaphanHelper_get_DashBoots_Desc_b= and a direction to dash
+	XaphanHelper_get_DashBoots_Controls= Press (A) and a direction to dash
 	XaphanHelper_get_SpaceJump_Name= SPACE JUMP
 	XaphanHelper_get_SpaceJump_Desc= Allows one extra jump in midair
-	XaphanHelper_get_SpaceJump_Desc_b= in midair to jump again
+	XaphanHelper_get_SpaceJump_Controls= Press (A) in midair to jump again
 	XaphanHelper_get_HoverBoots_Name= HOVER BOOTS
 	XaphanHelper_get_HoverBoots_Desc= Allows you to float for a short time
-	XaphanHelper_get_HoverBoots_Desc_b= and a direction while falling to float
+	XaphanHelper_get_HoverBoots_Controls= Hold (A) and a direction while falling to float
 	XaphanHelper_get_LightningDash_Name= LIGHTNING DASH
 	XaphanHelper_get_LightningDash_Desc= Allows you to perform an infinite horizontal dash
-	XaphanHelper_get_LightningDash_Desc_b= and the direction away from the wall to dash
+	XaphanHelper_get_LightningDash_Controls= While clinging to a wall, press (A) and the direction away from the wall to dash
 
 #Metroid Upgrades
 	XaphanHelper_get_Spazer_Name= SPAZER
@@ -111,32 +92,37 @@
 	XaphanHelper_get_Met_GravityJacket_Desc= Allows free movement in liquids and protect from lava
 	XaphanHelper_get_MorphingBall_Name= MORPHING BALL
 	XaphanHelper_get_MorphingBall_Desc= Allows you to gain access to narrow passages
-	XaphanHelper_get_MorphingBall_Desc_b= to transform
+	XaphanHelper_get_MorphingBall_Controls= Press (A) to transform
 	XaphanHelper_get_MorphBombs_Name= BOMBS
 	XaphanHelper_get_MorphBombs_Desc= Allows you to destroy some walls
-	XaphanHelper_get_MorphBombs_Desc_b= in Morph Ball form to set
+	XaphanHelper_get_MorphBombs_Controls= Press (A) in Morph Ball form to set
 	XaphanHelper_get_SpringBall_Name= SPRING BALL
 	XaphanHelper_get_SpringBall_Desc= Adds Morphing Ball jumping capability
-	XaphanHelper_get_SpringBall_Desc_b= in Morphing Ball form to jump
+	XaphanHelper_get_SpringBall_Controls= Press (A) in Morphing Ball form to jump
 	XaphanHelper_get_Met_ScrewAttack_Name= SCREW ATTACK
 	XaphanHelper_get_Met_ScrewAttack_Desc= Damage enemies while somersaulting
 	XaphanHelper_get_HighJumpBoots_Name= HIGH JUMP BOOTS
 	XaphanHelper_get_HighJumpBoots_Desc= Increases maximum jump height
 	XaphanHelper_get_Met_SpaceJump_Name= SPACE JUMP
 	XaphanHelper_get_Met_SpaceJump_Desc= Somersault continually in the air
-	XaphanHelper_get_Met_SpaceJump_Desc_b= mid-somersault to jump again
+	XaphanHelper_get_Met_SpaceJump_Controls= Press (A) mid-somersault to jump again
 	XaphanHelper_get_SpeedBooster_Name= SPEED BOOSTER
 	XaphanHelper_get_SpeedBooster_Desc= Increases running speed. Destroys certain blocks
-	XaphanHelper_get_SpeedBooster_Desc_b= and run for a while to activate
+	XaphanHelper_get_SpeedBooster_Controls= Hold (A) and run for a while to activate
+
+#Ammo Upgrades
 	XaphanHelper_get_Missile_Name= MISSILE
 	XaphanHelper_get_Missile_Name_b= MISSILE TANK
 	XaphanHelper_get_Missile_Desc= Deals increased damage - Open red hatches
+	XaphanHelper_get_Missile_Controls= Select it with (A) and fire with (B)
 	XaphanHelper_get_SuperMissile_Name= SUPER MISSILE
 	XaphanHelper_get_SuperMissile_Name_b= SUPER MISSILE TANK
 	XaphanHelper_get_SuperMissile_Desc= Deals massive damage - Open green hatches
+	XaphanHelper_get_SuperMissile_Controls= Select it with (A) and fire with (B)
 	XaphanHelper_get_PowerBomb_Name= POWER BOMB
 	XaphanHelper_get_PowerBomb_Name_b= POWER BOMB TANK
 	XaphanHelper_get_PowerBomb_Desc= Release a powerfull explosion - Open yellow hatches
+	XaphanHelper_get_PowerBomb_Controls= Select it with (A) and set it with (B) in Morph Ball form
 	XaphanHelper_get_Met_EnergyTank_Name= ENERGY TANK
 	XaphanHelper_get_Met_EnergyTank_Desc= Maximum energy increased
 	XaphanHelper_Increase_Missile= Missiles capacity increased
@@ -145,8 +131,7 @@
 
 #Common Upgrades
 	XaphanHelper_get_VariaJacket_Name= VARIA JACKET
-	XaphanHelper_get_VariaJacket_Desc= Allows you to survive in lava
-	XaphanHelper_get_VariaJacket_Desc_b= and protect from extreme temperatures
+	XaphanHelper_get_VariaJacket_Desc= Allows you to survive in lava and protects from extreme temperatures
 	XaphanHelper_get_GravityJacket_Name= GRAVITY JACKET
 	XaphanHelper_get_GravityJacket_Desc= Allows free movement in liquids
 	XaphanHelper_get_LongBeam_Name= LONG BEAM
