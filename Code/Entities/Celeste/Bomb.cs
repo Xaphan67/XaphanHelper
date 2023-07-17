@@ -411,6 +411,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 player.Speed.X = (180f * dirX) * (GravityJacket.determineIfInWater() && !XaphanModule.ModSettings.GravityJacket ? 0.8f : 1f);
             }
 
+            foreach (Entity entity in Scene.Tracker.GetEntities<BombBlock>())
+            {
+                BombBlock bombBlock = (BombBlock)entity;
+                if (bombBlock.isActive)
+                {
+                    foreach (BombBlock.PushingSide side in bombBlock.pushSides)
+                    {
+                        if (CollideCheck(side) && (
+                            (side.Side == "Left" && Right - 8 <= side.Left) ||
+                            (side.Side == "Right" && Left + 8 >= side.Right) ||
+                            (side.Side == "Up" && Bottom - 8 <= side.Top) ||
+                            (side.Side == "Down" && (Top + 8 >= side.Bottom || Hold.IsHeld))
+                            ) && side.isActive)
+                        {
+                            bombBlock.Push();
+                        }
+                    }
+                }
+            }
+
             foreach (Entity entity in Scene.Tracker.GetEntities<BreakBlockIndicator>())
             {
                 BreakBlockIndicator breakBlockIndicator = (BreakBlockIndicator)entity;
