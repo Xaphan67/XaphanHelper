@@ -305,6 +305,15 @@ namespace Celeste.Mod.XaphanHelper
 				medals: 5
 			));
             list.Add(new AchievementData(
+                achievementID: "map1-2s",
+                categoryID: 1,
+                icon: "achievements/Xaphan/MapBronze",
+                flag: "XaphanHelper_StatFlag_MapCh1-2-Visited",
+                currentValue: StatsFlags.CurrentSubAreaTiles[1][2] > 0 ? 1 : 0,
+                maxValue: 1,
+                medals: 5
+            ));
+            list.Add(new AchievementData(
 				achievementID: "map1-0",
 				categoryID: 1,
 				icon: "achievements/Xaphan/MapCheckmarkBronze",
@@ -325,6 +334,16 @@ namespace Celeste.Mod.XaphanHelper
 				reqID: "map1-1s"
 			));
             list.Add(new AchievementData(
+                achievementID: "map1-2",
+                categoryID: 1,
+                icon: "achievements/Xaphan/MapCheckmarkBronze",
+                flag: "XaphanHelper_StatFlag_MapCh1-2",
+                currentValue: StatsFlags.CurrentSubAreaTiles[1][2],
+                maxValue: StatsFlags.TotalSubAreaTiles[1][2],
+                medals: 10,
+                reqID: "map1-2s"
+            ));
+            list.Add(new AchievementData(
 				achievementID: "strwb1-0",
 				categoryID: 1,
 				icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
@@ -338,12 +357,22 @@ namespace Celeste.Mod.XaphanHelper
 				achievementID: "strwb1-1",
 				categoryID: 1,
 				icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
-				flag: "XaphanHelper_StatFlag_StrawberriesCh1-0",
+				flag: "XaphanHelper_StatFlag_StrawberriesCh1-1",
 				currentValue: StatsFlags.CurrentSubAreaStrawberries[1][1],
 				maxValue: StatsFlags.TotalSubAreaStrawberries[1][1],
 				medals: 10,
 				reqID: "map1-1s"
 			));
+            list.Add(new AchievementData(
+                achievementID: "strwb1-2",
+                categoryID: 1,
+                icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
+                flag: "XaphanHelper_StatFlag_StrawberriesCh1-2",
+                currentValue: StatsFlags.CurrentSubAreaStrawberries[1][2],
+                maxValue: StatsFlags.TotalSubAreaStrawberries[1][2],
+                medals: 10,
+                reqID: "map1-2s"
+            ));
             list.Add(new AchievementData(
 				achievementID: "map1",
 				categoryID: 1,
