@@ -1,5 +1,6 @@
 Version 1.0.57 :
 - Fixed a bug counting  B-Sides golden strawberies as nrormal strawberries in various "The Secret of Celeste Mountain" achievements
+- The 'Retry' option from the pause menu can now be used when using the Remote Drone
 
 Version 1.0.56 :
 - Fixed a bug preventing Refills in "The Secret of Celeste Mountain" to be collected when the player had low stamina
