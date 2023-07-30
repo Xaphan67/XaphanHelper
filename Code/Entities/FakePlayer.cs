@@ -27,9 +27,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private static void OnPlayerAdded(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
         {
             orig(self, scene);
-            if (XaphanModule.fakePlayerFacing != 0)
+            if (XaphanModule.ModSaveData.fakePlayerFacing.ContainsKey(self.SceneAs<Level>().Session.Area.GetLevelSet()) && XaphanModule.ModSaveData.fakePlayerFacing[self.SceneAs<Level>().Session.Area.GetLevelSet()] != 0 && self.GetType() == typeof(FakePlayer))
             {
-                self.Facing = XaphanModule.fakePlayerFacing;
+                self.Facing = XaphanModule.ModSaveData.fakePlayerFacing[self.SceneAs<Level>().Session.Area.GetLevelSet()];
             }
         }
 
@@ -45,7 +45,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 StateMachine.State = 11;
                 DummyAutoAnimate = false;
                 Sprite.Play("sleep");
-                Sprite.SetAnimationFrame(XaphanModule.fakePlayerSpriteFrame);
+                Sprite.SetAnimationFrame(XaphanModule.ModSaveData.fakePlayerSpriteFrame[SceneAs<Level>().Session.Area.GetLevelSet()]);
                 Depth = 100;
             }
             fakePlayerPlatforms.ForEach(entity => entity.Collidable = false);

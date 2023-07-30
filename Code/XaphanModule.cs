@@ -447,20 +447,6 @@ namespace Celeste.Mod.XaphanHelper
             return false;
         }
 
-        public static bool startAsDrone;
-
-        public static string droneStartRoom;
-
-        public static Vector2? droneStartSpawn;
-
-        public static Vector2? droneCurrentSpawn;
-
-        public static Facings fakePlayerFacing;
-
-        public static Vector2 fakePlayerPosition;
-
-        public static int fakePlayerSpriteFrame;
-
         public static bool useIngameMap;
 
         public static string inGameMapProgressDisplayMode;
@@ -1600,7 +1586,6 @@ namespace Celeste.Mod.XaphanHelper
             useUpgradesCheck(level);
             getTeleportToOtherSidePortalsData(level);
 
-
             // In-game Map stuff
 
             if (useIngameMap)
@@ -2411,6 +2396,17 @@ namespace Celeste.Mod.XaphanHelper
             minimapEnabled = false;
             TriggeredCountDown = false;
             ModSaveData.CanDisplayAchievementsPopups = false;
+            if ((!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerMode != "Rooms")) && mode != LevelExit.Mode.SaveAndQuit)
+            {
+                ModSaveData.startAsDrone.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.droneStartChapter.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.droneStartRoom.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.droneStartSpawn.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.droneCurrentSpawn.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.fakePlayerFacing.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.fakePlayerPosition.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.fakePlayerSpriteFrame.Remove(level.Session.Area.GetLevelSet());
+            }
             SaveSettings();
 
             onSlope = false;
@@ -2956,7 +2952,7 @@ namespace Celeste.Mod.XaphanHelper
 
                 // Save the room as the one that the player must load into when starting the campaign if using a MergeChaptersController with mode set to Rooms
 
-                else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !PlayerIsControllingRemoteDrone() && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true) && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+                else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true) && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
                 {
                     ModSaveData.LoadedPlayer = true;
                     if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
@@ -217,6 +218,24 @@ namespace Celeste.Mod.XaphanHelper
         public bool CanDisplayAchievementsPopups = false;
 
         public HashSet<string> Achievements = new();
+
+        // Drone
+
+        public Dictionary<string, bool> startAsDrone = new();
+
+        public Dictionary<string, int> droneStartChapter = new();
+
+        public Dictionary<string, string> droneStartRoom = new();
+
+        public Dictionary<string, Vector2?> droneStartSpawn = new();
+
+        public Dictionary<string, Vector2?> droneCurrentSpawn = new();
+
+        public Dictionary<string, Facings> fakePlayerFacing = new();
+
+        public Dictionary<string, Vector2> fakePlayerPosition = new();
+
+        public Dictionary<string, int> fakePlayerSpriteFrame = new();
 
         // Others
 

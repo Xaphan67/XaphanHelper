@@ -158,7 +158,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 Session session = (Session)LevelExitSession.GetValue(self);
-                session.RespawnPoint = XaphanModule.ModSaveData.droneStartSpawn;
+                session.RespawnPoint = XaphanModule.ModSaveData.droneStartSpawn[session.Area.GetLevelSet()];
                 LevelExitSession.SetValue(self, session);
             }
             orig(self);
@@ -167,20 +167,56 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private static void OnLevelLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader)
         {
             orig(self, playerIntro, isFromLoader);
-            if (XaphanModule.ModSaveData.startAsDrone)
+
+            // Set Drone variables
+
+            if (!XaphanModule.ModSaveData.startAsDrone.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.startAsDrone.Add(self.Session.Area.GetLevelSet(), false);
+            }
+            if (!XaphanModule.ModSaveData.droneStartChapter.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.droneStartChapter.Add(self.Session.Area.GetLevelSet(), 0);
+            }
+            if (!XaphanModule.ModSaveData.droneStartRoom.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.droneStartRoom.Add(self.Session.Area.GetLevelSet(), "");
+            }
+            if (!XaphanModule.ModSaveData.droneStartSpawn.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.droneStartSpawn.Add(self.Session.Area.GetLevelSet(), new());
+            }
+            if (!XaphanModule.ModSaveData.droneCurrentSpawn.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.droneCurrentSpawn.Add(self.Session.Area.GetLevelSet(), new());
+                Logger.Log(LogLevel.Info, "XH", "Ajout currentSpawn");
+            }
+            if (!XaphanModule.ModSaveData.fakePlayerFacing.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.fakePlayerFacing.Add(self.Session.Area.GetLevelSet(), new());
+            }
+            if (!XaphanModule.ModSaveData.fakePlayerPosition.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.fakePlayerPosition.Add(self.Session.Area.GetLevelSet(), new());
+            }
+            if (!XaphanModule.ModSaveData.fakePlayerSpriteFrame.ContainsKey(self.Session.Area.GetLevelSet()))
+            {
+                XaphanModule.ModSaveData.fakePlayerSpriteFrame.Add(self.Session.Area.GetLevelSet(), 0);
+            }
+
+            if (XaphanModule.ModSaveData.startAsDrone[self.Session.Area.GetLevelSet()] && playerIntro != Player.IntroTypes.Transition)
             {
                 Player player = self.Tracker.GetEntity<Player>();
                 if (player != null)
                 {
-                    player.Position = (self.Session.Level == XaphanModule.ModSaveData.droneStartRoom && self.Session.RespawnPoint.GetValueOrDefault() == XaphanModule.ModSaveData.droneCurrentSpawn) ? XaphanModule.ModSaveData.fakePlayerPosition : self.Session.RespawnPoint.GetValueOrDefault();
+                    player.Position = (self.Session.Level == XaphanModule.ModSaveData.droneStartRoom[self.Session.Area.GetLevelSet()] && self.Session.RespawnPoint.GetValueOrDefault() == XaphanModule.ModSaveData.droneCurrentSpawn[self.Session.Area.GetLevelSet()]) ? XaphanModule.ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()] : self.Session.RespawnPoint.GetValueOrDefault();
                     self.Camera.Position = player.CameraTarget;
                     self.Add(new Drone(player.Position, player)
                     {
                         canDestroy = true,
-                        startRoom = XaphanModule.ModSaveData.droneStartRoom,
-                    startedAsDrone = true
+                        startRoom = XaphanModule.ModSaveData.droneStartRoom[self.Session.Area.GetLevelSet()],
+                        startedAsDrone = true
                     });
-                    XaphanModule.ModSaveData.droneStartRoom = null;
                     player.Visible = false;
                     DynData<Player> playerData = new(player);
                     Hitbox normalPlayerHitbox = playerData.Get<Hitbox>("normalHitbox");
@@ -239,7 +275,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (self.SceneAs<Level>().Session.Level == drone.startRoom)
                 {
                     drone.CurrentSpawn = self.Target;
-                    XaphanModule.ModSaveData.droneCurrentSpawn = self.Target;
+                    XaphanModule.ModSaveData.droneCurrentSpawn[self.SceneAs<Level>().Session.Area.GetLevelSet()] = self.Target;
                 }
             }
         }
@@ -371,7 +407,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (!XaphanModule.ModSettings.UseBagItemSlot.Check && !XaphanModule.ModSaveData.startAsDrone)
+            if (!XaphanModule.ModSettings.UseBagItemSlot.Check && !XaphanModule.ModSaveData.startAsDrone[SceneAs<Level>().Session.Area.GetLevelSet()])
             {
                 RemoveSelf();
             }
@@ -379,14 +415,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (startedAsDrone)
                 {
-                    FakePlayer = new FakePlayer(XaphanModule.ModSaveData.fakePlayerPosition, SceneAs<Level>().Session.Inventory.Backpack ? PlayerSpriteMode.Madeline : PlayerSpriteMode.MadelineNoBackpack, true);
-                    FakePlayer.Facing = XaphanModule.ModSaveData.fakePlayerFacing;
+                    FakePlayer = new FakePlayer(XaphanModule.ModSaveData.fakePlayerPosition[SceneAs<Level>().Session.Area.GetLevelSet()], SceneAs<Level>().Session.Inventory.Backpack ? PlayerSpriteMode.Madeline : PlayerSpriteMode.MadelineNoBackpack, true);
+                    FakePlayer.Facing = XaphanModule.ModSaveData.fakePlayerFacing[SceneAs<Level>().Session.Area.GetLevelSet()];
                     FakePlayer.StateMachine.State = 11;
                     FakePlayer.DummyAutoAnimate = false;
                     FakePlayer.DummyGravity = false;
                     FakePlayer.Depth = 100;
                     Scene.Add(FakePlayer);
-                    CurrentSpawn = XaphanModule.ModSaveData.droneCurrentSpawn;
+                    CurrentSpawn = XaphanModule.ModSaveData.droneCurrentSpawn[SceneAs<Level>().Session.Area.GetLevelSet()];
                     GiveAmmo();
                 }
                 else
@@ -394,7 +430,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     SceneAs<Level>().PauseLock = true;
                 }
             }
-            XaphanModule.ModSaveData.startAsDrone = false;
         }
 
         public override void Removed(Scene scene)
@@ -455,8 +490,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 duckPlayerHurtbox.Left = -3f;
                 duckPlayerHurtbox.Top = -6f;
                 CurrentSpawn = SceneAs<Level>().Session.RespawnPoint;
-                XaphanModule.ModSaveData.droneStartSpawn = CurrentSpawn;
-                XaphanModule.ModSaveData.droneCurrentSpawn = CurrentSpawn;
+                XaphanModule.ModSaveData.droneStartSpawn[SceneAs<Level>().Session.Area.GetLevelSet()] = CurrentSpawn;
+                XaphanModule.ModSaveData.droneCurrentSpawn[SceneAs<Level>().Session.Area.GetLevelSet()] = CurrentSpawn;
                 cameraPosition = new Vector2(SceneAs<Level>().Camera.Position.X - SceneAs<Level>().Bounds.Left, SceneAs<Level>().Camera.Position.Y - SceneAs<Level>().Bounds.Top);
                 released = true;
                 startRoom = SceneAs<Level>().Session.Level;
@@ -466,8 +501,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 FakePlayer.DummyAutoAnimate = false;
                 FakePlayer.Sprite.Play("throw");
                 FakePlayer.Depth = 100;
-                XaphanModule.ModSaveData.fakePlayerFacing = FakePlayer.Facing;
-                XaphanModule.ModSaveData.fakePlayerPosition = FakePlayer.Position;
+                XaphanModule.ModSaveData.fakePlayerFacing[SceneAs<Level>().Session.Area.GetLevelSet()] = FakePlayer.Facing;
+                XaphanModule.ModSaveData.fakePlayerPosition[SceneAs<Level>().Session.Area.GetLevelSet()] = FakePlayer.Position;
+                XaphanModule.ModSaveData.startAsDrone[SceneAs<Level>().Session.Area.GetLevelSet()] = true;
+                XaphanModule.ModSaveData.droneStartRoom[SceneAs<Level>().Session.Area.GetLevelSet()] = startRoom;
+                int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                XaphanModule.ModSaveData.droneStartChapter[SceneAs<Level>().Session.Area.GetLevelSet()] = chapterIndex;
                 player.Visible = false;
                 if (force.X != 0f && force.Y == 0f)
                 {
@@ -664,7 +703,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             duckPlayerHurtbox.Width = 8f;
             duckPlayerHurtbox.Left = -4f;
             duckPlayerHurtbox.Top = -6f;
-            SceneAs<Level>().SaveQuitDisabled = false;
             RemoveSelf();
         }
 
@@ -711,7 +749,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             UpgradesDisplay display = SceneAs<Level>().Tracker.GetEntity<UpgradesDisplay>();
-            if (startedAsDrone)
+            if (startedAsDrone && display != null)
             {
                 if (XaphanModule.ModSession.CurrentAmmoSelected == 1)
                 {
@@ -749,14 +787,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     tutorialGui = null;
                 }
-            }
-            if (!dead && !Teleport)
-            {
-                SceneAs<Level>().SaveQuitDisabled = true;
-            }
-            else
-            {
-                SceneAs<Level>().SaveQuitDisabled = false;
             }
             currentRoom = SceneAs<Level>().Session.Level;
             if (currentRoom != previousRoom)
@@ -1224,8 +1254,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             XaphanModule.ModSession.CurrentDroneMissile = 0;
                             XaphanModule.ModSession.CurrentDroneSuperMissile = 0;
                             Level.Session.RespawnPoint = CurrentSpawn;
-                            XaphanModule.ModSaveData.fakePlayerFacing = 0;
-                            XaphanModule.ModSaveData.fakePlayerPosition = Vector2.Zero;
+                            XaphanModule.ModSaveData.fakePlayerFacing.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+                            XaphanModule.ModSaveData.fakePlayerPosition.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+                            XaphanModule.ModSaveData.startAsDrone.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+                            XaphanModule.ModSaveData.droneStartRoom.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+                            XaphanModule.ModSaveData.droneStartSpawn.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
                             if (startRoom == Level.Session.Level)
                             {
                                 DynData<Player> playerData = new(player);
@@ -1278,7 +1311,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     player.StateMachine.State = 0;
                                     Level.PauseLock = false;
                                 }
-                                XaphanModule.ModSaveData.droneCurrentSpawn = null;
                             }
                             else
                             {
@@ -1336,11 +1368,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 player.StateMachine.Locked = false;
                                 player.StateMachine.State = 0;
                                 Level.PauseLock = false;
-                                XaphanModule.ModSaveData.startAsDrone = true;
-                                XaphanModule.ModSaveData.droneStartRoom = startRoom;
                                 if (FakePlayer != null)
                                 {
-                                    XaphanModule.ModSaveData.fakePlayerSpriteFrame = FakePlayer.Sprite.CurrentAnimationFrame;
+                                    XaphanModule.ModSaveData.fakePlayerSpriteFrame[Level.Session.Area.GetLevelSet()] = FakePlayer.Sprite.CurrentAnimationFrame;
                                 }
                                 int chapterIndex = Level.Session.Area.ChapterIndex;
                                 foreach (DroneSwitch droneSwitch in Level.Tracker.GetEntities<DroneSwitch>())
