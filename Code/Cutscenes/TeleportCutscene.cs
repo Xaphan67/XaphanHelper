@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Controllers;
+using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -45,10 +46,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private float currentSpriterate;
 
+        private bool drone;
+
         private static FieldInfo PlayerOnGround = typeof(Player).GetField("onGround", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public TeleportCutscene(Player player, string room, Vector2 spawnPoint, int cameraX, int cameraY, bool cameraOnPlayer, float timer, string wipeType, float wipeDuration = 0.5f, bool fromElevator = false, bool skipFirstWipe = false,
-            bool respawnAnim = false, bool useLevelWipe = false, bool wakeUpAnim = false, float spawnPositionX = 0f, float spawnPositionY = 0f, bool oldRespawn = false, bool faceLeft = false) : base(false)
+            bool respawnAnim = false, bool useLevelWipe = false, bool wakeUpAnim = false, float spawnPositionX = 0f, float spawnPositionY = 0f, bool oldRespawn = false, bool faceLeft = false, bool drone = false) : base(false)
         {
             Tag = Tags.FrozenUpdate;
             this.player = player;
@@ -67,6 +70,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             this.useLevelWipe = useLevelWipe;
             this.oldRespawn = oldRespawn;
             this.faceLeft = faceLeft;
+            this.drone = drone;
             spawnPosition = new Vector2(spawnPositionX, spawnPositionY);
         }
 
@@ -414,6 +418,16 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                         controller.RemoveSelf();
                     }
                 }
+
+                if (drone)
+                {
+                    XaphanModule.ModSaveData.fakePlayerFacing.Remove(level.Session.Area.GetLevelSet());
+                    XaphanModule.ModSaveData.fakePlayerPosition.Remove(level.Session.Area.GetLevelSet());
+                    XaphanModule.ModSaveData.droneStartRoom.Remove(level.Session.Area.GetLevelSet());
+                    XaphanModule.ModSaveData.droneStartSpawn.Remove(level.Session.Area.GetLevelSet());
+                    XaphanModule.TeleportBackFromDrone = false;
+                }
+
                 Leader.RestoreStrawberries(level.Tracker.GetEntity<Player>().Leader);
                 XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_teleporting");
                 level.Tracker.GetEntity<Player>().StateMachine.State = Player.StNormal;

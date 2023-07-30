@@ -108,6 +108,10 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool ShowUI;
 
+        public static bool TeleportBackFromDrone;
+
+        public static bool NoDroneSpawnSound;
+
         public enum Upgrades
         {
             // Celeste Upgrades
@@ -2405,8 +2409,8 @@ namespace Celeste.Mod.XaphanHelper
                 ModSaveData.droneCurrentSpawn.Remove(level.Session.Area.GetLevelSet());
                 ModSaveData.fakePlayerFacing.Remove(level.Session.Area.GetLevelSet());
                 ModSaveData.fakePlayerPosition.Remove(level.Session.Area.GetLevelSet());
-                ModSaveData.fakePlayerSpriteFrame.Remove(level.Session.Area.GetLevelSet());
             }
+            NoDroneSpawnSound = false;
             SaveSettings();
 
             onSlope = false;
@@ -3218,7 +3222,21 @@ namespace Celeste.Mod.XaphanHelper
                             return;
                         }
                     }
-                    self.Add(new TeleportCutscene(player, destinationRoom, spawn, 0, 0, true, 0f, wipe, wipeDuration, fromElevator, true, useLevelWipe: ModSaveData.CountdownUseLevelWipe));
+                    if (TeleportBackFromDrone)
+                    {
+                        self.Add(new TransitionBlackEffect(true));
+                        self.TimerHidden = true;
+                        bool faceLeft = false;
+                        if (ModSaveData.fakePlayerFacing[self.Session.Area.GetLevelSet()] == Facings.Left)
+                        {
+                            faceLeft = true;
+                        }
+                        self.Add(new TeleportCutscene(player, ModSaveData.droneStartRoom[self.Session.Area.GetLevelSet()], Vector2.Zero, 0, 0, true, 0f, "Fade", wipeDuration, fromElevator, wakeUpAnim: true, spawnPositionX: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].X, spawnPositionY: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].Y, faceLeft: faceLeft, drone : true));
+                    }
+                    else
+                    {
+                        self.Add(new TeleportCutscene(player, destinationRoom, spawn, 0, 0, true, 0f, wipe, wipeDuration, fromElevator, true, useLevelWipe: ModSaveData.CountdownUseLevelWipe));
+                    }
                     ModSaveData.CountdownUseLevelWipe = false;
                 }
             }

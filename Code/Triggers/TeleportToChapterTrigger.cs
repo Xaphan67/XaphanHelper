@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -30,6 +31,8 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         private TalkComponent talk;
 
+        private bool triggered;
+
         public TeleportToChapterTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
             ToChapter = data.Int("toChapter");
@@ -55,11 +58,15 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         public override void OnEnter(Player player)
         {
-            base.OnEnter(player);
-            if (!canInteract)
+            if (!triggered)
             {
-                Interact(player);
-            }
+                triggered = true;
+                base.OnEnter(player);
+                if (!canInteract)
+                {
+                    Interact(player);
+                }
+            }        
         }
 
         private void Interact(Player player)

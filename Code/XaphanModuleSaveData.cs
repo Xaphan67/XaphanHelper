@@ -235,8 +235,6 @@ namespace Celeste.Mod.XaphanHelper
 
         public Dictionary<string, Vector2> fakePlayerPosition = new();
 
-        public Dictionary<string, int> fakePlayerSpriteFrame = new();
-
         // Others
 
         public string CurrentSubArea = "";

@@ -15,13 +15,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static float alpha;
 
+        private bool immediate;
+
         private static FieldInfo LevelTransition = typeof(Level).GetField("transition", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public TransitionBlackEffect() : base()
+        public TransitionBlackEffect(bool immediate = false) : base()
         {
             Tag = (Tags.Persistent | Tags.TransitionUpdate);
             Depth = -89990;
-            alpha = 0f;
+            alpha = immediate ? 1f : 0f;
+            this.immediate = immediate;
         }
 
         public static void Load()
@@ -119,7 +122,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Added(scene);
             camera = SceneAs<Level>().Camera;
-            Add(new Coroutine(FadeRoutine()));
+            if (!immediate)
+            {
+                Add(new Coroutine(FadeRoutine()));
+            }
         }
 
         private IEnumerator FadeRoutine()

@@ -45,7 +45,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 StateMachine.State = 11;
                 DummyAutoAnimate = false;
                 Sprite.Play("sleep");
-                Sprite.SetAnimationFrame(XaphanModule.ModSaveData.fakePlayerSpriteFrame[SceneAs<Level>().Session.Area.GetLevelSet()]);
+                Sprite.SetAnimationFrame(Sprite.CurrentAnimationTotalFrames - 1);
                 Depth = 100;
             }
             fakePlayerPlatforms.ForEach(entity => entity.Collidable = false);

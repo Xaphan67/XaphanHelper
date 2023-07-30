@@ -176,80 +176,83 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator MoveElevator(Vector2 end)
         {
-            foreach (Elevator elevator in SceneAs<Level>().Tracker.GetEntities<Elevator>())
+            if (!XaphanModule.TeleportBackFromDrone)
             {
-                if (CanTalk)
+                foreach (Elevator elevator in SceneAs<Level>().Tracker.GetEntities<Elevator>())
                 {
-                    if (!elevator.CanTalk)
+                    if (CanTalk)
                     {
-                        elevator.RemoveSelf();
-                    }
-                }
-                else
-                {
-                    if (elevator.CanTalk)
-                    {
-                        elevator.RemoveSelf();
-                    }
-                }
-            }
-            Player player = Scene.Tracker.GetEntity<Player>();
-            SceneAs<Level>().PauseLock = true;
-            player.StateMachine.State = 11;
-            yield return player.DummyWalkToExact((int)X + 16, false, 1f, true);
-            player.Facing = Facings.Right;
-            while (Timer > 0f)
-            {
-                yield return null;
-                Timer -= Engine.DeltaTime;
-            }
-            sound = Audio.Play("event:/game/xaphan/elevator", Center);
-            SceneAs<Level>().Session.SetFlag("Using_Elevator", true);
-            while (Position != EndPosition && player != null)
-            {
-                if (((ReversePosition < 0 && Position == EndPosition + new Vector2(0f, 48f)) || (ReversePosition > 0 && Position == EndPosition + new Vector2(0f, -48f))) && CanTalk)
-                {
-                    int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
-                    if (ToChapter != currentChapter)
-                    {
-                        FadeWipe Wipe = new(SceneAs<Level>(), false, () => ExitRoom(player))
+                        if (!elevator.CanTalk)
                         {
-                            Duration = 1.35f
-                        };
-                        SceneAs<Level>().Add(Wipe);
+                            elevator.RemoveSelf();
+                        }
                     }
                     else
                     {
-                        ExitRoom(player);
+                        if (elevator.CanTalk)
+                        {
+                            elevator.RemoveSelf();
+                        }
                     }
                 }
-                speed = 120f / Vector2.Distance(StartPosition, EndPosition);
-                lerp = Calc.Approach(lerp, 1, speed * Engine.DeltaTime);
-                Vector2 liftSpeed = (EndPosition - StartPosition) * speed;
-                MoveTo(Vector2.Lerp(StartPosition, EndPosition, lerp), liftSpeed);
-                SceneAs<Level>().Camera.Position = player.CameraTarget;
-                yield return null;
-            }
-            if (Position == EndPosition && player != null)
-            {
-                sound.stop(STOP_MODE.IMMEDIATE);
-                SceneAs<Level>().Session.SetFlag("Using_Elevator", false);
-                CountdownDisplay timerDisplay = SceneAs<Level>().Tracker.GetEntity<CountdownDisplay>();
-                if (!CanTalk)
+                Player player = Scene.Tracker.GetEntity<Player>();
+                SceneAs<Level>().PauseLock = true;
+                player.StateMachine.State = 11;
+                yield return player.DummyWalkToExact((int)X + 16, false, 1f, true);
+                player.Facing = Facings.Right;
+                while (Timer > 0f)
                 {
-                    if (timerDisplay != null)
-                    {
-                        timerDisplay.StopTimer(false, true);
-                    }
-                    if (!OneUse)
-                    {
-                        Scene.Add(new Elevator(Position, sprite, true, UsableInSpeedrunMode, 1f, false, -ReversePosition, ToChapter, DestinationRoom, SpawnRoomX, SpawnRoomY, flag));
-                        RemoveSelf();
-                    }
+                    yield return null;
+                    Timer -= Engine.DeltaTime;
                 }
-                SceneAs<Level>().PauseLock = false;
-                Sprite.Play("inactive");
-                player.StateMachine.State = 0;
+                sound = Audio.Play("event:/game/xaphan/elevator", Center);
+                SceneAs<Level>().Session.SetFlag("Using_Elevator", true);
+                while (Position != EndPosition && player != null)
+                {
+                    if (((ReversePosition < 0 && Position == EndPosition + new Vector2(0f, 48f)) || (ReversePosition > 0 && Position == EndPosition + new Vector2(0f, -48f))) && CanTalk)
+                    {
+                        int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
+                        if (ToChapter != currentChapter)
+                        {
+                            FadeWipe Wipe = new(SceneAs<Level>(), false, () => ExitRoom(player))
+                            {
+                                Duration = 1.35f
+                            };
+                            SceneAs<Level>().Add(Wipe);
+                        }
+                        else
+                        {
+                            ExitRoom(player);
+                        }
+                    }
+                    speed = 120f / Vector2.Distance(StartPosition, EndPosition);
+                    lerp = Calc.Approach(lerp, 1, speed * Engine.DeltaTime);
+                    Vector2 liftSpeed = (EndPosition - StartPosition) * speed;
+                    MoveTo(Vector2.Lerp(StartPosition, EndPosition, lerp), liftSpeed);
+                    SceneAs<Level>().Camera.Position = player.CameraTarget;
+                    yield return null;
+                }
+                if (Position == EndPosition && player != null)
+                {
+                    sound.stop(STOP_MODE.IMMEDIATE);
+                    SceneAs<Level>().Session.SetFlag("Using_Elevator", false);
+                    CountdownDisplay timerDisplay = SceneAs<Level>().Tracker.GetEntity<CountdownDisplay>();
+                    if (!CanTalk)
+                    {
+                        if (timerDisplay != null)
+                        {
+                            timerDisplay.StopTimer(false, true);
+                        }
+                        if (!OneUse)
+                        {
+                            Scene.Add(new Elevator(Position, sprite, true, UsableInSpeedrunMode, 1f, false, -ReversePosition, ToChapter, DestinationRoom, SpawnRoomX, SpawnRoomY, flag));
+                            RemoveSelf();
+                        }
+                    }
+                    SceneAs<Level>().PauseLock = false;
+                    Sprite.Play("inactive");
+                    player.StateMachine.State = 0;
+                }
             }
         }
 
