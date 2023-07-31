@@ -304,15 +304,20 @@ namespace Celeste.Mod.XaphanHelper
 				maxValue: 1,
 				medals: 5
 			));
-            list.Add(new AchievementData(
-                achievementID: "map1-2s",
-                categoryID: 1,
-                icon: "achievements/Xaphan/MapBronze",
-                flag: "XaphanHelper_StatFlag_MapCh1-2-Visited",
-                currentValue: StatsFlags.CurrentSubAreaTiles[1][2] > 0 ? 1 : 0,
-                maxValue: 1,
-                medals: 5
-            ));
+
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+			{
+				list.Add(new AchievementData(
+					achievementID: "map1-2s",
+					categoryID: 1,
+					icon: "achievements/Xaphan/MapBronze",
+					flag: "XaphanHelper_StatFlag_MapCh1-2-Visited",
+					currentValue: StatsFlags.CurrentSubAreaTiles[1][2] > 0 ? 1 : 0,
+					maxValue: 1,
+					medals: 5
+                ));
+            }
+            
             list.Add(new AchievementData(
 				achievementID: "map1-0",
 				categoryID: 1,
@@ -333,16 +338,21 @@ namespace Celeste.Mod.XaphanHelper
 				medals: 10,
 				reqID: "map1-1s"
 			));
-            list.Add(new AchievementData(
-                achievementID: "map1-2",
-                categoryID: 1,
-                icon: "achievements/Xaphan/MapCheckmarkBronze",
-                flag: "XaphanHelper_StatFlag_MapCh1-2",
-                currentValue: StatsFlags.CurrentSubAreaTiles[1][2],
-                maxValue: StatsFlags.TotalSubAreaTiles[1][2],
-                medals: 10,
-                reqID: "map1-2s"
-            ));
+
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+			{
+                list.Add(new AchievementData(
+					achievementID: "map1-2",
+					categoryID: 1,
+					icon: "achievements/Xaphan/MapCheckmarkBronze",
+					flag: "XaphanHelper_StatFlag_MapCh1-2",
+					currentValue: StatsFlags.CurrentSubAreaTiles[1][2],
+					maxValue: StatsFlags.TotalSubAreaTiles[1][2],
+					medals: 10,
+					reqID: "map1-2s"
+				));
+            }
+                
             list.Add(new AchievementData(
 				achievementID: "strwb1-0",
 				categoryID: 1,
@@ -363,16 +373,21 @@ namespace Celeste.Mod.XaphanHelper
 				medals: 10,
 				reqID: "map1-1s"
 			));
-            list.Add(new AchievementData(
-                achievementID: "strwb1-2",
-                categoryID: 1,
-                icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
-                flag: "XaphanHelper_StatFlag_StrawberriesCh1-2",
-                currentValue: StatsFlags.CurrentSubAreaStrawberries[1][2],
-                maxValue: StatsFlags.TotalSubAreaStrawberries[1][2],
-                medals: 10,
-                reqID: "map1-2s"
-            ));
+
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            {
+                list.Add(new AchievementData(
+                    achievementID: "strwb1-2",
+                    categoryID: 1,
+                    icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_StrawberriesCh1-2",
+                    currentValue: StatsFlags.CurrentSubAreaStrawberries[1][2],
+                    maxValue: StatsFlags.TotalSubAreaStrawberries[1][2],
+                    medals: 10,
+                    reqID: "map1-2s"
+                ));
+            }
+            
             list.Add(new AchievementData(
 				achievementID: "map1",
 				categoryID: 1,
@@ -405,6 +420,7 @@ namespace Celeste.Mod.XaphanHelper
 					reqID: "upg2"
 				));
 			}
+
 
             list.Add(new AchievementData(
 				achievementID: "cass1",
