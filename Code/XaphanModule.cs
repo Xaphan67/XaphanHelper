@@ -43,6 +43,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static List<TeleportToOtherSideData> TeleportToOtherSideData = new();
 
+        public static List<RoomMusicControllerData> RoomMusicControllerData = new();
+
         private FieldInfo OuiChapterSelect_icons = typeof(OuiChapterSelect).GetField("icons", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private FieldInfo OuiChapterPanel_modes = typeof(OuiChapterPanel).GetField("modes", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -1561,6 +1563,25 @@ namespace Celeste.Mod.XaphanHelper
             }
         }
 
+        private void getRoomMusicControllerData(Level level)
+        {
+            RoomMusicControllerData.Clear();
+            MapData MapData = AreaData.Areas[level.Session.Area.ID].Mode[0].MapData;
+            if (MapData != null)
+            {
+                foreach (LevelData levelData in MapData.Levels)
+                {
+                    foreach (EntityData entity in levelData.Entities)
+                    {
+                        if (entity.Name == "XaphanHelper/RoomMusicController")
+                        {
+                            RoomMusicControllerData.Add(new RoomMusicControllerData(entity.Attr("rooms"), entity.Attr("excludeRooms"), entity.Attr("flagInnactive"), entity.Attr("flagA"), entity.Attr("flagB"), entity.Attr("flagC"), entity.Attr("flagD"), entity.Attr("musicIfFlagA"), entity.Attr("musicIfFlagB"), entity.Attr("musicIfFlagC"), entity.Attr("musicIfFlagD"), entity.Attr("defaultMusic")));
+                        }
+                    }
+                }
+            }
+        }
+
         private void onLevelLoad(Level level, Player.IntroTypes playerIntro, bool isFromLoader)
         {
             isInLevel = true;
@@ -1589,6 +1610,50 @@ namespace Celeste.Mod.XaphanHelper
             useMetroidGameplayCheck(level);
             useUpgradesCheck(level);
             getTeleportToOtherSidePortalsData(level);
+            getRoomMusicControllerData(level);
+
+            // Room Music stuff
+
+            if (string.IsNullOrEmpty(level.Session.LevelData.Music))
+            {
+                foreach (RoomMusicControllerData roomMusicControllerData in RoomMusicControllerData)
+                {
+                    if (!level.Session.GetFlag(roomMusicControllerData.FlagInnactive))
+                    {
+                        string[] excludeRooms = roomMusicControllerData.ExcludeRooms.Split(',');
+                        bool canApplyMusic = true;
+                        foreach (string excludeRoom in excludeRooms)
+                        {
+                            if (level.Session.Level == excludeRoom)
+                            {
+                                canApplyMusic = false;
+                                break;
+                            }
+                        }
+                        if (level.Session.Level.Contains(roomMusicControllerData.Rooms) && canApplyMusic)
+                        {
+                            level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.DefaultMusic);
+                            if (level.Session.GetFlag(roomMusicControllerData.FlagA))
+                            {
+                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagA);
+                            }
+                            else if (level.Session.GetFlag(roomMusicControllerData.FlagB))
+                            {
+                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagB);
+                            }
+                            else if (level.Session.GetFlag(roomMusicControllerData.FlagC))
+                            {
+                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagC);
+                            }
+                            else if (level.Session.GetFlag(roomMusicControllerData.FlagD))
+                            {
+                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagD);
+                            }
+                        }
+                        level.Session.Audio.Apply(forceSixteenthNoteHack: false);
+                    }
+                }
+            }
 
             // In-game Map stuff
 
