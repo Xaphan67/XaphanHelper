@@ -1618,7 +1618,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 foreach (RoomMusicControllerData roomMusicControllerData in RoomMusicControllerData)
                 {
-                    if (!level.Session.GetFlag(roomMusicControllerData.FlagInnactive))
+                    if (!level.Session.GetFlag(roomMusicControllerData.FlagInnactive) || string.IsNullOrEmpty(roomMusicControllerData.FlagInnactive))
                     {
                         string[] excludeRooms = roomMusicControllerData.ExcludeRooms.Split(',');
                         bool canApplyMusic = true;
