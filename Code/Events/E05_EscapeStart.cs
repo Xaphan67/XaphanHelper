@@ -1,6 +1,4 @@
-﻿
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
@@ -51,14 +49,14 @@ namespace Celeste.Mod.XaphanHelper.Events
                 {
                     List<EntityID> IDs = new();
                     List<EntityID> IDsToRemove = new();
-                    IDs.Add(new EntityID("B-32", 2611));
-                    IDs.Add(new EntityID("B-32", 2610));
-                    IDs.Add(new EntityID("B-32", 2612));
-                    IDs.Add(new EntityID("B-32", 2538));
-                    IDs.Add(new EntityID("B-34", 95));
-                    IDs.Add(new EntityID("B-37", 4787));
-                    IDs.Add(new EntityID("B-38", 4977));
-                    IDs.Add(new EntityID("B-38", 4983));
+                    IDs.Add(new EntityID("W-32", 2611));
+                    IDs.Add(new EntityID("W-32", 2610));
+                    IDs.Add(new EntityID("W-32", 2612));
+                    IDs.Add(new EntityID("W-32", 2538));
+                    IDs.Add(new EntityID("W-34", 95));
+                    IDs.Add(new EntityID("W-37", 4787));
+                    IDs.Add(new EntityID("W-38", 4977));
+                    IDs.Add(new EntityID("W-38", 4983));
                     foreach (EntityID entity in level.Session.DoNotLoad)
                     {
                         foreach (EntityID id in IDs)
