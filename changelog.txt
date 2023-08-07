@@ -1,3 +1,6 @@
+Version 1.0.58 :
+- Switching from achievements categories to the achievements list and vice-versa is now done with MenuLeft and MenuRight instead of the Confirm button
+
 Version 1.0.57 :
 - Fixed a bug counting  B-Sides golden strawberies as nrormal strawberries in various "The Secret of Celeste Mountain" achievements
 - The 'Retry' and 'Save and Quit' options from the pause menu can now be used when using the Remote Drone

@@ -27,13 +27,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Wiggler closeWiggle;
 
-        private Wiggler actionWiggle;
-
         private float menuWiggleDelay;
 
         private float closeWiggleDelay;
-
-        private float actionWiggleDelay;
 
         private float switchTimer;
 
@@ -52,7 +48,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Title = Dialog.Clean("XaphanHelper_UI_achievements");
             Add(menuWiggle = Wiggler.Create(0.4f, 4f));
             Add(closeWiggle = Wiggler.Create(0.4f, 4f));
-            Add(actionWiggle = Wiggler.Create(0.4f, 4f));
             categorySelection = 0;
             Depth = -10003;
         }
@@ -92,11 +87,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     menuWiggle.Start();
                     menuWiggleDelay = 0.5f;
                 }
-                if (Input.MenuConfirm.Check && actionWiggleDelay <= 0f)
-                {
-                    actionWiggle.Start();
-                    actionWiggleDelay = 0.5f;
-                }
             }
             if (Input.MenuCancel.Check && closeWiggleDelay <= 0f)
             {
@@ -105,7 +95,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             menuWiggleDelay -= Engine.DeltaTime;
             closeWiggleDelay -= Engine.DeltaTime;
-            actionWiggleDelay -= Engine.DeltaTime;
             base.Update();
         }
 
@@ -269,23 +258,20 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else
                 {
-                    if (Input.MenuConfirm.Pressed)
+                    if (!locked)
                     {
-                        if (!locked)
+                        if (achievementSelection == -1 && Input.MenuRight.Pressed)
                         {
-                            if (achievementSelection == -1)
-                            {
-                                previousCategorySelection = categorySelection;
-                                categorySelection = -1;
-                                achievementSelection = 0;
-                            }
-                            else
-                            {
-                                achievementSelection = -1;
-                                categorySelection = previousCategorySelection;
-                                previousCategorySelection = -1;
-                                achievementsDisplay.GenerateAchievementsList(categorySelection);
-                            }
+                            previousCategorySelection = categorySelection;
+                            categorySelection = -1;
+                            achievementSelection = 0;
+                        }
+                        else if (categorySelection == -1 && Input.MenuLeft.Pressed)
+                        {
+                            achievementSelection = -1;
+                            categorySelection = previousCategorySelection;
+                            previousCategorySelection = -1;
+                            achievementsDisplay.GenerateAchievementsList(categorySelection);
                         }
                     }
                     if (categorySelection != -1)
@@ -386,8 +372,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     float scale = 0.5f;
                     string label = Dialog.Clean("XaphanHelper_UI_close");
                     string label2 = Dialog.Clean("XaphanHelper_UI_menu");
-                    string label3 = Dialog.Clean("XaphanHelper_UI_selectCategory");
-                    string label4 = Dialog.Clean("XaphanHelper_UI_back");
                     float num = ButtonUI.Width(label, Input.MenuCancel);
                     float num2 = ButtonUI.Width(label2, Input.Pause);
                     Vector2 position = new(1830f, 1055f);
@@ -395,10 +379,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     position.X -= num / 2 + 32;
                     ButtonUI.Render(position, label2, Input.Pause, scale, 1f, menuWiggle.Value * 0.05f);
                     position.X -= num2 / 2 + 32;
-                    if (!locked)
-                    {
-                        ButtonUI.Render(position, categorySelection >= 0 ? label3 : label4, Input.MenuConfirm, scale, 1f, actionWiggle.Value * 0.05f);
-                    }
                 }
             }
         }
