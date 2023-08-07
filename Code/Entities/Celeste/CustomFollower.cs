@@ -11,7 +11,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
     class CustomFollower : Entity
     {
         [Tracked(true)]
-        private class CustomFollowerCollectText : Entity
+        public class CustomFollowerCollectText : Entity
         {
             private Sprite[] sprites;
 
@@ -29,7 +29,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private float textWidth;
 
-            public CustomFollowerCollectText(Vector2 position, int index, int color, string text) : base(position)
+            private float opacity;
+
+            public CustomFollowerCollectText(Vector2 position, int index, int color, string text, float opacity = 1f) : base(position)
             {
                 this.text = text;
                 sprites = new Sprite[text.Length];
@@ -60,6 +62,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Tag = (int)Tags.Persistent | (int)Tags.TransitionUpdate | (int)Tags.FrozenUpdate;
                 this.color = color;
                 this.index = index;
+                this.opacity = opacity;
             }
 
             public override void Added(Scene scene)
@@ -127,13 +130,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (Scene.OnInterval(0.05f))
                     {
-                        if (sprite.Color == particleType.Color2)
+                        if (sprite.Color == particleType.Color2 * opacity)
                         {
-                            sprite.Color = particleType.Color;
+                            sprite.Color = particleType.Color * opacity;
                         }
                         else
                         {
-                            sprite.Color = particleType.Color2;
+                            sprite.Color = particleType.Color2 * opacity;
                         }
                     }
                 }

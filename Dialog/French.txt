@@ -171,6 +171,8 @@
 	XaphanHelper_Collect_Missiles= MISSILES
 	XaphanHelper_Collect_SuperMissiles= SUPER MISSILE
 	XaphanHelper_Collect_FireRateModule= DELAI DE TIR
+	XaphanHelper_Collect_Time_One= SECONDE
+	XaphanHelper_Collect_Time= SECONDES
 	XaphanHelper_get_EnergyTank_Desc= Chaque réservoir d'énergie augmente l'endurance maximale de 5 points
 	XaphanHelper_get_FireRateModule_Desc= Chaque module de cadence de tir réduit le délai entre chaque tir du rayon de 15%
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Celeste.Mod.XaphanHelper.Entities;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using FMOD.Studio;
 using Monocle;
 
@@ -8,15 +9,17 @@ namespace Celeste.Mod.XaphanHelper.Managers
     [Tracked(true)]
     public class TimeManager : Entity
     {
-        int Timer;
+        private int Timer;
 
-        float currentTime;
+        public float currentTime;
 
-        EventInstance sfx;
+        private EventInstance sfx;
 
         private string TickingType;
 
         private string Flag;
+
+        private TimerIndicator indicator;
 
         public TimeManager(int timer, string tickingtype, string flag = null)
         {
@@ -29,6 +32,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
         {
             base.Added(scene);
             currentTime = Timer;
+            scene.Add(indicator = new TimerIndicator(this));
             foreach (TimedBlock block in SceneAs<Level>().Tracker.GetEntities<TimedBlock>())
             {
                 block.setCurrentIndex(1);
@@ -187,6 +191,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
             {
                 sfx.stop(STOP_MODE.IMMEDIATE);
             }
+            scene.Remove(indicator);
         }
 
         public void AddTime(int time)

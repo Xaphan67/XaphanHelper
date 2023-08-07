@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -356,6 +358,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (mode == "add")
                     {
+                        Scene.Add(new CustomFollower.CustomFollowerCollectText(player.TopCenter + new Vector2(0f, -15f), 0, 2, "+ " + timer + " " + Dialog.Clean("XaphanHelper_Collect_Time" + (timer == 1 ? "_One" : "")), 0.75f));
                         manager.AddTime(timer);
                     }
                     else

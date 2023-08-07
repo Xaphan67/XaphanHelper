@@ -1,5 +1,7 @@
 Version 1.0.58 :
 - Switching from achievements categories to the achievements list and vice-versa is now done with MenuLeft and MenuRight instead of the Confirm button
+- Timed Dash Switchs in 'Add' mode and Timer Refills now display shortly on screen the number of seconds they add to the current timer when pushed / collected.
+- While a timer is ticking, the number of seconds left is now displayed above Madeline head. This can go up to 999 seconds
 
 Version 1.0.57 :
 - Fixed a bug counting  B-Sides golden strawberies as nrormal strawberries in various "The Secret of Celeste Mountain" achievements

@@ -181,6 +181,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Audio.Play("event:/game/general/diamond_touch", Position);
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
             Collidable = false;
+            Scene.Add(new CustomFollower.CustomFollowerCollectText(player.TopCenter + new Vector2(0f, -15f), 0, 2, "+ " + timer + " " + Dialog.Clean("XaphanHelper_Collect_Time" + (timer == 1 ? "_One" : "")), 0.75f));
             Add(new Coroutine(RefillRoutine(player)));
             respawnTimer = respawnTime;
         }

@@ -171,6 +171,8 @@
 	XaphanHelper_Collect_Missiles= MISSILES
 	XaphanHelper_Collect_SuperMissiles= SUPER MISSILE
 	XaphanHelper_Collect_FireRateModule= BEAM DELAY
+	XaphanHelper_Collect_Time_One= SECOND
+	XaphanHelper_Collect_Time= SECONDS
 	XaphanHelper_get_EnergyTank_Desc= Each Energy Tank increases maximum stamina by 5 points
 	XaphanHelper_get_FireRateModule_Desc= Each Fire Rate Module decreases the delay between each beam shoot by 15%
 
