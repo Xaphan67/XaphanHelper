@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Celeste.Mod.Meta;
+using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Data;
@@ -540,33 +541,34 @@ namespace Celeste.Mod.XaphanHelper
                     decal.Depth = int.Parse(attrs["value"].Value);
                 }
             });
-            DecalRegistry.AddPropertyHandler("XaphanHelper_flagsHide", delegate (Decal decal, XmlAttributeCollection attrs)
-            {
-                if (attrs["flags"] != null)
+            DecalRegistry.AddPropertyHandler("XaphanHelper_flagsHide", (Decal decal, XmlAttributeCollection attrs) => {
+                if (attrs["flags"] != null && (attrs["room"] == null || decal.SceneAs<Level>().Session.Level == attrs["room"].Value))
                 {
-                    string[] flags = attrs["flags"].Value.Split(',');
-                    bool inverted = attrs["inverted"] != null ? bool.Parse(attrs["inverted"].Value) : false;
-                    string room = attrs["room"] != null ? attrs["room"].Value : "";
-                    if (!string.IsNullOrEmpty(room) ? decal.SceneAs<Level>().Session.Level == room : true)
-                    {
-                        foreach (string flag in flags)
-                        {
-                            decal.Visible = inverted ? decal.SceneAs<Level>().Session.GetFlag(flag) : !decal.SceneAs<Level>().Session.GetFlag(flag);
-                        }
-                    }
+                    decal.Add(new FlagDecalVisibilityToggle(attrs["flags"].Value.Split(','), attrs["inverted"] != null && bool.Parse(attrs["inverted"].Value)));
                 }
             });
             DecalRegistry.AddPropertyHandler("XaphanHelper_flagSwap", delegate (Decal decal, XmlAttributeCollection attrs)
             {
                 if (attrs["flag"] != null && attrs["offPath"] != null && attrs["onPath"] != null)
                 {
-                    if (decal.SceneAs<Level>().Session.GetFlag(attrs["flag"].Value))
+                    if (attrs["room"] == null || decal.SceneAs<Level>().Session.Level == attrs["room"].Value)
                     {
-                        // Image swap is done in DecalsFlagSwap.cs
-                        float X = attrs["offsetX"] != null ? float.Parse(attrs["offsetX"].Value) : 0f;
-                        float Y = attrs["offsetY"] != null ? float.Parse(attrs["offsetY"].Value) : 0f;
-                        decal.Position += new Vector2(decal.Scale.X == 1 ? X : -X, decal.Scale.Y == 1 ? Y : -Y);
+                        decal.MakeFlagSwap(attrs["flag"].Value, attrs["offPath"].Value, attrs["onPath"].Value);
+                        if (decal.SceneAs<Level>().Session.GetFlag(attrs["flag"].Value))
+                        {
+                            float X = attrs["offsetX"] != null ? float.Parse(attrs["offsetX"].Value) : 0f;
+                            float Y = attrs["offsetY"] != null ? float.Parse(attrs["offsetY"].Value) : 0f;
+                            decal.Position += new Vector2(decal.Scale.X == 1 ? X : -X, decal.Scale.Y == 1 ? Y : -Y);
+                        }
                     }
+                }
+            });
+            DecalRegistry.AddPropertyHandler("XaphanHelper_randomFlagSwap", (Decal decal, XmlAttributeCollection attrs) => {
+                if (attrs["flag"] != null && attrs["offPath"] != null && attrs["onPath"] != null)
+                {
+                    List<MTexture> offTextures = attrs["offPath"].Value.Split(',').Select(path => GFX.Game[path]).ToList();
+                    List<MTexture> onTextures = attrs["onPath"].Value.Split(',').Select(path => GFX.Game[path]).ToList();
+                    decal.Add(decal.Image = new RandomFlagSwapImage(attrs["flag"].Value, offTextures, onTextures));
                 }
             });
             DecalRegistry.AddPropertyHandler("XaphanHelper_flagLight", delegate (Decal decal, XmlAttributeCollection attrs)
@@ -712,7 +714,6 @@ namespace Celeste.Mod.XaphanHelper
             TransitionBlackEffect.Load();
             WorkRobot.Load();
             BreakBlock.Load();
-            DecalsRegisteryUpdate.Load();
             CustomRefill.Load();
         }
 
@@ -801,7 +802,6 @@ namespace Celeste.Mod.XaphanHelper
             TransitionBlackEffect.Unload();
             WorkRobot.Unload();
             BreakBlock.Unload();
-            DecalsRegisteryUpdate.Unload();
             CustomRefill.Unload();
         }
 
