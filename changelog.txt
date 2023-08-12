@@ -1,8 +1,10 @@
 Version 1.0.58 :
-- Added "Not Visible" attribute to Start Countdown Trigger
+- Added "Not Visible" and "Events Flags" attributes to Start Countdown Trigger
+- The Countdown timer now flash red when it reach certain values : Every minute starting at 5 minutes remaining, every 30 seconds starting at 2 minutes remaining and every second starting at 15 seconds remaining
 - Switching from achievements categories to the achievements list and vice-versa is now done with MenuLeft and MenuRight instead of the Confirm button
 - Timed Dash Switchs in 'Add' mode and Timer Refills now display shortly on screen the number of seconds they add to the current timer when pushed / collected.
 - While a timer is ticking, the number of seconds left is now displayed above Madeline head. This can go up to 999 seconds
+- Fixed a bug preventing the Strawberry Pie achievements in "The Secret of Celeste Mountain" to count correctly strawberries of the Ancient Ruins area
 
 Version 1.0.57 :
 - Fixed a bug counting  B-Sides golden strawberies as nrormal strawberries in various "The Secret of Celeste Mountain" achievements

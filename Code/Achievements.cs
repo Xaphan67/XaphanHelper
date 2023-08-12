@@ -183,7 +183,7 @@ namespace Celeste.Mod.XaphanHelper
 
             for (int i = 1; i <= (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? 5 : 2); i++)
 			{
-				currentTotalStrawberries += StatsFlags.CurrentStrawberries[i - (session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0)];
+				currentTotalStrawberries += (StatsFlags.CurrentStrawberries[i] - (session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
 				currentTotalEnergyTanks += StatsFlags.CurrentEnergyTanks[i];
 				currentTotalFireRateModules += StatsFlags.CurrentFireRateModules[i];
 				currentTotalMissiles += StatsFlags.CurrentMissiles[i];
