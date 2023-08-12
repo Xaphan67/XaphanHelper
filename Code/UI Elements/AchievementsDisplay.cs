@@ -125,13 +125,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     Selected = true;
                     ShowArrow = false;
-                    if (AchievementsScreen.prompt == null)
-                    {
-                        if (Input.MenuConfirm.Pressed && !Locked)
-                        {
-                            Audio.Play("event:/ui/main/message_confirm");
-                        }
-                    }
                     if (alphaStatus == 0 || (alphaStatus == 1 && selectedAlpha != 0.9f))
                     {
                         alphaStatus = 1;
@@ -252,13 +245,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (AchievementsScreen.achievementSelection == ID)
                 {
                     Selected = true;
-                    if (AchievementsScreen.prompt == null)
-                    {
-                        if (Input.MenuConfirm.Pressed)
-                        {
-                            Audio.Play("event:/ui/main/button_back");
-                        }
-                    }
                     if (alphaStatus == 0 || (alphaStatus == 1 && selectedAlpha != 0.9f))
                     {
                         alphaStatus = 1;
