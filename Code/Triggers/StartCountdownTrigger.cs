@@ -48,7 +48,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         public Vector2 SpawnPosition;
 
-        public bool notVisible;
+        public string hideFlag;
 
         public string eventsFlags;
 
@@ -80,7 +80,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 MessageColor = "FFFFFF";
             }
             SpawnPosition = data.Position;
-            notVisible = data.Bool("notVisible");
+            hideFlag = data.Attr("hideFlag");
         }
 
         public override void Added(Scene scene)

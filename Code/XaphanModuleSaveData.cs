@@ -145,7 +145,7 @@ namespace Celeste.Mod.XaphanHelper
 
         public bool CountdownUseLevelWipe = false;
 
-        public bool CountdownNotVisible = false;
+        public string CountdownHideFlag = "";
 
         public string CountdownEventsFlags = "";
 

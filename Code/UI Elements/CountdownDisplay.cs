@@ -44,7 +44,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public string activeFlag;
 
-        public bool NotVisible;
+        public string hideFlag;
 
         public string startRoom;
 
@@ -80,11 +80,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             ChapterTimerAtStart = -1;
             startFlag = timer.startFlag;
             activeFlag = timer.activeFlag;
+            hideFlag = timer.hideFlag;
             rawEventsFlags = timer.eventsFlags;
             startRoom = timer.startRoom;
             Shake = timer.shake;
             Explode = timer.explode;
-            NotVisible = timer.notVisible;
             SaveTimer = saveTimer;
             CurrentTime = (long)timer.time * 10000000;
             Immediate = immediate;
@@ -92,13 +92,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Depth = 1000000;
         }
 
-        public CountdownDisplay(float time, bool shake, bool explode, bool saveTimer, int startingChapter, string startingRoom, Vector2 spawnPositrion, string activeFlag, bool notVisible, string eventsFlags)
+        public CountdownDisplay(float time, bool shake, bool explode, bool saveTimer, int startingChapter, string startingRoom, Vector2 spawnPositrion, string activeFlag, string hideFlag, string eventsFlags)
         {
             Tag = (Tags.HUD | Tags.Global | Tags.PauseUpdate | Tags.TransitionUpdate);
             CalculateBaseSizes();
             SpawnPosition = spawnPositrion;
             ChapterTimerAtStart = -1;
             this.activeFlag = activeFlag;
+            this.hideFlag = hideFlag;
             rawEventsFlags = eventsFlags;
             startRoom = startingRoom;
             Shake = shake;
@@ -106,7 +107,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             SaveTimer = saveTimer;
             CurrentTime = (long)time;
             startChapter = startingChapter;
-            NotVisible = notVisible;
             FromOtherChapter = true;
             Depth = 1000000;
         }
@@ -200,7 +200,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     display.RemoveSelf();
                 }
             }
-            if (Timetext == null && !NotVisible)
+            if (Timetext == null)
             {
                 Timetext = new NormalText("Xaphanhelper_UI_Time", new Vector2(Engine.Width / 2 - 120, Engine.Height / 2 - 510), Color.Gold, 1f, 0.7f)
                 {
@@ -322,6 +322,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                 }
+                if (SceneAs<Level>().Session.GetFlag(hideFlag))
+                {
+                    Timetext.Visible = false;
+                }
+                else
+                {
+                    Timetext.Visible = Visible;
+                }
             }
             if (GetRemainingTime() <= 0 && !TimerRanOut && !SceneAs<Level>().Paused && !PauseTimer)
             {
@@ -395,7 +403,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             XaphanModule.ModSaveData.CountdownSpawn = new Vector2();
             XaphanModule.ModSaveData.CountdownIntroType = true;
             XaphanModule.ModSaveData.CountdownUseLevelWipe = true;
-            XaphanModule.ModSaveData.CountdownNotVisible = false;
+            XaphanModule.ModSaveData.CountdownHideFlag = "";
             XaphanModule.ModSaveData.CountdownEventsFlags = "";
             int chapterOffset = startChapter - currentChapter;
             int currentChapterID = SceneAs<Level>().Session.Area.ID;
@@ -453,7 +461,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public override void Render()
         {
-            if (!NotVisible)
+            if (!SceneAs<Level>().Session.GetFlag(hideFlag))
             {
                 base.Render();
                 string timeString = TimeSpan.FromTicks(IsPaused ? PausedTimer : (GetRemainingTime() <= 0 ? 0 : GetRemainingTime())).ShortGameplayFormat();
