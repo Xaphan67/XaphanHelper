@@ -50,6 +50,8 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         public bool notVisible;
 
+        public string eventsFlags;
+
         public StartCountdownTrigger(EntityData data, Vector2 offset, EntityID ID) : base(data, offset)
         {
             Tag = Tags.Global;
@@ -57,6 +59,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             time = data.Float("time");
             startFlag = data.Attr("startFlag");
             activeFlag = data.Attr("activeFlag");
+            eventsFlags = data.Attr("eventsFlags");
             shake = data.Bool("shake");
             explode = data.Bool("explosions");
             CrossChapter = data.Bool("crossChapter");
@@ -87,7 +90,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             SceneAs<Level>().Session.SetFlag("Countdown_" + eid.Key, false);
             SceneAs<Level>().Session.SetFlag(activeFlag, false);
             XaphanModule.ModSaveData.CountdownActiveFlag = "";
-            
         }
 
         public override void Update()

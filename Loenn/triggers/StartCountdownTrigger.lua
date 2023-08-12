@@ -2,7 +2,7 @@ local StartCountdownTrigger = {}
 
 StartCountdownTrigger.name = "XaphanHelper/StartCountdownTrigger"
 StartCountdownTrigger.fieldOrder = {
-    "x", "y", "width", "height", "time", "startFlag", "activeFlag", "dialogID", "messageTimer", "messageColor", "shake", "explosions", "crossChapter", "fastMessageDisplay", "notVisible"
+    "x", "y", "width", "height", "time", "startFlag", "activeFlag", "eventsFlags", "dialogID", "messageTimer", "messageColor", "shake", "explosions", "crossChapter", "fastMessageDisplay", "notVisible"
 }
 StartCountdownTrigger.fieldInformation = {
     messageColor = {
@@ -22,7 +22,8 @@ StartCountdownTrigger.placements = {
         messageTimer = 5.00,
         fastMessageDisplay = false,
         messageColor = "FFFFFF",
-        notVisible = false
+        notVisible = false,
+        eventsFlags = ""
     }
 }
 

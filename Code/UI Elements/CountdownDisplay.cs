@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
@@ -68,6 +68,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private static float fontFaceSize;
 
+        public string rawEventsFlags;
+
+        public Dictionary<float, string> EventsFlags = new();
+
         public CountdownDisplay(StartCountdownTrigger timer, bool saveTimer, Vector2 spawnPosition, bool immediate = false)
         {
             Tag = (Tags.HUD | Tags.Global | Tags.PauseUpdate | Tags.TransitionUpdate);
@@ -76,6 +80,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             ChapterTimerAtStart = -1;
             startFlag = timer.startFlag;
             activeFlag = timer.activeFlag;
+            rawEventsFlags = timer.eventsFlags;
             startRoom = timer.startRoom;
             Shake = timer.shake;
             Explode = timer.explode;
@@ -87,13 +92,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Depth = 1000000;
         }
 
-        public CountdownDisplay(float time, bool shake, bool explode, bool saveTimer, int startingChapter, string startingRoom, Vector2 spawnPositrion, string activeFlag, bool notVisible)
+        public CountdownDisplay(float time, bool shake, bool explode, bool saveTimer, int startingChapter, string startingRoom, Vector2 spawnPositrion, string activeFlag, bool notVisible, string eventsFlags)
         {
             Tag = (Tags.HUD | Tags.Global | Tags.PauseUpdate | Tags.TransitionUpdate);
             CalculateBaseSizes();
             SpawnPosition = spawnPositrion;
             ChapterTimerAtStart = -1;
             this.activeFlag = activeFlag;
+            rawEventsFlags = eventsFlags;
             startRoom = startingRoom;
             Shake = shake;
             Explode = explode;
@@ -261,6 +267,31 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         SceneAs<Level>().Session.SetFlag(activeFlag, true);
                         XaphanModule.ModSaveData.CountdownActiveFlag = activeFlag;
                     }
+                    if (!string.IsNullOrEmpty(rawEventsFlags) && EventsFlags.Count == 0)
+                    {
+                        string[] eFlags = rawEventsFlags.Split(',');
+                        foreach (string flag in eFlags)
+                        {
+                            if (flag.Contains(":"))
+                            {
+                                string[] str = flag.Split(':');
+                                if (float.TryParse(str[0], out _))
+                                {
+                                    float time = float.Parse(str[0]);
+                                    if (!EventsFlags.ContainsKey(time))
+                                    {
+                                        EventsFlags.Add(time, str[1]);
+                                    }
+                                    else
+                                    {
+                                        string old = EventsFlags[time];
+                                        EventsFlags.Remove(time);
+                                        EventsFlags.Add(time, old + "," + str[1]);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 if ((string.IsNullOrEmpty(startFlag) ? true : SceneAs<Level>().Session.GetFlag(startFlag)) && ChapterTimerAtStart == -1 && playerHasMoved)
                 {
@@ -276,6 +307,20 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     CurrentTime = PausedTimer;
                     ChapterTimerAtStart = SceneAs<Level>().Session.Time;
                     IsPaused = false;
+                }
+                if (EventsFlags.Count > 0)
+                {
+                    foreach (KeyValuePair<float, string> keyValuePair in EventsFlags)
+                    {
+                        if (GetRemainingTime() <= keyValuePair.Key * 10000000)
+                        {
+                            string[] flags = keyValuePair.Value.Split(',');
+                            foreach (string flag in flags)
+                            {
+                                SceneAs<Level>().Session.SetFlag(flag, true);
+                            }
+                        }
+                    }
                 }
             }
             if (GetRemainingTime() <= 0 && !TimerRanOut && !SceneAs<Level>().Paused && !PauseTimer)
@@ -322,6 +367,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (!FromOtherChapter)
             {
                 Scene.Add(new TeleportCutscene(player, startRoom, SpawnPosition, 0, 0, true, 0f, "Fade", respawnAnim: true, useLevelWipe: true));
+                yield return 0.49f;
+                UnsetEventsFlags(Level);
                 RemoveSelf();
             }
             else
@@ -349,6 +396,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             XaphanModule.ModSaveData.CountdownIntroType = true;
             XaphanModule.ModSaveData.CountdownUseLevelWipe = true;
             XaphanModule.ModSaveData.CountdownNotVisible = false;
+            XaphanModule.ModSaveData.CountdownEventsFlags = "";
             int chapterOffset = startChapter - currentChapter;
             int currentChapterID = SceneAs<Level>().Session.Area.ID;
             if (XaphanModule.useMergeChaptersController && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
@@ -363,6 +411,22 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             else
             {
                 LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset)), fromSaveData: false);
+            }
+            UnsetEventsFlags(level);
+        }
+
+        public void UnsetEventsFlags(Level level)
+        {
+            if (EventsFlags.Count > 0)
+            {
+                foreach (KeyValuePair<float, string> keyValuePair in EventsFlags)
+                {
+                    string[] flags = keyValuePair.Value.Split(',');
+                    foreach (string flag in flags)
+                    {
+                        level.Session.SetFlag(flag, false);
+                    }
+                }
             }
         }
 
