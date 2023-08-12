@@ -1,4 +1,5 @@
 Version 1.0.58 :
+- Added "Not Visible" attribute to Start Countdown Trigger
 - Switching from achievements categories to the achievements list and vice-versa is now done with MenuLeft and MenuRight instead of the Confirm button
 - Timed Dash Switchs in 'Add' mode and Timer Refills now display shortly on screen the number of seconds they add to the current timer when pushed / collected.
 - While a timer is ticking, the number of seconds left is now displayed above Madeline head. This can go up to 999 seconds

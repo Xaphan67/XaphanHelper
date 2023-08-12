@@ -10,7 +10,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 {
     [Tracked(true)]
     [CustomEntity("XaphanHelper/StartCountdownTrigger")]
-    class StartCountdownTrigger : Trigger
+    public class StartCountdownTrigger : Trigger
     {
         public float time;
 
@@ -48,6 +48,8 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         public Vector2 SpawnPosition;
 
+        public bool notVisible;
+
         public StartCountdownTrigger(EntityData data, Vector2 offset, EntityID ID) : base(data, offset)
         {
             Tag = Tags.Global;
@@ -75,6 +77,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 MessageColor = "FFFFFF";
             }
             SpawnPosition = data.Position;
+            notVisible = data.Bool("notVisible");
         }
 
         public override void Added(Scene scene)

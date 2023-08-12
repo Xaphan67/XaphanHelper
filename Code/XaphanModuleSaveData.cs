@@ -145,6 +145,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public bool CountdownUseLevelWipe = false;
 
+        public bool CountdownNotVisible = false;
+
         // Teleport variables
 
         public bool TeleportFromElevator = false;

@@ -27,6 +27,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 XaphanModule.ModSaveData.CountdownStartChapter = -1;
                 XaphanModule.ModSaveData.CountdownStartRoom = "";
                 XaphanModule.ModSaveData.CountdownSpawn = new Vector2();
+                XaphanModule.ModSaveData.CountdownNotVisible = false;
                 SceneAs<Level>().SaveQuitDisabled = false;
                 timer.RemoveSelf();
                 StartCountdownTrigger startTrigger = SceneAs<Level>().Tracker.GetEntity<StartCountdownTrigger>();

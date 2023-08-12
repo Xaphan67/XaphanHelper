@@ -145,6 +145,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                     }
                     XaphanModule.ModSaveData.CountdownStartRoom = timerDisplay.startRoom;
                     XaphanModule.ModSaveData.CountdownSpawn = timerDisplay.SpawnPosition;
+                    XaphanModule.ModSaveData.CountdownNotVisible = timerDisplay.NotVisible;
                 }
                 if (XaphanModule.useMergeChaptersController && (level.Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
                 {

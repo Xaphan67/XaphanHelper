@@ -2854,7 +2854,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 if (self.Tracker.GetEntity<CountdownDisplay>() == null)
                 {
-                    self.Add(new CountdownDisplay(ModSaveData.CountdownCurrentTime, ModSaveData.CountdownShake, ModSaveData.CountdownExplode, true, ModSaveData.CountdownStartChapter, ModSaveData.CountdownStartRoom, ModSaveData.CountdownSpawn, ModSaveData.CountdownActiveFlag)
+                    self.Add(new CountdownDisplay(ModSaveData.CountdownCurrentTime, ModSaveData.CountdownShake, ModSaveData.CountdownExplode, true, ModSaveData.CountdownStartChapter, ModSaveData.CountdownStartRoom, ModSaveData.CountdownSpawn, ModSaveData.CountdownActiveFlag, ModSaveData.CountdownNotVisible)
                     {
                         PauseTimer = true
                     });

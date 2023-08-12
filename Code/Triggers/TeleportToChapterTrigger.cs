@@ -188,6 +188,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                     }
                     XaphanModule.ModSaveData.CountdownStartRoom = timerDisplay.startRoom;
                     XaphanModule.ModSaveData.CountdownSpawn = timerDisplay.SpawnPosition;
+                    XaphanModule.ModSaveData.CountdownNotVisible = timerDisplay.NotVisible;
                 }
             }
             int chapterOffset = ToChapter - currentChapter;

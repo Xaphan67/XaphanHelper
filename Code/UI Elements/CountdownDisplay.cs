@@ -9,7 +9,7 @@ using Monocle;
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
     [Tracked(true)]
-    class CountdownDisplay : Entity
+    public class CountdownDisplay : Entity
     {
         public bool TimerRanOut;
 
@@ -43,6 +43,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public string activeFlag;
 
+        public bool NotVisible;
+
         public string startRoom;
 
         public int startChapter;
@@ -53,9 +55,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Coroutine WaitForSpawnRoutine = new();
 
-        NormalText Timetext;
+        private NormalText Timetext;
 
-        StartCountdownTrigger trigger;
+        private StartCountdownTrigger trigger;
 
         public CountdownDisplay(StartCountdownTrigger timer, bool saveTimer, Vector2 spawnPosition, bool immediate = false)
         {
@@ -67,6 +69,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             startRoom = timer.startRoom;
             Shake = timer.shake;
             Explode = timer.explode;
+            NotVisible = timer.notVisible;
             SaveTimer = saveTimer;
             CurrentTime = (long)timer.time * 10000000;
             Immediate = immediate;
@@ -74,7 +77,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Depth = 1000000;
         }
 
-        public CountdownDisplay(float time, bool shake, bool explode, bool saveTimer, int startingChapter, string startingRoom, Vector2 spawnPositrion, string activeFlag)
+        public CountdownDisplay(float time, bool shake, bool explode, bool saveTimer, int startingChapter, string startingRoom, Vector2 spawnPositrion, string activeFlag, bool notVisible)
         {
             Tag = (Tags.HUD | Tags.Global | Tags.PauseUpdate | Tags.TransitionUpdate);
             SpawnPosition = spawnPositrion;
@@ -86,6 +89,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             SaveTimer = saveTimer;
             CurrentTime = (long)time;
             startChapter = startingChapter;
+            NotVisible = notVisible;
             FromOtherChapter = true;
             Depth = 1000000;
         }
@@ -163,7 +167,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     display.RemoveSelf();
                 }
             }
-            if (Timetext == null)
+            if (Timetext == null && !NotVisible)
             {
                 Timetext = new NormalText("Xaphanhelper_UI_Time", new Vector2(Engine.Width / 2 - 120, Engine.Height / 2 - 510), Color.Gold, 1f, 0.7f)
                 {
@@ -317,6 +321,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             XaphanModule.ModSaveData.CountdownSpawn = new Vector2();
             XaphanModule.ModSaveData.CountdownIntroType = true;
             XaphanModule.ModSaveData.CountdownUseLevelWipe = true;
+            XaphanModule.ModSaveData.CountdownNotVisible = false;
             int chapterOffset = startChapter - currentChapter;
             int currentChapterID = SceneAs<Level>().Session.Area.ID;
             if (XaphanModule.useMergeChaptersController && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
@@ -357,10 +362,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public override void Render()
         {
-            base.Render();
-            string timeString = TimeSpan.FromTicks(IsPaused ? PausedTimer : (GetRemainingTime() <= 0 ? 0 : GetRemainingTime())).ShortGameplayFormat();
-            float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(timeString);
-            SpeedrunTimerDisplay.DrawTime(new Vector2(Engine.Width / 2 - timeWidth * 1.5f / 2, Engine.Height / 2 - 420), timeString, 1.5f);
+            if (!NotVisible)
+            {
+                base.Render();
+                string timeString = TimeSpan.FromTicks(IsPaused ? PausedTimer : (GetRemainingTime() <= 0 ? 0 : GetRemainingTime())).ShortGameplayFormat();
+                float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(timeString);
+                SpeedrunTimerDisplay.DrawTime(new Vector2(Engine.Width / 2 - timeWidth * 1.5f / 2, Engine.Height / 2 - 420), timeString, 1.5f);
+            }
         }
     }
 }

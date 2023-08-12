@@ -704,6 +704,7 @@ triggers.XaphanHelper/StartCountdownTrigger.attributes.description.dialogID=Dial
 triggers.XaphanHelper/StartCountdownTrigger.attributes.description.messageTimer=Time (in seconds) while the message will be shown on screen (including the time needed to write the message).\nThe countdown will start 2.5 seconds before this time end.
 triggers.XaphanHelper/StartCountdownTrigger.attributes.description.fastMessageDisplay=If true, the message will be drawn on screen faster.
 triggers.XaphanHelper/StartCountdownTrigger.attributes.description.messageColor=Hexadecimal code for the color of the message.
+triggers.XaphanHelper/StartCountdownTrigger.attributes.description.notVisible=If true, the timer will not be displayed on screen but is still active.
 
 # StopAdjustInGameMapTrigger
 triggers.XaphanHelper/StopAdjustInGameMapTrigger.placements.name.StopAdjustInGameMapTrigger=Stop Adjust In-Game Map

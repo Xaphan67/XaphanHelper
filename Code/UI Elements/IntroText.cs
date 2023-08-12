@@ -4,7 +4,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
-    class IntroText : Entity
+    public class IntroText : Entity
     {
         public string message;
 
