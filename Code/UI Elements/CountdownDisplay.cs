@@ -4,6 +4,7 @@ using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
@@ -59,9 +60,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private StartCountdownTrigger trigger;
 
+        private static float numberWidth;
+
+        private static float spacerWidth;
+
+        private static PixelFont font;
+
+        private static float fontFaceSize;
+
         public CountdownDisplay(StartCountdownTrigger timer, bool saveTimer, Vector2 spawnPosition, bool immediate = false)
         {
             Tag = (Tags.HUD | Tags.Global | Tags.PauseUpdate | Tags.TransitionUpdate);
+            CalculateBaseSizes();
             SpawnPosition = spawnPosition;
             ChapterTimerAtStart = -1;
             startFlag = timer.startFlag;
@@ -80,6 +90,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public CountdownDisplay(float time, bool shake, bool explode, bool saveTimer, int startingChapter, string startingRoom, Vector2 spawnPositrion, string activeFlag, bool notVisible)
         {
             Tag = (Tags.HUD | Tags.Global | Tags.PauseUpdate | Tags.TransitionUpdate);
+            CalculateBaseSizes();
             SpawnPosition = spawnPositrion;
             ChapterTimerAtStart = -1;
             this.activeFlag = activeFlag;
@@ -111,6 +122,22 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 level.SaveQuitDisabled = true;
             }
+        }
+
+        public static void CalculateBaseSizes()
+        {
+            font = Dialog.Languages["english"].Font;
+            fontFaceSize = Dialog.Languages["english"].FontFaceSize;
+            PixelFontSize pixelFontSize = font.Get(fontFaceSize);
+            for (int i = 0; i < 10; i++)
+            {
+                float x = pixelFontSize.Measure(i.ToString()).X;
+                if (x > numberWidth)
+                {
+                    numberWidth = x;
+                }
+            }
+            spacerWidth = pixelFontSize.Measure('.').X;
         }
 
         private IEnumerator ShakeLevel()
@@ -367,7 +394,35 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 base.Render();
                 string timeString = TimeSpan.FromTicks(IsPaused ? PausedTimer : (GetRemainingTime() <= 0 ? 0 : GetRemainingTime())).ShortGameplayFormat();
                 float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(timeString);
-                SpeedrunTimerDisplay.DrawTime(new Vector2(Engine.Width / 2 - timeWidth * 1.5f / 2, Engine.Height / 2 - 420), timeString, 1.5f);
+                Vector2 position = new Vector2(Engine.Width / 2 - timeWidth * 1.5f / 2, Engine.Height / 2 - 420);
+                float scale = 1.5f;
+                float alpha = 1f;
+                float num = scale;
+                for (int i = 0; i < timeString.Length; i++)
+                {
+                    char c = timeString[i];
+                    if (c == '.')
+                    {
+                        num = scale * 0.7f;
+                        position.Y -= 5f * scale;
+                    }
+                    Color color = ((c == ':' || c == '.' || num < scale) ? Color.LightGray * alpha : Color.White * alpha);
+                    bool flashRed = false;
+                    if (GetRemainingTime() <= 3000000000 && GetRemainingTime() > 5000000 && !IsPaused)
+                    {
+                        if ((GetRemainingTime() % 600000000 <= 1000000) || (GetRemainingTime() % 300000000 <= 1000000 && GetRemainingTime() <= 1200000000) || (GetRemainingTime() % 10000000 <= 1000000 && GetRemainingTime() <= 300000000))
+                        {
+                            flashRed = true;
+                        }
+                    }
+                    if (flashRed)
+                    {
+                        color = Color.Red;
+                    }
+                    float offset = (((c == ':' || c == '.') ? spacerWidth : numberWidth) + 4f) * num;
+                    font.DrawOutline(fontFaceSize, c.ToString(), new Vector2(position.X + offset / 2f, position.Y), new Vector2(0.5f, 1f), Vector2.One * num, color, 2f, Color.Black);
+                    position.X += offset;
+                }
             }
         }
     }
