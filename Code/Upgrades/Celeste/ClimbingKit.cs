@@ -4,12 +4,15 @@ using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {
     class ClimbingKit : Upgrade
     {
         private ILHook wallJumpHook;
+
+        MethodInfo wallJump = typeof(Player).GetMethod("WallJump", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public override int GetDefaultValue()
         {
@@ -28,13 +31,15 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public override void Load()
         {
-            IL.Celeste.Player.ClimbUpdate += onPlayerClimbUpdate;
+            IL.Celeste.Player.ClimbUpdate += ilPlayerClimbUpdate;
+            On.Celeste.Player.ClimbJump += onPlayerClimbJump;
             wallJumpHook = new ILHook(typeof(Player).GetMethod("orig_WallJump", BindingFlags.Instance | BindingFlags.NonPublic), modWallJump);
         }
 
         public override void Unload()
         {
-            IL.Celeste.Player.ClimbUpdate -= onPlayerClimbUpdate;
+            IL.Celeste.Player.ClimbUpdate -= ilPlayerClimbUpdate;
+            On.Celeste.Player.ClimbJump -= onPlayerClimbJump;
             if (wallJumpHook != null)
             {
                 wallJumpHook.Dispose();
@@ -50,17 +55,9 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             return true;
         }
 
-        private void onPlayerClimbUpdate(ILContext il)
+        private void ilPlayerClimbUpdate(ILContext il)
         {
             ILCursor cursor = new(il);
-
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<VirtualButton>("get_Pressed")))
-            {
-                cursor.Emit(OpCodes.Ldarg_0);
-                cursor.Emit(OpCodes.Ldarg_0);
-                cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("moveX", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
-                cursor.EmitDelegate<Func<bool, Player, int, bool>>(modJumpButtonCheck);
-            }
 
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdsfld(typeof(Input), "MoveY"), instr => instr.MatchLdfld<VirtualIntegerAxis>("Value")))
             {
@@ -80,22 +77,16 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
         }
 
-        private bool modJumpButtonCheck(bool actualValue, Player self, int moveX)
+        private void onPlayerClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
         {
-            if (Active(self.SceneAs<Level>()))
+            if (!Active(self.SceneAs<Level>()))
             {
-                // nothing to do
-                return actualValue;
+                wallJump.Invoke(self, new object[] { -(int)self.Facing });
             }
-
-            if (moveX == -(int)self.Facing)
+            else
             {
-                // This will lead to a wall jump. We want to kill climb jumping. So let it go
-                return actualValue;
+                orig(self);
             }
-
-            // let the game believe Jump is not pressed, so it won't return the player to the Normal state (leading to a weird animation / sound effect).
-            return false;
         }
 
         private void modWallJump(ILContext il)
