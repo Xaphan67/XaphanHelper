@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Celeste.Mod.Entities;
+using Celeste.Mod.Helpers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using FMOD.Studio;
@@ -876,21 +877,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 for (int i = 0; i < Width / liquidSprite.Width; i++)
                 {
                     liquidSprite.RenderPosition = Position + new Vector2(i * liquidSprite.Width, Height - liquidSprite.Height + 8);
-                    if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height <= Height)
+                    if (CullHelper.IsRectangleVisible(liquidSprite.RenderPosition.X, liquidSprite.RenderPosition.Y, liquidSprite.Width, liquidSprite.Height))
                     {
-                        liquidSprite.Render();
-                    }
-                    else if ((i + 1) * liquidSprite.Width > Width && liquidSprite.Height <= Height)
-                    {
-                        liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height));
-                    }
-                    else if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height > Height)
-                    {
-                        liquidSprite.DrawSubrect(new Vector2(0, liquidSprite.Height - Height - 8), new Rectangle(0, 0, (int)liquidSprite.Width, (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
-                    }
-                    else
-                    {
-                        liquidSprite.DrawSubrect(new Vector2(0, liquidSprite.Height - Height - 8), new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
+                        if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height <= Height)
+                        {
+                            liquidSprite.Render();
+                        }
+                        else if ((i + 1) * liquidSprite.Width > Width && liquidSprite.Height <= Height)
+                        {
+                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height));
+                        }
+                        else if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height > Height)
+                        {
+                            liquidSprite.DrawSubrect(new Vector2(0, liquidSprite.Height - Height - 8), new Rectangle(0, 0, (int)liquidSprite.Width, (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
+                        }
+                        else
+                        {
+                            liquidSprite.DrawSubrect(new Vector2(0, liquidSprite.Height - Height - 8), new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
+                        }
                     }
                 }
                 int totalLines = (int)(liquidSprite.Height - surfaceHeight) / 8;
@@ -899,14 +903,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     for (int j = 0; j < (Height + 8 - liquidSprite.Height) / 8; j++)
                     {
                         liquidSprite.RenderPosition = Position + new Vector2(i * liquidSprite.Width, (Height + 8 - liquidSprite.Height) - j * 8 - 8);
-                        Math.DivRem(j, totalLines, out int Variation);
-                        if ((i + 1) * liquidSprite.Width <= Width)
+                        if (CullHelper.IsRectangleVisible(liquidSprite.RenderPosition.X, liquidSprite.RenderPosition.Y, liquidSprite.Width, liquidSprite.Height))
                         {
-                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight + 8 * Variation, (int)liquidSprite.Width, 8));
-                        }
-                        else
-                        {
-                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight + 8 * Variation, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), 8));
+                            Math.DivRem(j, totalLines, out int Variation);
+                            if ((i + 1) * liquidSprite.Width <= Width)
+                            {
+                                liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight + 8 * Variation, (int)liquidSprite.Width, 8));
+                            }
+                            else
+                            {
+                                liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight + 8 * Variation, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), 8));
+                            }
                         }
                     }
                 }
@@ -916,21 +923,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 for (int i = 0; i < Width / liquidSprite.Width; i++)
                 {
                     liquidSprite.RenderPosition = Position + new Vector2(i * liquidSprite.Width, -8f);
-                    if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height <= Height)
+                    if (CullHelper.IsRectangleVisible(liquidSprite.RenderPosition.X, liquidSprite.RenderPosition.Y, liquidSprite.Width, liquidSprite.Height))
                     {
-                        liquidSprite.Render();
-                    }
-                    else if ((i + 1) * liquidSprite.Width > Width && liquidSprite.Height <= Height)
-                    {
-                        liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height));
-                    }
-                    else if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height > Height)
-                    {
-                        liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width, (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
-                    }
-                    else
-                    {
-                        liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
+                        if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height <= Height)
+                        {
+                            liquidSprite.Render();
+                        }
+                        else if ((i + 1) * liquidSprite.Width > Width && liquidSprite.Height <= Height)
+                        {
+                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height));
+                        }
+                        else if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height > Height)
+                        {
+                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width, (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
+                        }
+                        else
+                        {
+                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height - ((int)liquidSprite.Height - (int)Height - 8)));
+                        }
                     }
                 }
                 for (int i = 0; i < Width / liquidSprite.Width; i++)
@@ -938,21 +948,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     for (int j = 0; j < (Height + 8 - liquidSprite.Height) / (liquidSprite.Height - surfaceHeight); j++)
                     {
                         liquidSprite.RenderPosition = Position + new Vector2(i * liquidSprite.Width, liquidSprite.Height - 8 + j * (liquidSprite.Height - surfaceHeight));
-                        if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height - 8 + j * (liquidSprite.Height - surfaceHeight) <= (Height + 8 - liquidSprite.Height))
+                        if (CullHelper.IsRectangleVisible(liquidSprite.RenderPosition.X, liquidSprite.RenderPosition.Y, liquidSprite.Width, liquidSprite.Height))
                         {
-                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width, (int)liquidSprite.Height - surfaceHeight));
-                        }
-                        else if ((i + 1) * liquidSprite.Width > Width && liquidSprite.Height - 8 + j * (liquidSprite.Height - surfaceHeight) <= (Height + 8 - liquidSprite.Height))
-                        {
-                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height - surfaceHeight));
-                        }
-                        else if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height - 8 + j * (liquidSprite.Height - surfaceHeight) > (Height + 8 - liquidSprite.Height))
-                        {
-                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width, (int)(liquidSprite.Height - surfaceHeight) - ((int)(liquidSprite.Height - surfaceHeight + j * (liquidSprite.Height - surfaceHeight)) - (int)(Height + 8 - liquidSprite.Height))));
-                        }
-                        else
-                        {
-                            liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)(liquidSprite.Height - surfaceHeight) - ((int)(liquidSprite.Height - surfaceHeight + j * (liquidSprite.Height - surfaceHeight)) - (int)(Height + 8 - liquidSprite.Height))));
+                            if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height - 8 + j * (liquidSprite.Height - surfaceHeight) <= (Height + 8 - liquidSprite.Height))
+                            {
+                                liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width, (int)liquidSprite.Height - surfaceHeight));
+                            }
+                            else if ((i + 1) * liquidSprite.Width > Width && liquidSprite.Height - 8 + j * (liquidSprite.Height - surfaceHeight) <= (Height + 8 - liquidSprite.Height))
+                            {
+                                liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)liquidSprite.Height - surfaceHeight));
+                            }
+                            else if ((i + 1) * liquidSprite.Width <= Width && liquidSprite.Height - 8 + j * (liquidSprite.Height - surfaceHeight) > (Height + 8 - liquidSprite.Height))
+                            {
+                                liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width, (int)(liquidSprite.Height - surfaceHeight) - ((int)(liquidSprite.Height - surfaceHeight + j * (liquidSprite.Height - surfaceHeight)) - (int)(Height + 8 - liquidSprite.Height))));
+                            }
+                            else
+                            {
+                                liquidSprite.DrawSubrect(Vector2.Zero, new Rectangle(0, surfaceHeight, (int)liquidSprite.Width - ((i + 1) * (int)liquidSprite.Width - (int)Width), (int)(liquidSprite.Height - surfaceHeight) - ((int)(liquidSprite.Height - surfaceHeight + j * (liquidSprite.Height - surfaceHeight)) - (int)(Height + 8 - liquidSprite.Height))));
+                            }
                         }
                     }
                 }
