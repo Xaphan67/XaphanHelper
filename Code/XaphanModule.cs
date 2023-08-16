@@ -715,6 +715,7 @@ namespace Celeste.Mod.XaphanHelper
             WorkRobot.Load();
             BreakBlock.Load();
             CustomRefill.Load();
+            MergedChaptersGoldenStrawberry.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -803,6 +804,7 @@ namespace Celeste.Mod.XaphanHelper
             WorkRobot.Unload();
             BreakBlock.Unload();
             CustomRefill.Unload();
+            MergedChaptersGoldenStrawberry.Unload();
         }
 
         // Custom States
@@ -3178,7 +3180,7 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
 
-                if (XaphanModule.useMergeChaptersController && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true) && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+                if (useMergeChaptersController && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true) && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
                 {
                     if (!ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet))
                     {
@@ -3191,6 +3193,16 @@ namespace Celeste.Mod.XaphanHelper
                             ModSaveData.SavedTime[self.Session.Area.LevelSet] = self.Session.Time;
                         }
                     }
+                }
+
+                if (useMergeChaptersController && MergedChaptersGoldenStrawberry.Grabbed && !self.Session.GrabbedGolden)
+                {
+                    EntityData entityData = new EntityData();
+                    entityData.Position = player.Position;
+                    entityData.ID = MergedChaptersGoldenStrawberry.ID;
+                    entityData.Name = "goldenBerry";
+                    Strawberry strawberry = new Strawberry(gid: new EntityID(player.SceneAs<Level>().Session.Level, entityData.ID), data: entityData, offset: Vector2.Zero);
+                    player.SceneAs<Level>().Add(strawberry);
                 }
             }
 

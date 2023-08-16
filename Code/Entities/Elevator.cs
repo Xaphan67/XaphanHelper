@@ -108,7 +108,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (CanTalk)
                 {
-                    if ((!SceneAs<Level>().Session.GrabbedGolden || (SceneAs<Level>().Session.GrabbedGolden && ToChapter == SceneAs<Level>().Session.Area.ChapterIndex)) && (!XaphanModule.ModSettings.SpeedrunMode || (XaphanModule.ModSettings.SpeedrunMode && UsableInSpeedrunMode)) && (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area"))))
+                    if ((!XaphanModule.ModSettings.SpeedrunMode || (XaphanModule.ModSettings.SpeedrunMode && UsableInSpeedrunMode)) && (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area"))))
                     {
                         Add(talk = new TalkComponent(new Rectangle(4, -8, 24, 8), new Vector2(16f, -16f), Interact));
                         talk.PlayerMustBeFacing = false;

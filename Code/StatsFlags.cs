@@ -249,10 +249,23 @@ namespace Celeste.Mod.XaphanHelper
             HashSet<string> IDsToRemove = new();
             foreach (AchievementData achievement in achievements)
             {
-                if (XaphanModule.ModSaveData.Achievements.Contains(achievement.AchievementID) && !session.GetFlag(achievement.Flag))
+                if (achievement.AchievementID.Contains("map") || // In-game Map achievements
+                    achievement.AchievementID.Contains("strwb") || // Strawberries achievements
+                    achievement.AchievementID.Contains("tank") || // Energy Tanks achievements
+                    achievement.AchievementID.Contains("dfrm") || // Drone Fire Rate Modules achievements
+                    achievement.AchievementID.Contains("dmiss") || // Drone Missiles Modules achievements
+                    achievement.AchievementID.Contains("cass") || // Cassettes achievements
+                    achievement.AchievementID.Contains("heart") || // Blue Hearts achievements
+                    achievement.AchievementID.Contains("items") || // All Items achievement
+                    achievement.AchievementID.Contains("golden") // Golden Strawberries achievements
+                    )
                 {
-                    IDsToRemove.Add(achievement.AchievementID);
+                    if (XaphanModule.ModSaveData.Achievements.Contains(achievement.AchievementID) && !session.GetFlag(achievement.Flag))
+                    {
+                        IDsToRemove.Add(achievement.AchievementID);
+                    }
                 }
+                
             }
             foreach (string id in IDsToRemove)
             {

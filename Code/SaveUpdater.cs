@@ -20,6 +20,13 @@ namespace Celeste.Mod.XaphanHelper
                         upgradesToRemove.Add("Bombs");
                     }
 
+                    // Remove Bombs upgrade Achievement
+
+                    if (XaphanModule.ModSaveData.Achievements.Contains("upg5"))
+                    {
+                        XaphanModule.ModSaveData.Achievements.Remove("upg5");
+                    }
+
                     Dictionary<string, string> RoomsNamesConversion = new();
                     for (int i = SaveData.Instance.GetLevelSetStats().AreaOffset; i < SaveData.Instance.GetLevelSetStats().AreaOffset + SaveData.Instance.GetLevelSetStats().Areas.Count; i++)
                     {
