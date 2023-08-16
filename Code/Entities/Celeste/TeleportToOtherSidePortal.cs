@@ -286,7 +286,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             switch (side)
             {
                 case "A-Side":
-                    if (XaphanModule.useMergeChaptersController && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
+                    if (XaphanModule.useMergeChaptersController)
                     {
                         LevelEnter.Go(new Session(new AreaKey(SceneAs<Level>().Session.Area.ID, AreaMode.Normal))
                         {

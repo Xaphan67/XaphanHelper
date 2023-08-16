@@ -68,50 +68,22 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public bool BossDefeated()
         {
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated");
-            }
-            else
-            {
-                return Level.Session.GetFlag("Boss_Defeated");
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated");
         }
 
         public bool BossDefeatedCM()
         {
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated_CM");
-            }
-            else
-            {
-                return Level.Session.GetFlag("Boss_Defeated_CM");
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated_CM");
         }
 
         public bool SpaceJumpCollected()
         {
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
-            }
-            else
-            {
-                return Level.Session.GetFlag("Upgrade_SpaceJump");
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
         }
 
         public bool DashBootsCollected()
         {
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots");
-            }
-            else
-            {
-                return Level.Session.GetFlag("Upgrade_DashBootsp");
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots");
         }
 
         public bool HadDashBoots;
@@ -540,7 +512,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                     string Prefix = level.Session.Area.GetLevelSet();
-                    if (!XaphanModule.ModSettings.SpeedrunMode && !HasGolden() && !level.Session.GetFlag("boss_Challenge_Mode"))
+                    if (!HasGolden() && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         Scene.Add(new CS02_BossDefeated(player));
                     }

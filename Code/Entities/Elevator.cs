@@ -24,8 +24,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool Activated;
 
-        private bool UsableInSpeedrunMode;
-
         private int ReversePosition;
 
         private int ToChapter;
@@ -54,12 +52,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string flag;
 
-        public Elevator(Vector2 position, string sprite, bool canTalk, bool usableInSpeedrunMode, float timer, bool endAreaEntrance, int endPosition, int toChapter, string destinationRoom, int spawnRoomX, int spawnRoomY, string flag) : base(position, 32f, 8f, safe: true)
+        public Elevator(Vector2 position, string sprite, bool canTalk, float timer, bool endAreaEntrance, int endPosition, int toChapter, string destinationRoom, int spawnRoomX, int spawnRoomY, string flag) : base(position, 32f, 8f, safe: true)
         {
             CanTalk = canTalk;
             Timer = timer;
             EndAreaEntrance = endAreaEntrance;
-            UsableInSpeedrunMode = usableInSpeedrunMode;
             StartPosition = Position;
             EndPosition = Position + new Vector2(0, endPosition);
             ReversePosition = endPosition;
@@ -81,7 +78,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             CanTalk = data.Bool("canTalk");
             Timer = data.Float("timer");
             EndAreaEntrance = data.Bool("endAreaEntrance");
-            UsableInSpeedrunMode = data.Bool("usableInSpeedrunMode");
             StartPosition = Position;
             EndPosition = Position + new Vector2(0, data.Int("endPosition"));
             ReversePosition = data.Int("endPosition");
@@ -108,7 +104,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (CanTalk)
                 {
-                    if ((!XaphanModule.ModSettings.SpeedrunMode || (XaphanModule.ModSettings.SpeedrunMode && UsableInSpeedrunMode)) && (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area"))))
+                    if (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area")))
                     {
                         Add(talk = new TalkComponent(new Rectangle(4, -8, 24, 8), new Vector2(16f, -16f), Interact));
                         talk.PlayerMustBeFacing = false;
@@ -135,7 +131,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Sprite.Play("idle");
                     if (CanTalk)
                     {
-                        if ((!SceneAs<Level>().Session.GrabbedGolden || (SceneAs<Level>().Session.GrabbedGolden && ToChapter == SceneAs<Level>().Session.Area.ChapterIndex)) && (!XaphanModule.ModSettings.SpeedrunMode || (XaphanModule.ModSettings.SpeedrunMode && UsableInSpeedrunMode)) && (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area"))))
+                        if ((!SceneAs<Level>().Session.GrabbedGolden || (SceneAs<Level>().Session.GrabbedGolden && ToChapter == SceneAs<Level>().Session.Area.ChapterIndex)) && (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area"))))
                         {
                             Add(talk = new TalkComponent(new Rectangle(4, -8, 24, 8), new Vector2(16f, -16f), Interact));
                             talk.PlayerMustBeFacing = false;
@@ -245,7 +241,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         if (!OneUse)
                         {
-                            Scene.Add(new Elevator(Position, sprite, true, UsableInSpeedrunMode, 1f, false, -ReversePosition, ToChapter, DestinationRoom, SpawnRoomX, SpawnRoomY, flag));
+                            Scene.Add(new Elevator(Position, sprite, true, 1f, false, -ReversePosition, ToChapter, DestinationRoom, SpawnRoomX, SpawnRoomY, flag));
                             RemoveSelf();
                         }
                     }
@@ -305,7 +301,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     RegisterChapterCompleteFlag(Prefix, currentChapter);
                     SceneAs<Level>().RegisterAreaComplete();
                 }
-                if (XaphanModule.useMergeChaptersController && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
+                if (XaphanModule.useMergeChaptersController)
                 {
                     long currentTime = SceneAs<Level>().Session.Time;
                     LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))

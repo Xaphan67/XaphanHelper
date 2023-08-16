@@ -22,7 +22,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void OnStay(Player player)
         {
             base.OnStay(player);
-            if (triggered || XaphanModule.ModSettings.SpeedrunMode)
+            if (triggered)
             {
                 return;
             }

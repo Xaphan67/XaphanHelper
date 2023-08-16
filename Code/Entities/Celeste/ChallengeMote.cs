@@ -31,38 +31,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool SpaceJumpCollected()
         {
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
-            }
-            else
-            {
-                return level.Session.GetFlag("Upgrade_SpaceJump");
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
         }
 
         public bool LightningDashCollected()
         {
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_LightningDash");
-            }
-            else
-            {
-                return level.Session.GetFlag("Upgrade_LightningDash");
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_LightningDash");
         }
 
         public bool GravityJacketCollected()
         {
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_GravityJacket");
-            }
-            else
-            {
-                return level.Session.GetFlag("Upgrade_GravityJacket");
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_GravityJacket");
         }
 
         public ChallengeMote(EntityData data, Vector2 position, EntityID ID) : base(data.Position + position)
@@ -130,7 +109,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             strawberry = level.Entities.FindFirst<Strawberry>();
             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated"))
             {
-                if (((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM") && !XaphanModule.ModSettings.SpeedrunMode) || level.Session.GetFlag("Boss_Defeated_CM")) && strawberry != null && !Started)
+                if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM") || level.Session.GetFlag("Boss_Defeated_CM")) && strawberry != null && !Started)
                 {
                     Started = true;
                     Visible = true;
@@ -139,7 +118,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     sprite.Play("completed");
                     sprite.OnLastFrame = onLastFrame;
                 }
-                else if (((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM") && !XaphanModule.ModSettings.SpeedrunMode) || level.Session.GetFlag("Boss_Defeated_CM")))
+                else if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM") || level.Session.GetFlag("Boss_Defeated_CM")))
                 {
                     if (!Started)
                     {

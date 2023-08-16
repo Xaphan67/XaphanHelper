@@ -93,29 +93,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.GetLevelSet();
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
-            if (!XaphanModule.ModSettings.SpeedrunMode)
+            if (upgrade == "MapShard")
             {
-                if (upgrade == "MapShard")
+                if (mapShardIndex == 0)
                 {
-                    if (mapShardIndex == 0)
-                    {
-                        return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_MapShard");
-                    }
-                    else
-                    {
-                        return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_MapShard_" + mapShardIndex);
-                    }
+                    return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_MapShard");
                 }
-                if (upgrade == "Map")
+                else
                 {
-                    return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Can_Open_Map");
+                    return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_MapShard_" + mapShardIndex);
                 }
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade);
             }
-            else
+            if (upgrade == "Map")
             {
-                return session.GetFlag(upgrade);
+                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Can_Open_Map");
             }
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade);
         }
 
         public UpgradeCollectable(EntityData data, Vector2 position, EntityID id) : base(data.Position + position)
@@ -163,7 +156,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (!haveGolden || (haveGolden && (upgrade == "MapShard" || upgrade == "Map")))
             {
                 int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
-                if (!XaphanModule.ModSettings.SpeedrunMode && FlagRegiseredInSaveData() || SceneAs<Level>().Session.GetFlag("Upgrade_" + upgrade))
+                if (FlagRegiseredInSaveData() || SceneAs<Level>().Session.GetFlag("Upgrade_" + upgrade))
                 {
                     RemoveSelf();
                 }

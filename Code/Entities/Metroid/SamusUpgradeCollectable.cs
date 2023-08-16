@@ -86,22 +86,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.GetLevelSet();
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
-            if (!XaphanModule.ModSettings.SpeedrunMode)
+            if (upgrade == "MapShard")
             {
-                if (upgrade == "MapShard")
-                {
-                    return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + upgrade);
-                }
-                if (upgrade == "Map")
-                {
-                    return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Can_Open_Map");
-                }
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade);
+                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + upgrade);
             }
-            else
+            if (upgrade == "Map")
             {
-                return session.GetFlag(upgrade);
+                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Can_Open_Map");
             }
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade);
         }
 
         public SamusUpgradeCollectable(EntityData data, Vector2 position, EntityID id) : base(data.Position + position)

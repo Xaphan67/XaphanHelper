@@ -107,10 +107,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnBegin(Level level)
         {
-            if (!XaphanModule.ModSettings.SpeedrunModeUnlocked)
-            {
-                MInput.Disabled = true;
-            }
+            MInput.Disabled = true;
             Add(new Coroutine(Cutscene(level)));
         }
 
@@ -160,7 +157,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 Bg.Render();
             }
-            if (credits != null && XaphanModule.ModSettings.SpeedrunModeUnlocked)
+            if (credits != null)
             {
                 float num = 0.5f;
                 string label = Dialog.Clean("XaphanHelper_UI_skip");
@@ -219,7 +216,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             credits.Enabled = true;
             while (credits.BottomTimer <= 3f && !Skipped)
             {
-                if (Input.ESC.Pressed && XaphanModule.ModSettings.SpeedrunModeUnlocked)
+                if (Input.ESC.Pressed)
                 {
                     Skipped = true;
                 }
@@ -411,45 +408,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return null;
             }
             Audio.Play("event:/new_content/game/10_farewell/endscene_final_input");
-            if (XaphanModule.ModSettings.SpeedrunModeUnlocked)
+            yield return new FadeWipe(level, false, () => EndCutscene(Level))
             {
-                yield return new FadeWipe(level, false, () => EndCutscene(Level))
-                {
-                    Duration = 5.25f
-                }.Duration;
-            }
-            else
-            {
-                yield return new FadeWipe(level, wipeIn: false)
-                {
-                    Duration = 1.25f
-                }.Duration;
-                Bg.Visible = false;
-                totaltime.Visible = false;
-                endTextA.Visible = false;
-                endTextB.Visible = false;
-                endTextC.Visible = false;
-                endTextD.Visible = false;
-                endTextE.Visible = false;
-                yield return 1f;
-                Scene.Add(new FadeWipe(level, true)
-                {
-                    Duration = 1.25f
-                });
-                XaphanModule.ModSettings.SpeedrunModeUnlocked = true;
-                Scene.Add(new NormalText("Xaphan_0_Credits_SpeedrunMode_Unlocked_Title", new Vector2(Engine.Width / 2, Engine.Height / 2 - 100), Color.Gold, 1f, 2f));
-                Scene.Add(new NormalText("Xaphan_0_Credits_SpeedrunMode_Unlocked", new Vector2(Engine.Width / 2, Engine.Height / 2 + 100), Color.White, 1f, 1f));
-                timer = 10f;
-                while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed && timer > 0f)
-                {
-                    yield return null;
-                    timer -= Engine.DeltaTime;
-                }
-                Scene.Add(new FadeWipe(level, false, () => EndCutscene(Level))
-                {
-                    Duration = 3.25f
-                });
-            }
+                Duration = 5.25f
+            }.Duration;
         }
     }
 }

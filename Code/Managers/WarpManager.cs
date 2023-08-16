@@ -13,8 +13,8 @@ namespace Celeste.Mod.XaphanHelper.Managers
         public static bool ActivateWarp(string warpId) => UnlockedWarps.Add(warpId);
         public static bool DeactivateWarp(string warpId) => UnlockedWarps.Remove(warpId);
 
-        private static bool UseTempWarps => XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode;
-        private static HashSet<string> UnlockedWarps => !UseTempWarps ? XaphanModule.ModSaveData.UnlockedWarps : XaphanModule.ModSaveData.SpeedrunModeUnlockedWarps;
+        private static bool UseTempWarps => XaphanModule.PlayerHasGolden;
+        private static HashSet<string> UnlockedWarps => !UseTempWarps ? XaphanModule.ModSaveData.UnlockedWarps : XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps;
 
         public static string GetWarpId(Level level, int warpIndex)
         {
@@ -148,7 +148,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                     XaphanModule.ModSaveData.CountdownHideFlag = timerDisplay.hideFlag;
                     XaphanModule.ModSaveData.CountdownEventsFlags = timerDisplay.rawEventsFlags;
                 }
-                if (XaphanModule.useMergeChaptersController && (level.Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
+                if (XaphanModule.useMergeChaptersController)
                 {
                     long currentTime = level.Session.Time;
                     LevelEnter.Go(new Session(new AreaKey(areaId))

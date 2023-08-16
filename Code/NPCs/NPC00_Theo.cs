@@ -34,35 +34,17 @@ namespace Celeste.Mod.XaphanHelper.NPCs
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (!XaphanModule.ModSettings.SpeedrunMode)
+            if (mode == "start" && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
             {
-                if (mode == "start" && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
-                {
-                    RemoveSelf();
-                }
-                else if (mode == "gemRoom" && (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots") || playerHasCollectedOneGem()))
-                {
-                    RemoveSelf();
-                }
-                else if (mode == "gemRoomB" && !playerHasCollectedOneGem())
-                {
-                    RemoveSelf();
-                }
+                RemoveSelf();
             }
-            else
+            else if (mode == "gemRoom" && (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots") || playerHasCollectedOneGem()))
             {
-                if (mode == "start" && SceneAs<Level>().Session.GetFlag("Upgrade_DashBoots"))
-                {
-                    RemoveSelf();
-                }
-                else if (mode == "gemRoom" && !SceneAs<Level>().Session.GetFlag("Upgrade_DashBoots"))
-                {
-                    RemoveSelf();
-                }
-                else if (mode == "gemRoomB")
-                {
-                    RemoveSelf();
-                }
+                RemoveSelf();
+            }
+            else if (mode == "gemRoomB" && !playerHasCollectedOneGem())
+            {
+                RemoveSelf();
             }
         }
 

@@ -132,7 +132,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             int chapterIndex = Level.Session.Area.ChapterIndex;
             if (!string.IsNullOrEmpty(flag))
             {
-                if (Level.Session.GetFlag(flag) || Level.Session.GetFlag(flag + "_sloted") || (!XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag)))
+                if (Level.Session.GetFlag(flag) || Level.Session.GetFlag(flag + "_sloted") || XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                 {
                     RemoveSelf();
                 }
@@ -153,7 +153,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             int chapterIndex = Level.Session.Area.ChapterIndex;
             if (!string.IsNullOrEmpty(flag))
             {
-                if (Level.Session.GetFlag(flag) || Level.Session.GetFlag(flag + "_sloted") || (!XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag)))
+                if (Level.Session.GetFlag(flag) || Level.Session.GetFlag(flag + "_sloted") || XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                 {
                     RemoveSelf();
                 }

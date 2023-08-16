@@ -85,7 +85,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public IEnumerator Cutscene(Level level)
         {
-            if ((XaphanModule.ModSettings.SpeedrunMode && level.Session.GetFlag("Upgrade_DashBoots")) || (!XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots")))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
             {
                 player.StateMachine.State = 11;
                 yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);

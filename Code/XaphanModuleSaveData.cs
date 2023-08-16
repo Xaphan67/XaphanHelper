@@ -35,7 +35,7 @@ namespace Celeste.Mod.XaphanHelper
 
         public HashSet<string> UnlockedWarps = new();
 
-        public HashSet<string> SpeedrunModeUnlockedWarps = new();
+        public HashSet<string> GoldenStrawberryUnlockedWarps = new();
 
         // Celeste Upgrades
 
@@ -111,19 +111,19 @@ namespace Celeste.Mod.XaphanHelper
 
         public HashSet<string> StaminaUpgrades = new();
 
-        public HashSet<string> SpeedrunModeStaminaUpgrades = new();
+        public HashSet<string> GoldenStrawberryStaminaUpgrades = new();
 
         public HashSet<string> DroneMissilesUpgrades = new();
 
-        public HashSet<string> SpeedrunModeDroneMissilesUpgrades = new();
+        public HashSet<string> GoldenStrawberryDroneMissilesUpgrades = new();
 
         public HashSet<string> DroneSuperMissilesUpgrades = new();
 
-        public HashSet<string> SpeedrunModeDroneSuperMissilesUpgrades = new();
+        public HashSet<string> GoldenStrawberryDroneSuperMissilesUpgrades = new();
 
         public HashSet<string> DroneFireRateUpgrades = new();
 
-        public HashSet<string> SpeedrunModeDroneFireRateUpgrades = new();
+        public HashSet<string> GoldenStrawberryDroneFireRateUpgrades = new();
 
         // Countdown
 
@@ -242,8 +242,6 @@ namespace Celeste.Mod.XaphanHelper
         // Others
 
         public string CurrentSubArea = "";
-
-        public bool SpeedrunMode = false;
 
         public int BagUIId1 = 0;
 

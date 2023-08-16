@@ -261,14 +261,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (type.Contains("Missiles"))
             {
                 string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
-                foreach (string missileUpgrade in (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) ? XaphanModule.ModSaveData.SpeedrunModeDroneMissilesUpgrades : XaphanModule.ModSaveData.DroneMissilesUpgrades)
+                foreach (string missileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades : XaphanModule.ModSaveData.DroneMissilesUpgrades)
                 {
                     if (missileUpgrade.Contains(Prefix))
                     {
                         maxMissileCount += 2;
                     }
                 }
-                foreach (string superMissileUpgrade in (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) ? XaphanModule.ModSaveData.SpeedrunModeDroneSuperMissilesUpgrades : XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
+                foreach (string superMissileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades : XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
                 {
                     if (superMissileUpgrade.Contains(Prefix))
                     {

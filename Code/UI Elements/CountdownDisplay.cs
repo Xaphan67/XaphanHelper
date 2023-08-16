@@ -407,7 +407,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             XaphanModule.ModSaveData.CountdownEventsFlags = "";
             int chapterOffset = startChapter - currentChapter;
             int currentChapterID = SceneAs<Level>().Session.Area.ID;
-            if (XaphanModule.useMergeChaptersController && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
+            if (XaphanModule.useMergeChaptersController)
             {
                 long currentTime = SceneAs<Level>().Session.Time;
                 LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))

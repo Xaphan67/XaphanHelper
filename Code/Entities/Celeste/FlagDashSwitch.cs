@@ -83,14 +83,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.GetLevelSet();
             int chapterIndex = session.Area.ChapterIndex;
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
-            }
-            else
-            {
-                return session.GetFlag(flag);
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
         }
 
         public Vector2? startSpawnPoint;
@@ -358,7 +351,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (!haveGolden && !XaphanModule.ModSettings.SpeedrunMode)
+            if (!haveGolden)
             {
                 if ((((mode == "SetTrue" && SceneAs<Level>().Session.GetFlag(flag)) || (mode == "SetFalse" && !SceneAs<Level>().Session.GetFlag(flag))) || FlagRegiseredInSaveData()) && !canSwapFlag)
                 {

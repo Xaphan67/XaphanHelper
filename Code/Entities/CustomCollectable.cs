@@ -69,8 +69,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool collectGoldenStrawberry;
 
-        private bool completeSpeedrun;
-
         private bool registerInSaveData;
 
         private bool canRespawn;
@@ -82,14 +80,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.GetLevelSet();
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
-            }
-            else
-            {
-                return session.GetFlag(flag);
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
         }
 
         public CustomCollectable(EntityData data, Vector2 position, EntityID id) : base(data.Position + position)
@@ -104,7 +95,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             mustDash = data.Bool("mustDash");
             endChapter = data.Bool("completeArea") || data.Bool("endChapter");
             collectGoldenStrawberry = data.Bool("collectGoldenStrawberry");
-            completeSpeedrun = data.Bool("completeSpeedrun");
             registerInSaveData = data.Bool("registerInSaveData");
             ignoreGolden = data.Bool("ignoreGolden");
             canRespawn = data.Bool("canRespawn");
@@ -157,7 +147,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            endChapter = (completeSpeedrun && XaphanModule.ModSettings.SpeedrunMode) ? true : endChapter;
             bool haveGolden = false;
             foreach (Strawberry item in Scene.Entities.FindAll<Strawberry>())
             {
@@ -171,7 +160,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (!haveGolden || (haveGolden && ignoreGolden))
                 {
-                    if (!XaphanModule.ModSettings.SpeedrunMode && FlagRegiseredInSaveData() || SceneAs<Level>().Session.GetFlag(flag))
+                    if (FlagRegiseredInSaveData() || SceneAs<Level>().Session.GetFlag(flag))
                     {
                         RemoveSelf();
                     }

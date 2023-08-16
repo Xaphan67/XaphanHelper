@@ -104,7 +104,7 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool CanOpenMap(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Can_Open_Map") || ModSettings.SpeedrunMode ? true : false;
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Can_Open_Map");
         }
 
         public static bool UIOpened;
@@ -880,7 +880,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private void modOuiChapterSelectIconUpdate(On.Celeste.OuiChapterSelectIcon.orig_Update orig, OuiChapterSelectIcon self)
         {
-            if (useMergeChaptersController && SaveData.Instance != null && (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && SaveData.Instance != null)
             {
                 orig(self);
                 if (!MergeChaptersControllerKeepPrologue || (MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset))
@@ -940,7 +940,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 icon.Visible = true;
             }
-            if (useMergeChaptersController && (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController)
             {
                 if (MergeChaptersControllerKeepPrologue)
                 {
@@ -982,7 +982,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private IEnumerator modOuiChapterPanelIncrementStats(On.Celeste.OuiChapterPanel.orig_IncrementStats orig, OuiChapterPanel self, bool shouldAdvance)
         {
-            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true) && (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true))
             {
                 shouldAdvance = false;
             }
@@ -992,7 +992,7 @@ namespace Celeste.Mod.XaphanHelper
         private void modOuiMapSearchInspect(On.Celeste.Mod.UI.OuiMapSearch.orig_Inspect orig, UI.OuiMapSearch self, AreaData area, AreaMode mode)
         {
             MergeChaptersControllerCheck(area);
-            if (useMergeChaptersController && (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController)
             {
                 self.Focused = false;
                 Audio.Play("event:/ui/world_map/icon/select");
@@ -1022,7 +1022,7 @@ namespace Celeste.Mod.XaphanHelper
         private void modOuiMapListInspect(On.Celeste.Mod.UI.OuiMapList.orig_Inspect orig, UI.OuiMapList self, AreaData area, AreaMode mode)
         {
             MergeChaptersControllerCheck(area);
-            if (useMergeChaptersController && (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController)
             {
                 self.Focused = false;
                 Audio.Play("event:/ui/world_map/icon/select");
@@ -1051,7 +1051,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private IEnumerator modOuiChapterPanelLeave(On.Celeste.OuiChapterPanel.orig_Leave orig, OuiChapterPanel self, Oui next)
         {
-            if (!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.GetLevelSetStats().AreaOffset) || (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? ModSaveData.SpeedrunMode : false))
+            if (!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.GetLevelSetStats().AreaOffset))
             {
                 yield return new SwapImmediately(orig(self, next));
             }
@@ -1059,7 +1059,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private IEnumerator modOuiChapterPanelEnter(On.Celeste.OuiChapterPanel.orig_Enter orig, OuiChapterPanel self, Oui from)
         {
-            if (useMergeChaptersController && (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController)
             {
                 if (MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
                 {
@@ -1159,7 +1159,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onSpeedrunTimerDisplayDrawTime(On.Celeste.SpeedrunTimerDisplay.orig_DrawTime orig, Vector2 position, string timeString, float scale, bool valid, bool finished, bool bestTime, float alpha)
         {
-            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && SaveData.Instance.CurrentSession.Area.Mode == AreaMode.Normal && (SaveData.Instance.CurrentSession.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && SaveData.Instance.CurrentSession.Area.Mode == AreaMode.Normal)
             {
                 valid = true;
             }
@@ -1168,7 +1168,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private Session onSessionRestart(On.Celeste.Session.orig_Restart orig, Session self, string intoLevel)
         {
-            if (useMergeChaptersController && SaveData.Instance.CurrentSession.Area.Mode == AreaMode.Normal && (SaveData.Instance.CurrentSession.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && SaveData.Instance.CurrentSession.Area.Mode == AreaMode.Normal)
             {
                 Session session = new(self.Area, self.StartCheckpoint, self.OldStats)
                 {
@@ -1193,7 +1193,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private bool modHeartGemIsCompleteArea(On.Celeste.HeartGem.orig_IsCompleteArea orig, HeartGem self, bool value)
         {
-            if ((SaveData.Instance.CurrentSession.Area.Mode == AreaMode.BSide || SaveData.Instance.CurrentSession.Area.Mode == AreaMode.CSide) && (ModSaveData.SpeedrunMode && SaveData.Instance.CurrentSession.Area.LevelSet == "Xaphan/0"))
+            if ((SaveData.Instance.CurrentSession.Area.Mode == AreaMode.BSide || SaveData.Instance.CurrentSession.Area.Mode == AreaMode.CSide))
             {
                 return true;
             }
@@ -1215,7 +1215,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onLevelPause(On.Celeste.Level.orig_Pause orig, Level self, int startIndex, bool minimal, bool quickReset)
         {
-            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true) && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true))
             {
                 if (quickReset)
                 {
@@ -1227,7 +1227,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onReturnMapHintRender(On.Celeste.ReturnMapHint.orig_Render orig, ReturnMapHint self)
         {
-            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && (SaveData.Instance.CurrentSession.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true) && !((MergeChaptersControllerKeepPrologue && SaveData.Instance.CurrentSession.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && !((MergeChaptersControllerKeepPrologue && SaveData.Instance.CurrentSession.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
             {
                 MTexture mTexture = GFX.Gui["checkpoint"];
                 string text = "";
@@ -1254,7 +1254,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private bool modSaveDataFoundAnyCheckpoints(On.Celeste.SaveData.orig_FoundAnyCheckpoints orig, SaveData self, AreaKey area)
         {
-            if (area.LevelSet == MergeChaptersControllerLevelSet && MergeChaptersControllerMode != "Classic" && (self.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (area.LevelSet == MergeChaptersControllerLevelSet && MergeChaptersControllerMode != "Classic")
             {
                 return false;
             }
@@ -1446,7 +1446,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private IEnumerator modOuiChapterPanelStartRoutine(On.Celeste.OuiChapterPanel.orig_StartRoutine orig, OuiChapterPanel self, string checkpoint)
         {
-            if (useMergeChaptersController && (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController)
             {
                 self.EnteringChapter = true;
                 self.Overworld.Maddy.Hide(down: false);
@@ -1703,18 +1703,6 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
 
-            // Activate Speedrun Mode if needed
-
-            if (ModSaveData.SpeedrunMode)
-            {
-                ModSettings.SpeedrunMode = true;
-                level.Session.SetFlag("Map_Collected");
-                if (!ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + level.Session.Area.ChapterIndex + "_Map_Collected"))
-                {
-                    ModSaveData.SavedFlags.Add("Xaphan/0_Ch" + level.Session.Area.ChapterIndex + "_Map_Collected");
-                }
-            }
-
             // Upgrades stuff
 
             if (useUpgrades)
@@ -1766,64 +1754,61 @@ namespace Celeste.Mod.XaphanHelper
 
             if (!PlayerHasGolden && !ModSaveData.SavedFlags.Contains(Prefix + "_teleporting"))
             {
-                if (!ModSettings.SpeedrunMode) // Normal mode only
+                foreach (string savedFlag in ModSaveData.SavedFlags)
                 {
-                    foreach (string savedFlag in ModSaveData.SavedFlags)
+                    if (forceStartingUpgrades)
                     {
-                        if (forceStartingUpgrades)
+                        if (savedFlag.Contains("Upgrade_"))
                         {
-                            if (savedFlag.Contains("Upgrade_"))
-                            {
-                                continue;
-                            }
-                        }
-                        string[] savedFlags = savedFlag.Split('_');
-                        if (savedFlags[0] == Prefix && savedFlags[1] == "Ch" + chapterIndex)
-                        {
-                            string flagPrefix = savedFlags[0] + "_" + savedFlags[1] + "_";
-                            string flag = string.Empty;
-                            int num = savedFlag.IndexOf(flagPrefix);
-                            if (num >= 0)
-                            {
-                                flag = savedFlag.Remove(num, flagPrefix.Length);
-                            }
-                            level.Session.SetFlag(flag);
+                            continue;
                         }
                     }
-                    foreach (string flag in ModSaveData.SavedFlags)
+                    string[] savedFlags = savedFlag.Split('_');
+                    if (savedFlags[0] == Prefix && savedFlags[1] == "Ch" + chapterIndex)
                     {
-                        if (forceStartingUpgrades)
+                        string flagPrefix = savedFlags[0] + "_" + savedFlags[1] + "_";
+                        string flag = string.Empty;
+                        int num = savedFlag.IndexOf(flagPrefix);
+                        if (num >= 0)
                         {
-                            if (flag.Contains("Upgrade_"))
-                            {
-                                continue;
-                            }
+                            flag = savedFlag.Remove(num, flagPrefix.Length);
                         }
-                        if (flag.Contains(Prefix))
+                        level.Session.SetFlag(flag);
+                    }
+                }
+                foreach (string flag in ModSaveData.SavedFlags)
+                {
+                    if (forceStartingUpgrades)
+                    {
+                        if (flag.Contains("Upgrade_"))
                         {
-                            string toRemove = Prefix + "_";
-                            string result = string.Empty;
-                            int i = flag.IndexOf(toRemove);
-                            if (i >= 0)
-                            {
-                                result = flag.Remove(i, toRemove.Length);
-                            }
-                            level.Session.SetFlag(result, true);
+                            continue;
                         }
                     }
-                    foreach (string flag in ModSaveData.GlobalFlags)
+                    if (flag.Contains(Prefix))
                     {
-                        if (flag.Contains(Prefix))
+                        string toRemove = Prefix + "_";
+                        string result = string.Empty;
+                        int i = flag.IndexOf(toRemove);
+                        if (i >= 0)
                         {
-                            string toRemove = Prefix + "_";
-                            string result = string.Empty;
-                            int i = flag.IndexOf(toRemove);
-                            if (i >= 0)
-                            {
-                                result = flag.Remove(i, toRemove.Length);
-                            }
-                            level.Session.SetFlag(result, true);
+                            result = flag.Remove(i, toRemove.Length);
                         }
+                        level.Session.SetFlag(result, true);
+                    }
+                }
+                foreach (string flag in ModSaveData.GlobalFlags)
+                {
+                    if (flag.Contains(Prefix))
+                    {
+                        string toRemove = Prefix + "_";
+                        string result = string.Empty;
+                        int i = flag.IndexOf(toRemove);
+                        if (i >= 0)
+                        {
+                            result = flag.Remove(i, toRemove.Length);
+                        }
+                        level.Session.SetFlag(result, true);
                     }
                 }
             }
@@ -2142,7 +2127,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 // Give back upgrades the player has unlocked
 
-                if (!forceStartingUpgrades && !PlayerHasGolden && !ModSettings.SpeedrunMode)
+                if (!forceStartingUpgrades && !PlayerHasGolden)
                 {
                     // Celeste Upgrades
 
@@ -2313,7 +2298,7 @@ namespace Celeste.Mod.XaphanHelper
                         level.Session.SetFlag("Upgrade_SpaceJump", true);
                     }
                 }
-                else if (PlayerHasGolden || ModSettings.SpeedrunMode) // If the player has the golden berry or is in speedrun mode
+                else if (PlayerHasGolden) // If the player has the golden berry
                 {
                     if (goldenPowerGrip || level.Session.GetFlag("Upgrade_PowerGrip"))
                     {
@@ -2428,18 +2413,6 @@ namespace Celeste.Mod.XaphanHelper
             useUpgrades = false;
             useMetroidGameplay = false;
 
-            // Remove Speedrun Mode
-
-            if (ModSettings.SpeedrunMode)
-            {
-                ModSaveData.SpeedrunModeUnlockedWarps.Clear();
-                ModSaveData.SpeedrunModeStaminaUpgrades.Clear();
-                ModSaveData.SpeedrunModeDroneMissilesUpgrades.Clear();
-                ModSaveData.SpeedrunModeDroneSuperMissilesUpgrades.Clear();
-                ModSaveData.SpeedrunModeDroneFireRateUpgrades.Clear();
-                ModSettings.SpeedrunMode = false;
-            }
-
             // Remove PickedGolden flag from save
 
             PlayerHasGolden = false;
@@ -2517,7 +2490,7 @@ namespace Celeste.Mod.XaphanHelper
                 GiveUpCMButton.ConfirmSfx = "event:/ui/main/message_confirm";
                 menu.Insert(retryIndex + 1, GiveUpCMButton);
             }
-            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true) && (level.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true))
             {
                 // Find the "Restart chapter" button and remove it from the menu if it exist
                 int restartAreaIndex = menu.GetItems().FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RESTARTAREA"));
@@ -2537,7 +2510,7 @@ namespace Celeste.Mod.XaphanHelper
                 RestartCampaignButton.ConfirmSfx = "event:/ui/main/message_confirm";
                 menu.Insert(restartAreaIndex, RestartCampaignButton);
             }
-            if (useMergeChaptersController && (level.Session.Area.Mode == AreaMode.BSide || level.Session.Area.Mode == AreaMode.CSide) && (level.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && (level.Session.Area.Mode == AreaMode.BSide || level.Session.Area.Mode == AreaMode.CSide))
             {
                 // Find the position of "Return to map"
                 int returnToMapIndex = menu.GetItems().FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETURN"));
@@ -2871,7 +2844,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     minimapEnabled = false;
                 }
-                if (allRoomsUseTileController && ModSettings.ShowMiniMap && (ModSaveData.SavedFlags.Contains(self.Session.Area.GetLevelSet() + "_Can_Open_Map") || (self.Session.Area.LevelSet == "Xaphan/0" ? ModSaveData.SpeedrunMode : false)) && !minimapEnabled)
+                if (allRoomsUseTileController && ModSettings.ShowMiniMap && ModSaveData.SavedFlags.Contains(self.Session.Area.GetLevelSet() + "_Can_Open_Map") && !minimapEnabled)
                 {
                     if (self.Tracker.GetEntity<MiniMap>() == null)
                     {
@@ -2937,7 +2910,7 @@ namespace Celeste.Mod.XaphanHelper
 
             // Change starting chapter and room if using a Merge Chapter Controller
 
-            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && self.Session.Area.Mode == AreaMode.Normal && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true))
+            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && self.Session.Area.Mode == AreaMode.Normal)
             {
                 if ((ModSaveData.LoadedPlayer || self.Session.GetFlag("XaphanHelper_Loaded_Player")) && !CanLoadPlayer) // If for some reason thoses value are true when entering the level, reset them to false. May happen if the game is not exited correctly
                 {
@@ -3023,7 +2996,7 @@ namespace Celeste.Mod.XaphanHelper
 
                 // Save the room as the one that the player must load into when starting the campaign if using a MergeChaptersController with mode set to Rooms
 
-                else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true) && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+                else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
                 {
                     ModSaveData.LoadedPlayer = true;
                     if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))
@@ -3180,7 +3153,7 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
 
-                if (useMergeChaptersController && (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSaveData.SpeedrunMode : true) && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+                if (useMergeChaptersController && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
                 {
                     if (!ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet))
                     {
@@ -3221,14 +3194,6 @@ namespace Celeste.Mod.XaphanHelper
                         self.Wipe.Cancel();
                         self.Add(GetWipe(self, true));
                     }
-                }
-                if (ModSettings.SpeedrunMode) // Clear Speedrun Mode stuff
-                {
-                    ModSaveData.SpeedrunModeUnlockedWarps.Clear();
-                    ModSaveData.SpeedrunModeStaminaUpgrades.Clear();
-                    ModSaveData.SpeedrunModeDroneMissilesUpgrades.Clear();
-                    ModSaveData.SpeedrunModeDroneSuperMissilesUpgrades.Clear();
-                    ModSaveData.SpeedrunModeDroneFireRateUpgrades.Clear();
                 }
                 if (string.IsNullOrEmpty(ModSaveData.DestinationRoom))
                 {
@@ -3720,11 +3685,6 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
                 }
-                ModSaveData.SpeedrunModeUnlockedWarps.Clear();
-                ModSaveData.SpeedrunModeStaminaUpgrades.Clear();
-                ModSaveData.SpeedrunModeDroneMissilesUpgrades.Clear();
-                ModSaveData.SpeedrunModeDroneSuperMissilesUpgrades.Clear();
-                ModSaveData.SpeedrunModeDroneFireRateUpgrades.Clear();
             }
             orig(self, player);
         }

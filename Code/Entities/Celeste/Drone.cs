@@ -710,7 +710,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (XaphanModule.ModSession.CurrentDroneMissile == 0)
             {
                 int missileCount = 10;
-                foreach (string missileUpgrade in (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) ? XaphanModule.ModSaveData.SpeedrunModeDroneMissilesUpgrades : XaphanModule.ModSaveData.DroneMissilesUpgrades)
+                foreach (string missileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades : XaphanModule.ModSaveData.DroneMissilesUpgrades)
                 {
                     if (missileUpgrade.Contains(Prefix))
                     {
@@ -727,7 +727,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (XaphanModule.ModSession.CurrentDroneSuperMissile == 0)
             {
                 int superMissileCount = 5;
-                foreach (string superMissileUpgrade in (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) ? XaphanModule.ModSaveData.SpeedrunModeDroneSuperMissilesUpgrades : XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
+                foreach (string superMissileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades : XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
                 {
                     if (superMissileUpgrade.Contains(Prefix))
                     {
@@ -1153,7 +1153,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     string beamType = "Power" + (WaveBeam.Active(level) ? "Wave" : "") + (IceBeam.Active(level) ? "Ice" : "");
                     level.Add(new Beam(player, beamType, beamSound, Position, WaveBeam.Active(level) ? 4 : 0));
                     int droneFireRateUpgradesCount = 0;
-                    foreach (string fireRateModuleUpgrade in (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) ? XaphanModule.ModSaveData.SpeedrunModeDroneFireRateUpgrades : XaphanModule.ModSaveData.DroneFireRateUpgrades)
+                    foreach (string fireRateModuleUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades : XaphanModule.ModSaveData.DroneFireRateUpgrades)
                     {
                         if (fireRateModuleUpgrade.Contains(Prefix))
                         {
@@ -1400,7 +1400,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                         int chapterOffset = XaphanModule.ModSaveData.droneStartChapter[SceneAs<Level>().Session.Area.GetLevelSet()] - currentChapter;
                                         int currentChapterID = SceneAs<Level>().Session.Area.ID;
                                         XaphanModule.TeleportBackFromDrone = true;
-                                        if (XaphanModule.useMergeChaptersController && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
+                                        if (XaphanModule.useMergeChaptersController)
                                         {
                                             long currentTime = SceneAs<Level>().Session.Time;
                                             LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))

@@ -224,7 +224,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             FirstInput = null;
             InputImage = null;
             decoRight = null;
-            if (XaphanModule.ModSettings.SpeedrunModeUnlocked)
+            /*if (XaphanModule.ModSettings.SpeedrunModeUnlocked)
             {
                 Add(menu = new TextMenu());
                 menu.Add(new TextMenu.SubHeader(""));
@@ -242,7 +242,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     yield return null;
                 }
             }
-            else
+            else*/
             {
                 StartGame();
             }
@@ -321,12 +321,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 menu.Update();
             }
-        }
-
-        private void ActivateSpeedrunMode()
-        {
-            XaphanModule.ModSaveData.SpeedrunMode = true;
-            StartGame();
         }
 
         private void StartGame()

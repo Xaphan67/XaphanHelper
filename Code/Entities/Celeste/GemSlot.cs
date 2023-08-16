@@ -34,7 +34,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (!XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + Chapter + "_Gem_Sloted"))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + Chapter + "_Gem_Sloted"))
             {
                 Activated = true;
                 Sprite.Position.Y += 6;

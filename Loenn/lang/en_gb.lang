@@ -135,7 +135,6 @@ entities.XaphanHelper/CustomCollectable.attributes.description.mapIcon=Name of t
 entities.XaphanHelper/CustomCollectable.attributes.description.mustDash=If true, the player must dash to collect the collectable.
 entities.XaphanHelper/CustomCollectable.attributes.description.collectGoldenStrawberry=If true, the golden strawberry will collect when the player collect the collectable.
 entities.XaphanHelper/CustomCollectable.attributes.description.endChapter=If true, the chapter will end when the player collect the collectable.
-entities.XaphanHelper/CustomCollectable.attributes.description.completeSpeedrun=Only used in SoCM. Leave not set.
 entities.XaphanHelper/CustomCollectable.attributes.description.registerInSaveData=If true, the flag will be registered in the player Save file and will be set forever.
 entities.XaphanHelper/CustomCollectable.attributes.description.ignoreGolden=If true, the collectable will not re-appear when the player carry a golden berry if it has already been collected.
 entities.XaphanHelper/CustomCollectable.attributes.description.canRespawn=If true, the collectable will respawn when player re-enter the room it is in if the flag set by the collectable is not set.
@@ -236,7 +235,6 @@ entities.XaphanHelper/Elevator.placements.name.Elevator=Elevator
 entities.XaphanHelper/Elevator.attributes.description.sprite=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 entities.XaphanHelper/Elevator.attributes.description.endPosition=Number of pixels the elevator will travel when used.\nPositive values move the elevator downward, and negative values move it upward. (1 tile in game is 8x8 pixels)
 entities.XaphanHelper/Elevator.attributes.description.canTalk=Can the player interact with the elevator to activate it? Must be set for the elevator to transport the player to an other room or chapter. If not set, the elevator will activate as soon as the player step on it.
-entities.XaphanHelper/Elevator.attributes.description.usableInSpeedrunMode=Only used in SoCM. Leave not set.
 entities.XaphanHelper/Elevator.attributes.description.timer=Time to wait between elevator activation and it actually moving.
 entities.XaphanHelper/Elevator.attributes.description.endAreaEntrance=Only used in SoCM. Leave not set.
 entities.XaphanHelper/Elevator.attributes.description.toChapter=Wich chapter this elevator will transport the player into. 0 =interlude.\nSet this to the current chapter to transport the player in an other room of the current chapter instead.

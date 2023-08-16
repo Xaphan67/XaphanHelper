@@ -45,14 +45,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.GetLevelSet();
             int chapterIndex = session.Area.ChapterIndex;
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
-            }
-            else
-            {
-                return session.GetFlag(flag);
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
         }
 
         public DroneSwitch(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, true)

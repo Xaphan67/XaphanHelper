@@ -2,7 +2,7 @@ local Elevator = {}
 
 Elevator.name = "XaphanHelper/Elevator"
 Elevator.depth = 8999
-Elevator.fieldOrder = {"x", "y", "sprite", "canTalk", "flag", "oneUse", "timer", "endPosition", "toChapter", "destinationRoom", "spawnRoomX", "spawnRoomY", "usableInSpeedrunMode", "endAreaEntrance"}
+Elevator.fieldOrder = {"x", "y", "sprite", "canTalk", "flag", "oneUse", "timer", "endPosition", "toChapter", "destinationRoom", "spawnRoomX", "spawnRoomY", "endAreaEntrance"}
 Elevator.ignoredFields = {
     "_name", "_id", "width", "height"
 }
@@ -29,7 +29,6 @@ Elevator.placements = {
         sprite = "objects/XaphanHelper/Elevator",
         endPosition = 0,
         canTalk = false,
-        usableInSpeedrunMode = false,
         timer = 1.00,
         endAreaEntrance = false,
         toChapter = 0,

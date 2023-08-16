@@ -198,7 +198,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             {
                 SceneAs<Level>().RegisterAreaComplete();
             }
-            if (XaphanModule.useMergeChaptersController && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? !XaphanModule.ModSaveData.SpeedrunMode : true))
+            if (XaphanModule.useMergeChaptersController)
             {
                 long currentTime = SceneAs<Level>().Session.Time;
                 LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))

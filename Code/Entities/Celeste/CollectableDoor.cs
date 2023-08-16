@@ -337,14 +337,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.GetLevelSet();
             int chapterIndex = session.Area.ChapterIndex;
-            if (!XaphanModule.ModSettings.SpeedrunMode)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID);
-            }
-            else
-            {
-                return session.GetFlag("XaphanHelper_Opened_Collectable_Door_" + doorID);
-            }
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID);
         }
 
         public CollectableDoor(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset)

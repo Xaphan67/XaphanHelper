@@ -29,24 +29,21 @@ namespace Celeste.Mod.XaphanHelper.Controllers
         public override void Update()
         {
             base.Update();
-            if (!XaphanModule.ModSettings.SpeedrunMode)
+            if (SceneAs<Level>().Session.GetFlag("CS_Ch0_Gem_Room_Activeate_Gems") && !triggered)
             {
-                if (SceneAs<Level>().Session.GetFlag("CS_Ch0_Gem_Room_Activeate_Gems") && !triggered)
+                triggered = true;
+                Add(new Coroutine(ActivateGems()));
+            }
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_End_Area_Open"))
+            {
+                SceneAs<Level>().Session.SetFlag("Open_End_Area", true);
+            }
+            else if (Ch1GemCollected() && Ch2GemCollected() && Ch3GemCollected() && Ch4GemCollected())
+            {
+                if (!EndAreaOpened)
                 {
-                    triggered = true;
-                    Add(new Coroutine(ActivateGems()));
-                }
-                if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_End_Area_Open"))
-                {
-                    SceneAs<Level>().Session.SetFlag("Open_End_Area", true);
-                }
-                else if (Ch1GemCollected() && Ch2GemCollected() && Ch3GemCollected() && Ch4GemCollected())
-                {
-                    if (!EndAreaOpened)
-                    {
-                        EndAreaOpened = true;
-                        Add(new Coroutine(OpenEndArea()));
-                    }
+                    EndAreaOpened = true;
+                    Add(new Coroutine(OpenEndArea()));
                 }
             }
         }

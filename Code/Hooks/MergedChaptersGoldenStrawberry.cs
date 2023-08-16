@@ -42,6 +42,11 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 StartRoom = level.Session.Level;
                 StartSpawn = level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
                 ID = self.ID.ID;
+                XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps.Clear();
+                XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Clear();
+                XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Clear();
+                XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Clear();
+                XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
                 Audio.Play(SaveData.Instance.CheckStrawberry(self.ID) ? "event:/game/general/strawberry_blue_touch" : "event:/game/general/strawberry_touch", self.Position);
             }
             if (Grabbed)

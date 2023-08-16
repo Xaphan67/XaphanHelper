@@ -39,7 +39,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.CancelCutscene();
             level.Session.SetFlag("CS_Ch0_Statue_Room_P1");
             player.StateMachine.State = 0;
-            while ((XaphanModule.ModSettings.SpeedrunMode && !level.Session.GetFlag("Upgrade_DashBoots")) || (!XaphanModule.ModSettings.SpeedrunMode && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots")))
+            while (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
             {
                 yield return null;
             }

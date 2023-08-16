@@ -35,7 +35,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (XaphanModule.ModSettings.SpeedrunMode || !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_End_Area_Open"))
+            if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_End_Area_Open"))
             {
                 sprite.Play("idle");
                 Collidable = true;
@@ -60,7 +60,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 RemoveSelf();
             }
-            else if (!XaphanModule.ModSettings.SpeedrunMode && SceneAs<Level>().Session.GetFlag("Open_End_Area"))
+            else if (SceneAs<Level>().Session.GetFlag("Open_End_Area"))
             {
                 Player player = Scene.Tracker.GetEntity<Player>();
                 Add(new Coroutine(BreakSequence(player)));

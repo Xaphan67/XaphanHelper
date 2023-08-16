@@ -179,13 +179,5 @@ namespace Celeste.Mod.XaphanHelper
 
         [SettingIgnore]
         public int SpaceJump { get; set; } = 1;
-
-        // Others
-
-        [SettingIgnore]
-        public bool SpeedrunModeUnlocked { get; set; } = false;
-
-        [SettingIgnore]
-        public bool SpeedrunMode { get; set; } = false;
     }
 }

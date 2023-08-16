@@ -141,7 +141,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             int ExtraStamina = 0;
             if (Engine.Scene is Level)
             {
-                foreach (string upgrade in (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) ? XaphanModule.ModSaveData.SpeedrunModeStaminaUpgrades : XaphanModule.ModSaveData.StaminaUpgrades)
+                foreach (string upgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades : XaphanModule.ModSaveData.StaminaUpgrades)
                 {
                     if (upgrade.Contains(Prefix))
                     {

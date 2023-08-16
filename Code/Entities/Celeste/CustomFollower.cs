@@ -199,7 +199,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 case "energyTank":
                     {
-                        if ((!XaphanModule.PlayerHasGolden && !XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.StaminaUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || ((XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) && XaphanModule.ModSaveData.SpeedrunModeStaminaUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
+                        if ((!XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.StaminaUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || (XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
                         {
                             RemoveSelf();
                         }
@@ -207,7 +207,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 case "missile":
                     {
-                        if ((!XaphanModule.PlayerHasGolden && !XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.DroneMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || ((XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) && XaphanModule.ModSaveData.SpeedrunModeDroneMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
+                        if ((!XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.DroneMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || (XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
                         {
                             RemoveSelf();
                         }
@@ -215,7 +215,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 case "superMissile":
                     {
-                        if ((!XaphanModule.PlayerHasGolden && !XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.DroneSuperMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || ((XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) && XaphanModule.ModSaveData.SpeedrunModeDroneSuperMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
+                        if ((!XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.DroneSuperMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || (XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
                         {
                             RemoveSelf();
                         }
@@ -223,7 +223,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 case "fireRateModule":
                     {
-                        if ((!XaphanModule.PlayerHasGolden && !XaphanModule.ModSettings.SpeedrunMode && XaphanModule.ModSaveData.DroneFireRateUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || ((XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode) && XaphanModule.ModSaveData.SpeedrunModeDroneFireRateUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
+                        if ((!XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.DroneFireRateUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)) || (XaphanModule.PlayerHasGolden && XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Contains(Prefix + "_Ch" + chapterIndex + "_" + ID)))
                         {
                             RemoveSelf();
                         }
@@ -374,9 +374,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
 
                         XaphanModule.ModSaveData.StaminaUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
-                        if (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode)
+                        if (XaphanModule.PlayerHasGolden)
                         {
-                            XaphanModule.ModSaveData.SpeedrunModeStaminaUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
+                            XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
                         }
                         break;
                     }
@@ -384,9 +384,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
 
                         XaphanModule.ModSaveData.DroneMissilesUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
-                        if (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode)
+                        if (XaphanModule.PlayerHasGolden)
                         {
-                            XaphanModule.ModSaveData.SpeedrunModeDroneMissilesUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
+                            XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
                         }
                         break;
                     }
@@ -394,9 +394,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
 
                         XaphanModule.ModSaveData.DroneSuperMissilesUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
-                        if (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode)
+                        if (XaphanModule.PlayerHasGolden)
                         {
-                            XaphanModule.ModSaveData.SpeedrunModeDroneSuperMissilesUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
+                            XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
                         }
                         break;
                     }
@@ -404,9 +404,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
 
                         XaphanModule.ModSaveData.DroneFireRateUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
-                        if (XaphanModule.PlayerHasGolden || XaphanModule.ModSettings.SpeedrunMode)
+                        if (XaphanModule.PlayerHasGolden)
                         {
-                            XaphanModule.ModSaveData.SpeedrunModeDroneFireRateUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
+                            XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Add(Prefix + "_Ch" + chapterIndex + "_" + ID);
                         }
                         break;
                     }
