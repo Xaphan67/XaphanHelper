@@ -1,6 +1,7 @@
 ﻿using Monocle;
 using Microsoft.Xna.Framework;
 using System.Reflection;
+using Celeste.Mod.XaphanHelper.Cutscenes;
 
 namespace Celeste.Mod.XaphanHelper.Hooks
 {
@@ -74,26 +75,29 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         private static void onPlayerDeadBodyEnd(On.Celeste.PlayerDeadBody.orig_End orig, PlayerDeadBody self)
         {
             Level level = self.SceneAs<Level>();
-            if (XaphanModule.useMergeChaptersController && StartChapter != -999 && level.Session.Area.ChapterIndex != StartChapter)
+            if (XaphanModule.useMergeChaptersController && StartChapter != -999)
             {
-                self.DeathAction = delegate
+                if (level.Session.Area.ChapterIndex != StartChapter || (level.Session.Area.ChapterIndex == StartChapter && level.Session.Level != StartRoom))
                 {
-                    level.Session.GrabbedGolden = false;
-                    AreaKey area = level.Session.Area;
-                    int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
-                    XaphanModule.ModSaveData.DestinationRoom = StartRoom;
-                    XaphanModule.ModSaveData.Spawn = (Vector2)StartSpawn;
-                    XaphanModule.ModSaveData.Wipe = "Fade";
-                    XaphanModule.ModSaveData.WipeDuration = 0.35f;
-                    int chapterOffset = StartChapter - currentChapter;
-                    int currentChapterID = area.ID;
+                    self.DeathAction = delegate
+                    {
+                        level.Session.GrabbedGolden = false;
+                        AreaKey area = level.Session.Area;
+                        int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
+                        XaphanModule.ModSaveData.DestinationRoom = StartRoom;
+                        XaphanModule.ModSaveData.Spawn = (Vector2)StartSpawn;
+                        XaphanModule.ModSaveData.Wipe = "Fade";
+                        XaphanModule.ModSaveData.WipeDuration = 0.35f;
+                        int chapterOffset = StartChapter - currentChapter;
+                        int currentChapterID = area.ID;
 
-                    StartChapter = -999;
-                    StartRoom = "";
-                    StartSpawn = Vector2.Zero;
+                        StartChapter = -999;
+                        StartRoom = "";
+                        StartSpawn = Vector2.Zero;
 
-                    LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset)), fromSaveData: false);
-                };
+                        LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset)), fromSaveData: false);
+                    };
+                }
             }
             orig(self);
         }

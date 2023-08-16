@@ -3685,6 +3685,14 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
                 }
+                if (!useMergeChaptersController)
+                {
+                    ModSaveData.GoldenStrawberryUnlockedWarps.Clear();
+                    ModSaveData.GoldenStrawberryStaminaUpgrades.Clear();
+                    ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Clear();
+                    ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Clear();
+                    ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
+                }
             }
             orig(self, player);
         }
