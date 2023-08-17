@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Xml;
 using Celeste.Mod.Meta;
@@ -18,7 +16,6 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
-using FMOD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -1401,16 +1398,18 @@ namespace Celeste.Mod.XaphanHelper
             }
         }
 
+        private int MergedChapterAreaOffset;
+
         private void MergeChaptersControllerCheck(AreaData data = null)
         {
             useMergeChaptersController = false;
             lastLevelSet = SaveData.Instance.GetLevelSetStats().Name;
-            int areaOffset = SaveData.Instance.GetLevelSetStats().AreaOffset;
+            MergedChapterAreaOffset = SaveData.Instance.GetLevelSetStats().AreaOffset;
             if (data != null)
             {
-                areaOffset = AreaData.Areas.FindIndex((AreaData area) => area.GetLevelSet() == data.LevelSet);
+                MergedChapterAreaOffset = AreaData.Areas.FindIndex((AreaData area) => area.GetLevelSet() == data.LevelSet);
             }
-            MapData MapData = AreaData.Areas[areaOffset].Mode[0].MapData;
+            MapData MapData = AreaData.Areas[MergedChapterAreaOffset].Mode[0].MapData;
             foreach (LevelData levelData in MapData.Levels)
             {
                 foreach (EntityData entity in levelData.Entities)
@@ -1439,6 +1438,10 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     MergeChaptersControllerCheck();
                     self.Overworld.Maddy.Hide();
+                    if (useMergeChaptersController)
+                    {
+                        SaveData.Instance.UnlockedAreas_Safe = MergedChapterAreaOffset + SaveData.Instance.GetLevelSetStats().MaxArea;
+                    }
                 }
             }
             orig(self);
@@ -1635,19 +1638,19 @@ namespace Celeste.Mod.XaphanHelper
                         if (level.Session.Level.Contains(roomMusicControllerData.Rooms) && canApplyMusic)
                         {
                             level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.DefaultMusic);
-                            if (level.Session.GetFlag(roomMusicControllerData.FlagA))
+                            if (level.Session.GetFlag(roomMusicControllerData.FlagA) && !string.IsNullOrEmpty(roomMusicControllerData.FlagA))
                             {
                                 level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagA);
                             }
-                            else if (level.Session.GetFlag(roomMusicControllerData.FlagB))
+                            else if (level.Session.GetFlag(roomMusicControllerData.FlagB) && !string.IsNullOrEmpty(roomMusicControllerData.FlagB))
                             {
                                 level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagB);
                             }
-                            else if (level.Session.GetFlag(roomMusicControllerData.FlagC))
+                            else if (level.Session.GetFlag(roomMusicControllerData.FlagC) && !string.IsNullOrEmpty(roomMusicControllerData.FlagC))
                             {
                                 level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagC);
                             }
-                            else if (level.Session.GetFlag(roomMusicControllerData.FlagD))
+                            else if (level.Session.GetFlag(roomMusicControllerData.FlagD) && !string.IsNullOrEmpty(roomMusicControllerData.FlagD))
                             {
                                 level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagD);
                             }
