@@ -14,9 +14,20 @@ namespace Celeste.Mod.XaphanHelper.Components
             Inverted = inverted;
         }
 
+        public override void Added(Entity entity)
+        {
+            base.Added(entity);
+            SetVisibility();
+        }
+
         public override void Update()
         {
             base.Update();
+            SetVisibility();
+        }
+
+        private void SetVisibility()
+        {
             foreach (string flag in Flags)
             {
                 Entity.Visible = Inverted ? Entity.SceneAs<Level>().Session.GetFlag(flag) : !Entity.SceneAs<Level>().Session.GetFlag(flag);
