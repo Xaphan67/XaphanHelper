@@ -32,9 +32,13 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 }
             }
             string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
-            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated"))
+            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
             {
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated");
+                if (XaphanModule.PlayerHasGolden)
+                {
+                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated_GoldenStrawberry");
+                }
             }
             player.StateMachine.State = 0;
         }

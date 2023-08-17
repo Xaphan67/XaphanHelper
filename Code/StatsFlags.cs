@@ -512,6 +512,13 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             self.Session.SetFlag("XaphanHelper_StatFlag_TempleCh2");
                         }
+
+                        // Golden
+
+                        if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_SoCMGolden"))
+                        {
+                            self.Session.SetFlag("XaphanHelper_StatFlag_SoCMGolden");
+                        }
                     }
                 }
                 if (self.Session.Area.Mode == 0 && self.Session.Area.LevelSet == "Xaphan/0" && !fixedAchievements)

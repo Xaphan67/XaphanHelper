@@ -1336,6 +1336,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                                     {
                                                         XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag);
                                                     }
+                                                    if (XaphanModule.PlayerHasGolden)
+                                                    {
+                                                        if (SceneAs<Level>().Session.GetFlag(droneSwitch.flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry"))
+                                                        {
+                                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry");
+                                                        }
+                                                        else if (!SceneAs<Level>().Session.GetFlag(droneSwitch.flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry"))
+                                                        {
+                                                            XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry");
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -1370,6 +1381,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                                     else if (!SceneAs<Level>().Session.GetFlag(droneSwitch.flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag))
                                                     {
                                                         XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag);
+                                                    }
+                                                }
+                                                if (XaphanModule.PlayerHasGolden)
+                                                {
+                                                    if (SceneAs<Level>().Session.GetFlag(droneSwitch.flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry"))
+                                                    {
+                                                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry");
+                                                    }
+                                                    else if (!SceneAs<Level>().Session.GetFlag(droneSwitch.flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry"))
+                                                    {
+                                                        XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry");
                                                     }
                                                 }
                                             }

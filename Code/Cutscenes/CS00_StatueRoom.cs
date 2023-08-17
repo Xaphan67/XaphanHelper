@@ -39,7 +39,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.CancelCutscene();
             level.Session.SetFlag("CS_Ch0_Statue_Room_P1");
             player.StateMachine.State = 0;
-            while (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
+            while (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
             {
                 yield return null;
             }

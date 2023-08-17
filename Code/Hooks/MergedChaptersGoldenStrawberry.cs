@@ -1,12 +1,17 @@
 ﻿using Monocle;
 using Microsoft.Xna.Framework;
 using System.Reflection;
-using Celeste.Mod.XaphanHelper.Cutscenes;
+using System;
+using System.Collections.Generic;
+using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace Celeste.Mod.XaphanHelper.Hooks
 {
     internal class MergedChaptersGoldenStrawberry
     {
+        public static bool ResetFlags;
+
         public static bool Grabbed;
 
         public static int ID;
@@ -22,15 +27,76 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         public static void Load()
         {
             On.Celeste.Strawberry.OnPlayer += onStrawberryOnPlayer;
+            On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
             On.Celeste.Player.Die += onPlayerDie;
             On.Celeste.PlayerDeadBody.End += onPlayerDeadBodyEnd;
+            Everest.Events.Level.OnExit += onLevelExit;
+            On.Celeste.Level.RegisterAreaComplete += onLevelRegisterAreaComplete;
+        }
+
+        private static void onLevelRegisterAreaComplete(On.Celeste.Level.orig_RegisterAreaComplete orig, Level self)
+        {
+            if (XaphanModule.useMergeChaptersController)
+            {
+                if (self.Completed)
+                {
+                    return;
+                }
+                Player entity = self.Tracker.GetEntity<Player>();
+                if (entity != null)
+                {
+                    List<IStrawberry> list = new List<IStrawberry>();
+                    ReadOnlyCollection<Type> berryTypes = StrawberryRegistry.GetBerryTypes();
+                    foreach (Follower follower in entity.Leader.Followers)
+                    {
+                        if (berryTypes.Contains(follower.Entity.GetType()) && follower.Entity is IStrawberry)
+                        {
+                            bool skip = false;
+                            if (follower.Entity is Strawberry)
+                            {
+                                Strawberry berry = (Strawberry)follower.Entity;
+                                if (berry.Golden)
+                                {
+                                    skip = true;
+                                }
+                            }
+                            if (!skip)
+                            {
+                                list.Add(follower.Entity as IStrawberry);
+                            }
+                        }
+                    }
+                    foreach (IStrawberry item in list)
+                    {
+                        item.OnCollect();
+                    }
+                }
+                self.Completed = true;
+                SaveData.Instance.RegisterCompletion(self.Session);
+            }
+            else
+            {
+                orig(self);
+            }
+        }
+
+        private static IEnumerator onStrawberryCollectRoutine(On.Celeste.Strawberry.orig_CollectRoutine orig, Strawberry self, int collectIndex)
+        {
+            if (self.Golden)
+            {
+                string Prefix = self.SceneAs<Level>().Session.Area.GetLevelSet();
+                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
+            }
+            yield return new SwapImmediately(orig(self, collectIndex));
         }
 
         public static void Unload()
         {
             On.Celeste.Strawberry.OnPlayer -= onStrawberryOnPlayer;
             On.Celeste.Player.Die += onPlayerDie;
-            On.Celeste.PlayerDeadBody.End += onPlayerDeadBodyEnd;
+            On.Celeste.PlayerDeadBody.End -= onPlayerDeadBodyEnd;
+            Everest.Events.Level.OnExit -= onLevelExit;
+            On.Celeste.Level.RegisterAreaComplete -= onLevelRegisterAreaComplete;
         }
 
         private static void onStrawberryOnPlayer(On.Celeste.Strawberry.orig_OnPlayer orig, Strawberry self, Player player)
@@ -38,16 +104,20 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             if (XaphanModule.useMergeChaptersController && self.Golden && !Grabbed)
             {
                 Grabbed = true;
+                ResetFlags = true;
                 Level level = player.SceneAs<Level>();
                 StartChapter = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
                 StartRoom = level.Session.Level;
                 StartSpawn = level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
                 ID = self.ID.ID;
                 XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps.Clear();
-                XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Clear();
-                XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Clear();
-                XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Clear();
-                XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
+                if (XaphanModule.useUpgrades)
+                {
+                    XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Clear();
+                    XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Clear();
+                    XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Clear();
+                    XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
+                }
                 Audio.Play(SaveData.Instance.CheckStrawberry(self.ID) ? "event:/game/general/strawberry_blue_touch" : "event:/game/general/strawberry_touch", self.Position);
             }
             if (Grabbed)
@@ -63,12 +133,35 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 wiggler.Start();
                 self.Depth = -1000000;
             }
+            if (self.SceneAs<Level>().Session.Area.GetLevelSet() == "Xaphan/0")
+            {
+                self.SceneAs<Level>().Session.SetFlag("SoCM-CarryGolden", true);
+            }
             orig(self, player);
         }
 
         private static PlayerDeadBody onPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            Grabbed = false;
+            if (evenIfInvincible)
+            {
+                Grabbed = false;
+                List<string> ToRemove = new();
+                foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+                {
+                    if (flag.Contains(self.SceneAs<Level>().Session.Area.GetLevelSet()) && flag.Contains("_GoldenStrawberry"))
+                    {
+                        ToRemove.Add(flag);
+                    }
+                }
+                foreach (string flag in ToRemove)
+                {
+                    XaphanModule.ModSaveData.SavedFlags.Remove(flag);
+                }
+                if (self.SceneAs<Level>().Session.Area.GetLevelSet() == "Xaphan/0")
+                {
+                    self.SceneAs<Level>().Session.SetFlag("SoCM-CarryGolden", false);
+                }
+            }
             return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
@@ -91,6 +184,8 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         int chapterOffset = StartChapter - currentChapter;
                         int currentChapterID = area.ID;
 
+                        XaphanModule.PlayerHasGolden = false;
+                        Grabbed = false;
                         StartChapter = -999;
                         StartRoom = "";
                         StartSpawn = Vector2.Zero;
@@ -100,6 +195,14 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 }
             }
             orig(self);
+        }
+
+        private static void onLevelExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow)
+        {
+            Grabbed = false;
+            StartChapter = -999;
+            StartRoom = "";
+            StartSpawn = Vector2.Zero;
         }
     }
 }

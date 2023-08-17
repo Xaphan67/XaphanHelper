@@ -31,7 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator GenerateSparks()
         {
-            while (true)
+            while (true && !SceneAs<Level>().InCredits)
             {
                 float offTime = Calc.Random.NextFloat() * 2f + 1f;
                 while (offTime > 0)

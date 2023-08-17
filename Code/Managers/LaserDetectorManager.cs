@@ -65,14 +65,14 @@ namespace Celeste.Mod.XaphanHelper.Managers
             base.Update();
             foreach (string flag in activeFlags)
             {
-                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
+                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
                 {
                     SceneAs<Level>().Session.SetFlag(flag, true);
                 }
             }
             foreach (string flag in inactiveFlags)
             {
-                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag) && !activeFlags.Contains(flag))
+                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) && !activeFlags.Contains(flag))
                 {
                     SceneAs<Level>().Session.SetFlag(flag, false);
                 }

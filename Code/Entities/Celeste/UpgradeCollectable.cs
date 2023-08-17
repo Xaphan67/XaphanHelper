@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Hooks;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -107,6 +108,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (upgrade == "Map")
             {
                 return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Can_Open_Map");
+            }
+            if (XaphanModule.PlayerHasGolden)
+            {
+                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry");
             }
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade);
         }
@@ -410,6 +415,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade))
                     {
                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Upgrade_" + upgrade);
+                    }
+                    if (XaphanModule.PlayerHasGolden)
+                    {
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry"))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry");
+                        }
                     }
                 }
             }

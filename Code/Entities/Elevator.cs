@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.UI_Elements;
@@ -104,10 +105,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (CanTalk)
                 {
-                    if (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area")))
+                    if ((XaphanModule.SoCMVersion < new Version(3, 0, 0) && (!SceneAs<Level>().Session.GrabbedGolden || (SceneAs<Level>().Session.GrabbedGolden && ToChapter == SceneAs<Level>().Session.Area.ChapterIndex))) || XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                     {
-                        Add(talk = new TalkComponent(new Rectangle(4, -8, 24, 8), new Vector2(16f, -16f), Interact));
-                        talk.PlayerMustBeFacing = false;
+                        if (!EndAreaEntrance || (EndAreaEntrance && SceneAs<Level>().Session.GetFlag("Open_End_Area")))
+                        {
+                            Add(talk = new TalkComponent(new Rectangle(4, -8, 24, 8), new Vector2(16f, -16f), Interact));
+                            talk.PlayerMustBeFacing = false;
+                        }
                     }
                 }
                 else
@@ -324,6 +328,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Chapter_" + currentChapter + "_Complete"))
             {
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Chapter_" + currentChapter + "_Complete");
+            }
+            if (XaphanModule.PlayerHasGolden)
+            {
+                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Chapter_" + currentChapter + "_Complete_GoldenStrawberry"))
+                {
+                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Chapter_" + currentChapter + "_Complete_GoldenStrawberry");
+                }
             }
         }
     }

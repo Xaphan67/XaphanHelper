@@ -723,6 +723,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
+            if (XaphanModule.ModSaveData.SavedFlags.Contains(Area.GetLevelSet() + "_GoldenStrawberryGet"))
+            {
+                flag = true;
+            }
             MTexture mTexture = GFX.Gui[(!flag) ? _ModCardTexture("areaselect/cardtop") : _ModCardTexture("areaselect/cardtop_golden")];
             mTexture.Draw(Position + new Vector2(0f, -32f));
             MTexture mTexture2 = GFX.Gui[(!flag) ? _ModCardTexture("areaselect/card") : _ModCardTexture("areaselect/card_golden")];

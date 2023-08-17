@@ -31,7 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 levelSet = Prefix;
             }
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex == -1 ? 0 : SceneAs<Level>().Session.Area.ChapterIndex;
-            if ((!switchFlag && state) || (switchFlag && !XaphanModule.ModSaveData.GlobalFlags.Contains(levelSet + "_Ch" + chapterIndex + "_" + flag)))
+            if ((!switchFlag && state) || (switchFlag && !XaphanModule.ModSaveData.GlobalFlags.Contains(levelSet + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""))))
             {
                 if (!XaphanModule.ModSaveData.GlobalFlags.Contains(levelSet + "_Ch" + chapterIndex + "_" + flag))
                 {
@@ -39,6 +39,17 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                     if (levelSet == Prefix)
                     {
                         SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, true);
+                    }
+                }
+                if (XaphanModule.PlayerHasGolden)
+                {
+                    if (!XaphanModule.ModSaveData.GlobalFlags.Contains(levelSet + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
+                    {
+                        XaphanModule.ModSaveData.GlobalFlags.Add(levelSet + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
+                        if (levelSet == Prefix)
+                        {
+                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, true);
+                        }
                     }
                 }
             }
@@ -50,6 +61,17 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                     if (levelSet == Prefix)
                     {
                         SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, false);
+                    }
+                }
+                if (XaphanModule.PlayerHasGolden)
+                {
+                    if (XaphanModule.ModSaveData.GlobalFlags.Contains(levelSet + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
+                    {
+                        XaphanModule.ModSaveData.GlobalFlags.Remove(levelSet + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
+                        if (levelSet == Prefix)
+                        {
+                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, false);
+                        }
                     }
                 }
             }

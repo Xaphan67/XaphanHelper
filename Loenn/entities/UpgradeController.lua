@@ -29,7 +29,7 @@ UpgradeController.fieldOrder = {
     "startWithBinoculars", "goldenStartWithBinoculars",
     "startWithPortableStation", "goldenStartWithPortableStation",
     "startWithPulseRadar", "goldenStartWithPulseRadar",
-    "disableStatusScreen", "onlyAllowStartingUpgrades", "upgradesAreTemporary"
+    "disableStatusScreen", "onlyAllowStartingUpgrades", "upgradesAreTemporary", 'noResetUpgrades'
 }
 UpgradeController.placements = {
     name = "UpgradeController",
@@ -88,7 +88,8 @@ UpgradeController.placements = {
         goldenStartWithJumpBoost = false,
         onlyAllowStartingUpgrades = false,
         upgradesAreTemporary = false,
-        disableStatusScreen = false
+        disableStatusScreen = false,
+        noResetUpgrades = false
     }
 }
 

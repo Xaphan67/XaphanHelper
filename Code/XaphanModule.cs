@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Xml;
 using Celeste.Mod.Meta;
@@ -17,6 +18,7 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
+using FMOD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -163,166 +165,166 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool PowerGripCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PowerGrip");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PowerGrip" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool ClimbingKitCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_ClimbingKit");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_ClimbingKit" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpiderMagnetCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpiderMagnet");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpiderMagnet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool DroneTeleportCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_DroneTeleport");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_DroneTeleport" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool JumpBoostCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_JumpBoost");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_JumpBoost" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool BombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Bombs");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Bombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MegaBombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MegaBombs");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MegaBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool RemoteDroneCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_RemoteDrone");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_RemoteDrone" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool GoldenFeatherCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_GoldenFeather");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_GoldenFeather" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool BinocularsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Binoculars");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Binoculars" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool EtherealDashCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_EtherealDash");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_EtherealDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool PortableStationCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PortableStation");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PortableStation" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool PulseRadarCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PulseRadar");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PulseRadar" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool DashBootsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_DashBoots");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_DashBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool HoverJetCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_HoverJet");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_HoverJet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool LightningDashCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_LightningDash");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_LightningDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MissilesModuleCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MissilesModule");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SuperMissilesModuleCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SuperMissilesModule");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SuperMissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         // Metroid Upgrades
 
         public static bool SpazerCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Spazer");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Spazer" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool PlasmaBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PlasmaBeam");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PlasmaBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MorphingBallCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MorphingBall");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MorphingBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MorphBombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MorphBombs");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MorphBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpringBallCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpringBall");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpringBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool HighJumpBootsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_HighJumpBoots");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_HighJumpBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpeedBoosterCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpeedBooster");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpeedBooster" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         // Common Upgrades
 
         public static bool LongBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_LongBeam");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_LongBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool IceBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_IceBeam");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_IceBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool WaveBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_WaveBeam");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_WaveBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool VariaJacketCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_VariaJacket");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_VariaJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool GravityJacketCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_GravityJacket");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_GravityJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool ScrewAttackCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_ScrewAttack");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_ScrewAttack" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpaceJumpCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpaceJump");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpaceJump" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static void useIngameMapCheck(Level level)
@@ -677,7 +679,6 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Session.Restart += onSessionRestart;
             On.Celeste.SpeedrunTimerDisplay.DrawTime += onSpeedrunTimerDisplayDrawTime;
             On.Celeste.Strawberry.OnPlayer += modStrawberryOnPlayer;
-            On.Celeste.Strawberry.Update += modStrawberryUpdate;
             On.Celeste.Strawberry.OnLoseLeader += modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
@@ -766,7 +767,6 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Session.Restart -= onSessionRestart;
             On.Celeste.SpeedrunTimerDisplay.DrawTime -= onSpeedrunTimerDisplayDrawTime;
             On.Celeste.Strawberry.OnPlayer -= modStrawberryOnPlayer;
-            On.Celeste.Strawberry.Update -= modStrawberryUpdate;
             On.Celeste.Strawberry.OnLoseLeader -= modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine -= onStrawberryCollectRoutine;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
@@ -1766,6 +1766,7 @@ namespace Celeste.Mod.XaphanHelper
                     string[] savedFlags = savedFlag.Split('_');
                     if (savedFlags[0] == Prefix && savedFlags[1] == "Ch" + chapterIndex)
                     {
+
                         string flagPrefix = savedFlags[0] + "_" + savedFlags[1] + "_";
                         string flag = string.Empty;
                         int num = savedFlag.IndexOf(flagPrefix);
@@ -1800,6 +1801,76 @@ namespace Celeste.Mod.XaphanHelper
                 foreach (string flag in ModSaveData.GlobalFlags)
                 {
                     if (flag.Contains(Prefix))
+                    {
+                        string toRemove = Prefix + "_";
+                        string result = string.Empty;
+                        int i = flag.IndexOf(toRemove);
+                        if (i >= 0)
+                        {
+                            result = flag.Remove(i, toRemove.Length);
+                        }
+                        level.Session.SetFlag(result, true);
+                    }
+                }
+            }
+
+            if (PlayerHasGolden && useMergeChaptersController && !ModSaveData.SavedFlags.Contains(Prefix + "_teleporting"))
+            {
+                foreach (string savedFlag in ModSaveData.SavedFlags)
+                {
+                    if (forceStartingUpgrades)
+                    {
+                        if (savedFlag.Contains("Upgrade_"))
+                        {
+                            continue;
+                        }
+                    }
+                    if (savedFlag.Contains("_GoldenStrawberry"))
+                    {
+                        string[] savedFlags = savedFlag.Split('_');
+                        if (savedFlags[0] == Prefix && savedFlags[1] == "Ch" + chapterIndex)
+                        {
+
+                            string flagPrefix = savedFlags[0] + "_" + savedFlags[1] + "_";
+                            string flag = string.Empty;
+                            int num = savedFlag.IndexOf(flagPrefix);
+                            if (num >= 0)
+                            {
+                                flag = savedFlag.Remove(num, flagPrefix.Length);
+                            }
+                            int i = flag.IndexOf("_GoldenStrawberry");
+                            if (i >= 0)
+                            {
+                                flag = flag.Remove(i, "_GoldenStrawberry".Length);
+                            }
+                            level.Session.SetFlag(flag);
+                        }
+                    }
+                }
+                foreach (string flag in ModSaveData.SavedFlags)
+                {
+                    if (forceStartingUpgrades)
+                    {
+                        if (flag.Contains("Upgrade_"))
+                        {
+                            continue;
+                        }
+                    }
+                    if (flag.Contains(Prefix) && flag.Contains("_GoldenStrawberry"))
+                    {
+                        string toRemove = Prefix + "_";
+                        string result = string.Empty;
+                        int i = flag.IndexOf(toRemove);
+                        if (i >= 0)
+                        {
+                            result = flag.Remove(i, toRemove.Length);
+                        }
+                        level.Session.SetFlag(result, true);
+                    }
+                }
+                foreach (string flag in ModSaveData.GlobalFlags)
+                {
+                    if (flag.Contains(Prefix) && flag.Contains("_GoldenStrawberry"))
                     {
                         string toRemove = Prefix + "_";
                         string result = string.Empty;
@@ -1864,134 +1935,76 @@ namespace Celeste.Mod.XaphanHelper
             ModSettings.SuperMissilesModule = false;
             level.Session.SetFlag("Using_Elevator", false);
 
+            EntityData UpgradeController = new();
+            foreach (LevelData levelData in MapData.Levels)
+            {
+                foreach (EntityData entity in levelData.Entities)
+                {
+                    if (entity.Name == "XaphanHelper/UpgradeController")
+                    {
+                        UpgradeController = entity;
+                        break;
+                    }
+                }
+            }
+
             // Get upgrades info from the Upgrade Controller
 
-            bool setPowerGrip = false;
-            bool setClimbingKit = false;
-            bool setSpiderMagnet = false;
-            bool setDroneTeleport = false;
-            bool setJumpBoost = false;
-            bool setScrewAttack = false;
-            bool setVariaJacket = false;
-            bool setGravityJacket = false;
-            bool setBombs = false;
-            bool setMegaBombs = false;
-            bool setRemoteDrone = false;
-            bool setGoldenFeather = false;
-            bool setBinoculars = false;
-            bool setEtherealDash = false;
-            bool setPortableStation = false;
-            bool setPulseRadar = false;
-            bool setDashBoots = false;
-            bool setSpaceJump = false;
-            bool setHoverJet = false;
-            bool setLightningDash = false;
-            bool setLongBeam = false;
-            bool setIceBeam = false;
-            bool setWaveBeam = false;
-            bool setMissilesModule = false;
-            bool setSuperMissilesModule = false;
-            bool hasStartingUpgrades = false;
-            foreach (LevelData levelData in MapData.Levels)
-            {
-                foreach (EntityData entity in levelData.Entities)
-                {
-                    if (entity.Name == "XaphanHelper/UpgradeController")
-                    {
-                        setPowerGrip = entity.Bool("onlyAllowPowerGrip") || entity.Bool("startWithPowerGrip");
-                        setClimbingKit = entity.Bool("onlyAllowClimbingKit") || entity.Bool("startWithClimbingKit");
-                        setSpiderMagnet = entity.Bool("onlyAllowSpiderMagnet") || entity.Bool("startWithSpiderMagnet");
-                        setDroneTeleport = entity.Bool("onlyAllowDroneTeleport") || entity.Bool("startWithDroneTeleport");
-                        setJumpBoost = entity.Bool("onlyAllowJumpBoost") || entity.Bool("startWithJumpBoost");
-                        setScrewAttack = entity.Bool("onlyAllowScrewAttack") || entity.Bool("startWithScrewAttack");
-                        setVariaJacket = entity.Bool("onlyAllowVariaJacket") || entity.Bool("startWithVariaJacket");
-                        setGravityJacket = entity.Bool("onlyAllowGravityJacket") || entity.Bool("startWithGravityJacket");
-                        setBombs = entity.Bool("onlyAllowBombs") || entity.Bool("startWithBombs");
-                        setMegaBombs = entity.Bool("onlyAllowMegaBombs") || entity.Bool("startWithMegaBombs");
-                        setRemoteDrone = entity.Bool("onlyAllowRemoteDrone") || entity.Bool("startWithRemoteDrone");
-                        setGoldenFeather = entity.Bool("onlyAllowGoldenFeather") || entity.Bool("startWithGoldenFeather");
-                        setBinoculars = entity.Bool("onlyAllowBinoculars") || entity.Bool("startWithBinoculars");
-                        setEtherealDash = entity.Bool("onlyAllowEtherealDash") || entity.Bool("startWithEtherealDash");
-                        setPortableStation = entity.Bool("onlyAllowPortableStation") || entity.Bool("startWithPortableStation");
-                        setPulseRadar = entity.Bool("onlyAllowPulseRadar") || entity.Bool("startWithPulseRadar");
-                        setDashBoots = entity.Bool("onlyAllowDashBoots") || entity.Bool("startWithDashBoots");
-                        setSpaceJump = entity.Bool("onlyAllowSpaceJump") || entity.Bool("startWithSpaceJump");
-                        setHoverJet = entity.Bool("onlyAllowHoverJet") || entity.Bool("startWithHoverJet");
-                        setLightningDash = entity.Bool("onlyAllowLightningDash") || entity.Bool("startWithLightningDash");
-                        setLongBeam = entity.Bool("onlyAllowLongBeam") || entity.Bool("startWithLongBeam");
-                        setIceBeam = entity.Bool("onlyAllowIceBeam") || entity.Bool("startWithIceBeam");
-                        setWaveBeam = entity.Bool("onlyAllowWaveBeam") || entity.Bool("startWithWaveBeam");
-                        setMissilesModule = entity.Bool("onlyAllowMissilesModule") || entity.Bool("startWithMissilesModule");
-                        setSuperMissilesModule = entity.Bool("onlyAllowSuperMissilesModule") || entity.Bool("startWithSuperMissilesModule");
-                        hasStartingUpgrades = setPowerGrip || setClimbingKit || setSpiderMagnet || setDroneTeleport || setJumpBoost || setScrewAttack || setVariaJacket || setGravityJacket || setBombs || setMegaBombs || setRemoteDrone || setGoldenFeather || setBinoculars || setEtherealDash || setPortableStation || setPulseRadar || setDashBoots || setSpaceJump || setHoverJet || setLightningDash || setLongBeam || setIceBeam || setWaveBeam || setMissilesModule || setSuperMissilesModule;
-                        forceStartingUpgrades = entity.Bool("onlyAllowStartingUpgrades", hasStartingUpgrades ? true : false);
-                        break;
-                    }
-                }
-            }
+            bool setPowerGrip = UpgradeController.Bool("onlyAllowPowerGrip") || UpgradeController.Bool("startWithPowerGrip");
+            bool setClimbingKit = UpgradeController.Bool("onlyAllowClimbingKit") || UpgradeController.Bool("startWithClimbingKit");
+            bool setSpiderMagnet = UpgradeController.Bool("onlyAllowSpiderMagnet") || UpgradeController.Bool("startWithSpiderMagnet");
+            bool setDroneTeleport = UpgradeController.Bool("onlyAllowDroneTeleport") || UpgradeController.Bool("startWithDroneTeleport");
+            bool setJumpBoost = UpgradeController.Bool("onlyAllowJumpBoost") || UpgradeController.Bool("startWithJumpBoost");
+            bool setScrewAttack = UpgradeController.Bool("onlyAllowScrewAttack") || UpgradeController.Bool("startWithScrewAttack");
+            bool setVariaJacket = UpgradeController.Bool("onlyAllowVariaJacket") || UpgradeController.Bool("startWithVariaJacket");
+            bool setGravityJacket = UpgradeController.Bool("onlyAllowGravityJacket") || UpgradeController.Bool("startWithGravityJacket");
+            bool setBombs = UpgradeController.Bool("onlyAllowBombs") || UpgradeController.Bool("startWithBombs");
+            bool setMegaBombs = UpgradeController.Bool("onlyAllowMegaBombs") || UpgradeController.Bool("startWithMegaBombs");
+            bool setRemoteDrone = UpgradeController.Bool("onlyAllowRemoteDrone") || UpgradeController.Bool("startWithRemoteDrone");
+            bool setGoldenFeather = UpgradeController.Bool("onlyAllowGoldenFeather") || UpgradeController.Bool("startWithGoldenFeather");
+            bool setBinoculars = UpgradeController.Bool("onlyAllowBinoculars") || UpgradeController.Bool("startWithBinoculars");
+            bool setEtherealDash = UpgradeController.Bool("onlyAllowEtherealDash") || UpgradeController.Bool("startWithEtherealDash");
+            bool setPortableStation = UpgradeController.Bool("onlyAllowPortableStation") || UpgradeController.Bool("startWithPortableStation");
+            bool setPulseRadar = UpgradeController.Bool("onlyAllowPulseRadar") || UpgradeController.Bool("startWithPulseRadar");
+            bool setDashBoots = UpgradeController.Bool("onlyAllowDashBoots") || UpgradeController.Bool("startWithDashBoots");
+            bool setSpaceJump = UpgradeController.Bool("onlyAllowSpaceJump") || UpgradeController.Bool("startWithSpaceJump");
+            bool setHoverJet = UpgradeController.Bool("onlyAllowHoverJet") || UpgradeController.Bool("startWithHoverJet");
+            bool setLightningDash = UpgradeController.Bool("onlyAllowLightningDash") || UpgradeController.Bool("startWithLightningDash");
+            bool setLongBeam = UpgradeController.Bool("onlyAllowLongBeam") || UpgradeController.Bool("startWithLongBeam");
+            bool setIceBeam = UpgradeController.Bool("onlyAllowIceBeam") || UpgradeController.Bool("startWithIceBeam");
+            bool setWaveBeam = UpgradeController.Bool("onlyAllowWaveBeam") || UpgradeController.Bool("startWithWaveBeam");
+            bool setMissilesModule = UpgradeController.Bool("onlyAllowMissilesModule") || UpgradeController.Bool("startWithMissilesModule");
+            bool setSuperMissilesModule = UpgradeController.Bool("onlyAllowSuperMissilesModule") || UpgradeController.Bool("startWithSuperMissilesModule");
+            bool hasStartingUpgrades = setPowerGrip || setClimbingKit || setSpiderMagnet || setDroneTeleport || setJumpBoost || setScrewAttack || setVariaJacket || setGravityJacket || setBombs || setMegaBombs || setRemoteDrone || setGoldenFeather || setBinoculars || setEtherealDash || setPortableStation || setPulseRadar || setDashBoots || setSpaceJump || setHoverJet || setLightningDash || setLongBeam || setIceBeam || setWaveBeam || setMissilesModule || setSuperMissilesModule;
+            bool forceStartingUpgrades = UpgradeController.Bool("onlyAllowStartingUpgrades", hasStartingUpgrades ? true : false);
 
-            // Check specified upgrades for the golden berry and speedrun mode
+            // Check specified upgrades for the golden berry
 
-            bool goldenPowerGrip = false;
-            bool goldenClimbingKit = false;
-            bool goldenSpiderMagnet = false;
-            bool goldenDroneTeleport = false;
-            bool goldenJumpBoost = false;
-            bool goldenScrewAttack = false;
-            bool goldenVariaJacket = false;
-            bool goldenGravityJacket = false;
-            bool goldenBinoculars = false;
-            bool goldenEtherealDash = false;
-            bool goldenBombs = false;
-            bool goldenMegaBombs = false;
-            bool goldenRemoteDrone = false;
-            bool goldenGoldenFeather = false;
-            bool goldenPortableStation = false;
-            bool goldenPulseRadar = false;
-            bool goldenDashBoots = false;
-            bool goldenSpaceJump = false;
-            bool goldenHoverJet = false;
-            bool goldenLightningDash = false;
-            bool goldenLongBeam = false;
-            bool goldenIceBeam = false;
-            bool goldenWaveBeam = false;
-            bool goldenMissilesModule = false;
-            bool goldenSuperMissilesModule = false;
-            foreach (LevelData levelData in MapData.Levels)
-            {
-                foreach (EntityData entity in levelData.Entities)
-                {
-                    if (entity.Name == "XaphanHelper/UpgradeController")
-                    {
-                        goldenPowerGrip = entity.Bool("goldenStartWithPowerGrip");
-                        goldenClimbingKit = entity.Bool("goldenStartWithClimbingKit");
-                        goldenSpiderMagnet = entity.Bool("goldenStartWithSpiderMagnet");
-                        goldenDroneTeleport = entity.Bool("goldenStartWithDroneTeleport");
-                        goldenJumpBoost = entity.Bool("goldenStartWithJumpBoost");
-                        goldenScrewAttack = entity.Bool("goldenStartWithScrewAttack");
-                        goldenVariaJacket = entity.Bool("goldenStartWithVariaJacket");
-                        goldenGravityJacket = entity.Bool("goldenStartWithGravityJacket");
-                        goldenBombs = entity.Bool("goldenStartWithBombs");
-                        goldenMegaBombs = entity.Bool("goldenStartWithMegaBombs");
-                        goldenRemoteDrone = entity.Bool("goldenStartWithRemoteDrone");
-                        goldenGoldenFeather = entity.Bool("goldenStartWithGoldenFeather");
-                        goldenBinoculars = entity.Bool("goldenStartWithBinoculars");
-                        goldenEtherealDash = entity.Bool("goldenStartWithEtherealDash");
-                        goldenPortableStation = entity.Bool("goldenStartWithPortableStation");
-                        goldenPulseRadar = entity.Bool("goldenStartWithPulseRadar");
-                        goldenDashBoots = entity.Bool("goldenStartWithDashBoots");
-                        goldenSpaceJump = entity.Bool("goldenStartWithSpaceJump");
-                        goldenHoverJet = entity.Bool("goldenStartWithHoverJet");
-                        goldenLightningDash = entity.Bool("goldenStartWithLightningDash");
-                        goldenLongBeam = entity.Bool("goldenStartWithLongBeam");
-                        goldenIceBeam = entity.Bool("goldenStartWithIceBeam");
-                        goldenWaveBeam = entity.Bool("goldenStartWithWaveBeam");
-                        goldenMissilesModule = entity.Bool("goldenStartWithMissilesModule");
-                        goldenSuperMissilesModule = entity.Bool("goldenStartWithSuperMissilesModule");
-                        break;
-                    }
-                }
-            }
+            bool goldenPowerGrip = UpgradeController.Bool("goldenStartWithPowerGrip");
+            bool goldenClimbingKit = UpgradeController.Bool("goldenStartWithClimbingKit");
+            bool goldenSpiderMagnet = UpgradeController.Bool("goldenStartWithSpiderMagnet");
+            bool goldenDroneTeleport = UpgradeController.Bool("goldenStartWithDroneTeleport");
+            bool goldenJumpBoost = UpgradeController.Bool("goldenStartWithJumpBoost");
+            bool goldenScrewAttack = UpgradeController.Bool("goldenStartWithScrewAttack");
+            bool goldenVariaJacket = UpgradeController.Bool("goldenStartWithVariaJacket");
+            bool goldenGravityJacket = UpgradeController.Bool("goldenStartWithGravityJacket");
+            bool goldenBombs = UpgradeController.Bool("goldenStartWithBombs");
+            bool goldenMegaBombs = UpgradeController.Bool("goldenStartWithMegaBombs");
+            bool goldenRemoteDrone = UpgradeController.Bool("goldenStartWithRemoteDrone");
+            bool goldenGoldenFeather = UpgradeController.Bool("goldenStartWithGoldenFeather");
+            bool goldenBinoculars = UpgradeController.Bool("goldenStartWithBinoculars");
+            bool goldenEtherealDash = UpgradeController.Bool("goldenStartWithEtherealDash");
+            bool goldenPortableStation = UpgradeController.Bool("goldenStartWithPortableStation");
+            bool goldenPulseRadar = UpgradeController.Bool("goldenStartWithPulseRadar");
+            bool goldenDashBoots = UpgradeController.Bool("goldenStartWithDashBoots");
+            bool goldenSpaceJump = UpgradeController.Bool("goldenStartWithSpaceJump");
+            bool goldenHoverJet = UpgradeController.Bool("goldenStartWithHoverJet");
+            bool goldenLightningDash = UpgradeController.Bool("goldenStartWithLightningDash");
+            bool goldenLongBeam = UpgradeController.Bool("goldenStartWithLongBeam");
+            bool goldenIceBeam = UpgradeController.Bool("goldenStartWithIceBeam");
+            bool goldenWaveBeam = UpgradeController.Bool("goldenStartWithWaveBeam");
+            bool goldenMissilesModule = UpgradeController.Bool("goldenStartWithMissilesModule");
+            bool goldenSuperMissilesModule = UpgradeController.Bool("goldenStartWithSuperMissilesModule");
 
             // Give specified upgrades
 
@@ -2127,7 +2140,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 // Give back upgrades the player has unlocked
 
-                if (!forceStartingUpgrades && !PlayerHasGolden)
+                if (!forceStartingUpgrades && (!PlayerHasGolden || (PlayerHasGolden && MergedChaptersGoldenStrawberry.StartChapter != -999)))
                 {
                     // Celeste Upgrades
 
@@ -2416,6 +2429,18 @@ namespace Celeste.Mod.XaphanHelper
             // Remove PickedGolden flag from save
 
             PlayerHasGolden = false;
+            List<string> ToRemove = new();
+            foreach (string flag in ModSaveData.SavedFlags)
+            {
+                if (flag.Contains("GoldenStrawberry") && flag != level.Session.Area.GetLevelSet() + "_GoldenStrawberryGet")
+                {
+                    ToRemove.Add(flag);
+                }
+            }
+            foreach (string flag in ToRemove)
+            {
+                ModSaveData.SavedFlags.Remove(flag);
+            }
 
             // Reset Variables
 
@@ -3410,72 +3435,30 @@ namespace Celeste.Mod.XaphanHelper
                 Level level = player.SceneAs<Level>();
                 if (self.Golden)
                 {
-                    foreach (Strawberry item in level.Entities.FindAll<Strawberry>())
-                    {
-                        if (item.Golden && item.Follower.Leader != null)
-                        {
-                            PlayerHasGolden = true;
-                            break;
-                        }
-                    }
+                    PlayerHasGolden = true;
                 }
                 if (useUpgrades)
                 {
-                    if (PlayerHasGolden) // When the player grab a golden berry
+                    EntityData UpgradeController = new();
+                    AreaKey area = level.Session.Area;
+                    MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
+                    foreach (LevelData levelData in MapData.Levels)
                     {
-                        // Reset upgrades
-
-                        level.Session.SetFlag("Upgrade_PowerGrip", false);
-                        ModSettings.PowerGrip = false;
-                        level.Session.SetFlag("Upgrade_ClimbingKit", false);
-                        ModSettings.ClimbingKit = false;
-                        level.Session.SetFlag("Upgrade_SpiderMagnet", false);
-                        ModSettings.SpiderMagnet = false;
-                        level.Session.SetFlag("Upgrade_DroneTeleport", false);
-                        ModSettings.DroneTeleport = false;
-                        level.Session.SetFlag("Upgrade_JumpBoost", false);
-                        ModSettings.JumpBoost = false;
-                        level.Session.SetFlag("Upgrade_ScrewAttack", false);
-                        ModSettings.ScrewAttack = false;
-                        level.Session.SetFlag("Upgrade_VariaJacket", false);
-                        ModSettings.VariaJacket = false;
-                        level.Session.SetFlag("Upgrade_GravityJacket", false);
-                        ModSettings.GravityJacket = false;
-                        level.Session.SetFlag("Upgrade_Bombs", false);
-                        ModSettings.Bombs = false;
-                        level.Session.SetFlag("Upgrade_MegaBombs", false);
-                        ModSettings.MegaBombs = false;
-                        level.Session.SetFlag("Upgrade_RemoteDrone", false);
-                        ModSettings.RemoteDrone = false;
-                        level.Session.SetFlag("Upgrade_GoldenFeather", false);
-                        ModSettings.GoldenFeather = false;
-                        level.Session.SetFlag("Upgrade_Binoculars", false);
-                        ModSettings.Binoculars = false;
-                        level.Session.SetFlag("Upgrade_EtherealDash", false);
-                        ModSettings.EtherealDash = false;
-                        level.Session.SetFlag("Upgrade_PortableStation", false);
-                        ModSettings.PortableStation = false;
-                        level.Session.SetFlag("Upgrade_PulseRadar", false);
-                        ModSettings.PulseRadar = false;
-                        level.Session.SetFlag("Upgrade_DashBoots", false);
-                        ModSettings.DashBoots = false;
-                        level.Session.SetFlag("Upgrade_SpaceJump", false);
-                        ModSettings.SpaceJump = 1;
-                        level.Session.SetFlag("Upgrade_HoverJet", false);
-                        ModSettings.HoverJet = false;
-                        level.Session.SetFlag("Upgrade_LightningDash", false);
-                        ModSettings.LightningDash = false;
-                        level.Session.SetFlag("Upgrade_LongBeam", false);
-                        ModSettings.LongBeam = false;
-                        level.Session.SetFlag("Upgrade_IceBeam", false);
-                        ModSettings.IceBeam = false;
-                        level.Session.SetFlag("Upgrade_WaveBeam", false);
-                        ModSettings.WaveBeam = false;
-                        level.Session.SetFlag("Upgrade_MissilesModule", false);
-                        ModSettings.MissilesModule = false;
-                        level.Session.SetFlag("Upgrade_SuperMissilesModule", false);
-                        ModSettings.SuperMissilesModule = false;
-
+                        foreach (EntityData entity in levelData.Entities)
+                        {
+                            if (entity.Name == "XaphanHelper/UpgradeController")
+                            {
+                                UpgradeController = entity;
+                                break;
+                            }
+                        }
+                    }
+                    if (PlayerHasGolden && (!useMergeChaptersController || (useMergeChaptersController && MergedChaptersGoldenStrawberry.ResetFlags))) // When the player grab a golden berry
+                    {
+                        if (useMergeChaptersController)
+                        {
+                            MergedChaptersGoldenStrawberry.ResetFlags = false;
+                        }
                         foreach (string flag in ModSaveData.SavedFlags)
                         {
                             string Prefix = level.Session.Area.GetLevelSet();
@@ -3494,194 +3477,214 @@ namespace Celeste.Mod.XaphanHelper
                             }
                         }
 
-                        // Give allowed starting upgrades
+                        if (!UpgradeController.Bool("noResetUpgrades"))
+                        {
+                            // Reset upgrades
 
-                        AreaKey area = level.Session.Area;
-                        MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
-                        bool goldenPowerGrip = false;
-                        bool goldenClimbingKit = false;
-                        bool goldenSpiderMagnet = false;
-                        bool goldenDroneTeleport = false;
-                        bool goldenJumpBoost = false;
-                        bool goldenScrewAttack = false;
-                        bool goldenVariaJacket = false;
-                        bool goldenGravityJacket = false;
-                        bool goldenBombs = false;
-                        bool goldenMegaBombs = false;
-                        bool goldenRemoteDrone = false;
-                        bool goldenGoldenFeather = false;
-                        bool goldenBinoculars = false;
-                        bool goldenEtherealDash = false;
-                        bool goldenPortableStation = false;
-                        bool goldenPulseRadar = false;
-                        bool goldenDashBoots = false;
-                        bool goldenSpaceJump = false;
-                        bool goldenHoverJet = false;
-                        bool goldenLightningDash = false;
-                        bool goldenLongBeam = false;
-                        bool goldenIceBeam = false;
-                        bool goldenWaveBeam = false;
-                        bool goldenMissilesModule = false;
-                        bool goldenSuperMissilesModule = false;
-                        foreach (LevelData levelData in MapData.Levels)
-                        {
-                            foreach (EntityData entity in levelData.Entities)
+                            level.Session.SetFlag("Upgrade_PowerGrip", false);
+                            ModSettings.PowerGrip = false;
+                            level.Session.SetFlag("Upgrade_ClimbingKit", false);
+                            ModSettings.ClimbingKit = false;
+                            level.Session.SetFlag("Upgrade_SpiderMagnet", false);
+                            ModSettings.SpiderMagnet = false;
+                            level.Session.SetFlag("Upgrade_DroneTeleport", false);
+                            ModSettings.DroneTeleport = false;
+                            level.Session.SetFlag("Upgrade_JumpBoost", false);
+                            ModSettings.JumpBoost = false;
+                            level.Session.SetFlag("Upgrade_ScrewAttack", false);
+                            ModSettings.ScrewAttack = false;
+                            level.Session.SetFlag("Upgrade_VariaJacket", false);
+                            ModSettings.VariaJacket = false;
+                            level.Session.SetFlag("Upgrade_GravityJacket", false);
+                            ModSettings.GravityJacket = false;
+                            level.Session.SetFlag("Upgrade_Bombs", false);
+                            ModSettings.Bombs = false;
+                            level.Session.SetFlag("Upgrade_MegaBombs", false);
+                            ModSettings.MegaBombs = false;
+                            level.Session.SetFlag("Upgrade_RemoteDrone", false);
+                            ModSettings.RemoteDrone = false;
+                            level.Session.SetFlag("Upgrade_GoldenFeather", false);
+                            ModSettings.GoldenFeather = false;
+                            level.Session.SetFlag("Upgrade_Binoculars", false);
+                            ModSettings.Binoculars = false;
+                            level.Session.SetFlag("Upgrade_EtherealDash", false);
+                            ModSettings.EtherealDash = false;
+                            level.Session.SetFlag("Upgrade_PortableStation", false);
+                            ModSettings.PortableStation = false;
+                            level.Session.SetFlag("Upgrade_PulseRadar", false);
+                            ModSettings.PulseRadar = false;
+                            level.Session.SetFlag("Upgrade_DashBoots", false);
+                            ModSettings.DashBoots = false;
+                            level.Session.SetFlag("Upgrade_SpaceJump", false);
+                            ModSettings.SpaceJump = 1;
+                            level.Session.SetFlag("Upgrade_HoverJet", false);
+                            ModSettings.HoverJet = false;
+                            level.Session.SetFlag("Upgrade_LightningDash", false);
+                            ModSettings.LightningDash = false;
+                            level.Session.SetFlag("Upgrade_LongBeam", false);
+                            ModSettings.LongBeam = false;
+                            level.Session.SetFlag("Upgrade_IceBeam", false);
+                            ModSettings.IceBeam = false;
+                            level.Session.SetFlag("Upgrade_WaveBeam", false);
+                            ModSettings.WaveBeam = false;
+                            level.Session.SetFlag("Upgrade_MissilesModule", false);
+                            ModSettings.MissilesModule = false;
+                            level.Session.SetFlag("Upgrade_SuperMissilesModule", false);
+                            ModSettings.SuperMissilesModule = false;
+
+                            // Give allowed starting upgrades
+
+                            bool goldenPowerGrip = UpgradeController.Bool("goldenStartWithPowerGrip");
+                            bool goldenClimbingKit = UpgradeController.Bool("goldenStartWithClimbingKit");
+                            bool goldenSpiderMagnet = UpgradeController.Bool("goldenStartWithSpiderMagnet");
+                            bool goldenDroneTeleport = UpgradeController.Bool("goldenStartWithDroneTeleport");
+                            bool goldenJumpBoost = UpgradeController.Bool("goldenStartWithJumpBoost");
+                            bool goldenScrewAttack = UpgradeController.Bool("goldenStartWithScrewAttack");
+                            bool goldenVariaJacket = UpgradeController.Bool("goldenStartWithVariaJacket");
+                            bool goldenGravityJacket = UpgradeController.Bool("goldenStartWithGravityJacket");
+                            bool goldenBombs = UpgradeController.Bool("goldenStartWithBombs");
+                            bool goldenMegaBombs = UpgradeController.Bool("goldenStartWithMegaBombs");
+                            bool goldenRemoteDrone = UpgradeController.Bool("goldenStartWithRemoteDrone");
+                            bool goldenGoldenFeather = UpgradeController.Bool("goldenStartWithGoldenFeather");
+                            bool goldenBinoculars = UpgradeController.Bool("goldenStartWithBinoculars");
+                            bool goldenEtherealDash = UpgradeController.Bool("goldenStartWithEtherealDash");
+                            bool goldenPortableStation = UpgradeController.Bool("goldenStartWithPortableStation");
+                            bool goldenPulseRadar = UpgradeController.Bool("goldenStartWithPulseRadar");
+                            bool goldenDashBoots = UpgradeController.Bool("goldenStartWithDashBoots");
+                            bool goldenSpaceJump = UpgradeController.Bool("goldenStartWithSpaceJump");
+                            bool goldenHoverJet = UpgradeController.Bool("goldenStartWithHoverJet");
+                            bool goldenLightningDash = UpgradeController.Bool("goldenStartWithLightningDash");
+                            bool goldenLongBeam = UpgradeController.Bool("goldenStartWithLongBeam");
+                            bool goldenIceBeam = UpgradeController.Bool("goldenStartWithIceBeam");
+                            bool goldenWaveBeam = UpgradeController.Bool("goldenStartWithWaveBeam");
+                            bool goldenMissilesModule = UpgradeController.Bool("goldenStartWithMissilesModule");
+                            bool goldenSuperMissilesModule = UpgradeController.Bool("goldenStartWithSuperMissilesModule");
+
+                            if (goldenPowerGrip)
                             {
-                                if (entity.Name == "XaphanHelper/UpgradeController")
-                                {
-                                    goldenPowerGrip = entity.Bool("goldenStartWithPowerGrip");
-                                    goldenClimbingKit = entity.Bool("goldenStartWithClimbingKit");
-                                    goldenSpiderMagnet = entity.Bool("goldenStartWithSpiderMagnet");
-                                    goldenDroneTeleport = entity.Bool("goldenStartWithDroneTeleport");
-                                    goldenJumpBoost = entity.Bool("goldenStartWithJumpBoost");
-                                    goldenScrewAttack = entity.Bool("goldenStartWithScrewAttack");
-                                    goldenVariaJacket = entity.Bool("goldenStartWithVariaJacket");
-                                    goldenGravityJacket = entity.Bool("goldenStartWithGravityJacket");
-                                    goldenBombs = entity.Bool("goldenStartWithBombs");
-                                    goldenMegaBombs = entity.Bool("goldenStartWithMegaBombs");
-                                    goldenRemoteDrone = entity.Bool("goldenStartWithRemoteDrone");
-                                    goldenGoldenFeather = entity.Bool("goldenStartWithGoldenFeather");
-                                    goldenBinoculars = entity.Bool("goldenStartWithBinoculars");
-                                    goldenEtherealDash = entity.Bool("goldenStartWithEtherealDash");
-                                    goldenPortableStation = entity.Bool("goldenStartWithPortableStation");
-                                    goldenPulseRadar = entity.Bool("goldenStartWithPulseRadar");
-                                    goldenDashBoots = entity.Bool("goldenStartWithDashBoots");
-                                    goldenSpaceJump = entity.Bool("goldenStartWithSpaceJump");
-                                    goldenHoverJet = entity.Bool("goldenStartWithHoverJet");
-                                    goldenLightningDash = entity.Bool("goldenStartWithLightningDash");
-                                    goldenLongBeam = entity.Bool("goldenStartWithLongBeam");
-                                    goldenIceBeam = entity.Bool("goldenStartWithIceBeam");
-                                    goldenWaveBeam = entity.Bool("goldenStartWithWaveBeam");
-                                    goldenMissilesModule = entity.Bool("goldenStartWithMissilesModule");
-                                    goldenSuperMissilesModule = entity.Bool("goldenStartWithSuperMissilesModule");
-                                    break;
-                                }
+                                ModSettings.PowerGrip = true;
+                                level.Session.SetFlag("Upgrade_PowerGrip", true);
                             }
-                        }
-                        if (goldenPowerGrip)
-                        {
-                            ModSettings.PowerGrip = true;
-                            level.Session.SetFlag("Upgrade_PowerGrip", true);
-                        }
-                        if (goldenClimbingKit)
-                        {
-                            ModSettings.ClimbingKit = true;
-                            level.Session.SetFlag("Upgrade_ClimbingKit", true);
-                        }
-                        if (goldenSpiderMagnet)
-                        {
-                            ModSettings.SpiderMagnet = true;
-                            level.Session.SetFlag("Upgrade_SpiderMagnet", true);
-                        }
-                        if (goldenDroneTeleport)
-                        {
-                            ModSettings.DroneTeleport = true;
-                            level.Session.SetFlag("Upgrade_DroneTeleport", true);
-                        }
-                        if (goldenJumpBoost)
-                        {
-                            ModSettings.JumpBoost = true;
-                            level.Session.SetFlag("Upgrade_JumpBoost", true);
-                        }
-                        if (goldenScrewAttack)
-                        {
-                            ModSettings.ScrewAttack = true;
-                            level.Session.SetFlag("Upgrade_ScrewAttack", true);
-                        }
-                        if (goldenVariaJacket)
-                        {
-                            ModSettings.VariaJacket = true;
-                            level.Session.SetFlag("Upgrade_VariaJacket", true);
-                        }
-                        if (goldenGravityJacket)
-                        {
-                            ModSettings.GravityJacket = true;
-                            level.Session.SetFlag("Upgrade_GravityJacket", true);
-                        }
-                        if (goldenBombs)
-                        {
-                            ModSettings.Bombs = true;
-                            level.Session.SetFlag("Upgrade_Bombs", true);
-                        }
-                        if (goldenMegaBombs)
-                        {
-                            ModSettings.MegaBombs = true;
-                            level.Session.SetFlag("Upgrade_MegaBombs", true);
-                        }
-                        if (goldenRemoteDrone)
-                        {
-                            ModSettings.RemoteDrone = true;
-                            level.Session.SetFlag("Upgrade_RemoteDrone", true);
-                        }
-                        if (goldenGoldenFeather)
-                        {
-                            ModSettings.GoldenFeather = true;
-                            level.Session.SetFlag("Upgrade_GoldenFeather", true);
-                        }
-                        if (goldenBinoculars)
-                        {
-                            ModSettings.Binoculars = true;
-                            level.Session.SetFlag("Upgrade_Binoculars", true);
-                        }
-                        if (goldenEtherealDash)
-                        {
-                            ModSettings.EtherealDash = true;
-                            level.Session.SetFlag("Upgrade_EtherealDash", true);
-                        }
-                        if (goldenPortableStation)
-                        {
-                            ModSettings.PortableStation = true;
-                            level.Session.SetFlag("Upgrade_PortableStation", true);
-                        }
-                        if (goldenPulseRadar)
-                        {
-                            ModSettings.PulseRadar = true;
-                            level.Session.SetFlag("Upgrade_PulseRadar", true);
-                        }
-                        if (goldenDashBoots)
-                        {
-                            ModSettings.DashBoots = true;
-                            level.Session.SetFlag("Upgrade_DashBoots", true);
-                        }
-                        if (goldenSpaceJump)
-                        {
-                            ModSettings.SpaceJump = 2;
-                            level.Session.SetFlag("Upgrade_SpaceJump", true);
-                        }
-                        if (goldenHoverJet)
-                        {
-                            ModSettings.HoverJet = true;
-                            level.Session.SetFlag("Upgrade_HoverJet", true);
-                        }
-                        if (goldenLightningDash)
-                        {
-                            ModSettings.LightningDash = true;
-                            level.Session.SetFlag("Upgrade_LightningDash", true);
-                        }
-                        if (goldenLongBeam)
-                        {
-                            ModSettings.LongBeam = true;
-                            level.Session.SetFlag("Upgrade_LongBeam", true);
-                        }
-                        if (goldenIceBeam)
-                        {
-                            ModSettings.IceBeam = true;
-                            level.Session.SetFlag("Upgrade_IceBeam", true);
-                        }
-                        if (goldenWaveBeam)
-                        {
-                            ModSettings.WaveBeam = true;
-                            level.Session.SetFlag("Upgrade_WaveBeam", true);
-                        }
-                        if (goldenMissilesModule)
-                        {
-                            ModSettings.MissilesModule = true;
-                            level.Session.SetFlag("Upgrade_MissilesModule", true);
-                        }
-                        if (goldenSuperMissilesModule)
-                        {
-                            ModSettings.SuperMissilesModule = true;
-                            level.Session.SetFlag("Upgrade_SuperMissilesModule", true);
+                            if (goldenClimbingKit)
+                            {
+                                ModSettings.ClimbingKit = true;
+                                level.Session.SetFlag("Upgrade_ClimbingKit", true);
+                            }
+                            if (goldenSpiderMagnet)
+                            {
+                                ModSettings.SpiderMagnet = true;
+                                level.Session.SetFlag("Upgrade_SpiderMagnet", true);
+                            }
+                            if (goldenDroneTeleport)
+                            {
+                                ModSettings.DroneTeleport = true;
+                                level.Session.SetFlag("Upgrade_DroneTeleport", true);
+                            }
+                            if (goldenJumpBoost)
+                            {
+                                ModSettings.JumpBoost = true;
+                                level.Session.SetFlag("Upgrade_JumpBoost", true);
+                            }
+                            if (goldenScrewAttack)
+                            {
+                                ModSettings.ScrewAttack = true;
+                                level.Session.SetFlag("Upgrade_ScrewAttack", true);
+                            }
+                            if (goldenVariaJacket)
+                            {
+                                ModSettings.VariaJacket = true;
+                                level.Session.SetFlag("Upgrade_VariaJacket", true);
+                            }
+                            if (goldenGravityJacket)
+                            {
+                                ModSettings.GravityJacket = true;
+                                level.Session.SetFlag("Upgrade_GravityJacket", true);
+                            }
+                            if (goldenBombs)
+                            {
+                                ModSettings.Bombs = true;
+                                level.Session.SetFlag("Upgrade_Bombs", true);
+                            }
+                            if (goldenMegaBombs)
+                            {
+                                ModSettings.MegaBombs = true;
+                                level.Session.SetFlag("Upgrade_MegaBombs", true);
+                            }
+                            if (goldenRemoteDrone)
+                            {
+                                ModSettings.RemoteDrone = true;
+                                level.Session.SetFlag("Upgrade_RemoteDrone", true);
+                            }
+                            if (goldenGoldenFeather)
+                            {
+                                ModSettings.GoldenFeather = true;
+                                level.Session.SetFlag("Upgrade_GoldenFeather", true);
+                            }
+                            if (goldenBinoculars)
+                            {
+                                ModSettings.Binoculars = true;
+                                level.Session.SetFlag("Upgrade_Binoculars", true);
+                            }
+                            if (goldenEtherealDash)
+                            {
+                                ModSettings.EtherealDash = true;
+                                level.Session.SetFlag("Upgrade_EtherealDash", true);
+                            }
+                            if (goldenPortableStation)
+                            {
+                                ModSettings.PortableStation = true;
+                                level.Session.SetFlag("Upgrade_PortableStation", true);
+                            }
+                            if (goldenPulseRadar)
+                            {
+                                ModSettings.PulseRadar = true;
+                                level.Session.SetFlag("Upgrade_PulseRadar", true);
+                            }
+                            if (goldenDashBoots)
+                            {
+                                ModSettings.DashBoots = true;
+                                level.Session.SetFlag("Upgrade_DashBoots", true);
+                            }
+                            if (goldenSpaceJump)
+                            {
+                                ModSettings.SpaceJump = 2;
+                                level.Session.SetFlag("Upgrade_SpaceJump", true);
+                            }
+                            if (goldenHoverJet)
+                            {
+                                ModSettings.HoverJet = true;
+                                level.Session.SetFlag("Upgrade_HoverJet", true);
+                            }
+                            if (goldenLightningDash)
+                            {
+                                ModSettings.LightningDash = true;
+                                level.Session.SetFlag("Upgrade_LightningDash", true);
+                            }
+                            if (goldenLongBeam)
+                            {
+                                ModSettings.LongBeam = true;
+                                level.Session.SetFlag("Upgrade_LongBeam", true);
+                            }
+                            if (goldenIceBeam)
+                            {
+                                ModSettings.IceBeam = true;
+                                level.Session.SetFlag("Upgrade_IceBeam", true);
+                            }
+                            if (goldenWaveBeam)
+                            {
+                                ModSettings.WaveBeam = true;
+                                level.Session.SetFlag("Upgrade_WaveBeam", true);
+                            }
+                            if (goldenMissilesModule)
+                            {
+                                ModSettings.MissilesModule = true;
+                                level.Session.SetFlag("Upgrade_MissilesModule", true);
+                            }
+                            if (goldenSuperMissilesModule)
+                            {
+                                ModSettings.SuperMissilesModule = true;
+                                level.Session.SetFlag("Upgrade_SuperMissilesModule", true);
+                            }
                         }
                     }
                 }
@@ -3697,25 +3700,6 @@ namespace Celeste.Mod.XaphanHelper
             orig(self, player);
         }
 
-        private void modStrawberryUpdate(On.Celeste.Strawberry.orig_Update orig, Strawberry self)
-        {
-            if (useUpgrades)
-            {
-                if (self.Golden && PlayerHasGolden && self.Follower.Leader == null)
-                {
-                    self.RemoveSelf();
-                }
-                else
-                {
-                    orig(self);
-                }
-            }
-            else
-            {
-                orig(self);
-            }
-        }
-
         private void modStrawberryOnLoseLeader(On.Celeste.Strawberry.orig_OnLoseLeader orig, Strawberry self)
         {
             if (self.Golden)
@@ -3724,7 +3708,7 @@ namespace Celeste.Mod.XaphanHelper
             }
             if (useUpgrades && self.Golden)
             {
-                PlayerHasGolden = false;
+                PlayerHasGolden = MergedChaptersGoldenStrawberry.StartChapter == -999 ? false : true;
                 orig(self);
             }
             else

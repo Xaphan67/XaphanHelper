@@ -640,6 +640,7 @@ entities.XaphanHelper/UpgradeController.attributes.description.goldenStartWithJu
 entities.XaphanHelper/UpgradeController.attributes.description.onlyAllowStartingUpgrades=If true, any upgrades except those defined here will be deactivated when entering the chapter.
 entities.XaphanHelper/UpgradeController.attributes.description.upgradesAreTemporary=If true, the player will lose all upgrades aquiered in this chapter when they leave it, and upgrades will be collectable again when they re-enter the chapter.
 entities.XaphanHelper/UpgradeController.attributes.description.disableStatusScreen=If true, the status screen cannot be opened.
+entities.XaphanHelper/UpgradeController.attributes.description.noResetUpgrades=If true, 'Golden Start With...' attributers will be ignored when collecting a Golden Strawberry.
 
 # WarpStation
 entities.XaphanHelper/WarpStation.placements.name.WarpStation=Warp Station

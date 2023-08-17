@@ -34,7 +34,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + Chapter + "_Gem_Sloted"))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + Chapter + "_Gem_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
             {
                 Activated = true;
                 Sprite.Position.Y += 6;
@@ -62,6 +62,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 level.ParticlesFG.Emit(SummitGem.P_Shatter, Position + new Vector2(Calc.Random.Range(-8, 8), Calc.Random.Range(-8, 8)), Calc.HexToColor(ParticleColor), Calc.Random.NextFloat((float)Math.PI * 2f));
             }
             XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch" + Chapter + "_Gem_Sloted");
+            if (XaphanModule.PlayerHasGolden)
+            {
+                XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch" + Chapter + "_Gem_Sloted_GoldenStrawberry");
+            }
             yield return 0.25f;
         }
 

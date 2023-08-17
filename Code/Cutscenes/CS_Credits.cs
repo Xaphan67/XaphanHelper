@@ -107,7 +107,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnBegin(Level level)
         {
-            MInput.Disabled = true;
             Add(new Coroutine(Cutscene(level)));
         }
 
@@ -402,7 +401,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     Show = true
                 });
             }
-            MInput.Disabled = false;
             while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed)
             {
                 yield return null;

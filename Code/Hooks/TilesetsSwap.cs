@@ -20,7 +20,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             {
                 if (self == GFX.FGAutotiler) // Foreground Tiles
                 {
-                    if (XaphanModule.ModSaveData.GlobalFlags.Contains("Xaphan/0_Ch4_Escape_Complete")) // Change Tilesets after escape has occured
+                    if (XaphanModule.ModSaveData.GlobalFlags.Contains("Xaphan/0_Ch4_Escape_Complete" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""))) // Change Tilesets after escape has occured
                     {
                         for (int x = 0; x < mapData.Columns; x++)
                         {
@@ -51,7 +51,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 }
                 if (self == GFX.BGAutotiler) // Background Tiles
                 {
-                    if (XaphanModule.ModSaveData.GlobalFlags.Contains("Xaphan/0_Ch4_Escape_Complete")) // Change Tilesets after escape has occured
+                    if (XaphanModule.ModSaveData.GlobalFlags.Contains("Xaphan/0_Ch4_Escape_Complete" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""))) // Change Tilesets after escape has occured
                     {
                         for (int x = 0; x < mapData.Columns; x++)
                         {

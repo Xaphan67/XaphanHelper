@@ -273,6 +273,15 @@ namespace Celeste.Mod.XaphanHelper
                    maxValue: maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + maxTotalCassettes + maxTotalASideHearts,
                    medals: 50
                 ));
+				list.Add(new AchievementData(
+					achievementID: "golden",
+					categoryID: 0,
+					icon: "achievements/Xaphan/Golden",
+					flag: "XaphanHelper_StatFlag_SoCMGolden",
+					currentValue: session.GetFlag("XaphanHelper_StatFlag_SoCMGolden") ? 1 : 0,
+					maxValue: 1,
+					medals: 100
+				));
             }
 
             // Area 1
@@ -450,16 +459,21 @@ namespace Celeste.Mod.XaphanHelper
 				medals: 25,
 				reqID: "cass1"
             ));
-			list.Add(new AchievementData(
-				achievementID: "golden1",
-				categoryID: 1,
-				icon: "achievements/Xaphan/Golden",
-				flag: "XaphanHelper_StatFlag_GoldenCh1-0",
-				currentValue: session.GetFlag("XaphanHelper_StatFlag_GoldenCh1-0") ? 1 : 0,
-				maxValue: 1,
-				medals: 50
-			));
-			list.Add(new AchievementData(
+
+            if (XaphanModule.SoCMVersion < new Version(3, 0, 0))
+			{
+                list.Add(new AchievementData(
+					achievementID: "golden1",
+					categoryID: 1,
+					icon: "achievements/Xaphan/Golden",
+					flag: "XaphanHelper_StatFlag_GoldenCh1-0",
+					currentValue: session.GetFlag("XaphanHelper_StatFlag_GoldenCh1-0") ? 1 : 0,
+					maxValue: 1,
+					medals: 50
+				));
+            }
+
+            list.Add(new AchievementData(
 				achievementID: "golden1-b",
 				categoryID: 1,
 				icon: "achievements/Xaphan/Golden",
@@ -663,17 +677,21 @@ namespace Celeste.Mod.XaphanHelper
 				medals: 50,
 				reqID: "boss2-1"
 			));
-			list.Add(new AchievementData(
-				achievementID: "golden2",
-				categoryID: 2,
-				icon: "achievements/Xaphan/Golden",
-				flag: "XaphanHelper_StatFlag_GoldenCh2-0",
-				currentValue: session.GetFlag("XaphanHelper_StatFlag_GoldenCh2-0") ? 1 : 0,
-				maxValue: 1,
-				medals: 50
-			));
 
-			if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            if (XaphanModule.SoCMVersion < new Version(3, 0, 0))
+            {
+				list.Add(new AchievementData(
+					achievementID: "golden2",
+					categoryID: 2,
+					icon: "achievements/Xaphan/Golden",
+					flag: "XaphanHelper_StatFlag_GoldenCh2-0",
+					currentValue: session.GetFlag("XaphanHelper_StatFlag_GoldenCh2-0") ? 1 : 0,
+					maxValue: 1,
+					medals: 50
+				));
+            }
+
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
 			{
 				// Area 3
 

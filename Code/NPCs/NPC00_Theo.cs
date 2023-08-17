@@ -13,7 +13,14 @@ namespace Celeste.Mod.XaphanHelper.NPCs
 
         private bool StartMoving;
 
-        public bool playerHasCollectedOneGem() { return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected") || XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected") || XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected") || XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected"); }
+        public bool playerHasCollectedOneGem()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
 
         public NPC00_Theo(EntityData data, Vector2 position) : base(data.Position + position)
         {
@@ -34,11 +41,11 @@ namespace Celeste.Mod.XaphanHelper.NPCs
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (mode == "start" && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
+            if (mode == "start" && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
             {
                 RemoveSelf();
             }
-            else if (mode == "gemRoom" && (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots") || playerHasCollectedOneGem()))
+            else if (mode == "gemRoom" && (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || playerHasCollectedOneGem()))
             {
                 RemoveSelf();
             }

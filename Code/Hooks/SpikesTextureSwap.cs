@@ -23,7 +23,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void onSpikesAdded(On.Celeste.Spikes.orig_Added orig, Spikes self, Scene scene)
         {
-            if (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" && XaphanModule.ModSaveData.GlobalFlags.Contains("Xaphan/0_Ch4_Escape_Complete") && SaveData.Instance.CurrentSession.Area.ChapterIndex == 5)
+            if (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" && XaphanModule.ModSaveData.GlobalFlags.Contains("Xaphan/0_Ch4_Escape_Complete" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) && SaveData.Instance.CurrentSession.Area.ChapterIndex == 5)
             {
                 string oldType = (string)SpikesOverrideType.GetValue(self);
                 if (oldType == "Xaphan/terminal")
