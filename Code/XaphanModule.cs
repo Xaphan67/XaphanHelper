@@ -57,6 +57,8 @@ namespace Celeste.Mod.XaphanHelper
 
         private FieldInfo OuiChapterSelectIcon_back = typeof(OuiChapterSelectIcon).GetField("back", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private FieldInfo OuiJournalProress_table = typeof(OuiJournalProgress).GetField("table", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private FieldInfo Overworld_transitioning = typeof(Overworld).GetField("transitioning", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private Type OuiChapterPanel_T_Option = typeof(OuiChapterPanel).GetNestedType("Option", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
@@ -666,6 +668,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.OuiChapterPanel.Reset += modOuiChapterPanelReset;
             On.Celeste.OuiChapterPanel.Start += modOuiChapterPanelStart;
             On.Celeste.OuiChapterPanel.StartRoutine += modOuiChapterPanelStartRoutine;
+            On.Celeste.OuiJournalProgress.ctor += modOuiJournalProressCtor;
             On.Celeste.Overworld.SetNormalMusic += modOverworldSetNormalMusic;
             On.Celeste.Player.ctor += modPlayerCtor;
             On.Celeste.Player.CallDashEvents += modPlayerCallDashEvents;
@@ -754,6 +757,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.OuiChapterPanel.Reset -= modOuiChapterPanelReset;
             On.Celeste.OuiChapterPanel.Start -= modOuiChapterPanelStart;
             On.Celeste.OuiChapterPanel.StartRoutine -= modOuiChapterPanelStartRoutine;
+            On.Celeste.OuiJournalProgress.ctor -= modOuiJournalProressCtor;
             On.Celeste.Overworld.SetNormalMusic -= modOverworldSetNormalMusic;
             On.Celeste.Player.ctor -= modPlayerCtor;
             On.Celeste.Player.CallDashEvents -= modPlayerCallDashEvents;
@@ -1438,10 +1442,6 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     MergeChaptersControllerCheck();
                     self.Overworld.Maddy.Hide();
-                    if (useMergeChaptersController)
-                    {
-                        SaveData.Instance.UnlockedAreas_Safe = MergedChapterAreaOffset + SaveData.Instance.GetLevelSetStats().MaxArea;
-                    }
                 }
             }
             orig(self);
@@ -1482,6 +1482,143 @@ namespace Celeste.Mod.XaphanHelper
             else
             {
                 yield return new SwapImmediately(orig(self, checkpoint));
+            }
+        }
+
+        private void modOuiJournalProressCtor(On.Celeste.OuiJournalProgress.orig_ctor orig, OuiJournalProgress self, OuiJournal journal)
+        {
+            if (useMergeChaptersController)
+            {
+                self.PageTexture = "page";
+                OuiJournalPage.Table Table = new OuiJournalPage.Table()
+                    .AddColumn(new OuiJournalPage.TextCell(Dialog.Clean("journal_progress"), new Vector2(0f, 0.5f), 1f, Color.Black * 0.7f, 400f, true))
+                    .AddColumn(new OuiJournalPage.EmptyCell(64f))
+                    .AddColumn(new OuiJournalPage.EmptyCell(64f))
+                    .AddColumn(new OuiJournalPage.EmptyCell(100f))
+                    .AddColumn(new OuiJournalPage.IconCell("strawberry", 150f))
+                    .AddColumn(new OuiJournalPage.IconCell("skullblue", 100f));
+                if (SaveData.Instance.UnlockedModes >= 2)
+                {
+                    Table.AddColumn(new OuiJournalPage.IconCell("skullred", 100f));
+                }
+                if (SaveData.Instance.UnlockedModes >= 3)
+                {
+                    Table.AddColumn(new OuiJournalPage.IconCell("skullgold", 100f));
+                }
+                Table.AddColumn(new OuiJournalPage.IconCell("time", 220f));
+
+                Color TextColor = Color.Black * 0.6f;
+                Vector2 TextJustify = new Vector2(0.5f, 0.5f);
+                int TotalDeaths = 0;
+                long TotalTime = 0;
+                for (int i = 0; i < SaveData.Instance.GetLevelSetStats().Areas.Count; i++)
+                {
+                    AreaData areaData = AreaData.Get(SaveData.Instance.GetLevelSetStats().AreaOffset + i);
+                    AreaStats areaStats = SaveData.Instance.Areas_Safe[SaveData.Instance.GetLevelSetStats().AreaOffset + i + ((MergeChaptersControllerKeepPrologue && i == 0) ? 1 : 0)];
+
+                    bool Visited = false;
+                    foreach (string visitedChapter in ModSaveData.VisitedChapters)
+                    {
+                        string[] visitedChapterData = visitedChapter.Split('_');
+                        if (visitedChapter.Contains(SaveData.Instance.GetLevelSet()) && visitedChapterData[2] == "0" && i == int.Parse(visitedChapterData[1].Remove(0, 2)))
+                        {
+                            Visited = true;
+                        }
+                    }
+
+                    OuiJournalPage.Row row = Table.AddRow().Add(new OuiJournalPage.TextCell((Visited || i == 0) ? Dialog.Clean(areaData.Name) : "???", new Vector2(1f, 0.5f), 0.6f, TextColor, 400f, true)).Add(null);
+                    if (!areaData.Interlude_Safe)
+                    {
+                        List<string> list = new List<string>();
+                        for (int j = 0; j < areaStats.Modes.Length; j++)
+                        {
+                            if (areaStats.Modes[j].HeartGem)
+                            {
+                                list.Add("heartgem" + j);
+                            }
+                        }
+                        if (list.Count <= 0)
+                        {
+                            list.Add("dot");
+                        }
+                        row.Add(new OuiJournalPage.IconsCell(areaStats.Cassette ? "cassette" : "dot"));
+                        row.Add(new OuiJournalPage.IconsCell(-32f, list.ToArray()));
+                        string text = null;
+                        if (areaData.Mode[0].TotalStrawberries > 0 || areaStats.TotalStrawberries > 0)
+                        {
+                            text = areaStats.TotalStrawberries.ToString();
+                            if (areaStats.Modes[0].Completed)
+                            {
+                                text = text + "/" + areaData.Mode[0].TotalStrawberries;
+                            }
+                        }
+                        else
+                        {
+                            text = "-";
+                        }
+                        row.Add(new OuiJournalPage.TextCell(text, TextJustify, 0.5f, TextColor));
+                    }
+                    else
+                    {
+                        row.Add(null).Add(null).Add(null);
+                    }
+                    if (areaData.IsFinal_Safe)
+                    {
+                        row.Add(new OuiJournalPage.TextCell(Dialog.Deaths(areaStats.Modes[0].Deaths), TextJustify, 0.5f, TextColor)
+                        {
+                            SpreadOverColumns = SaveData.Instance.UnlockedModes
+                        });
+                        for (int j = 0; j < SaveData.Instance.UnlockedModes - 1; j++)
+                        {
+                            row.Add(null);
+                        }
+                        TotalDeaths += areaStats.Modes[0].Deaths;
+                    }
+                    else
+                    {
+                        for (int k = 0; k < SaveData.Instance.UnlockedModes; k++)
+                        {
+                            if (areaData.HasMode((AreaMode)k))
+                            {
+                                row.Add(new OuiJournalPage.TextCell(Dialog.Deaths(areaStats.Modes[k].Deaths), TextJustify, 0.5f, TextColor));
+                                TotalDeaths += areaStats.Modes[k].Deaths;
+                            }
+                            else
+                            {
+                                row.Add(new OuiJournalPage.TextCell("-", TextJustify, 0.5f, TextColor));
+                            }
+                        }
+                    }
+                    if (areaStats.TotalTimePlayed > 0)
+                    {
+                        row.Add(new OuiJournalPage.TextCell(Dialog.Time(areaStats.TotalTimePlayed), TextJustify, 0.5f, TextColor));
+                        TotalTime += areaStats.TotalTimePlayed;
+                    }
+                    else
+                    {
+                        row.Add(new OuiJournalPage.IconCell("dot"));
+                    }
+                }
+                Table.AddRow();
+                OuiJournalPage.Row total = Table.AddRow().Add(new OuiJournalPage.TextCell(Dialog.Clean("journal_totals"), new Vector2(1f, 0.5f), 0.7f, TextColor)).Add(null)
+                .Add(null)
+                .Add(null)
+                .Add(new OuiJournalPage.TextCell(SaveData.Instance.TotalStrawberries_Safe.ToString(), TextJustify, 0.6f, TextColor));
+                total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalDeaths), TextJustify, 0.6f, TextColor)
+                {
+                    SpreadOverColumns = SaveData.Instance.UnlockedModes
+                });
+                for (int l = 1; l < SaveData.Instance.UnlockedModes; l++)
+                {
+                    total.Add(null);
+                }
+                total.Add(new OuiJournalPage.TextCell(Dialog.Time(TotalTime), TextJustify, 0.6f, TextColor));
+                Table.AddRow();
+                OuiJournalProress_table.SetValue(self, Table);
+            }
+            else
+            {
+                orig(self, journal);
             }
         }
 
@@ -1706,15 +1843,21 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
 
-            // Upgrades stuff
+            // Visited Chapters check
 
-            if (useUpgrades)
+            if (useUpgrades || useMergeChaptersController)
             {
                 if (!ModSaveData.VisitedChapters.Contains(Prefix + "_Ch" + chapterIndex + "_" + (int)level.Session.Area.Mode))
                 {
                     ModSaveData.VisitedChapters.Add(Prefix + "_Ch" + chapterIndex + "_" + (int)level.Session.Area.Mode);
                     ModSaveData.VisitedChapters.Sort();
                 }
+            }
+
+            // Upgrades stuff
+
+            if (useUpgrades)
+            {
                 GiveUpgradesToPlayer(MapData, level);
             }
             else // Set upgrades to default values if the map is not using upgrades

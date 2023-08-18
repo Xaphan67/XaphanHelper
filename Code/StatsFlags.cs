@@ -213,7 +213,7 @@ namespace Celeste.Mod.XaphanHelper
                         GetGoldenBerries(i, ModeMapData, j);
                     }
                 }
-                GetCurrentItems(i, MapData);
+                GetCurrentItems(i);
             }
         }
 
@@ -727,7 +727,7 @@ namespace Celeste.Mod.XaphanHelper
             }
         }
 
-        private static void GetCurrentItems(int chapterIndex, MapData MapData)
+        private static void GetCurrentItems(int chapterIndex)
         {
             string Prefix = SaveData.Instance.GetLevelSetStats().Name;
             foreach (AreaStats item in SaveData.Instance.Areas_Safe)
