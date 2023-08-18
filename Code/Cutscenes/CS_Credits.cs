@@ -406,6 +406,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return null;
             }
             Audio.Play("event:/new_content/game/10_farewell/endscene_final_input");
+            level.RegisterAreaComplete();
             yield return new FadeWipe(level, false, () => EndCutscene(Level))
             {
                 Duration = 5.25f

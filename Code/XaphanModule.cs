@@ -16,6 +16,7 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
+using FMOD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -58,6 +59,10 @@ namespace Celeste.Mod.XaphanHelper
         private FieldInfo OuiChapterSelectIcon_back = typeof(OuiChapterSelectIcon).GetField("back", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private FieldInfo OuiJournalProress_table = typeof(OuiJournalProgress).GetField("table", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo OuiJournalSpeedrun_table = typeof(OuiJournalSpeedrun).GetField("table", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo OuiFileSelectSlot_HighlightEase = typeof(OuiFileSelectSlot).GetField("highlightEase", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private FieldInfo Overworld_transitioning = typeof(Overworld).GetField("transitioning", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -668,7 +673,11 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.OuiChapterPanel.Reset += modOuiChapterPanelReset;
             On.Celeste.OuiChapterPanel.Start += modOuiChapterPanelStart;
             On.Celeste.OuiChapterPanel.StartRoutine += modOuiChapterPanelStartRoutine;
+            On.Celeste.OuiFileSelectSlot.ctor_int_OuiFileSelect_SaveData += modOuiFileSelectSlotCtor_SaveData;
+            On.Celeste.OuiFileSelectSlot.Show += modOuiFileSelectShow;
+            On.Celeste.OuiFileSelectSlot.Render += modOuiFileSelectSlotRender;
             On.Celeste.OuiJournalProgress.ctor += modOuiJournalProressCtor;
+            On.Celeste.OuiJournal.Enter += modOuiJournalEnter;
             On.Celeste.Overworld.SetNormalMusic += modOverworldSetNormalMusic;
             On.Celeste.Player.ctor += modPlayerCtor;
             On.Celeste.Player.CallDashEvents += modPlayerCallDashEvents;
@@ -757,7 +766,11 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.OuiChapterPanel.Reset -= modOuiChapterPanelReset;
             On.Celeste.OuiChapterPanel.Start -= modOuiChapterPanelStart;
             On.Celeste.OuiChapterPanel.StartRoutine -= modOuiChapterPanelStartRoutine;
+            On.Celeste.OuiFileSelectSlot.ctor_int_OuiFileSelect_SaveData -= modOuiFileSelectSlotCtor_SaveData;
+            On.Celeste.OuiFileSelectSlot.Show -= modOuiFileSelectShow;
+            On.Celeste.OuiFileSelectSlot.Render -= modOuiFileSelectSlotRender;
             On.Celeste.OuiJournalProgress.ctor -= modOuiJournalProressCtor;
+            On.Celeste.OuiJournal.Enter -= modOuiJournalEnter;
             On.Celeste.Overworld.SetNormalMusic -= modOverworldSetNormalMusic;
             On.Celeste.Player.ctor -= modPlayerCtor;
             On.Celeste.Player.CallDashEvents -= modPlayerCallDashEvents;
@@ -1600,10 +1613,26 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
                 Table.AddRow();
-                OuiJournalPage.Row total = Table.AddRow().Add(new OuiJournalPage.TextCell(Dialog.Clean("journal_totals"), new Vector2(1f, 0.5f), 0.7f, TextColor)).Add(null)
-                .Add(null)
-                .Add(null)
-                .Add(new OuiJournalPage.TextCell(SaveData.Instance.TotalStrawberries_Safe.ToString(), TextJustify, 0.6f, TextColor));
+                OuiJournalPage.Row total = Table.AddRow().Add(new OuiJournalPage.TextCell(Dialog.Clean("journal_totals"), new Vector2(1f, 0.5f), 0.7f, TextColor)).Add(null);
+
+                AreaStats lastAreaStats = SaveData.Instance.Areas_Safe[SaveData.Instance.GetLevelSetStats().AreaOffset + SaveData.Instance.GetLevelSetStats().Areas.Count - 1];
+                if (lastAreaStats.Modes[0].Completed && !ModSaveData.SavedFlags.Contains(SaveData.Instance.GetLevelSet() + "_GoldenStrawberryGet"))
+                {
+                    total.Add(new OuiJournalPage.IconCell("clear")).Add(null);
+                }
+                else if (!lastAreaStats.Modes[0].Completed && ModSaveData.SavedFlags.Contains(SaveData.Instance.GetLevelSet() + "_GoldenStrawberryGet"))
+                {
+                    total.Add(null).Add(new OuiJournalPage.IconCell("goldenStrawberry"));
+                }
+                else if (lastAreaStats.Modes[0].Completed && ModSaveData.SavedFlags.Contains(SaveData.Instance.GetLevelSet() + "_GoldenStrawberryGet"))
+                {
+                    total.Add(new OuiJournalPage.IconCell("clear")).Add(new OuiJournalPage.IconCell("goldenStrawberry"));
+                }
+                else
+                {
+                    total.Add(null).Add(null);
+                }
+                total.Add(new OuiJournalPage.TextCell(SaveData.Instance.TotalStrawberries_Safe.ToString() + "/" + SaveData.Instance.GetLevelSetStats().MaxStrawberries.ToString(), TextJustify, 0.6f, TextColor));
                 total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalDeaths), TextJustify, 0.6f, TextColor)
                 {
                     SpreadOverColumns = SaveData.Instance.UnlockedModes
@@ -1621,6 +1650,85 @@ namespace Celeste.Mod.XaphanHelper
                 orig(self, journal);
             }
         }
+
+        private void modOuiFileSelectSlotRender(On.Celeste.OuiFileSelectSlot.orig_Render orig, OuiFileSelectSlot self)
+        {
+            orig(self);
+            if (self.Exists && !self.Corrupted && self.FurthestArea == 99999999 && self.SaveData != null)
+            {
+                string name = self.SaveData.GetLevelSetStats().Name;
+                Vector2 width = ActiveFont.Measure(name);
+                ActiveFont.Draw(Dialog.Clean(name), self.Position - Vector2.UnitX * Ease.CubeInOut((float)OuiFileSelectSlot_HighlightEase.GetValue(self)) * 360f + new Vector2(110f, -10f), new Vector2(0.5f, 0.5f), Vector2.One * (width.X > 140 ? 0.55f : 0.8f), Color.Black * 0.6f);
+            }
+        }
+
+        private void modOuiFileSelectShow(On.Celeste.OuiFileSelectSlot.orig_Show orig, OuiFileSelectSlot self)
+        {
+            orig(self);
+            LevelSetStats levelSetStats = self.SaveData?.GetLevelSetStats();
+            if (levelSetStats != null)
+            {
+                bool useMergeChaptersController = false;
+                MapData MapData = AreaData.Areas[AreaData.Areas.FindIndex((AreaData area) => area.GetLevelSet() == self.SaveData.LevelSet)].Mode[0].MapData;
+                foreach (LevelData levelData in MapData.Levels)
+                {
+                    foreach (EntityData entity in levelData.Entities)
+                    {
+                        if (entity.Name == "XaphanHelper/MergeChaptersController")
+                        {
+                            useMergeChaptersController = true;
+                            break;
+                        }
+                    }
+                }
+                if (useMergeChaptersController)
+                {
+                    self.FurthestArea = 99999999;
+                }
+            }
+        }
+
+        private void modOuiFileSelectSlotCtor_SaveData(On.Celeste.OuiFileSelectSlot.orig_ctor_int_OuiFileSelect_SaveData orig, OuiFileSelectSlot self, int index, OuiFileSelect fileSelect, SaveData data)
+        {
+            orig(self, index, fileSelect, data);
+            bool useMergeChaptersController = false;
+            MapData MapData = AreaData.Areas[AreaData.Areas.FindIndex((AreaData area) => area.GetLevelSet() == data.LevelSet)].Mode[0].MapData;
+            foreach (LevelData levelData in MapData.Levels)
+            {
+                foreach (EntityData entity in levelData.Entities)
+                {
+                    if (entity.Name == "XaphanHelper/MergeChaptersController")
+                    {
+                        useMergeChaptersController = true;
+                        break;
+                    }
+                }
+            }
+            if (useMergeChaptersController)
+            {
+                self.FurthestArea = 99999999;
+            }
+        }
+
+
+
+        private IEnumerator modOuiJournalEnter(On.Celeste.OuiJournal.orig_Enter orig, OuiJournal self, Oui from)
+        {
+            yield return new SwapImmediately(orig(self, from));
+            if (useMergeChaptersController)
+            {
+                self.Pages.Clear();
+                self.Pages.Add(new OuiJournalCover(self));
+                self.Pages.Add(new OuiJournalProgress(self));
+                self.Pages.Add(new OuiJournalPoem(self));
+                if (Stats.Has())
+                {
+                    self.Pages.Add(new OuiJournalGlobal(self));
+                }
+                self.Pages[0].Redraw(self.CurrentPageBuffer);
+            }
+        }
+
 
         private void modOuiChapterPanelStart(On.Celeste.OuiChapterPanel.orig_Start orig, OuiChapterPanel self, string checkpoint)
         {

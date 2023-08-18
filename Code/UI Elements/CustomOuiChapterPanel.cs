@@ -710,19 +710,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
             }
             bool flag = false;
-            if (RealStats.Modes[(int)Area.Mode].Completed)
-            {
-                int mode = (int)Area.Mode;
-                foreach (EntityData goldenberry in AreaData.Areas[Area.ID].Mode[mode].MapData.Goldenberries)
-                {
-                    EntityID item = new(goldenberry.Level.Name, goldenberry.ID);
-                    if (RealStats.Modes[mode].Strawberries.Contains(item))
-                    {
-                        flag = true;
-                        break;
-                    }
-                }
-            }
             if (XaphanModule.ModSaveData.SavedFlags.Contains(Area.GetLevelSet() + "_GoldenStrawberryGet"))
             {
                 flag = true;
