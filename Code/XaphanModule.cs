@@ -1658,7 +1658,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 string name = self.SaveData.GetLevelSetStats().Name;
                 Vector2 width = ActiveFont.Measure(name);
-                ActiveFont.Draw(Dialog.Clean(name), self.Position - Vector2.UnitX * Ease.CubeInOut((float)OuiFileSelectSlot_HighlightEase.GetValue(self)) * 360f + new Vector2(110f, -10f), new Vector2(0.5f, 0.5f), Vector2.One * (width.X > 140 ? 0.55f : 0.8f), Color.Black * 0.6f);
+                ActiveFont.Draw(Dialog.Clean(name), self.Position - Vector2.UnitX * Ease.CubeInOut((float)OuiFileSelectSlot_HighlightEase.GetValue(self)) * 360f + new Vector2(110f, -10f), new Vector2(0.5f, 0.5f), Vector2.One * (width.X > 430f ? 0.55f : 0.8f), Color.Black * 0.6f);
             }
         }
 
@@ -3453,7 +3453,7 @@ namespace Celeste.Mod.XaphanHelper
                     entityData.Position = player.Position;
                     entityData.ID = MergedChaptersGoldenStrawberry.ID;
                     entityData.Name = "goldenBerry";
-                    Strawberry strawberry = new Strawberry(gid: new EntityID(player.SceneAs<Level>().Session.Level, entityData.ID), data: entityData, offset: Vector2.Zero);
+                    Strawberry strawberry = new Strawberry(gid: new EntityID(MergedChaptersGoldenStrawberry.StartRoom, entityData.ID), data: entityData, offset: Vector2.Zero);
                     player.SceneAs<Level>().Add(strawberry);
                 }
             }

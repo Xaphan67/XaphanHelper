@@ -82,7 +82,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static IEnumerator onStrawberryCollectRoutine(On.Celeste.Strawberry.orig_CollectRoutine orig, Strawberry self, int collectIndex)
         {
-            if (self.Golden)
+            if (self.Golden && XaphanModule.useMergeChaptersController)
             {
                 string Prefix = self.SceneAs<Level>().Session.Area.GetLevelSet();
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
