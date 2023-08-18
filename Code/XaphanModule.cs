@@ -1894,24 +1894,29 @@ namespace Celeste.Mod.XaphanHelper
                                 break;
                             }
                         }
-                        if (level.Session.Level.Contains(roomMusicControllerData.Rooms) && canApplyMusic)
+                        string[] allowedRooms = roomMusicControllerData.Rooms.Split(',');
+                        foreach (string allowedRoom in allowedRooms)
                         {
-                            level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.DefaultMusic);
-                            if (level.Session.GetFlag(roomMusicControllerData.FlagA) && !string.IsNullOrEmpty(roomMusicControllerData.FlagA))
+                            if (level.Session.Level.Contains(allowedRoom) && canApplyMusic)
                             {
-                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagA);
-                            }
-                            else if (level.Session.GetFlag(roomMusicControllerData.FlagB) && !string.IsNullOrEmpty(roomMusicControllerData.FlagB))
-                            {
-                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagB);
-                            }
-                            else if (level.Session.GetFlag(roomMusicControllerData.FlagC) && !string.IsNullOrEmpty(roomMusicControllerData.FlagC))
-                            {
-                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagC);
-                            }
-                            else if (level.Session.GetFlag(roomMusicControllerData.FlagD) && !string.IsNullOrEmpty(roomMusicControllerData.FlagD))
-                            {
-                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagD);
+                                level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.DefaultMusic);
+                                if (level.Session.GetFlag(roomMusicControllerData.FlagA) && !string.IsNullOrEmpty(roomMusicControllerData.FlagA))
+                                {
+                                    level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagA);
+                                }
+                                else if (level.Session.GetFlag(roomMusicControllerData.FlagB) && !string.IsNullOrEmpty(roomMusicControllerData.FlagB))
+                                {
+                                    level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagB);
+                                }
+                                else if (level.Session.GetFlag(roomMusicControllerData.FlagC) && !string.IsNullOrEmpty(roomMusicControllerData.FlagC))
+                                {
+                                    level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagC);
+                                }
+                                else if (level.Session.GetFlag(roomMusicControllerData.FlagD) && !string.IsNullOrEmpty(roomMusicControllerData.FlagD))
+                                {
+                                    level.Session.Audio.Music.Event = SFX.EventnameByHandle(roomMusicControllerData.MusicIfFlagD);
+                                }
+                                break;
                             }
                         }
                         level.Session.Audio.Apply(forceSixteenthNoteHack: false);
