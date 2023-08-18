@@ -1,5 +1,8 @@
 Version 1.0.59 :
 - If the player has not collected the Climbing Kit upgrade, and press the jump button while grabbing a wall, they will now do a wall jump away from the wall instead of doing nothing
+- Golden Strawberries now carry from chapter to chapter when using a Merge Chapter Controller
+- Updated the journal of campaigns that use a Merge Chapter Controller
+- The save file slot now show the campaign name instead of the further area name when using a Merge Chapter Controller
 
 Version 1.0.58 :
 - Added "Hide Flag" and "Events Flags" attributes to Start Countdown Trigger

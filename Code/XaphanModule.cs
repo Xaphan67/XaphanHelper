@@ -1522,7 +1522,9 @@ namespace Celeste.Mod.XaphanHelper
 
                 Color TextColor = Color.Black * 0.6f;
                 Vector2 TextJustify = new Vector2(0.5f, 0.5f);
-                int TotalDeaths = 0;
+                int TotalASidesDeaths = 0;
+                int TotalBSidesDeaths = 0;
+                int TotalCSidesDeaths = 0;
                 long TotalTime = 0;
                 for (int i = 0; i < SaveData.Instance.GetLevelSetStats().Areas.Count; i++)
                 {
@@ -1585,7 +1587,7 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             row.Add(null);
                         }
-                        TotalDeaths += areaStats.Modes[0].Deaths;
+                        TotalASidesDeaths += areaStats.Modes[0].Deaths;
                     }
                     else
                     {
@@ -1594,7 +1596,18 @@ namespace Celeste.Mod.XaphanHelper
                             if (areaData.HasMode((AreaMode)k))
                             {
                                 row.Add(new OuiJournalPage.TextCell(Dialog.Deaths(areaStats.Modes[k].Deaths), TextJustify, 0.5f, TextColor));
-                                TotalDeaths += areaStats.Modes[k].Deaths;
+                                if (k == 0)
+                                {
+                                    TotalASidesDeaths += areaStats.Modes[0].Deaths;
+                                }
+                                else if (k == 1)
+                                {
+                                    TotalBSidesDeaths += areaStats.Modes[1].Deaths;
+                                }
+                                else if (k == 2)
+                                {
+                                    TotalCSidesDeaths += areaStats.Modes[2].Deaths;
+                                }
                             }
                             else
                             {
@@ -1633,13 +1646,14 @@ namespace Celeste.Mod.XaphanHelper
                     total.Add(null).Add(null);
                 }
                 total.Add(new OuiJournalPage.TextCell(SaveData.Instance.TotalStrawberries_Safe.ToString() + "/" + SaveData.Instance.GetLevelSetStats().MaxStrawberries.ToString(), TextJustify, 0.6f, TextColor));
-                total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalDeaths), TextJustify, 0.6f, TextColor)
+                total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalASidesDeaths), TextJustify, 0.6f, TextColor));
+                if (SaveData.Instance.UnlockedModes >= 2)
                 {
-                    SpreadOverColumns = SaveData.Instance.UnlockedModes
-                });
-                for (int l = 1; l < SaveData.Instance.UnlockedModes; l++)
+                    total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalBSidesDeaths), TextJustify, 0.6f, TextColor));
+                }
+                if (SaveData.Instance.UnlockedModes >= 3)
                 {
-                    total.Add(null);
+                    total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalCSidesDeaths), TextJustify, 0.6f, TextColor));
                 }
                 total.Add(new OuiJournalPage.TextCell(Dialog.Time(TotalTime), TextJustify, 0.6f, TextColor));
                 Table.AddRow();
@@ -1658,7 +1672,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 string name = self.SaveData.GetLevelSetStats().Name;
                 Vector2 width = ActiveFont.Measure(name);
-                ActiveFont.Draw(Dialog.Clean(name), self.Position - Vector2.UnitX * Ease.CubeInOut((float)OuiFileSelectSlot_HighlightEase.GetValue(self)) * 360f + new Vector2(110f, -10f), new Vector2(0.5f, 0.5f), Vector2.One * (width.X > 430f ? 0.55f : 0.8f), Color.Black * 0.6f);
+                ActiveFont.Draw(Dialog.Clean(name), self.Position - Vector2.UnitX * Ease.CubeInOut((float)OuiFileSelectSlot_HighlightEase.GetValue(self)) * 360f + new Vector2(110f, -10f), new Vector2(0.5f, 0.5f), Vector2.One * (width.X > 220f ? 0.55f : 0.8f), Color.Black * 0.6f);
             }
         }
 
