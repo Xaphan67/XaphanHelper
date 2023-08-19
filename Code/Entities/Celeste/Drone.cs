@@ -701,6 +701,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             duckPlayerHurtbox.Width = 8f;
             duckPlayerHurtbox.Left = -4f;
             duckPlayerHurtbox.Top = -6f;
+            XaphanModule.ModSaveData.startAsDrone.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+            XaphanModule.ModSaveData.droneStartChapter.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+            XaphanModule.ModSaveData.droneStartRoom.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+            XaphanModule.ModSaveData.droneStartSpawn.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+            XaphanModule.ModSaveData.droneCurrentSpawn.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+            XaphanModule.ModSaveData.fakePlayerFacing.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
+            XaphanModule.ModSaveData.fakePlayerPosition.Remove(SceneAs<Level>().Session.Area.GetLevelSet());
             RemoveSelf();
         }
 
