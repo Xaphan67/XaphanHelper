@@ -63,6 +63,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float width;
 
+        private float height;
+
+        VirtualButton Button = new();
+
+        private MTexture buttonTexture;
+
         public static void getStaminaData(Level level)
         {
             AreaKey area = level.Session.Area;
@@ -80,6 +86,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             Tag = (Tags.HUD | Tags.Persistent | Tags.PauseUpdate);
             borderColor = Calc.HexToColor("262626");
+            ButtonBinding Control = XaphanModule.ModSettings.SelectItem;
+            Button.Binding = Control.Binding;
+            buttonTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
             Depth = -99;
         }
 
@@ -220,7 +229,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 TotalSections = (int)determineBaseStamina() / 5;
                 Sections = GetSections();
             }
-            width = Sections.Count * (section.Width + sectionSpacing) + 22f - sectionSpacing;
+            if (!XaphanModule.PlayerIsControllingRemoteDrone())
+            {
+                width = Sections.Count * (section.Width + sectionSpacing) + 22f - sectionSpacing;
+            }
+            else
+            {
+                width = 160f;
+                HasMissilesUpgrade = MissilesModule.Active(SceneAs<Level>());
+                HasSuperMissilesUpgrade = SuperMissilesModule.Active(SceneAs<Level>());
+                height = ((HasMissilesUpgrade && !HasSuperMissilesUpgrade) || (HasSuperMissilesUpgrade && !HasMissilesUpgrade)) ? 54f : 96f;
+            }
             int BagDisplays = SceneAs<Level>().Tracker.GetEntities<BagDisplay>().Count;
             Position.X = 1920f - (XaphanModule.minimapEnabled ? 222f : 0f) - 27f - width - BagDisplays * 120f;
         }
@@ -354,26 +373,59 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             else if (XaphanModule.PlayerIsControllingRemoteDrone() && (HasMissilesUpgrade || HasSuperMissilesUpgrade))
             {
-                int missileIconPos = 32;
-                int superMissileIconPos = 145;
-                int bgWidth = (HasMissilesUpgrade && HasSuperMissilesUpgrade) ? 270 : 157;
-                bg.Draw(Position + new Vector2(-bg.Width + bgWidth, 0f));
+                Draw.Rect(Position + new Vector2(2), width, height, Color.Black * 0.85f * Opacity);
+                string name = Dialog.Clean("Xaphanhelper_UI_Ammo");
+                ActiveFont.DrawOutline(name, Position + new Vector2((width + 4f) / 2f, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 0.3f, Color.Yellow * Opacity, 2f, Color.Black * Opacity);
+                float nameLenght = ActiveFont.Measure(name).X * 0.3f;
+
+                Draw.Rect(Position, (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2((width + 4f) / 2f, 0f) + new Vector2(nameLenght / 2 + 10f, 0), (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 2f), 2f, height, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(width + 2f, 2f), 2f, height, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, height + 2f), width + 4f, 2f, borderColor * Opacity);
+
+                Vector2 missileIconPos = Vector2.Zero;
+                Vector2 superMissilePos = Vector2.Zero;
+
                 if (HasMissilesUpgrade)
                 {
-                    missileIcon.Draw(Position + new Vector2(missileIconPos, -11));
-                    ActiveFont.DrawOutline(CurrentMissiles.ToString(), Position + new Vector2(missileIconPos + missileIcon.Width + 15f, 17f), new Vector2(0f, 0.5f), Vector2.One * 0.7f, MissileSelected ? Color.Gold : Color.White, 2f, Color.Black);
+                    missileIconPos = Position + new Vector2(13f, 13f);
                 }
                 if (HasSuperMissilesUpgrade && !HasMissilesUpgrade)
                 {
-                    superMissileIcon.Draw(Position + new Vector2(missileIconPos, -11));
+                    superMissilePos = Position + new Vector2(13f, 13f);
                 }
                 else if (HasMissilesUpgrade && HasSuperMissilesUpgrade)
                 {
-                    superMissileIcon.Draw(Position + new Vector2(superMissileIconPos, -11));
+                    superMissilePos = Position + new Vector2(13f, 55f);
+                }
+
+                if (MissileSelected)
+                {
+                    Draw.Rect(missileIconPos - new Vector2(4), 146f, missileIcon.Height + 8f, Color.Green * 0.85f * Opacity);
+                }
+                if (SuperMissileSelected)
+                {
+                    Draw.Rect(superMissilePos - new Vector2(4), 146f, superMissileIcon.Height + 8f, Color.Green * 0.85f * Opacity);
+                }
+
+                if (HasMissilesUpgrade)
+                {
+                    missileIcon.Draw(missileIconPos, Vector2.Zero, MissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
+                    ActiveFont.DrawOutline(CurrentMissiles.ToString(), Position + new Vector2(missileIcon.Width + 13f + 90f, 30f), new Vector2(1f, 0.5f), Vector2.One * 0.7f, MissileSelected ? Color.Gold * Opacity : Color.White * Opacity, 2f, Color.Black * Opacity);
+                }
+                if ((HasSuperMissilesUpgrade && !HasMissilesUpgrade) || (HasMissilesUpgrade && HasSuperMissilesUpgrade))
+                {
+                    superMissileIcon.Draw(superMissilePos, Vector2.Zero, SuperMissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
                 }
                 if (HasSuperMissilesUpgrade)
                 {
-                    ActiveFont.DrawOutline(CurrentSuperMissiles.ToString(), Position + new Vector2((HasMissilesUpgrade ? superMissileIconPos : missileIconPos) + superMissileIcon.Width + 15f, 17f), new Vector2(0f, 0.5f), Vector2.One * 0.7f, SuperMissileSelected ? Color.Gold : Color.White, 2f, Color.Black);
+                    ActiveFont.DrawOutline(CurrentSuperMissiles.ToString(), Position + new Vector2(superMissileIcon.Width + 13f + 90f, 30f + (HasMissilesUpgrade ? 42f : 0f)), new Vector2(1f, 0.5f), Vector2.One * 0.7f, SuperMissileSelected ? Color.Gold * Opacity : Color.White * Opacity, 2f, Color.Black * Opacity);
+                }
+
+                if (buttonTexture != null)
+                {
+                    buttonTexture.DrawCentered(Position + new Vector2(width / 2, height + 5f), Color.White * Opacity, 0.4f);
                 }
             }
         }

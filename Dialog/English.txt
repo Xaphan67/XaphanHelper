@@ -273,6 +273,7 @@
 	XaphanHelper_UI_selectCategory= Select Category
 	XaphanHelper_UI_back= Back
 	Xaphanhelper_UI_Stamina= STAMINA
+	Xaphanhelper_UI_Ammo= AMMO
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= WOULD YOU LIKE TO SAVE ?
