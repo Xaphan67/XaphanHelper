@@ -7,6 +7,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/CustomCollectable")]
     class CustomCollectable : Entity
     {

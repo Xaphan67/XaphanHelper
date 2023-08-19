@@ -78,6 +78,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool startedAnySoCMChapter = false;
 
+        public static bool SkipSoCMIntro = false;
+
         public static bool onSlope;
 
         public static int onSlopeDir;
@@ -2735,6 +2737,7 @@ namespace Celeste.Mod.XaphanHelper
             ModSaveData.BagUIId2 = 0;
             ModSaveData.LoadedPlayer = false;
             startedAnySoCMChapter = false;
+            SkipSoCMIntro = false;
             minimapEnabled = false;
             TriggeredCountDown = false;
             ModSaveData.CanDisplayAchievementsPopups = false;
@@ -3057,7 +3060,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onLevelEnterGo(On.Celeste.LevelEnter.orig_Go orig, Session session, bool fromSaveData)
         {
-            if (!fromSaveData && session.StartedFromBeginning && session.Area.Mode == AreaMode.Normal && session.Area.GetSID() == "Xaphan/0/0-Prologue" && !ModSaveData.SavedFlags.Contains("Xaphan/0_Skip_Vignette"))
+            if (!fromSaveData && session.StartedFromBeginning && session.Area.Mode == AreaMode.Normal && session.Area.GetSID() == "Xaphan/0/0-Prologue" && !ModSaveData.SavedFlags.Contains("Xaphan/0_Skip_Vignette") && SoCMVersion < new Version(3, 0, 0))
             {
                 ModSaveData.SavedFlags.Add("Xaphan/0_Skip_Vignette");
                 Engine.Scene = new SoCMIntroVignette(session);
@@ -3215,238 +3218,259 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.LoadedPlayer = false;
                     self.Session.SetFlag("XaphanHelper_Loaded_Player", false);
                 }
-                CanLoadPlayer = true;
-                if (!self.Session.GetFlag("XaphanHelper_Loaded_Player") && !ModSaveData.LoadedPlayer && !self.Paused)
+                
+                // SoCM Only
+
+                if (startedAnySoCMChapter && SoCMVersion >= new Version(3, 0, 0) && !SkipSoCMIntro && self.Session.Area.ChapterIndex == -1)
                 {
-                    bool hasInterlude = false;
-                    int maxChapters = SaveData.Instance.GetLevelSetStats().Areas.Count;
-                    for (int i = 0; i < maxChapters; i++)
+                    if (self.Session.Level != "Intro")
                     {
-                        if (AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i)].Interlude)
-                        {
-                            hasInterlude = true;
-                            break;
-                        }
-                    }
-                    MapData destinationMapData;
-                    bool loadAtStartOfCampaign = false;
-                    if (ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet) && ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        int chapter = (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet]) - (hasInterlude ? 0 : 1);
-                        destinationMapData = AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + chapter].Mode[0].MapData;
-                        if (destinationMapData.Get(ModSaveData.SavedRoom[self.Session.Area.LevelSet]) == null)
-                        {
-                            loadAtStartOfCampaign = true;
-                        }
-                    }
-                    self.Session.SetFlag("XaphanHelper_Loaded_Player", true);
-                    self.Session.SetFlag("XaphanHelper_Changed_Start_Room", true);
-                    if (!ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet)
-                        || !ModSaveData.SavedSpawn.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedLightingAlphaAdd.ContainsKey(self.Session.Area.LevelSet)
-                        || !ModSaveData.SavedBloomBaseAdd.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedCoreMode.ContainsKey(self.Session.Area.LevelSet)
-                        || !ModSaveData.SavedMusic.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedAmbience.ContainsKey(self.Session.Area.LevelSet)
-                        || !ModSaveData.SavedNoLoadEntities.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet)
-                        || !ModSaveData.SavedFromBeginning.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedSesionFlags.ContainsKey(self.Session.Area.LevelSet)
-                        || !ModSaveData.SavedSessionStrawberries.ContainsKey(self.Session.Area.LevelSet) || (MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
-                        || loadAtStartOfCampaign)
-                    {
-                        ModSaveData.LoadedPlayer = true;
-                        ModSaveData.CanDisplayAchievementsPopups = true;
-                    }
-                    else if (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == self.Session.Area.ChapterIndex)
-                    {
-                        string[] sessionFlags = ModSaveData.SavedSesionFlags[self.Session.Area.LevelSet].Split(',');
-                        self.Session.FirstLevel = false;
-                        self.Session.LightingAlphaAdd = ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet];
-                        self.Session.BloomBaseAdd = ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet];
-                        self.Session.CoreMode = ModSaveData.SavedCoreMode[self.Session.Area.LevelSet];
-                        self.Session.DoNotLoad = ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet];
-                        self.Session.Time = ModSaveData.SavedTime[self.Session.Area.LevelSet];
-                        self.Session.StartedFromBeginning = ModSaveData.SavedFromBeginning[self.Session.Area.LevelSet];
-                        if (SaveData.Instance != null)
-                        {
-                            SaveData.Instance.CurrentSession.LightingAlphaAdd = ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet];
-                            SaveData.Instance.CurrentSession.BloomBaseAdd = ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet];
-                            SaveData.Instance.CurrentSession.CoreMode = ModSaveData.SavedCoreMode[self.Session.Area.LevelSet];
-                        }
-                        self.Session.Audio.Music.Event = ModSaveData.SavedMusic[self.Session.Area.LevelSet];
-                        self.Session.Audio.Ambience.Event = ModSaveData.SavedAmbience[self.Session.Area.LevelSet];
-                        self.Session.Audio.Apply(forceSixteenthNoteHack: false);
-                        foreach (string flag in sessionFlags)
-                        {
-                            if (!flag.Contains("XaphanHelper_StatFlag_") || (flag.Contains("XaphanHelper_StatFlag_") && flag.Contains("-Visited")))
-                            {
-                                self.Session.SetFlag(flag, true);
-                            }
-                        }
-                        self.Session.Strawberries = ModSaveData.SavedSessionStrawberries[self.Session.Area.LevelSet];
-                        ModSaveData.LoadedPlayer = true;
-                        self.Add(new TeleportCutscene(player, ModSaveData.SavedRoom[self.Session.Area.LevelSet], MergeChaptersControllerMode == "Warps" ? Vector2.Zero : ModSaveData.SavedSpawn[self.Session.Area.LevelSet], 0, 0, true, 0f, "Fade", skipFirstWipe: true, respawnAnim: true, useLevelWipe: true, spawnPositionX: MergeChaptersControllerMode == "Warps" ? ModSaveData.SavedSpawn[self.Session.Area.LevelSet].X : 0f, spawnPositionY: MergeChaptersControllerMode == "Warps" ? ModSaveData.SavedSpawn[self.Session.Area.LevelSet].Y : 0f));
-                    }
-                    else
-                    {
-                        LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet] - (hasInterlude ? 0 : 1))))
-                        {
-                            Time = ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedTime[self.Session.Area.LevelSet] : 0L
-                        }, fromSaveData: false);
+                        NoDroneSpawnSound = true;
+                        self.Add(new TeleportCutscene(player, "Intro", Vector2.Zero, 0, 0, false, 0f, "Fade", skipFirstWipe: true));
                     }
                 }
-
-                // Save the room as the one that the player must load into when starting the campaign if using a MergeChaptersController with mode set to Rooms
-
-                else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+                else
                 {
-                    ModSaveData.LoadedPlayer = true;
-                    if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))
+                    CanLoadPlayer = true;
+                    if (!self.Session.GetFlag("XaphanHelper_Loaded_Player") && !ModSaveData.LoadedPlayer && !self.Paused)
                     {
-                        ModSaveData.SavedChapter.Add(self.Session.Area.LevelSet, self.Session.Area.ChapterIndex);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedChapter[self.Session.Area.LevelSet] != self.Session.Area.ChapterIndex)
+                        bool hasInterlude = false;
+                        int maxChapters = SaveData.Instance.GetLevelSetStats().Areas.Count;
+                        for (int i = 0; i < maxChapters; i++)
                         {
-                            ModSaveData.SavedChapter[self.Session.Area.LevelSet] = self.Session.Area.ChapterIndex;
-                        }
-                    }
-                    if (string.IsNullOrEmpty(ModSaveData.CountdownStartRoom))
-                    {
-                        if (!ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet))
-                        {
-                            ModSaveData.SavedRoom.Add(self.Session.Area.LevelSet, self.Session.Level);
-                        }
-                        else
-                        {
-                            if (ModSaveData.SavedRoom[self.Session.Area.LevelSet] != self.Session.Level)
+                            if (AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i)].Interlude)
                             {
-                                ModSaveData.SavedRoom[self.Session.Area.LevelSet] = self.Session.Level;
+                                hasInterlude = true;
+                                break;
                             }
                         }
-                    }
+                        MapData destinationMapData;
+                        bool loadAtStartOfCampaign = false;
+                        if (ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet) && ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            int chapter = (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet]) - (hasInterlude ? 0 : 1);
+                            destinationMapData = AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + chapter].Mode[0].MapData;
+                            if (destinationMapData.Get(ModSaveData.SavedRoom[self.Session.Area.LevelSet]) == null)
+                            {
+                                loadAtStartOfCampaign = true;
+                            }
+                        }
+                        self.Session.SetFlag("XaphanHelper_Loaded_Player", true);
+                        self.Session.SetFlag("XaphanHelper_Changed_Start_Room", true);
+                        if (!ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet)
+                            || !ModSaveData.SavedSpawn.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedLightingAlphaAdd.ContainsKey(self.Session.Area.LevelSet)
+                            || !ModSaveData.SavedBloomBaseAdd.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedCoreMode.ContainsKey(self.Session.Area.LevelSet)
+                            || !ModSaveData.SavedMusic.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedAmbience.ContainsKey(self.Session.Area.LevelSet)
+                            || !ModSaveData.SavedNoLoadEntities.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet)
+                            || !ModSaveData.SavedFromBeginning.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedSesionFlags.ContainsKey(self.Session.Area.LevelSet)
+                            || !ModSaveData.SavedSessionStrawberries.ContainsKey(self.Session.Area.LevelSet) || (MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
+                            || loadAtStartOfCampaign)
+                        {
+                            ModSaveData.LoadedPlayer = true;
+                            ModSaveData.CanDisplayAchievementsPopups = true;
 
-                    if (self.Session.RespawnPoint == null)
-                    {
-                        self.Session.RespawnPoint = Vector2.Zero;
-                    }
-                    if (!ModSaveData.SavedSpawn.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedSpawn.Add(self.Session.Area.LevelSet, (Vector2)self.Session.RespawnPoint - new Vector2(self.Bounds.Left, self.Bounds.Top));
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedSpawn[self.Session.Area.LevelSet] != (Vector2)self.Session.RespawnPoint - new Vector2(self.Bounds.Left, self.Bounds.Top))
-                        {
-                            ModSaveData.SavedSpawn[self.Session.Area.LevelSet] = (Vector2)self.Session.RespawnPoint - new Vector2(self.Bounds.Left, self.Bounds.Top);
+                            // SoCM Only
+
+                            if (startedAnySoCMChapter && SoCMVersion >= new Version(3, 0, 0))
+                            {
+                                self.Add(new TeleportCutscene(player, "A-00", Vector2.Zero, 0, 0, false, 0f, "Spotlight", wipeDuration: 1.8f, skipFirstWipe: true));
+                            }
                         }
-                    }
-                    if (!ModSaveData.SavedLightingAlphaAdd.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedLightingAlphaAdd.Add(self.Session.Area.LevelSet, self.Lighting.Alpha - self.BaseLightingAlpha);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet] != self.Lighting.Alpha - self.BaseLightingAlpha)
+                        else if (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == self.Session.Area.ChapterIndex)
                         {
-                            ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet] = self.Lighting.Alpha - self.BaseLightingAlpha;
-                        }
-                    }
-                    if (!ModSaveData.SavedBloomBaseAdd.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedBloomBaseAdd.Add(self.Session.Area.LevelSet, self.Bloom.Base - AreaData.Get(self).BloomBase);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet] != self.Bloom.Base - AreaData.Get(self).BloomBase)
-                        {
-                            ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet] = self.Bloom.Base - AreaData.Get(self).BloomBase;
-                        }
-                    }
-                    if (!ModSaveData.SavedCoreMode.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedCoreMode.Add(self.Session.Area.LevelSet, self.Session.CoreMode);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedCoreMode[self.Session.Area.LevelSet] != self.Session.CoreMode)
-                        {
-                            ModSaveData.SavedCoreMode[self.Session.Area.LevelSet] = self.Session.CoreMode;
-                        }
-                    }
-                    if (!ModSaveData.SavedMusic.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedMusic.Add(self.Session.Area.LevelSet, self.Session.Audio.Music.Event);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedMusic[self.Session.Area.LevelSet] != self.Session.Audio.Music.Event)
-                        {
-                            ModSaveData.SavedMusic[self.Session.Area.LevelSet] = self.Session.Audio.Music.Event;
-                        }
-                    }
-                    if (!ModSaveData.SavedAmbience.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedAmbience.Add(self.Session.Area.LevelSet, self.Session.Audio.Ambience.Event);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedAmbience[self.Session.Area.LevelSet] != self.Session.Audio.Ambience.Event)
-                        {
-                            ModSaveData.SavedAmbience[self.Session.Area.LevelSet] = self.Session.Audio.Ambience.Event;
-                        }
-                    }
-                    if (!ModSaveData.SavedNoLoadEntities.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedNoLoadEntities.Add(self.Session.Area.LevelSet, self.Session.DoNotLoad);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet] != self.Session.DoNotLoad)
-                        {
-                            ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet] = self.Session.DoNotLoad;
-                        }
-                    }
-                    if (!ModSaveData.SavedFromBeginning.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedFromBeginning.Add(self.Session.Area.LevelSet, self.Session.StartedFromBeginning);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedFromBeginning[self.Session.Area.LevelSet] != self.Session.StartedFromBeginning)
-                        {
-                            ModSaveData.SavedFromBeginning[self.Session.Area.LevelSet] = self.Session.StartedFromBeginning;
-                        }
-                    }
-                    string sessionFlags = "";
-                    foreach (string flag in self.Session.Flags)
-                    {
-                        if (sessionFlags == "")
-                        {
-                            sessionFlags += flag;
+                            string[] sessionFlags = ModSaveData.SavedSesionFlags[self.Session.Area.LevelSet].Split(',');
+                            self.Session.FirstLevel = false;
+                            self.Session.LightingAlphaAdd = ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet];
+                            self.Session.BloomBaseAdd = ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet];
+                            self.Session.CoreMode = ModSaveData.SavedCoreMode[self.Session.Area.LevelSet];
+                            self.Session.DoNotLoad = ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet];
+                            self.Session.Time = ModSaveData.SavedTime[self.Session.Area.LevelSet];
+                            self.Session.StartedFromBeginning = ModSaveData.SavedFromBeginning[self.Session.Area.LevelSet];
+                            if (SaveData.Instance != null)
+                            {
+                                SaveData.Instance.CurrentSession.LightingAlphaAdd = ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet];
+                                SaveData.Instance.CurrentSession.BloomBaseAdd = ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet];
+                                SaveData.Instance.CurrentSession.CoreMode = ModSaveData.SavedCoreMode[self.Session.Area.LevelSet];
+                            }
+                            self.Session.Audio.Music.Event = ModSaveData.SavedMusic[self.Session.Area.LevelSet];
+                            self.Session.Audio.Ambience.Event = ModSaveData.SavedAmbience[self.Session.Area.LevelSet];
+                            self.Session.Audio.Apply(forceSixteenthNoteHack: false);
+                            foreach (string flag in sessionFlags)
+                            {
+                                if (!flag.Contains("XaphanHelper_StatFlag_") || (flag.Contains("XaphanHelper_StatFlag_") && flag.Contains("-Visited")))
+                                {
+                                    self.Session.SetFlag(flag, true);
+                                }
+                            }
+                            self.Session.Strawberries = ModSaveData.SavedSessionStrawberries[self.Session.Area.LevelSet];
+                            ModSaveData.LoadedPlayer = true;
+                            self.Add(new TeleportCutscene(player, ModSaveData.SavedRoom[self.Session.Area.LevelSet], MergeChaptersControllerMode == "Warps" ? Vector2.Zero : ModSaveData.SavedSpawn[self.Session.Area.LevelSet], 0, 0, true, 0f, "Fade", skipFirstWipe: true, respawnAnim: true, useLevelWipe: true, spawnPositionX: MergeChaptersControllerMode == "Warps" ? ModSaveData.SavedSpawn[self.Session.Area.LevelSet].X : 0f, spawnPositionY: MergeChaptersControllerMode == "Warps" ? ModSaveData.SavedSpawn[self.Session.Area.LevelSet].Y : 0f));
                         }
                         else
                         {
-                            sessionFlags += "," + flag;
+                            LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet] - (hasInterlude ? 0 : 1))))
+                            {
+                                Time = ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedTime[self.Session.Area.LevelSet] : 0L
+                            }, fromSaveData: false);
                         }
                     }
-                    if (!ModSaveData.SavedSesionFlags.ContainsKey(self.Session.Area.LevelSet))
+
+                    // Save the room as the one that the player must load into when starting the campaign if using a MergeChaptersController with mode set to Rooms
+
+                    else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
                     {
-                        ModSaveData.SavedSesionFlags.Add(self.Session.Area.LevelSet, sessionFlags);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedSesionFlags[self.Session.Area.LevelSet] != sessionFlags)
+                        ModSaveData.LoadedPlayer = true;
+                        if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))
                         {
-                            ModSaveData.SavedSesionFlags[self.Session.Area.LevelSet] = sessionFlags;
+                            ModSaveData.SavedChapter.Add(self.Session.Area.LevelSet, self.Session.Area.ChapterIndex);
                         }
-                    }
-                    if (!ModSaveData.SavedSessionStrawberries.ContainsKey(self.Session.Area.LevelSet))
-                    {
-                        ModSaveData.SavedSessionStrawberries.Add(self.Session.Area.LevelSet, self.Session.Strawberries);
-                    }
-                    else
-                    {
-                        if (ModSaveData.SavedSessionStrawberries[self.Session.Area.LevelSet] != self.Session.Strawberries)
+                        else
                         {
-                            ModSaveData.SavedSessionStrawberries[self.Session.Area.LevelSet] = self.Session.Strawberries;
+                            if (ModSaveData.SavedChapter[self.Session.Area.LevelSet] != self.Session.Area.ChapterIndex)
+                            {
+                                ModSaveData.SavedChapter[self.Session.Area.LevelSet] = self.Session.Area.ChapterIndex;
+                            }
+                        }
+                        if (string.IsNullOrEmpty(ModSaveData.CountdownStartRoom))
+                        {
+                            if (!ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet))
+                            {
+                                ModSaveData.SavedRoom.Add(self.Session.Area.LevelSet, self.Session.Level);
+                            }
+                            else
+                            {
+                                if (ModSaveData.SavedRoom[self.Session.Area.LevelSet] != self.Session.Level)
+                                {
+                                    ModSaveData.SavedRoom[self.Session.Area.LevelSet] = self.Session.Level;
+                                }
+                            }
+                        }
+
+                        if (self.Session.RespawnPoint == null)
+                        {
+                            self.Session.RespawnPoint = Vector2.Zero;
+                        }
+                        if (!ModSaveData.SavedSpawn.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedSpawn.Add(self.Session.Area.LevelSet, (Vector2)self.Session.RespawnPoint - new Vector2(self.Bounds.Left, self.Bounds.Top));
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedSpawn[self.Session.Area.LevelSet] != (Vector2)self.Session.RespawnPoint - new Vector2(self.Bounds.Left, self.Bounds.Top))
+                            {
+                                ModSaveData.SavedSpawn[self.Session.Area.LevelSet] = (Vector2)self.Session.RespawnPoint - new Vector2(self.Bounds.Left, self.Bounds.Top);
+                            }
+                        }
+                        if (!ModSaveData.SavedLightingAlphaAdd.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedLightingAlphaAdd.Add(self.Session.Area.LevelSet, self.Lighting.Alpha - self.BaseLightingAlpha);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet] != self.Lighting.Alpha - self.BaseLightingAlpha)
+                            {
+                                ModSaveData.SavedLightingAlphaAdd[self.Session.Area.LevelSet] = self.Lighting.Alpha - self.BaseLightingAlpha;
+                            }
+                        }
+                        if (!ModSaveData.SavedBloomBaseAdd.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedBloomBaseAdd.Add(self.Session.Area.LevelSet, self.Bloom.Base - AreaData.Get(self).BloomBase);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet] != self.Bloom.Base - AreaData.Get(self).BloomBase)
+                            {
+                                ModSaveData.SavedBloomBaseAdd[self.Session.Area.LevelSet] = self.Bloom.Base - AreaData.Get(self).BloomBase;
+                            }
+                        }
+                        if (!ModSaveData.SavedCoreMode.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedCoreMode.Add(self.Session.Area.LevelSet, self.Session.CoreMode);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedCoreMode[self.Session.Area.LevelSet] != self.Session.CoreMode)
+                            {
+                                ModSaveData.SavedCoreMode[self.Session.Area.LevelSet] = self.Session.CoreMode;
+                            }
+                        }
+                        if (!ModSaveData.SavedMusic.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedMusic.Add(self.Session.Area.LevelSet, self.Session.Audio.Music.Event);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedMusic[self.Session.Area.LevelSet] != self.Session.Audio.Music.Event)
+                            {
+                                ModSaveData.SavedMusic[self.Session.Area.LevelSet] = self.Session.Audio.Music.Event;
+                            }
+                        }
+                        if (!ModSaveData.SavedAmbience.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedAmbience.Add(self.Session.Area.LevelSet, self.Session.Audio.Ambience.Event);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedAmbience[self.Session.Area.LevelSet] != self.Session.Audio.Ambience.Event)
+                            {
+                                ModSaveData.SavedAmbience[self.Session.Area.LevelSet] = self.Session.Audio.Ambience.Event;
+                            }
+                        }
+                        if (!ModSaveData.SavedNoLoadEntities.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedNoLoadEntities.Add(self.Session.Area.LevelSet, self.Session.DoNotLoad);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet] != self.Session.DoNotLoad)
+                            {
+                                ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet] = self.Session.DoNotLoad;
+                            }
+                        }
+                        if (!ModSaveData.SavedFromBeginning.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedFromBeginning.Add(self.Session.Area.LevelSet, self.Session.StartedFromBeginning);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedFromBeginning[self.Session.Area.LevelSet] != self.Session.StartedFromBeginning)
+                            {
+                                ModSaveData.SavedFromBeginning[self.Session.Area.LevelSet] = self.Session.StartedFromBeginning;
+                            }
+                        }
+                        string sessionFlags = "";
+                        foreach (string flag in self.Session.Flags)
+                        {
+                            if (sessionFlags == "")
+                            {
+                                sessionFlags += flag;
+                            }
+                            else
+                            {
+                                sessionFlags += "," + flag;
+                            }
+                        }
+                        if (!ModSaveData.SavedSesionFlags.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedSesionFlags.Add(self.Session.Area.LevelSet, sessionFlags);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedSesionFlags[self.Session.Area.LevelSet] != sessionFlags)
+                            {
+                                ModSaveData.SavedSesionFlags[self.Session.Area.LevelSet] = sessionFlags;
+                            }
+                        }
+                        if (!ModSaveData.SavedSessionStrawberries.ContainsKey(self.Session.Area.LevelSet))
+                        {
+                            ModSaveData.SavedSessionStrawberries.Add(self.Session.Area.LevelSet, self.Session.Strawberries);
+                        }
+                        else
+                        {
+                            if (ModSaveData.SavedSessionStrawberries[self.Session.Area.LevelSet] != self.Session.Strawberries)
+                            {
+                                ModSaveData.SavedSessionStrawberries[self.Session.Area.LevelSet] = self.Session.Strawberries;
+                            }
                         }
                     }
                 }

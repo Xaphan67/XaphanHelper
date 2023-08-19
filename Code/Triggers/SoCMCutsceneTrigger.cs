@@ -38,6 +38,9 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             Level level = Scene as Level;
             switch (Cutscene)
             {
+                case "Intro":
+                    Scene.Add(new SoCMIntro(player));
+                    break;
                 case "Ch0 - Start":
                     if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Start"))
                     {
