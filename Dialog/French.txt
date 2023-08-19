@@ -272,6 +272,7 @@
 	XaphanHelper_UI_AchievementToUnlock= Succès requis pour devérouiller :
 	XaphanHelper_UI_selectCategory= Seléctionner catégorie
 	XaphanHelper_UI_back= Retour
+	Xaphanhelper_UI_Stamina= ENDURANCE
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= SOUHAITEZ-VOUS SAUVEGARDER ?

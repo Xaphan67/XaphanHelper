@@ -51,6 +51,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public bool preventTutorialDisplay;
 
+        public int totalDisplays;
+
         public BagDisplay(Level level, string type)
         {
             this.level = level;
@@ -61,7 +63,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Sprite = new Sprite(GFX.Gui, "");
             Sprite.Scale = new Vector2(0.15f);
             borderColor = Calc.HexToColor("262626");
-            Opacity = 1f;
             ButtonBinding Control = type == "bag" ? XaphanModule.ModSettings.UseBagItemSlot : XaphanModule.ModSettings.UseMiscItemSlot;
             SlotButton.Binding = Control.Binding;
             buttonTexture = Input.GuiButton(SlotButton, "controls/keyboard/oemquestion");
@@ -208,9 +209,37 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        public void SetXPosition()
+        {
+            totalDisplays = level.Tracker.GetEntities<BagDisplay>().Count;
+            if (XaphanModule.minimapEnabled)
+            {
+                if (totalDisplays == 2 && type == "bag")
+                {
+                    Position.X = 1455f;
+                }
+                else
+                {
+                    Position.X = 1575f;
+                }
+            }
+            else
+            {
+                if (totalDisplays == 2 && type == "bag")
+                {
+                    Position.X = 1670f;
+                }
+                else
+                {
+                    Position.X = 1790f;
+                }
+            }
+        }
+
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            SetXPosition();
             foreach (string VisitedChapter in XaphanModule.ModSaveData.VisitedChapters)
             {
                 string[] str = VisitedChapter.Split('_');
@@ -306,7 +335,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             base.Update();
             player = level.Tracker.GetEntity<Player>();
-            int totalDisplays = level.Tracker.GetEntities<BagDisplay>().Count;
+            totalDisplays = level.Tracker.GetEntities<BagDisplay>().Count;
             if (player != null && player.Center.X > level.Camera.Right - (totalDisplays == 2 ? 96f : 64f) && player.Center.Y < level.Camera.Top + 52)
             {
                 Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
@@ -315,28 +344,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
             }
-            if (XaphanModule.minimapEnabled)
-            {
-                if (totalDisplays == 2 && type == "bag")
-                {
-                    Position.X = 1455f;
-                }
-                else
-                {
-                    Position.X = 1575f;
-                }
-            }
-            else
-            {
-                if (totalDisplays == 2 && type == "bag")
-                {
-                    Position.X = 1670f;
-                }
-                else
-                {
-                    Position.X = 1790f;
-                }
-            }
+            SetXPosition();
             if (!preventTutorialDisplay)
             {
                 if (tutorialGui == null)
@@ -552,7 +560,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             float nameLenght = ActiveFont.Measure(name).X * 0.3f;
 
             Draw.Rect(Position, 50f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
-            Draw.Rect(Position + new Vector2(50f, 0f) + new Vector2(nameLenght / 2 + 10f, 0), 50f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
+            Draw.Rect(Position + new Vector2(50f, 0f) + new Vector2(nameLenght / 2 + 11f, 0), 50f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
             Draw.Rect(Position + new Vector2(0f, 2f), 2f, 96f, borderColor * Opacity);
             Draw.Rect(Position + new Vector2(98f, 2f), 2f, 96f, borderColor * Opacity);
             Draw.Rect(Position + new Vector2(0f, 98f), 100f, 2f, borderColor * Opacity);

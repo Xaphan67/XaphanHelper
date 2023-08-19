@@ -55,6 +55,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public bool ResetSelectedAmmo;
 
+        private float Opacity;
+
+        private Color borderColor;
+
+        private int sectionSpacing;
+
+        private float width;
+
         public static void getStaminaData(Level level)
         {
             AreaKey area = level.Session.Area;
@@ -70,8 +78,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public UpgradesDisplay()
         {
-            Tag = (Tags.HUD | Tags.Persistent | Tags.PauseUpdate | Tags.TransitionUpdate);
-            Position.Y = -50f;
+            Tag = (Tags.HUD | Tags.Persistent | Tags.PauseUpdate);
+            borderColor = Calc.HexToColor("262626");
             Depth = -99;
         }
 
@@ -167,7 +175,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         break;
                     }
                 }
-                if ((self.Frozen || self.RetryPlayerCorpse != null || self.SkippingCutscene || self.InCutscene) || (player != null && !player.Sprite.Visible && !self.Session.GetFlag("Xaphan_Helper_Ceiling") && !sliding && (self.Tracker.GetEntity<ScrewAttackManager>() != null ? !self.Tracker.GetEntity<ScrewAttackManager>().StartedScrewAttack : true)) || XaphanModule.ShowUI)
+                if ((self.FrozenOrPaused || self.RetryPlayerCorpse != null || self.SkippingCutscene || self.InCutscene) || (player != null && !player.Sprite.Visible && !self.Session.GetFlag("Xaphan_Helper_Ceiling") && !sliding && (self.Tracker.GetEntity<ScrewAttackManager>() != null ? !self.Tracker.GetEntity<ScrewAttackManager>().StartedScrewAttack : true)) || XaphanModule.ShowUI)
                 {
                     if (self.Tracker.GetEntity<UpgradesDisplay>() != null)
                     {
@@ -205,29 +213,37 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
-        public override void Update()
+        public void SetXposition()
         {
-            base.Update();
-            if (Settings.Instance.SpeedrunClock == SpeedrunType.Off)
-            {
-                Position.X = 0f;
-            }
-            else if (!SceneAs<Level>().TimerHidden)
-            {
-                if (Settings.Instance.SpeedrunClock == SpeedrunType.Chapter)
-                {
-                    Position.X = SpeedrunTimerDisplay.GetTimeWidth(TimeSpan.FromTicks(SceneAs<Level>().Session.Time).ShortGameplayFormat()) + 30f;
-                }
-                else if (Settings.Instance.SpeedrunClock == SpeedrunType.File)
-                {
-                    Position.X = SpeedrunTimerDisplay.GetTimeWidth(TimeSpan.FromTicks(SaveData.Instance.Time).ShortGameplayFormat()) + 30f;
-                }
-            }
-            Position.Y = 60f;
             if (player != null)
             {
                 TotalSections = (int)determineBaseStamina() / 5;
                 Sections = GetSections();
+            }
+            width = Sections.Count * (section.Width + sectionSpacing) + 22f - sectionSpacing;
+            int BagDisplays = SceneAs<Level>().Tracker.GetEntities<BagDisplay>().Count;
+            Position.X = 1920f - (XaphanModule.minimapEnabled ? 222f : 0f) - 27f - width - BagDisplays * 120f;
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            sectionSpacing = 2;
+            SetXposition();
+            Position.Y = 26f;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            SetXposition();
+            if (player != null && player.Center.X > SceneAs<Level>().Camera.Right - (96 + width / 6) && player.Center.Y < SceneAs<Level>().Camera.Top + 52)
+            {
+                Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
+            }
+            else
+            {
+                Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
             }
             if (!SceneAs<Level>().Paused && !SceneAs<Level>().PauseLock && XaphanModule.PlayerIsControllingRemoteDrone())
             {
@@ -314,15 +330,26 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Render();
             if (ShowStaminaBar && PowerGrip.isActive && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
-                bg.Draw(Position + new Vector2(-bg.Width + 32f + staminaIcon.Width + 15f + TotalSections * 9 + section.Width, 0f));
-                staminaIcon.Draw(Position + new Vector2(32f, -1));
-                int Col = 0;
+                Draw.Rect(Position + new Vector2(2), width, 46f, Color.Black * 0.85f * Opacity);
+                string name = Dialog.Clean("Xaphanhelper_UI_Stamina");
+                ActiveFont.DrawOutline(name, Position + new Vector2((width + 4f)/ 2f, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 0.3f, Color.Yellow * Opacity, 2f, Color.Black * Opacity);
+                float nameLenght = ActiveFont.Measure(name).X * 0.3f;
+
+                Draw.Rect(Position, (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2((width + 4f) / 2f, 0f) + new Vector2(nameLenght / 2 + 11f, 0), (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 2f), 2f, 46f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(width + 2f, 2f), 2f, 46f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 46f + 2f), width + 4f, 2f, borderColor * Opacity);
+
+                int OffsetX = 0;
+                int Col = 1;
                 foreach (Image section in Sections)
                 {
-                    section.Position = Position + (new Vector2(32f + staminaIcon.Width + 15f + Col, 3f));
-                    section.Color = Color.White;
+                    section.Position = Position + new Vector2(13f) + Vector2.UnitX * OffsetX;
+                    section.Color = Color.White * Opacity;
                     section.Render();
-                    Col += 9;
+                    OffsetX += ((int)section.Width + sectionSpacing);
+                    Col++;
                 }
             }
             else if (XaphanModule.PlayerIsControllingRemoteDrone() && (HasMissilesUpgrade || HasSuperMissilesUpgrade))

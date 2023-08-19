@@ -272,6 +272,7 @@
 	XaphanHelper_UI_AchievementToUnlock= Achievement required to unlock:
 	XaphanHelper_UI_selectCategory= Select Category
 	XaphanHelper_UI_back= Back
+	Xaphanhelper_UI_Stamina= STAMINA
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= WOULD YOU LIKE TO SAVE ?
