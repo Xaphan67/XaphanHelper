@@ -563,6 +563,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Speed.X *= enabled ? 1f : 0.5f;
                     Speed.Y = enabled ? -320f : -160f;
                     noGravityTimer = enabled ? 0 : 0.15f;
+                    if (!enabled)
+                    {
+                        enabled = true;
+                        canControl = true;
+                        Speed = Vector2.Zero;
+                        Add(new Coroutine(HatchingRoutine()));
+                    }
                     return true;
                 }
                 if (spring.Orientation == Spring.Orientations.WallLeft && Speed.X <= 0f)

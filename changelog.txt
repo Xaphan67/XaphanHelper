@@ -3,6 +3,8 @@ Version 1.0.59 :
 - Golden Strawberries now carry from chapter to chapter when using a Merge Chapter Controller
 - Updated the journal of campaigns that use a Merge Chapter Controller
 - The save file slot now show the campaign name instead of the further area name when using a Merge Chapter Controller
+- Fixed a bug respawning the player in Drone control when exiting a map after using the Drone Teleport ability
+- Fixed a suftlock if the Remote Drone was thrown on top of a floor-oriented spring
 
 Version 1.0.58 :
 - Added "Hide Flag" and "Events Flags" attributes to Start Countdown Trigger
