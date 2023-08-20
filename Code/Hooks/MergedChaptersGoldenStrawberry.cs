@@ -1,10 +1,10 @@
-﻿using Monocle;
-using Microsoft.Xna.Framework;
-using System.Reflection;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
+using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Hooks
 {
@@ -45,7 +45,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 Player entity = self.Tracker.GetEntity<Player>();
                 if (entity != null)
                 {
-                    List<IStrawberry> list = new List<IStrawberry>();
+                    List<IStrawberry> list = new();
                     ReadOnlyCollection<Type> berryTypes = StrawberryRegistry.GetBerryTypes();
                     foreach (Follower follower in entity.Leader.Followers)
                     {

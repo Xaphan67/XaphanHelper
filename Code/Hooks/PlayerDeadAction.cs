@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Celeste.Mod.XaphanHelper.Entities;
-using Celeste.Mod.XaphanHelper.UI_Elements;
+﻿using Celeste.Mod.XaphanHelper.Entities;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Hooks

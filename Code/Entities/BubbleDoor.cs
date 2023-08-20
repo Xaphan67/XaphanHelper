@@ -361,7 +361,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else if (side == "Top")
                 {
-                    if ( (player.Right < Left || player.Left > Right || player.Top > Bottom + 10))
+                    if ((player.Right < Left || player.Left > Right || player.Top > Bottom + 10))
                     {
                         isNotCloseToDoor = true;
                     }

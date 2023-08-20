@@ -125,7 +125,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Removed(Scene scene)
         {
             base.Removed(scene);
-            foreach(ScreenSelect secrenSelect in ScreenSelects)
+            foreach (ScreenSelect secrenSelect in ScreenSelects)
             {
                 secrenSelect.RemoveSelf();
             }
@@ -155,16 +155,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 for (int i = 0; i <= 2; i++)
                 {
-                    ScreenSelect select = new ScreenSelect(PromptPos + new Vector2(150f + 250f * i, 101f), i, this);
+                    ScreenSelect select = new(PromptPos + new Vector2(150f + 250f * i, 101f), i, this);
                     ScreenSelects.Add(select);
                     SceneAs<Level>().Add(select);
                 }
             }
             else
             {
-                for (int i = 0; i <= 1; i ++)
+                for (int i = 0; i <= 1; i++)
                 {
-                    ScreenSelect select = new ScreenSelect(PromptPos + new Vector2(275f + 250f * i, 101f), i == 0 ? 0 : i + 1, this);
+                    ScreenSelect select = new(PromptPos + new Vector2(275f + 250f * i, 101f), i == 0 ? 0 : i + 1, this);
                     ScreenSelects.Add(select);
                     SceneAs<Level>().Add(select);
                 }

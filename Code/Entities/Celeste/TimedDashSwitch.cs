@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
-using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
 

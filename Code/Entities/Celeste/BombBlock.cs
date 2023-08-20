@@ -189,7 +189,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool toggle;
 
-        public List<PushingSide> pushSides = new ();
+        public List<PushingSide> pushSides = new();
 
         public BombBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {

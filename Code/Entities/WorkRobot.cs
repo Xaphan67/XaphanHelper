@@ -374,7 +374,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Collider.Height += cancelYPos;
                     sprite.Position.Y += cancelYPos;
-                    MoveV(-cancelYPos, 0);                    
+                    MoveV(-cancelYPos, 0);
                     cancelYPos = 0f;
                 }
             }

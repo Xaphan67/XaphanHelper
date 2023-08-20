@@ -265,7 +265,7 @@ namespace Celeste.Mod.XaphanHelper
                         IDsToRemove.Add(achievement.AchievementID);
                     }
                 }
-                
+
             }
             foreach (string id in IDsToRemove)
             {

@@ -405,7 +405,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (XaphanModule.ModSettings.GoldenFeather)
                 {
-                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 585f), 0 ,5, getCustomName("GoldenFeather"), getCustomSpritePath("GoldenFeather"), "GoldenFeather", XaphanModule.ModSaveData.GoldenFeatherInactive));
+                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 585f), 0, 5, getCustomName("GoldenFeather"), getCustomSpritePath("GoldenFeather"), "GoldenFeather", XaphanModule.ModSaveData.GoldenFeatherInactive));
                 }
                 if (XaphanModule.ModSettings.EtherealDash)
                 {
@@ -421,11 +421,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (XaphanModule.ModSettings.PortableStation)
                 {
-                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 785f), 0 ,9, getCustomName("PortableStation"), getCustomSpritePath("PortableStation"), "PortableStation", XaphanModule.ModSaveData.PortableStationInactive));
+                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 785f), 0, 9, getCustomName("PortableStation"), getCustomSpritePath("PortableStation"), "PortableStation", XaphanModule.ModSaveData.PortableStationInactive));
                 }
                 if (XaphanModule.ModSettings.PulseRadar)
                 {
-                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 835f), 0 ,10, getCustomName("PulseRadar"), getCustomSpritePath("PulseRadar"), "PulseRadar", XaphanModule.ModSaveData.PulseRadarInactive));
+                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 835f), 0, 10, getCustomName("PulseRadar"), getCustomSpritePath("PulseRadar"), "PulseRadar", XaphanModule.ModSaveData.PulseRadarInactive));
                 }
             }
             else
@@ -460,7 +460,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (XaphanModule.ModSettings.MorphingBall)
                 {
-                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 460f), 0 ,2, "XaphanHelper_get_MorphingBall_Name", "collectables/XaphanHelper/SamusUpgradeCollectable", "MorphingBall", XaphanModule.ModSaveData.MorphingBallInactive));
+                    Scene.Add(new UpgradeDisplay(level, 1, new Vector2(1215f, 460f), 0, 2, "XaphanHelper_get_MorphingBall_Name", "collectables/XaphanHelper/SamusUpgradeCollectable", "MorphingBall", XaphanModule.ModSaveData.MorphingBallInactive));
                 }
                 if (XaphanModule.ModSettings.MorphBombs)
                 {

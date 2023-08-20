@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Data;
-using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -1420,7 +1419,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 character = DroneSuperMissilesUpgradeDisplay[i].ToString();
                             }
                             Image characterImage = new(GFX.Gui["maps/keys/" + character]);
-                            characterImage.Position = new Vector2(Position.X + valueXPos + valueWidth + characterInline, linesYPos[iconYPos] -3f);
+                            characterImage.Position = new Vector2(Position.X + valueXPos + valueWidth + characterInline, linesYPos[iconYPos] - 3f);
                             characterImage.Color = getCurrentDroneSuperMissilesUpgrades() == getTotalDroneSuperMissilesUpgrades() ? Color.Gold : Color.White;
                             characterImage.Render();
                             valueWidth += (int)characterImage.Width;

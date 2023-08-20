@@ -334,42 +334,42 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
             if (drone != null)
             {
-                    if (Hold.IsHeld)
+                if (Hold.IsHeld)
+                {
+                    drone.RemoveSelf();
+                    return orig(self, direction, evenIfInvincible, registerDeathInStats);
+                }
+                else if (!drone.enabled)
+                {
+                    if (self != drone.FakePlayer)
                     {
-                        drone.RemoveSelf();
+                        if (!drone.dead)
+                        {
+                            drone.ForceDestroy();
+                        }
+                    }
+                    else
+                    {
+                        if (!drone.dead)
+                        {
+                            drone.ForceDestroy(true, true);
+                        }
                         return orig(self, direction, evenIfInvincible, registerDeathInStats);
                     }
-                    else if (!drone.enabled)
+                }
+                else if (!drone.dead)
+                {
+                    if (self == drone.FakePlayer)
                     {
-                        if (self != drone.FakePlayer)
+                        if (!drone.dead)
                         {
-                            if (!drone.dead)
-                            {
-                                drone.ForceDestroy();
-                            }
+                            drone.ForceDestroy(true, true);
                         }
-                        else
-                        {
-                            if (!drone.dead)
-                            {
-                                drone.ForceDestroy(true, true);
-                            }
-                            return orig(self, direction, evenIfInvincible, registerDeathInStats);
-                        }
+                        return orig(self, direction, evenIfInvincible, registerDeathInStats);
                     }
-                    else if (!drone.dead)
-                    {
-                        if (self == drone.FakePlayer)
-                        {
-                            if (!drone.dead)
-                            {
-                                drone.ForceDestroy(true, true);
-                            }
-                            return orig(self, direction, evenIfInvincible, registerDeathInStats);
-                        }
-                        drone.ForceDestroy();
-                    }
-                    return null;
+                    drone.ForceDestroy();
+                }
+                return null;
             }
             else
             {
@@ -1134,7 +1134,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (enabled && tutorial)
                     {
-                        
+
                         tutorialTimer += Engine.DeltaTime;
                     }
                     else
@@ -1255,7 +1255,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     tutorialTimer = 0f;
                 }
                 yield return 0.5f;
-                //enabled = false;
                 if (player != null)
                 {
                     if (goldenStrawb == null || forced)

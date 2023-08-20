@@ -222,7 +222,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public void SetXPosition()
         {
-            if(player != null)
+            if (player != null)
             {
                 TotalSections = (int)determineBaseStamina() / 5;
                 Sections = GetSections();
@@ -382,7 +382,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 Draw.Rect(Position + new Vector2(2), width, 46f, Color.Black * 0.85f * Opacity);
                 string name = Dialog.Clean("Xaphanhelper_UI_Stamina");
-                ActiveFont.DrawOutline(name, Position + new Vector2((width + 4f)/ 2f, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 0.3f, Color.Yellow * Opacity, 2f, Color.Black * Opacity);
+                ActiveFont.DrawOutline(name, Position + new Vector2((width + 4f) / 2f, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 0.3f, Color.Yellow * Opacity, 2f, Color.Black * Opacity);
                 float nameLenght = ActiveFont.Measure(name).X * 0.3f;
 
                 Draw.Rect(Position, (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);

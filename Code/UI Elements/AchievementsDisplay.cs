@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using Celeste.Mod.XaphanHelper.Data;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System;
-using System.Linq;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
@@ -329,7 +329,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         }
 
         private Level level;
-        
+
         public List<AchievementData> AchievementsData;
 
         private MedalsDisplay medalDisplay;

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
-using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -66,7 +65,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 {
                     Interact(player);
                 }
-            }        
+            }
         }
 
         private void Interact(Player player)

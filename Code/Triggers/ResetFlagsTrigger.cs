@@ -1,6 +1,5 @@
 ﻿using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Entities;
-using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 
 namespace Celeste.Mod.XaphanHelper.Triggers
@@ -121,7 +120,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                         {
                             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
                             {
-                                XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag+ "_GoldenStrawberry");
+                                XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
                             }
                         }
                     }

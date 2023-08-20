@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Microsoft.Xna.Framework;
+﻿using System.Reflection;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Hooks

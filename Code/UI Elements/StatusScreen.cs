@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
 using static Celeste.Mod.XaphanHelper.UI_Elements.StatusDisplay;

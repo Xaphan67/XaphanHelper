@@ -466,7 +466,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 base.Render();
                 string timeString = TimeSpan.FromTicks(IsPaused ? PausedTimer : (GetRemainingTime() <= 0 ? 0 : GetRemainingTime())).ShortGameplayFormat();
                 float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(timeString);
-                Vector2 position = new Vector2(Engine.Width / 2 - timeWidth * 1.5f / 2, Engine.Height / 2 - 420);
+                Vector2 position = new(Engine.Width / 2 - timeWidth * 1.5f / 2, Engine.Height / 2 - 420);
                 float scale = 1.5f;
                 float alpha = 1f;
                 float num = scale;

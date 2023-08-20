@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;

@@ -16,7 +16,6 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
-using FMOD;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -549,7 +548,8 @@ namespace Celeste.Mod.XaphanHelper
                     decal.Depth = int.Parse(attrs["value"].Value);
                 }
             });
-            DecalRegistry.AddPropertyHandler("XaphanHelper_flagsHide", (Decal decal, XmlAttributeCollection attrs) => {
+            DecalRegistry.AddPropertyHandler("XaphanHelper_flagsHide", (Decal decal, XmlAttributeCollection attrs) =>
+            {
                 if (attrs["flags"] != null && (attrs["room"] == null || decal.SceneAs<Level>().Session.Level == attrs["room"].Value))
                 {
                     decal.Add(new FlagDecalVisibilityToggle(attrs["flags"].Value.Split(','), attrs["inverted"] != null && bool.Parse(attrs["inverted"].Value)));
@@ -571,7 +571,8 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
             });
-            DecalRegistry.AddPropertyHandler("XaphanHelper_randomFlagSwap", (Decal decal, XmlAttributeCollection attrs) => {
+            DecalRegistry.AddPropertyHandler("XaphanHelper_randomFlagSwap", (Decal decal, XmlAttributeCollection attrs) =>
+            {
                 if (attrs["flag"] != null && attrs["offPath"] != null && attrs["onPath"] != null)
                 {
                     List<MTexture> offTextures = attrs["offPath"].Value.Split(',').Select(path => GFX.Game[path]).ToList();
@@ -1523,7 +1524,7 @@ namespace Celeste.Mod.XaphanHelper
                 Table.AddColumn(new OuiJournalPage.IconCell("time", 220f));
 
                 Color TextColor = Color.Black * 0.6f;
-                Vector2 TextJustify = new Vector2(0.5f, 0.5f);
+                Vector2 TextJustify = new(0.5f, 0.5f);
                 int TotalASidesDeaths = 0;
                 int TotalBSidesDeaths = 0;
                 int TotalCSidesDeaths = 0;
@@ -1546,7 +1547,7 @@ namespace Celeste.Mod.XaphanHelper
                     OuiJournalPage.Row row = Table.AddRow().Add(new OuiJournalPage.TextCell((Visited || i == 0) ? Dialog.Clean(areaData.Name) : "???", new Vector2(1f, 0.5f), 0.6f, TextColor, 400f, true)).Add(null);
                     if (!areaData.Interlude_Safe)
                     {
-                        List<string> list = new List<string>();
+                        List<string> list = new();
                         for (int j = 0; j < areaStats.Modes.Length; j++)
                         {
                             if (areaStats.Modes[j].HeartGem)
@@ -3218,7 +3219,7 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.LoadedPlayer = false;
                     self.Session.SetFlag("XaphanHelper_Loaded_Player", false);
                 }
-                
+
                 // SoCM Only
 
                 if (startedAnySoCMChapter && SoCMVersion >= new Version(3, 0, 0) && !SkipSoCMIntro && self.Session.Area.ChapterIndex == -1)
@@ -3492,11 +3493,11 @@ namespace Celeste.Mod.XaphanHelper
 
                 if (useMergeChaptersController && MergedChaptersGoldenStrawberry.Grabbed && !self.Session.GrabbedGolden)
                 {
-                    EntityData entityData = new EntityData();
+                    EntityData entityData = new();
                     entityData.Position = player.Position;
                     entityData.ID = MergedChaptersGoldenStrawberry.ID;
                     entityData.Name = "goldenBerry";
-                    Strawberry strawberry = new Strawberry(gid: new EntityID(MergedChaptersGoldenStrawberry.StartRoom, entityData.ID), data: entityData, offset: Vector2.Zero);
+                    Strawberry strawberry = new(gid: new EntityID(MergedChaptersGoldenStrawberry.StartRoom, entityData.ID), data: entityData, offset: Vector2.Zero);
                     player.SceneAs<Level>().Add(strawberry);
                 }
             }
@@ -3595,7 +3596,7 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             faceLeft = true;
                         }
-                        self.Add(new TeleportCutscene(player, ModSaveData.droneStartRoom[self.Session.Area.GetLevelSet()], Vector2.Zero, 0, 0, true, 0f, "Fade", wipeDuration, fromElevator, wakeUpAnim: true, spawnPositionX: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].X, spawnPositionY: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].Y, faceLeft: faceLeft, drone : true));
+                        self.Add(new TeleportCutscene(player, ModSaveData.droneStartRoom[self.Session.Area.GetLevelSet()], Vector2.Zero, 0, 0, true, 0f, "Fade", wipeDuration, fromElevator, wakeUpAnim: true, spawnPositionX: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].X, spawnPositionY: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].Y, faceLeft: faceLeft, drone: true));
                     }
                     else
                     {

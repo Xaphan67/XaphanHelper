@@ -26,7 +26,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            
+
         }
 
         private IEnumerator GenerateSparks()
