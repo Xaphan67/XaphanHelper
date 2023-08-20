@@ -65,8 +65,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private MTexture buttonTexture;
 
-        private bool isFading;
-
         private bool ShowAmmo;
 
         public static void getStaminaData(Level level)
@@ -263,6 +261,19 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Position.Y = 26f;
         }
 
+        public void UpdateOpacity()
+        {
+            int BagDisplays = SceneAs<Level>().Tracker.GetEntities<BagDisplay>().Count;
+            if (player != null && player.Center.X > SceneAs<Level>().Camera.Right - ((ShowAmmo ? 52f : (BagDisplays == 2 ? 64f : 32f)) + width / 6) && player.Center.Y < SceneAs<Level>().Camera.Top + 52)
+            {
+                Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
+            }
+            else
+            {
+                Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
+            }
+        }
+
         public override void Update()
         {
             base.Update();
@@ -274,25 +285,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (!drone.canDestroy || drone.dead || !drone.enabled)
                 {
                     Opacity = Calc.Approach(Opacity, 0f, Engine.RawDeltaTime * 3f);
-                    isFading = true;
                 }
                 else
                 {
-                    isFading = false;
-                    Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
+                    UpdateOpacity();
                 }
             }
             else
             {
-                isFading = false;
-                if (player != null && player.Center.X > SceneAs<Level>().Camera.Right - (96 + width / 6) && player.Center.Y < SceneAs<Level>().Camera.Top + 52)
-                {
-                    Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
-                }
-                else
-                {
-                    Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
-                }
+                UpdateOpacity();
             }
             if (!SceneAs<Level>().Paused && !SceneAs<Level>().PauseLock && XaphanModule.PlayerIsControllingRemoteDrone())
             {
@@ -415,7 +416,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Draw.Rect(Position + new Vector2(0f, height + 2f), width + 4f, 2f, borderColor * Opacity);
 
                 Vector2 missileIconPos = Vector2.Zero;
-                Vector2 superMissilePos = Vector2.Zero;
+                Vector2 superMissileIconPos = Vector2.Zero;
 
                 if (HasMissilesUpgrade)
                 {
@@ -423,11 +424,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (HasSuperMissilesUpgrade && !HasMissilesUpgrade)
                 {
-                    superMissilePos = Position + new Vector2(13f, 13f);
+                    superMissileIconPos = Position + new Vector2(13f, 13f);
                 }
                 else if (HasMissilesUpgrade && HasSuperMissilesUpgrade)
                 {
-                    superMissilePos = Position + new Vector2(13f, 55f);
+                    superMissileIconPos = Position + new Vector2(13f, 55f);
                 }
 
                 if (MissileSelected)
@@ -436,21 +437,48 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (SuperMissileSelected)
                 {
-                    Draw.Rect(superMissilePos - new Vector2(4), 146f, superMissileIcon.Height + 8f, Color.Green * 0.85f * Opacity);
+                    Draw.Rect(superMissileIconPos - new Vector2(4), 146f, superMissileIcon.Height + 8f, Color.Green * 0.85f * Opacity);
                 }
+
+                string currentMissiles = CurrentMissiles.ToString();
+                string currentSuperMissiles = CurrentSuperMissiles.ToString();
 
                 if (HasMissilesUpgrade)
                 {
                     missileIcon.Draw(missileIconPos, Vector2.Zero, MissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
-                    ActiveFont.DrawOutline(CurrentMissiles.ToString(), Position + new Vector2(missileIcon.Width + 13f + 90f, 30f), new Vector2(1f, 0.5f), Vector2.One * 0.7f, MissileSelected ? Color.Gold * Opacity : Color.White * Opacity, 2f, Color.Black * Opacity);
+                    MTexture FirstFigure = GFX.Gui["upgrades/ammo/0"];
+                    MTexture SecondFigure;
+                    if (currentMissiles.Length == 2)
+                    {
+                        FirstFigure = GFX.Gui["upgrades/ammo/" + currentMissiles[0]];
+                        SecondFigure = GFX.Gui["upgrades/ammo/" + currentMissiles[1]];
+                    }
+                    else
+                    {
+                        SecondFigure = GFX.Gui["upgrades/ammo/" + currentMissiles[0]];
+                    }
+                    FirstFigure.Draw(Position + new Vector2(missileIcon.Width + 13f + 34f, missileIconPos.Y - 22f), Vector2.Zero, MissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
+                    SecondFigure.Draw(Position + new Vector2(missileIcon.Width + 13f + 34f + 28f, missileIconPos.Y - 22f), Vector2.Zero, MissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
                 }
                 if ((HasSuperMissilesUpgrade && !HasMissilesUpgrade) || (HasMissilesUpgrade && HasSuperMissilesUpgrade))
                 {
-                    superMissileIcon.Draw(superMissilePos, Vector2.Zero, SuperMissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
+                    superMissileIcon.Draw(superMissileIconPos, Vector2.Zero, SuperMissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
                 }
                 if (HasSuperMissilesUpgrade)
                 {
-                    ActiveFont.DrawOutline(CurrentSuperMissiles.ToString(), Position + new Vector2(superMissileIcon.Width + 13f + 90f, 30f + (HasMissilesUpgrade ? 42f : 0f)), new Vector2(1f, 0.5f), Vector2.One * 0.7f, SuperMissileSelected ? Color.Gold * Opacity : Color.White * Opacity, 2f, Color.Black * Opacity);
+                    MTexture FirstFigure = GFX.Gui["upgrades/ammo/0"];
+                    MTexture SecondFigure;
+                    if (currentSuperMissiles.Length == 2)
+                    {
+                        FirstFigure = GFX.Gui["upgrades/ammo/" + currentSuperMissiles[0]];
+                        SecondFigure = GFX.Gui["upgrades/ammo/" + currentSuperMissiles[1]];
+                    }
+                    else
+                    {
+                        SecondFigure = GFX.Gui["upgrades/ammo/" + currentSuperMissiles[0]];
+                    }
+                    FirstFigure.Draw(Position + new Vector2(superMissileIcon.Width + 13f + 34f, superMissileIconPos.Y - 22f), Vector2.Zero, SuperMissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
+                    SecondFigure.Draw(Position + new Vector2(superMissileIcon.Width + 13f + 34f + 28f, superMissileIconPos.Y - 22f), Vector2.Zero, SuperMissileSelected ? Color.Gold * Opacity : Color.White * Opacity);
                 }
 
                 if (buttonTexture != null)
