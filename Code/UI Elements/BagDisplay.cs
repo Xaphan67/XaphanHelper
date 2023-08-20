@@ -23,7 +23,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Sprite Sprite;
 
-        private float Opacity;
+        public float Opacity;
 
         public int currentSelection;
 
@@ -52,6 +52,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public bool preventTutorialDisplay;
 
         public int totalDisplays;
+
+        private bool isFading;
 
         public BagDisplay(Level level, string type)
         {
@@ -115,7 +117,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         break;
                     }
                 }
-                if ((self.FrozenOrPaused || self.RetryPlayerCorpse != null || self.SkippingCutscene || self.InCutscene) || (player != null && !player.Sprite.Visible && !self.Session.GetFlag("Xaphan_Helper_Ceiling") && !sliding && (self.Tracker.GetEntity<ScrewAttackManager>() != null ? !self.Tracker.GetEntity<ScrewAttackManager>().StartedScrewAttack : true)) || XaphanModule.ShowUI || XaphanModule.PlayerIsControllingRemoteDrone() || playerIsInHideTrigger(self))
+                Drone drone = self.Tracker.GetEntity<Drone>();
+                if ((self.FrozenOrPaused || self.RetryPlayerCorpse != null || self.SkippingCutscene || self.InCutscene) || (player != null && !player.Sprite.Visible && !self.Session.GetFlag("Xaphan_Helper_Ceiling") && !sliding && (self.Tracker.GetEntity<ScrewAttackManager>() != null ? !self.Tracker.GetEntity<ScrewAttackManager>().StartedScrewAttack : true)) || XaphanModule.ShowUI || playerIsInHideTrigger(self))
                 {
                     if (canAddDisplay && self.Tracker.CountEntities<BagDisplay>() > 0)
                     {
@@ -211,27 +214,30 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public void SetXPosition()
         {
-            totalDisplays = level.Tracker.GetEntities<BagDisplay>().Count;
-            if (XaphanModule.minimapEnabled)
+            if (!isFading)
             {
-                if (totalDisplays == 2 && type == "bag")
+                totalDisplays = level.Tracker.GetEntities<BagDisplay>().Count;
+                if (XaphanModule.minimapEnabled)
                 {
-                    Position.X = 1455f;
+                    if (totalDisplays == 2 && type == "bag")
+                    {
+                        Position.X = 1455f;
+                    }
+                    else
+                    {
+                        Position.X = 1575f;
+                    }
                 }
                 else
                 {
-                    Position.X = 1575f;
-                }
-            }
-            else
-            {
-                if (totalDisplays == 2 && type == "bag")
-                {
-                    Position.X = 1670f;
-                }
-                else
-                {
-                    Position.X = 1790f;
+                    if (totalDisplays == 2 && type == "bag")
+                    {
+                        Position.X = 1670f;
+                    }
+                    else
+                    {
+                        Position.X = 1790f;
+                    }
                 }
             }
         }
@@ -336,15 +342,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Update();
             player = level.Tracker.GetEntity<Player>();
             totalDisplays = level.Tracker.GetEntities<BagDisplay>().Count;
-            if (player != null && player.Center.X > level.Camera.Right - (totalDisplays == 2 ? 96f : 64f) && player.Center.Y < level.Camera.Top + 52)
+            SetXPosition();
+            Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+            if (drone != null && !Drone.Hold.IsHeld)
             {
-                Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
+                Opacity = Calc.Approach(Opacity, 0f, Engine.RawDeltaTime * 3f);
+                isFading = true;
             }
             else
             {
-                Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
+                isFading = false;
+                if (player != null && player.Center.X > level.Camera.Right - (totalDisplays == 2 ? 96f : 64f) && player.Center.Y < level.Camera.Top + 52)
+                {
+                    Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
+                }
+                else
+                {
+                    Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
+                }
             }
-            SetXPosition();
             if (!preventTutorialDisplay)
             {
                 if (tutorialGui == null)

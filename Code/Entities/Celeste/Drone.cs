@@ -1248,6 +1248,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     tutorialTimer = 0f;
                 }
                 yield return 0.5f;
+                enabled = false;
                 if (player != null)
                 {
                     if (goldenStrawb == null || forced)

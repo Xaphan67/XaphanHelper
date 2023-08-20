@@ -19,10 +19,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private static ILHook summitGemSmashRoutineHook;
 
-        private MTexture bg = GFX.Gui["upgrades/displayBG"];
-
-        private MTexture staminaIcon = GFX.Gui["upgrades/stamina/icon"];
-
         private MTexture missileIcon = GFX.Gui["upgrades/ammo/missile"];
 
         private MTexture superMissileIcon = GFX.Gui["upgrades/ammo/superMissile"];
@@ -68,6 +64,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         VirtualButton Button = new();
 
         private MTexture buttonTexture;
+
+        private bool isFading;
+
+        private bool ShowAmmo;
 
         public static void getStaminaData(Level level)
         {
@@ -222,47 +222,77 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
-        public void SetXposition()
+        public void SetXPosition()
         {
-            if (player != null)
+            if(player != null)
             {
                 TotalSections = (int)determineBaseStamina() / 5;
                 Sections = GetSections();
             }
+            Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
             if (!XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 width = Sections.Count * (section.Width + sectionSpacing) + 22f - sectionSpacing;
             }
             else
             {
-                width = 160f;
+                if (drone != null && drone.canDestroy)
+                {
+                    width = 160f;
+                }
                 HasMissilesUpgrade = MissilesModule.Active(SceneAs<Level>());
                 HasSuperMissilesUpgrade = SuperMissilesModule.Active(SceneAs<Level>());
                 height = ((HasMissilesUpgrade && !HasSuperMissilesUpgrade) || (HasSuperMissilesUpgrade && !HasMissilesUpgrade)) ? 54f : 96f;
+                if (Opacity <= 0.05f && !drone.dead)
+                {
+                    Position.X = 1920f - (XaphanModule.minimapEnabled ? 222f : 0f) - 27f - width;
+                }
             }
-            int BagDisplays = SceneAs<Level>().Tracker.GetEntities<BagDisplay>().Count;
-            Position.X = 1920f - (XaphanModule.minimapEnabled ? 222f : 0f) - 27f - width - BagDisplays * 120f;
+            if (drone != null ? !drone.enabled && Opacity <= 0.5f : true)
+            {
+                int BagDisplays = SceneAs<Level>().Tracker.GetEntities<BagDisplay>().Count;
+                Position.X = 1920f - (XaphanModule.minimapEnabled ? 222f : 0f) - 27f - width - BagDisplays * 120f;
+            }
         }
 
         public override void Added(Scene scene)
         {
             base.Added(scene);
             sectionSpacing = 2;
-            SetXposition();
+            SetXPosition();
             Position.Y = 26f;
         }
 
         public override void Update()
         {
             base.Update();
-            SetXposition();
-            if (player != null && player.Center.X > SceneAs<Level>().Camera.Right - (96 + width / 6) && player.Center.Y < SceneAs<Level>().Camera.Top + 52)
+            SetXPosition();
+            Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+            ShowAmmo = (drone != null && !Drone.Hold.IsHeld && drone.canDestroy);
+            if (drone != null && !Drone.Hold.IsHeld)
             {
-                Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
+                if (!drone.canDestroy || drone.dead || !drone.enabled)
+                {
+                    Opacity = Calc.Approach(Opacity, 0f, Engine.RawDeltaTime * 3f);
+                    isFading = true;
+                }
+                else
+                {
+                    isFading = false;
+                    Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
+                }
             }
             else
             {
-                Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
+                isFading = false;
+                if (player != null && player.Center.X > SceneAs<Level>().Camera.Right - (96 + width / 6) && player.Center.Y < SceneAs<Level>().Camera.Top + 52)
+                {
+                    Opacity = Calc.Approach(Opacity, 0.3f, Engine.RawDeltaTime * 3f);
+                }
+                else
+                {
+                    Opacity = Calc.Approach(Opacity, 1f, Engine.RawDeltaTime * 3f);
+                }
             }
             if (!SceneAs<Level>().Paused && !SceneAs<Level>().PauseLock && XaphanModule.PlayerIsControllingRemoteDrone())
             {
@@ -347,7 +377,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Render()
         {
             base.Render();
-            if (ShowStaminaBar && PowerGrip.isActive && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (ShowStaminaBar && PowerGrip.isActive && !ShowAmmo)
             {
                 Draw.Rect(Position + new Vector2(2), width, 46f, Color.Black * 0.85f * Opacity);
                 string name = Dialog.Clean("Xaphanhelper_UI_Stamina");
@@ -371,7 +401,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     Col++;
                 }
             }
-            else if (XaphanModule.PlayerIsControllingRemoteDrone() && (HasMissilesUpgrade || HasSuperMissilesUpgrade))
+            else if (ShowAmmo && (HasMissilesUpgrade || HasSuperMissilesUpgrade))
             {
                 Draw.Rect(Position + new Vector2(2), width, height, Color.Black * 0.85f * Opacity);
                 string name = Dialog.Clean("Xaphanhelper_UI_Ammo");
