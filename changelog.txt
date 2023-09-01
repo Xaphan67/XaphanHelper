@@ -5,6 +5,7 @@ Version 1.0.59 :
 - The save file slot now show the campaign name instead of the further area name when using a Merge Chapter Controller
 - Fixed a bug respawning the player in Drone control when exiting a map after using the Drone Teleport ability
 - Fixed a suftlock if the Remote Drone was thrown on top of a floor-oriented spring
+- Fixed a bug preventing Event flags of Start Countdown Triggers to trigger at the correct time if the game was paused while the countdown is active
 
 Version 1.0.58 :
 - Added "Hide Flag" and "Events Flags" attributes to Start Countdown Trigger

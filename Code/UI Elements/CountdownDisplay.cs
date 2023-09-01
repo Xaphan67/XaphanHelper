@@ -454,7 +454,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             if (!TimerRanOut)
             {
-                return CurrentTime - GetSpendTime();
+                return IsPaused ? PausedTimer : (CurrentTime - GetSpendTime());
             }
             return 0;
         }
@@ -464,7 +464,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (!SceneAs<Level>().Session.GetFlag(hideFlag))
             {
                 base.Render();
-                string timeString = TimeSpan.FromTicks(IsPaused ? PausedTimer : (GetRemainingTime() <= 0 ? 0 : GetRemainingTime())).ShortGameplayFormat();
+                string timeString = TimeSpan.FromTicks(GetRemainingTime() <= 0 ? 0 : GetRemainingTime()).ShortGameplayFormat();
                 float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(timeString);
                 Vector2 position = new(Engine.Width / 2 - timeWidth * 1.5f / 2, Engine.Height / 2 - 420);
                 float scale = 1.5f;
