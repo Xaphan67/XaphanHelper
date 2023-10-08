@@ -721,6 +721,7 @@ namespace Celeste.Mod.XaphanHelper
         public override void LoadContent(bool firstLoad)
         {
             SpriteBank = new SpriteBank(GFX.Game, "Graphics/Xaphan/CustomSprites.xml");
+            On.Celeste.PlayerSprite.CreateFramesMetadata += PlayerSpriteMetadataHook;
         }
 
         // Unload the entirety of your mod's content. Free up any native resources.
@@ -3920,5 +3921,40 @@ namespace Celeste.Mod.XaphanHelper
             }
             return null;
         }
+
+
+        public void PlayerSpriteMetadataHook(On.Celeste.PlayerSprite.orig_CreateFramesMetadata orig, string self) {
+
+            string extend_object = "XaphanHelper_Extend__" + self;
+            if (!GFX.SpriteBank.Has(extend_object)) {
+                extend_object = "XaphanHelper_Extend__player";
+            }
+
+            SpriteData extendPlayer = GFX.SpriteBank.SpriteData[extend_object];
+            SpriteData objects = GFX.SpriteBank.SpriteData[self];
+
+            PatchSprite(extendPlayer.Sprite, objects.Sprite);
+            //Logger.Log(LogLevel.Warn, "XaphanHelper", $"{extendPlayer.Sprite.GetFrame("XaphanHelper_ceilingIdle", 0)}");
+
+            if (extend_object == "XaphanHelper_Extend__" + self) {
+                orig(extend_object);
+            }
+            orig(self);
+        }
+        private void PatchSprite(Sprite origSprite, Sprite newSprite) {
+            Dictionary<string, Sprite.Animation> newAnims = newSprite.GetAnimations();
+
+            // Shallow copy... sometimes new animations get added mid-update?
+            Dictionary<string, Sprite.Animation> oldAnims = new(origSprite.GetAnimations());
+            foreach (KeyValuePair<string, Sprite.Animation> animEntry in oldAnims) {
+                string origAnimId = animEntry.Key;
+
+                Sprite.Animation origAnim = animEntry.Value;
+                if (!newAnims.ContainsKey(origAnimId)) {
+                    newAnims[origAnimId] = origAnim;
+                }
+            }
+        }
+
     }
 }

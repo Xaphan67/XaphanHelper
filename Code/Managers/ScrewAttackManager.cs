@@ -15,10 +15,6 @@ namespace Celeste.Mod.XaphanHelper.Managers
     [Tracked(true)]
     public class ScrewAttackManager : Entity
     {
-        public Sprite PlayerSprite;
-
-        private Sprite PlayerHairSprite;
-
         private Sprite ScrewAttackSprite;
 
         public bool StartedScrewAttack;
@@ -31,17 +27,10 @@ namespace Celeste.Mod.XaphanHelper.Managers
 
         private Coroutine QuicksandDelayRoutine = new();
 
+        public static string PlayerPose = "";
         public ScrewAttackManager(Vector2 position) : base(position)
         {
             Tag = Tags.Global;
-            Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_spinJump"));
-            PlayerSprite.CenterOrigin();
-            PlayerSprite.Position += new Vector2(0f, -2f);
-            PlayerSprite.Visible = false;
-            Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_spinJump"));
-            PlayerHairSprite.CenterOrigin();
-            PlayerHairSprite.Position += new Vector2(0f, -2f);
-            PlayerHairSprite.Visible = false;
             Add(ScrewAttackSprite = new Sprite(GFX.Game, "upgrades/ScrewAttack/"));
             ScrewAttackSprite.AddLoop("screw", "screwAttack", 0.04f);
             ScrewAttackSprite.CenterOrigin();
@@ -57,12 +46,43 @@ namespace Celeste.Mod.XaphanHelper.Managers
         {
             On.Celeste.Player.Die += OnPlayerDie;
             IL.Celeste.Player.NormalUpdate += modNormalUpdate;
+
+            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
+            IL.Celeste.Player.Render += PlayerRenderIlHook_Color;
         }
 
         public static void Unload()
         {
             On.Celeste.Player.Die -= OnPlayerDie;
             IL.Celeste.Player.NormalUpdate -= modNormalUpdate;
+
+            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+            IL.Celeste.Player.Render -= PlayerRenderIlHook_Color;
+        }
+
+        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false) {
+
+            if (self.Entity is Player player && player != null && player.StateMachine.State != Player.StDash) {
+                if (PlayerPose != "" && isScrewAttacking) {
+                    id = PlayerPose;
+                }
+            }
+            orig(self, id, restart, randomizeFrame);
+        }
+        private static void PlayerRenderIlHook_Color(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall<Color>("get_White"))) {
+                Logger.Log("SkinModHelper", $"Patching silhouette color at {cursor.Index} in IL code for Player.Render()");
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<Color, Player, Color>>((orig, self) => {
+
+                    if (PlayerPose != "") {
+                        orig = Color.Lerp(self.Hair.Color, Calc.HexToColor("44B7FF"), 1 / 4f);
+                    }
+                    return orig;
+                });
+            }
         }
 
         private static PlayerDeadBody OnPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
@@ -72,10 +92,9 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 if (manager.ScrewAttackSprite.Visible)
                 {
                     manager.screwAttackSfx.Stop();
-                    manager.PlayerSprite.Visible = false;
-                    manager.PlayerHairSprite.Visible = false;
                     manager.ScrewAttackSprite.Visible = false;
-                    self.Sprite.Visible = true;
+                    self.Sprite.Color = Color.White;
+                    PlayerPose = "";
                 }
             }
             return orig(self, direction, evenIfInvincible, registerDeathInStats);
@@ -140,10 +159,12 @@ namespace Celeste.Mod.XaphanHelper.Managers
             if (StartedScrewAttack)
             {
                 isScrewAttacking = true;
+                PlayerPose = "XaphanHelper_spinFast";
             }
             else
             {
                 isScrewAttacking = false;
+                PlayerPose = "";
             }
             if (ScrewAttackSprite.Visible && !screwAttackSfx.Playing)
             {
@@ -160,10 +181,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                     }
                     Add(QuicksandDelayRoutine = new Coroutine(QuicksandDelay(player)));
                 }
-                PlayerSprite.Color = player.Sprite.Color;
                 Position = player.Position + new Vector2(0f, -4f);
-                PlayerSprite.FlipX = player.Facing == Facings.Left ? true : false;
-                PlayerHairSprite.FlipX = player.Facing == Facings.Left ? true : false;
                 ScrewAttackSprite.FlipX = player.Facing == Facings.Left ? true : false;
                 if (((player.Sprite.CurrentAnimationID.Contains("jumpFast") || StartedScrewAttack) && player.StateMachine.State == 0 && !player.DashAttacking && !player.OnGround() && player.Holding == null && !SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && (GravityJacket.determineIfInLiquid() ? GravityJacket.Active(SceneAs<Level>()) : true)) && !player.Sprite.CurrentAnimationID.Contains("slide") && Math.Abs(player.Speed.X) >= 90 && !CannotScrewAttack)
                 {
@@ -176,17 +194,12 @@ namespace Celeste.Mod.XaphanHelper.Managers
                         screwAttackSfx.Stop();
                     }
                     Collider = new Circle(10f, 0f, -2f);
-                    string backpack = SceneAs<Level>().Session.Inventory.Backpack ? "Backpack" : "NoBackpack";
-                    PlayerSprite.Play("spin" + backpack);
-                    PlayerHairSprite.Play("hair" + backpack);
+
+                    PlayerPose = "XaphanHelper_spinFast";
+                    player.Sprite.Play(PlayerPose);
+
                     ScrewAttackSprite.Play("screw");
                     StartedScrewAttack = true;
-                    if (!XaphanModule.useMetroidGameplay)
-                    {
-                        PlayerSprite.Visible = true;
-                        PlayerHairSprite.Visible = true;
-                        player.Sprite.Visible = player.Hair.Visible = false;
-                    }
                     ScrewAttackSprite.Visible = true;
                     Collidable = true;
                 }
@@ -194,15 +207,11 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 {
                     screwAttackSfx.Stop();
                     Collider = null;
-                    PlayerSprite.Stop();
-                    PlayerHairSprite.Stop();
                     ScrewAttackSprite.Stop();
                     StartedScrewAttack = false;
-                    PlayerSprite.Visible = false;
-                    PlayerHairSprite.Visible = false;
                     ScrewAttackSprite.Visible = false;
-                    player.Sprite.Visible = player.Hair.Visible = true;
                     Collidable = false;
+                    PlayerPose = "";
                 }
                 if (StartedScrewAttack)
                 {
@@ -248,54 +257,9 @@ namespace Celeste.Mod.XaphanHelper.Managers
         public override void Render()
         {
             base.Render();
-            if (!XaphanModule.useMetroidGameplay)
-            {
-                if (XaphanModule.useUpgrades && (VariaJacket.Active(SceneAs<Level>()) || GravityJacket.Active(SceneAs<Level>())))
-                {
-                    string id = "";
-                    if (GravityJacket.Active(SceneAs<Level>()))
-                    {
-                        id = "gravity";
-                    }
-                    else if (VariaJacket.Active(SceneAs<Level>()))
-                    {
-                        id = "varia";
-                    }
-                    Effect fxColorGrading = GFX.FxColorGrading;
-                    fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
-                    Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
-                    Draw.SpriteBatch.End();
-                    Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, (Scene as Level).GameplayRenderer.Camera.Matrix);
-                }
-                if (PlayerSprite != null && PlayerSprite.Visible)
-                {
-                    PlayerSprite.Render();
-                }
-                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-                if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
-                {
-                    PlayerHairSprite.Color = player.Hair.Color;
-                    PlayerHairSprite.Render();
-                }
-            }
             if (ScrewAttackSprite != null && ScrewAttackSprite.Visible)
             {
                 ScrewAttackSprite.Render();
-            }
-            if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(SceneAs<Level>()) || GravityJacket.Active(SceneAs<Level>())))
-            {
-                Draw.SpriteBatch.End();
-                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, (Scene as Level).GameplayRenderer.Camera.Matrix);
-            }
-        }
-
-        public override void Removed(Scene scene)
-        {
-            base.Removed(scene);
-            Player player = scene.Tracker.GetEntity<Player>();
-            if (player != null)
-            {
-                player.Sprite.Visible = player.Hair.Visible = true;
             }
         }
     }

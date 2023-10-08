@@ -12,9 +12,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [Tracked(true)]
     class PlayerPlatform : Solid
     {
-        private Sprite PlayerSprite;
-
-        private Sprite PlayerHairSprite;
 
         private Vector2 StartPosition;
 
@@ -43,6 +40,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public bool Sliding;
 
         public bool preventCollision;
+        public string PlayerPose = "";
 
         public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false) : base(position, width, 4, true)
         {
@@ -59,39 +57,34 @@ namespace Celeste.Mod.XaphanHelper.Entities
             AffectPlayerSpeed = affectPlayerSpeed;
             StickyDash = stickyDash;
             CanJumpThrough = canJumpThrough;
-            Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_slide"));
-            PlayerSprite.Visible = false;
-            Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_slide"));
-            PlayerHairSprite.Visible = false;
         }
 
         public static void Load()
         {
-            Everest.Events.Player.OnDie += onPlayerDie;
             On.Celeste.Solid.MoveVExact += OnSolidMoveVExact;
             On.Celeste.Solid.Update += OnSolidUpdate;
+
+            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
         }
 
         public static void Unload()
         {
-            Everest.Events.Player.OnDie -= onPlayerDie;
             On.Celeste.Solid.MoveVExact -= OnSolidMoveVExact;
             On.Celeste.Solid.Update -= OnSolidUpdate;
-        }
 
-        private static void onPlayerDie(Player player)
-        {
-            foreach (PlayerPlatform platform in player.SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
-            {
-                if (platform.PlayerSprite.Visible)
-                {
-                    platform.PlayerSprite.Visible = false;
-                }
-                if (platform.PlayerHairSprite.Visible)
-                {
-                    platform.PlayerHairSprite.Visible = false;
+            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+        }
+        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false) {
+
+            if (self.Entity is Player player && player != null && player.StateMachine.State != Player.StDash) {
+                foreach (PlayerPlatform platform in self.SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>()) {
+                    if (platform.PlayerPose != "" && platform.Active) {
+                        id = platform.PlayerPose;
+                        break;
+                    }
                 }
             }
+            orig(self, id, restart, randomizeFrame);
         }
 
         private static void OnSolidMoveVExact(On.Celeste.Solid.orig_MoveVExact orig, Solid self, int move)
@@ -181,8 +174,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            PlayerPose = "";
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+
             if (drone != null)
             {
                 if (drone.FakePlayer != null && !drone.dead)
@@ -195,16 +190,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (player != null)
             {
+
                 if (Sliding && (player.Sprite.CurrentAnimationID != "duck" || player.Speed.X == 0 || Input.Jump.Pressed))
                 {
                     Sliding = false;
-                    player.Sprite.Visible = true;
-                    player.Hair.Visible = true;
-                }
-                if (player.Sprite.Visible)
-                {
-                    PlayerSprite.Visible = false;
-                    PlayerHairSprite.Visible = false;
                 }
                 if (player.Right <= Left - 16 || player.Left >= Right + 16)
                 {
@@ -246,15 +235,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 SetCollision(player);
                             }
+
+
                             if (Side == "Left")
                             {
                                 if (CanSlide && drone == null && player.IsRiding(this) && Input.MoveY == 1 && Input.MoveX != -1 && player.Left >= Left && !XaphanModule.UIOpened)
                                 {
                                     Sliding = true;
-                                    player.Sprite.Visible = false;
-                                    player.Hair.Visible = false;
-                                    PlayerSprite.Visible = true;
-                                    PlayerHairSprite.Visible = true;
+                                    PlayerPose = "XaphanHelper_slopeSlide";
+
                                     if (player.Facing != Facings.Right)
                                     {
                                         player.Facing = Facings.Right;
@@ -279,10 +268,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 if (CanSlide && drone == null && player.IsRiding(this) && Input.MoveY == 1 && Input.MoveX != 1 && player.Right <= Right && !XaphanModule.UIOpened)
                                 {
                                     Sliding = true;
-                                    player.Sprite.Visible = false;
-                                    player.Hair.Visible = false;
-                                    PlayerSprite.Visible = true;
-                                    PlayerHairSprite.Visible = true;
+                                    PlayerPose = "XaphanHelper_slopeSlide";
+
                                     if (player.Facing != Facings.Left)
                                     {
                                         player.Facing = Facings.Left;
@@ -435,56 +422,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             else
             {
                 Collidable = false;
-            }
-        }
-
-        public override void Render()
-        {
-            if (XaphanModule.useUpgrades && (VariaJacket.Active(SceneAs<Level>()) || GravityJacket.Active(SceneAs<Level>())))
-            {
-                string id = "";
-                if (GravityJacket.Active(SceneAs<Level>()))
-                {
-                    id = "gravity";
-                }
-                else if (VariaJacket.Active(SceneAs<Level>()))
-                {
-                    id = "varia";
-                }
-                Effect fxColorGrading = GFX.FxColorGrading;
-                fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
-                Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
-                Draw.SpriteBatch.End();
-                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, (Scene as Level).GameplayRenderer.Camera.Matrix);
-            }
-            base.Render();
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player != null && PlayerSprite != null && PlayerHairSprite != null)
-            {
-                if (player.Facing == Facings.Left)
-                {
-                    PlayerSprite.FlipX = true;
-                    PlayerHairSprite.FlipX = true;
-                }
-                else
-                {
-                    PlayerSprite.FlipX = false;
-                    PlayerHairSprite.FlipX = false;
-                }
-                PlayerSprite.RenderPosition = player.Position + new Vector2(-16f, -31f);
-                PlayerHairSprite.RenderPosition = player.Position + new Vector2(-16f, -31f);
-                string backpack = SceneAs<Level>().Session.Inventory.Backpack ? "Backpack" : "NoBackpack";
-                if (PlayerSprite.Visible && PlayerHairSprite.Visible)
-                {
-                    PlayerSprite.Play("slide" + backpack);
-                    PlayerHairSprite.Color = player.Hair.Color;
-                    PlayerHairSprite.Play("hair" + backpack);
-                }
-            }
-            if (XaphanModule.useUpgrades && (VariaJacket.Active(SceneAs<Level>()) || GravityJacket.Active(SceneAs<Level>())))
-            {
-                Draw.SpriteBatch.End();
-                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, (Scene as Level).GameplayRenderer.Camera.Matrix);
             }
         }
 
