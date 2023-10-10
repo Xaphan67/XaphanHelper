@@ -162,7 +162,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
         }
-
+        public override void Update() {
+            base.Update();
+            if (attachedMoveBlock != null && attachedMoveBlock.steerSides.Contains("Bottom") && (attachedMoveBlock.direction == CustomMoveBlock.Directions.Left || attachedMoveBlock.direction == CustomMoveBlock.Directions.Right)) {
+                if (playerWasAttached) {
+                    Position.Y = attachedMoveBlock.Position.Y + attachedMoveBlock.Height + attachedMoveBlock.magneticCeilingOffset + attachedMoveBlock.buttonPressedOffset;
+                } else {
+                    Position.Y = attachedMoveBlock.Position.Y + attachedMoveBlock.Height + attachedMoveBlock.magneticCeilingOffset;
+                }
+            }
+        }
         private IEnumerator JumpGraceTimer(Player player)
         {
             float timer = 0.1f;
