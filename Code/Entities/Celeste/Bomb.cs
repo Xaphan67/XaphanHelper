@@ -146,31 +146,73 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnCollideH(CollisionData data)
         {
-            Audio.Play("event:/game/05_mirror_temple/crystaltheo_hit_side", Position);
-            if (Math.Abs(Speed.X) > 100f)
+            bool shouldBounce = true;
+            if (data.Hit is BombBlock)
             {
-                ImpactParticles(data.Direction);
+                BombBlock bombBlock = data.Hit as BombBlock;
+                if (bombBlock.Active)
+                {
+                    foreach (BombBlock.PushingSide side in bombBlock.pushSides)
+                    {
+                        if (((side.Side == "Left" && Right - 8 <= side.Left) ||
+                            (side.Side == "Right" && Left + 8 >= side.Right)
+                            ) && side.isActive)
+                        {
+                            shouldExplodeImmediately = true;
+                            shouldBounce = false;
+                        }
+                    }
+                }
             }
-            Speed.X *= -0.2f;
+            if (shouldBounce)
+            {
+                Audio.Play("event:/game/05_mirror_temple/crystaltheo_hit_side", Position);
+                if (Math.Abs(Speed.X) > 100f)
+                {
+                    ImpactParticles(data.Direction);
+                }
+                Speed.X *= -0.2f;
+            }
         }
 
         private void OnCollideV(CollisionData data)
         {
-            if (Speed.Y > 0f)
+            bool shouldBounce = true;
+            if (data.Hit is BombBlock)
             {
-                Audio.Play("event:/game/05_mirror_temple/crystaltheo_hit_ground", Position, "crystal_velocity", 0f);
+                BombBlock bombBlock = data.Hit as BombBlock;
+                if (bombBlock.Active)
+                {
+                    foreach (BombBlock.PushingSide side in bombBlock.pushSides)
+                    {
+                        if (((side.Side == "Up" && Bottom - 8 <= side.Top) ||
+                            (side.Side == "Down" && Top + 8 >= side.Bottom)
+                            ) && side.isActive)
+                        {
+                            shouldExplodeImmediately = true;
+                            shouldBounce = false;
+                        }
+                    }
+                }
             }
-            if (Speed.Y > 160f)
+            if (shouldBounce)
             {
-                ImpactParticles(data.Direction);
-            }
-            if (Speed.Y > 140f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch))
-            {
-                Speed.Y *= -0.4f;
-            }
-            else
-            {
-                Speed.Y = 0f;
+                if (Speed.Y > 0f)
+                {
+                    Audio.Play("event:/game/05_mirror_temple/crystaltheo_hit_ground", Position, "crystal_velocity", 0f);
+                }
+                if (Speed.Y > 160f)
+                {
+                    ImpactParticles(data.Direction);
+                }
+                if (Speed.Y > 140f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch))
+                {
+                    Speed.Y *= -0.4f;
+                }
+                else
+                {
+                    Speed.Y = 0f;
+                }
             }
         }
 
@@ -422,7 +464,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             (side.Side == "Left" && Right - 8 <= side.Left) ||
                             (side.Side == "Right" && Left + 8 >= side.Right) ||
                             (side.Side == "Up" && Bottom - 8 <= side.Top) ||
-                            (side.Side == "Down" && (Top + 8 >= side.Bottom || Hold.IsHeld))
+                            (side.Side == "Down" && (Top + 10 >= side.Bottom || Hold.IsHeld))
                             ) && side.isActive)
                         {
                             bombBlock.Push();
