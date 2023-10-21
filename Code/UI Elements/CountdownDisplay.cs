@@ -322,7 +322,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                 }
-                if (SceneAs<Level>().Session.GetFlag(hideFlag))
+                if (SceneAs<Level>().Session.GetFlag(hideFlag) && !string.IsNullOrEmpty(hideFlag))
                 {
                     Timetext.Visible = false;
                 }
@@ -372,18 +372,33 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Level.Session.DeathsInCurrentLevel++;
             SaveData.Instance.AddDeath(Level.Session.Area);
             yield return 0.5f;
-            if (!FromOtherChapter)
+
+            // Crossover Collab special case
+
+            if (Level.Session.Area.SID.ToString().StartsWith("CrossoverCollab"))
             {
-                Scene.Add(new TeleportCutscene(player, startRoom, SpawnPosition, 0, 0, true, 0f, "Fade", respawnAnim: true, useLevelWipe: true));
-                yield return 0.49f;
-                UnsetEventsFlags(Level);
-                RemoveSelf();
+                Engine.Scene = new LevelExit(LevelExit.Mode.GoldenBerryRestart, Level.Session)
+                {
+                    GoldenStrawberryEntryLevel = startRoom
+                };
             }
             else
-            {
-                Level.DoScreenWipe(false, () => ReturnToOrigChapter(Level));
-            }
 
+            // Normal behaviour
+
+            {
+                if (!FromOtherChapter)
+                {
+                    Scene.Add(new TeleportCutscene(player, startRoom, SpawnPosition, 0, 0, true, 0f, "Fade", respawnAnim: true, useLevelWipe: true));
+                    yield return 0.49f;
+                    UnsetEventsFlags(Level);
+                    RemoveSelf();
+                }
+                else
+                {
+                    Level.DoScreenWipe(false, () => ReturnToOrigChapter(Level));
+                }
+            }
         }
 
         private void ReturnToOrigChapter(Level level)
@@ -396,7 +411,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             XaphanModule.ModSaveData.Wipe = "Fade";
             XaphanModule.ModSaveData.WipeDuration = 1.35f;
             XaphanModule.ModSaveData.CountdownCurrentTime = -1;
-            XaphanModule.ModSaveData.CountdownShake = false;
             XaphanModule.ModSaveData.CountdownShake = false;
             XaphanModule.ModSaveData.CountdownStartChapter = -1;
             XaphanModule.ModSaveData.CountdownStartRoom = "";
@@ -461,7 +475,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public override void Render()
         {
-            if (!SceneAs<Level>().Session.GetFlag(hideFlag))
+            if (!SceneAs<Level>().Session.GetFlag(hideFlag) || string.IsNullOrEmpty(hideFlag))
             {
                 base.Render();
                 string timeString = TimeSpan.FromTicks(GetRemainingTime() <= 0 ? 0 : GetRemainingTime()).ShortGameplayFormat();
