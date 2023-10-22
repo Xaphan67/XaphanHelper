@@ -26,22 +26,41 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 explosionSprite.Play("explosionB");
             }
+            float rotation = rand.NextFloat();
+            if (rand.Next(101) <= 50)
+            {
+                explosionSprite.Rotation = -(float)Math.PI / (2 - rotation);
+            }
+            else
+            {
+                explosionSprite.Rotation = (float)Math.PI / (2 - rotation);
+            }
+            if (rand.Next(101) <= 50)
+            {
+                explosionSprite.FlipX = true;
+            }
+            if (rand.Next(101) <= 50)
+            {
+                explosionSprite.FlipY = true;
+            }
             explosionSprite.OnLastFrame = onLastFrame;
-            Collider = new Circle(50f);
+            Collider = new Circle(20f);
         }
 
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (CollideCheck<Player>() || CollideCheck<TimerExplosion>())
+            if (CollideCheck<Player>() || CollideCheck<BubbleDoor>())
             {
                 RemoveSelf();
             }
             else
             {
                 Random rand = Calc.Random;
-                if (rand.Next(101) <= 75)
+                if (rand.Next(101) <= 10)
+                {
                     Audio.Play("event:/game/xaphan/explosion");
+                }
             }
         }
 

@@ -179,7 +179,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 TimerExplosion explosion = new(SceneAs<Level>().Camera.Position + new Vector2(rand.Next(0, 320), rand.Next(0, 184)));
                 SceneAs<Level>().Add(explosion);
-                yield return 0.05f;
+                yield return 0.1f;
             }
             Explosing = false;
         }
