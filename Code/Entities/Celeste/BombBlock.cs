@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Policy;
 using Celeste.Mod.Entities;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -13,60 +17,70 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private class PathRenderer : Entity
         {
-            private BombBlock block;
+            public BombBlock Block;
 
-            private MTexture pathTexture;
+            private MTexture cog;
 
-            private MTexture clipTexture = new();
+            private Vector2 from;
 
-            private float timer = 0f;
+            private Vector2 to;
 
-            public bool isActive;
+            private Vector2 sparkAdd;
 
-            public string flag;
+            private float sparkDirFromA;
 
-            public PathRenderer(BombBlock block) : base(block.Position)
+            private float sparkDirFromB;
+
+            private float sparkDirToA;
+
+            private float sparkDirToB;
+
+            public PathRenderer(BombBlock block)
             {
-                this.block = block;
-                flag = block.flag;
-                Depth = 8999;
-                pathTexture = GFX.Game[block.directory + "/path" + ((block.start.X == block.end.X) ? "V" : "H")];
-                timer = Calc.Random.NextFloat();
+                base.Depth = 5000;
+                Block = block;
+                from = Block.start + new Vector2(Block.Width / 2f, Block.Height / 2f);
+                to = Block.end + new Vector2(Block.Width / 2f, Block.Height / 2f);
+                sparkAdd = (from - to).SafeNormalize(5f).Perpendicular();
+                float num = (from - to).Angle();
+                sparkDirFromA = num + (float)Math.PI / 8f;
+                sparkDirFromB = num - (float)Math.PI / 8f;
+                sparkDirToA = num + (float)Math.PI - (float)Math.PI / 8f;
+                sparkDirToB = num + (float)Math.PI + (float)Math.PI / 8f;
+                cog = GFX.Game["objects/zipmover/cog"];
             }
 
-            public override void Update()
+            public void CreateSparks()
             {
-                base.Update();
-                if (flag == "" || SceneAs<Level>().Session.GetFlag(flag))
-                {
-                    isActive = true;
-                }
-                else
-                {
-                    isActive = false;
-                }
-                timer += Engine.DeltaTime * 4f;
+                SceneAs<Level>().ParticlesBG.Emit(ZipMover.P_Sparks, from + sparkAdd + Calc.Random.Range(-Vector2.One, Vector2.One), sparkDirFromA);
+                SceneAs<Level>().ParticlesBG.Emit(ZipMover.P_Sparks, from - sparkAdd + Calc.Random.Range(-Vector2.One, Vector2.One), sparkDirFromB);
+                SceneAs<Level>().ParticlesBG.Emit(ZipMover.P_Sparks, to + sparkAdd + Calc.Random.Range(-Vector2.One, Vector2.One), sparkDirToA);
+                SceneAs<Level>().ParticlesBG.Emit(ZipMover.P_Sparks, to - sparkAdd + Calc.Random.Range(-Vector2.One, Vector2.One), sparkDirToB);
             }
 
             public override void Render()
             {
-                for (int i = block.moveRect.Left; i < block.moveRect.Right; i += pathTexture.Width)
+                DrawCogs(Vector2.UnitY, Color.Black);
+                DrawCogs(Vector2.Zero);
+            }
+
+            private void DrawCogs(Vector2 offset, Color? colorOverride = null)
+            {
+                Vector2 vector = (to - from).SafeNormalize();
+                Vector2 vector2 = vector.Perpendicular() * 3f;
+                Vector2 vector3 = -vector.Perpendicular() * 4f;
+                float rotation = Block.percent * (float)Math.PI * 2f;
+                Draw.Line(from + vector2 + offset, to + vector2 + offset, colorOverride.HasValue ? colorOverride.Value : Calc.HexToColor(Block.deactivateAllSidesAfterUse ? "4B4B4B" : "663931"));
+                Draw.Line(from + vector3 + offset, to + vector3 + offset, colorOverride.HasValue ? colorOverride.Value : Calc.HexToColor(Block.deactivateAllSidesAfterUse ? "4B4B4B" : "663931"));
+                for (float num = 4f - Block.percent * (float)Math.PI * 8f % 4f; num < (to - from).Length(); num += 4f)
                 {
-                    for (int j = block.moveRect.Top; j < block.moveRect.Bottom; j += pathTexture.Height)
-                    {
-                        pathTexture.GetSubtexture(0, 0, Math.Min(pathTexture.Width, block.moveRect.Right - i), Math.Min(pathTexture.Height, block.moveRect.Bottom - j), clipTexture);
-                        clipTexture.DrawCentered(new Vector2(i + clipTexture.Width / 2, j + clipTexture.Height / 2), Color.White);
-                    }
+                    Vector2 vector4 = from + vector2 + vector.Perpendicular() + vector * num;
+                    Vector2 vector5 = to + vector3 - vector * num;
+                    Draw.Line(vector4 + offset, vector4 + vector * 2f + offset, colorOverride.HasValue ? colorOverride.Value : Calc.HexToColor(Block.deactivateAllSidesAfterUse ? "797979" : "9b6157"));
+                    Draw.Line(vector5 + offset, vector5 - vector * 2f + offset, colorOverride.HasValue ? colorOverride.Value : Calc.HexToColor(Block.deactivateAllSidesAfterUse ? "797979" : "9b6157"));
                 }
-                if (isActive)
-                {
-                    float alpha = 0.5f * (0.5f + ((float)Math.Sin(timer) + 1f) * 0.25f);
-                    block.DrawBlockStyle(new Vector2(block.moveRect.X, block.moveRect.Y), block.moveRect.Width, block.moveRect.Height, block.nineSliceTarget, null, Color.White * alpha);
-                }
-                else
-                {
-                    block.DrawBlockStyle(new Vector2(block.moveRect.X, block.moveRect.Y), block.moveRect.Width, block.moveRect.Height, block.nineSliceTarget, null, Color.White * 0.5f);
-                }
+                cog.DrawCentered(from + offset, colorOverride.HasValue ? colorOverride.Value : Color.White, 1f, rotation);
+                cog.DrawCentered(to + offset, colorOverride.HasValue ? colorOverride.Value : Color.White, 1f, rotation);
             }
         }
 
@@ -75,22 +89,46 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             private BombBlock block;
 
+            private float alpha = 0f;
+
             public string Side;
+
+            public bool oneUse;
 
             public bool isActive;
 
-            public PushingSide(BombBlock block, string side, bool active) : base(block.Position)
+            public bool WasActivated;
+
+            public Sprite blackBg;
+
+            public Sprite sprite;
+
+            public PushingSide(BombBlock block, string side, bool active, bool one) : base(block.Position)
             {
                 this.block = block;
                 Side = side;
                 isActive = active;
+                oneUse = one;
                 Depth = block.Depth - 1;
+                Add(blackBg = new Sprite(GFX.Game, block.directory + "/"));
+                blackBg.Add("bg", "bg", 0);
+                blackBg.Play("bg");
+                Add(sprite = new Sprite(GFX.Game, block.directory + "/"));
+                sprite.AddLoop("active", "sideActive", 0.08f);
+                sprite.AddLoop("oneUse", "sideOneUse", 0.08f);
+                sprite.AddLoop("inactive", "sideInactive", 0.08f);
+                sprite.Play(isActive ? (oneUse ? "oneUse" : "active") : "inactive");
                 if (Side == "Left")
                 {
+                    blackBg.Rotation = sprite.Rotation = -(float)Math.PI / 2f;
+                    blackBg.FlipX = sprite.FlipX = true;
                     Collider = new Hitbox(4, block.Height, 0, 0);
                 }
                 if (Side == "Right")
                 {
+                    blackBg.Rotation = sprite.Rotation = -(float)Math.PI / 2f;
+                    blackBg.FlipX = sprite.FlipX = true;
+                    blackBg.FlipY = sprite.FlipY = true;
                     Collider = new Hitbox(4, block.Height, (int)block.Width - 4, 0);
                 }
                 if (Side == "Up")
@@ -99,6 +137,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (Side == "Down")
                 {
+                    blackBg.FlipY = sprite.FlipY = true;
                     Collider = new Hitbox(block.Width, 4, 0, (int)block.Height - 4);
                 }
             }
@@ -106,27 +145,98 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public override void Update()
             {
                 Position = block.Position;
+                alpha += Engine.DeltaTime * 4f;
+                sprite.Play(isActive ? (oneUse ? "oneUse" : "active") : "inactive");
+            }
+
+            public void swapActive()
+            {
+                Active = !Active;
             }
 
             public override void Render()
             {
-                Color color = isActive ? Color.Red : Color.DarkRed;
-
+                float opacity = isActive ? (0.9f * (0.9f + ((float)Math.Sin(alpha) + 1f) * 0.125f)) : 0.3f;
+                sprite.Color = Color.White * opacity;
                 if (Side == "Left")
                 {
-                    Draw.Rect(new Rectangle((int)block.Position.X, (int)block.Position.Y, 4, (int)block.Height), color);
+                    // Draw top tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position + Vector2.UnitY * 8;
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+
+                    // Draw middle tiles
+                    for (int i = 1; i <= (block.Height - 16) / 8; i++)
+                    {
+                        blackBg.RenderPosition = sprite.RenderPosition = Position + Vector2.UnitY * (i * 8 + 8);
+                        blackBg.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                        sprite.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                    }
+
+                    // Draw bottom tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position + Vector2.UnitY * block.Height;
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
                 }
-                if (Side == "Right")
+                else if (Side == "Right")
                 {
-                    Draw.Rect(new Rectangle((int)block.Position.X + (int)block.Width - 4, (int)block.Position.Y, 4, (int)block.Height), color);
+                    // Draw top tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position + new Vector2(block.Width - 8, 8);
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+
+                    // Draw middle tiles
+                    for (int i = 1; i <= (block.Height - 16) / 8; i++)
+                    {
+                        blackBg.RenderPosition = sprite.RenderPosition = Position + new Vector2(block.Width - 8, (i * 8 + 8));
+                        blackBg.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                        sprite.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                    }
+
+                    // Draw bottom tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position + new Vector2(block.Width - 8, block.Height);
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
                 }
-                if (Side == "Up")
+                else if (Side == "Up")
                 {
-                    Draw.Rect(new Rectangle((int)block.Position.X, (int)block.Position.Y, (int)block.Width, 4), color);
+                    // Draw left tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position;
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+
+                    // Draw middle tiles
+                    for (int i = 1; i <= (block.Width - 16) / 8; i++)
+                    {
+                        blackBg.RenderPosition = sprite.RenderPosition = Position + Vector2.UnitX * i * 8;
+                        blackBg.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                        sprite.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                    }
+
+                    // Draw right tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position + Vector2.UnitX * (block.Width - 8);
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
                 }
                 if (Side == "Down")
                 {
-                    Draw.Rect(new Rectangle((int)block.Position.X, (int)block.Position.Y + (int)block.Height - 4, (int)block.Width, 4), color);
+                    // Draw left tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position + Vector2.UnitY * (block.Height - 8);
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, 8, 8));
+
+                    // Draw middle tiles
+                    for (int i = 1; i <= (block.Width - 16) / 8; i++)
+                    {
+                        blackBg.RenderPosition = sprite.RenderPosition = Position + new Vector2(i * 8, block.Height - 8);
+                        blackBg.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                        sprite.DrawSubrect(Vector2.Zero, new Rectangle(8, 0, 8, 8));
+                    }
+
+                    // Draw right tile
+                    blackBg.RenderPosition = sprite.RenderPosition = Position + new Vector2(block.Width - 8, block.Height - 8);
+                    blackBg.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
+                    sprite.DrawSubrect(Vector2.Zero, new Rectangle(16, 0, 8, 8));
                 }
             }
         }
@@ -147,7 +257,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private int target;
 
-        private Rectangle moveRect;
+        private float percent;
 
         private float setSpeed;
 
@@ -177,8 +287,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private EventInstance returnSfx;
 
-        private DisplacementRenderer.Burst burst;
-
         private float particlesRemainder;
 
         public string flag;
@@ -188,6 +296,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public bool isActive;
 
         public bool toggle;
+
+        public string leftSide;
+
+        public string rightSide;
+
+        public string topSide;
+
+        public string bottomSide;
+
+        public bool swapActiveSides;
+
+        public bool deactivateAllSidesAfterUse;
 
         public List<PushingSide> pushSides = new();
 
@@ -200,6 +320,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             flag = data.Attr("flag");
             toggle = data.Bool("toggle");
+            leftSide = data.Attr("leftSide");
+            rightSide = data.Attr("rightSide");
+            topSide = data.Attr("topSide");
+            bottomSide = data.Attr("bottomSide");
+            swapActiveSides = data.Bool("swapActiveSides");
+            deactivateAllSidesAfterUse = data.Bool("deactivateAllSidesAfterUse");
             P_Move = new ParticleType
             {
                 Size = 1f,
@@ -226,7 +352,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             int num2 = (int)MathHelper.Min(Y, node.Y);
             int num3 = (int)MathHelper.Max(X + Width, node.X + Width);
             int num4 = (int)MathHelper.Max(Y + Height, node.Y + Height);
-            moveRect = new Rectangle(num, num2, num3 - num, num4 - num2);
             MTexture mtexture = GFX.Game[directory + "/block"];
             MTexture mtexture2 = GFX.Game[directory + "/blockRed"];
             MTexture mtexture3 = GFX.Game[directory + "/target"];
@@ -253,45 +378,47 @@ namespace Celeste.Mod.XaphanHelper.Entities
             middleRed.Play("idle");
             Add(middleRed);
             Add(new LightOcclude(0.2f));
+            Add(new Coroutine(Sequence()));
             Depth = -9999;
+        }
+
+        private IEnumerator Sequence()
+        {
+            while (true)
+            {
+                yield return null;
+                if (lerp != 0)
+                {
+                    percent = Ease.SineIn(lerp);
+                    if (Scene.OnInterval(0.1f) && lerp != 0 && lerp != 1)
+                    {
+                        path.CreateSparks();
+                    }
+                }
+            }
         }
 
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
             scene.Add(path = new PathRenderer(this));
-            if (start.X > end.X)
+            if (leftSide.ToLower().Contains("active"))
             {
-                pushSides.Add(new PushingSide(this, "Right", true));
-                if (toggle)
-                {
-                    pushSides.Add(new PushingSide(this, "Left", false));
-                }
+                pushSides.Add(new PushingSide(this, "Left", (leftSide == "Start Active" || leftSide == "Active Only Once") ? true : false, leftSide == "Active Only Once" ? true : false));
             }
-            if (start.X < end.X)
+            if (rightSide.ToLower().Contains("active"))
             {
-                pushSides.Add(new PushingSide(this, "Left", true));
-                if (toggle)
-                {
-                    pushSides.Add(new PushingSide(this, "Right", false));
-                }
+                pushSides.Add(new PushingSide(this, "Right", (rightSide  == "Start Active" || rightSide == "Active Only Once") ? true : false, rightSide == "Active Only Once" ? true : false));
             }
-            if (start.Y > end.Y)
+            if (topSide.ToLower().Contains("active"))
             {
-                pushSides.Add(new PushingSide(this, "Down", true));
-                if (toggle)
-                {
-                    pushSides.Add(new PushingSide(this, "Up", false));
-                }
+                pushSides.Add(new PushingSide(this, "Up", (topSide == "Start Active" || topSide == "Active Only Once") ? true : false, topSide == "Active Only Once" ? true : false));
             }
-            if (start.Y < end.Y)
+            if (bottomSide.ToLower().Contains("active"))
             {
-                pushSides.Add(new PushingSide(this, "Up", true));
-                if (toggle)
-                {
-                    pushSides.Add(new PushingSide(this, "Down", false));
-                }
+                pushSides.Add(new PushingSide(this, "Down", (bottomSide == "Start Active" || bottomSide == "Active Only Once") ? true : false, bottomSide == "Active Only Once" ? true : false));
             }
+
             foreach (PushingSide side in pushSides)
             {
                 scene.Add(side);
@@ -321,7 +448,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     target = 1;
                     returnTimer = 0.8f;
-                    burst = (Scene as Level).Displacement.AddBurst(Center, 0.2f, 0f, 16f);
                     if (lerp >= 0.2f)
                     {
                         speed = maxForwardSpeed;
@@ -356,7 +482,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         target = 1;
                     }
                     returnTimer = 0.8f;
-                    burst = (Scene as Level).Displacement.AddBurst(Center, 0.2f, 0f, 16f);
                     if (lerp >= 0.2f)
                     {
                         speed = maxForwardSpeed;
@@ -369,12 +494,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Audio.Play("event:/game/05_mirror_temple/swapblock_move_end", Center);
                     }
-                    foreach (PushingSide side in pushSides)
+                    
+                }
+                foreach (PushingSide side in pushSides)
+                {
+                    if (!deactivateAllSidesAfterUse)
                     {
-                        side.isActive = !side.isActive;
+                        if (swapActiveSides)
+                        {
+                            side.isActive = !side.isActive;
+                        }
+                        if (side.isActive && side.oneUse && side.WasActivated)
+                        {
+                            side.isActive = false;
+                        }
+                    }
+                    else
+                    {
+                        side.isActive = false;
                     }
                 }
-
             }
         }
 
@@ -401,10 +540,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     speed = 0f;
                 }
-            }
-            if (burst != null)
-            {
-                burst.Position = Center;
             }
             redAlpha = Calc.Approach(redAlpha, (target != 1) ? 1 : 0, Engine.DeltaTime * 32f);
             if (target == 0 && lerp == 0f)
@@ -513,20 +648,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Render()
         {
             Vector2 vector = Position + Shake;
-            if (lerp != target && speed > 0f)
-            {
-                Vector2 value = (end - start).SafeNormalize();
-                if (target == 1)
-                {
-                    value *= -1f;
-                }
-                float num = speed / maxForwardSpeed;
-                float num2 = 16f * num;
-                for (int i = 2; i < num2; i += 2)
-                {
-                    DrawBlockStyle(vector + value * i, Width, Height, nineSliceGreen, middleGreen, Color.White * (1f - i / num2));
-                }
-            }
             if (redAlpha < 1f)
             {
                 DrawBlockStyle(vector, Width, Height, nineSliceGreen, middleGreen, Color.White);

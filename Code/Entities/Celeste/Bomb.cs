@@ -160,6 +160,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             shouldExplodeImmediately = true;
                             shouldBounce = false;
+                            side.WasActivated = true;
+                            bombBlock.Push();
                         }
                     }
                 }
@@ -191,6 +193,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             shouldExplodeImmediately = true;
                             shouldBounce = false;
+                            side.WasActivated = true;
+                            bombBlock.Push();
                         }
                     }
                 }
@@ -451,26 +455,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 player.Speed.Y = ((180f - dist) * dirY) * (GravityJacket.determineIfInWater() && !XaphanModule.ModSettings.GravityJacket ? 0.8f : 1f);
                 player.Speed.X = (180f * dirX) * (GravityJacket.determineIfInWater() && !XaphanModule.ModSettings.GravityJacket ? 0.8f : 1f);
-            }
-
-            foreach (Entity entity in Scene.Tracker.GetEntities<BombBlock>())
-            {
-                BombBlock bombBlock = (BombBlock)entity;
-                if (bombBlock.isActive)
-                {
-                    foreach (BombBlock.PushingSide side in bombBlock.pushSides)
-                    {
-                        if (CollideCheck(side) && (
-                            (side.Side == "Left" && Right - 8 <= side.Left) ||
-                            (side.Side == "Right" && Left + 8 >= side.Right) ||
-                            (side.Side == "Up" && Bottom - 8 <= side.Top) ||
-                            (side.Side == "Down" && (Top + 10 >= side.Bottom || Hold.IsHeld))
-                            ) && side.isActive)
-                        {
-                            bombBlock.Push();
-                        }
-                    }
-                }
             }
 
             foreach (Entity entity in Scene.Tracker.GetEntities<BreakBlockIndicator>())
