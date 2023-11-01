@@ -729,6 +729,7 @@ namespace Celeste.Mod.XaphanHelper
             BreakBlock.Load();
             CustomRefill.Load();
             MergedChaptersGoldenStrawberry.Load();
+            Arrow.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -822,6 +823,7 @@ namespace Celeste.Mod.XaphanHelper
             BreakBlock.Unload();
             CustomRefill.Unload();
             MergedChaptersGoldenStrawberry.Unload();
+            Arrow.Unload();
         }
 
         // Custom States
