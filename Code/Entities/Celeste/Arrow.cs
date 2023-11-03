@@ -5,6 +5,7 @@ using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -30,7 +31,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float noCollideDelay;
 
-        //public StaticMover staticMover;
+        private Solid attachedSolid;
+
+        StaticMover staticMover;
 
         public Arrow(EntityData data, Vector2 position, ArrowTrap trap, string side) : base(data.Position + position, data.Width, data.Height, false)
         {
@@ -42,20 +45,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 noCollideDelay = 0.01f;
                 Add(new Coroutine(CollideDelayRoutine()));
             }
-            Init();
-        }
-
-        private IEnumerator CollideDelayRoutine()
-        {
-            while (noCollideDelay > 0)
-            {
-                noCollideDelay -= Engine.DeltaTime;
-                yield return null;
-            }
-        }
-
-        public void Init()
-        {
             if (side == "Right")
             {
                 Collider = new Hitbox(22f, 3f, 3f, 3f);
@@ -73,9 +62,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collider = new Hitbox(2f, 22f, 3f, 3f);
             }
             Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/ArrowTrap" + "/"));
-            sprite.AddLoop("arrow", "arrow", 0.08f);
+            sprite.AddLoop("arrow", "arrow", 0.08f, 0);
+            sprite.Add("vibrating", "arrow", 0.04f, 1, 2, 3, 0, 1, 2, 3, 0);
             sprite.Origin = new Vector2(sprite.Width / 2, sprite.Height / 2);
-            sprite.Play("arrow");
+            if (sourceTrap != null)
+            {
+                sprite.Play("arrow");
+            }
+            else
+            {
+                sprite.Play("vibrating");
+            }
             if (side == "Right")
             {
                 sprite.Position = new Vector2(15f, 4f);
@@ -95,23 +92,56 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 sprite.Rotation = (float)Math.PI / 2f;
                 sprite.Position = new Vector2(4f, 15f);
             }
-            Depth = -100;
-
-            /*staticMover = new StaticMover();
-            staticMover.OnAttach = delegate (Platform p)
+            Depth = -1;
+            if (sourceTrap == null)
             {
-                Depth = p.Depth + 1;
-            };
-            //staticMover.SolidChecker = ((Solid s) => CollideCheck(s, Position + Vector2.UnitX));
-            staticMover.SolidChecker = IsRiding;
-            staticMover.JumpThruChecker = ((JumpThru jt) => CollideCheck(jt, Position + Vector2.UnitX));
-            Add(staticMover);*/
+                staticMover = new StaticMover();
+                staticMover.OnAttach = delegate (Platform p)
+                {
+                    Depth = p.Depth + 1;
+                };
+                staticMover.SolidChecker = ((Solid s) => CollideCheck(s, Position + Vector2.UnitX));
+                staticMover.JumpThruChecker = ((JumpThru jt) => CollideCheck(jt, Position + Vector2.UnitX));
+                Add(staticMover);
+            }
         }
 
-        /*private bool IsRiding(Solid solid)
+        public override void Awake(Scene scene)
         {
-            return Scene.CollideCheck(new Rectangle((int)(X + Width), (int)Y, 8, (int)Width), solid);
-        }*/
+            base.Awake(scene);
+            if (side == "Right")
+            {
+                attachedSolid = CollideFirst<Solid>(Position + Vector2.UnitX * 2);
+            }
+            else if (side == "Left")
+            {
+                attachedSolid = CollideFirst<Solid>(Position - Vector2.UnitX * 2);
+            }
+            else if (side == "Top")
+            {
+                attachedSolid = CollideFirst<Solid>(Position - Vector2.UnitY * 2);
+            }
+            else if (side == "Bottom")
+            {
+                attachedSolid = CollideFirst<Solid>(Position + Vector2.UnitY * 2);
+            }
+            if (attachedSolid != null && attachedSolid.GetType() != typeof(SolidTiles) && staticMover != null)
+            {
+                DynData<Solid> solidData = new(attachedSolid);
+                List<StaticMover> staticMovers = solidData.Get<List<StaticMover>>("staticMovers");
+                staticMovers.Add(staticMover);
+                staticMover.Platform = attachedSolid;
+            }
+        }
+
+        private IEnumerator CollideDelayRoutine()
+        {
+            while (noCollideDelay > 0)
+            {
+                noCollideDelay -= Engine.DeltaTime;
+                yield return null;
+            }
+        }
 
         public static void Load()
         {
@@ -348,9 +378,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     MoveTo(Position + Vector2.UnitY * arrowSpeed * Engine.DeltaTime, Vector2.UnitY * arrowSpeed);
                 }
-                foreach (Entity entity in Scene.Tracker.GetEntities<FlagDashSwitch>())
+                foreach (FlagDashSwitch flagDashSwitch in Scene.Tracker.GetEntities<FlagDashSwitch>())
                 {
-                    FlagDashSwitch flagDashSwitch = (FlagDashSwitch)entity;
                     if (CollideCheck(flagDashSwitch))
                     {
                         if (side == "Right")
@@ -377,7 +406,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Visible = false;
             if (side == "Right")
             {
-
                 while (CollideCheck<Solid, ArrowTrap, Arrow>())
                 {
                     Position.X -= 1;

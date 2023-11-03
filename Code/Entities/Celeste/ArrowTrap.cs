@@ -259,6 +259,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public ArrowTrap(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, false)
         {
+            active = true;
             mode = data.Attr("mode", "Triggered");
             side = data.Attr("side", "Right");
             cooldown = data.Float("cooldown", 1f);
@@ -270,6 +271,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             sprite.Origin = new Vector2(sprite.Width / 2, sprite.Height / 2);
             sprite.Play("idle");
             Add(new ClimbBlocker(true));
+            Depth = -2;
             staticMover = new StaticMover();
             staticMover.OnAttach = delegate (Platform p)
             {
@@ -397,7 +399,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 mainCooldown -= Engine.DeltaTime;
             }
             DisplacePlayerOnTop();
-            if (string.IsNullOrEmpty(flag) || SceneAs<Level>().Session.GetFlag(flag) && active)
+            if ((string.IsNullOrEmpty(flag) || SceneAs<Level>().Session.GetFlag(flag)) && active)
             {
                 Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
                 if (player != null)
@@ -429,12 +431,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator Sequence()
         {
             yield return initialDelay;
-            while (string.IsNullOrEmpty(flag) || SceneAs<Level>().Session.GetFlag(flag))
+            while ((string.IsNullOrEmpty(flag) || SceneAs<Level>().Session.GetFlag(flag)) && active)
             {
                 Add(new Coroutine(nextArrow.Shoot()));
                 nextArrow = null;
-                Add(new Coroutine(ReloadArrow()));
-                yield return cooldown;
+                if (!onlyOnce)
+                {
+                    Add(new Coroutine(ReloadArrow()));
+                    yield return cooldown;
+                }
+                else
+                {
+                    active = false;
+                }
             }
         }
 
@@ -454,11 +463,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (side == "Right")
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(-13, 4), this, side));
+                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(-23, 4), this, side));
             }
             else if (side == "Left")
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(-9, 4), this, side));
+                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(-1, 4), this, side));
             }
             else if (side == "Top")
             {
