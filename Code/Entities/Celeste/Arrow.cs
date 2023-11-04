@@ -33,6 +33,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Solid attachedSolid;
 
+        private bool collideHole;
+
+        private ArrowHole arrowHole;
+
         StaticMover staticMover;
 
         public Arrow(EntityData data, Vector2 position, ArrowTrap trap, string side) : base(data.Position + position, data.Width, data.Height, false)
@@ -47,11 +51,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (side == "Right")
             {
-                Collider = new Hitbox(22f, 3f, 3f, 3f);
+                Collider = new Hitbox(22f, sourceTrap != null ? 2f : 4f, 3f, 3f);
             }
             else if (side == "Left")
             {
-                Collider = new Hitbox(22f, 3f, 5f, 3f);
+                Collider = new Hitbox(22f, sourceTrap != null ? 2f : 4f, 5f, 3f);
             }
             else if (side == "Top")
             {
@@ -360,7 +364,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator Shoot()
         {
             arrowSpeed = 460f;
-            while (CollideCheck(sourceTrap) || !CollideCheck<Solid, Arrow, FlagDashSwitch>() || noCollideDelay > 0f)
+            Audio.Play("event:/game/05_mirror_temple/bladespinner_spin", Position);
+            while (CollideCheck(sourceTrap) || CollideCheck< ArrowHole >() || !CollideCheck<Solid, Arrow, FlagDashSwitch>() || noCollideDelay > 0f)
             {
                 if (side == "Right")
                 {
@@ -401,40 +406,65 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         break;
                     }
                 }
+                if (CollideCheck<ArrowHole>() && !collideHole)
+                {
+                    collideHole = true;
+                    Depth = -15001;
+                    if (side == "Right")
+                    {
+                        arrowHole = CollideFirst<ArrowHole>(Position + Vector2.UnitX * 2);
+                    }
+                    else if (side == "Left")
+                    {
+                        arrowHole = CollideFirst<ArrowHole>(Position - Vector2.UnitX * 2);
+                    }
+                    else if (side == "Top")
+                    {
+                        arrowHole = CollideFirst<ArrowHole>(Position - Vector2.UnitY * 2);
+                    }
+                    else if (side == "Bottom")
+                    {
+                        arrowHole = CollideFirst<ArrowHole>(Position + Vector2.UnitY * 2);
+                    }
+                }
                 yield return null;
             }
             Visible = false;
-            if (side == "Right")
+            if (!collideHole)
             {
-                while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                Audio.Play("event:/game/00_prologue/car_down");
+                if (side == "Right")
                 {
-                    Position.X -= 1;
+                    while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                    {
+                        Position.X -= 1;
+                    }
+                    Scene.Add(new Arrow(new EntityData(), Position, null, "Right"));
                 }
-                Scene.Add(new Arrow(new EntityData(), Position, null, "Right"));
-            }
-            else if (side == "Left")
-            {
-                while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                else if (side == "Left")
                 {
-                    Position.X += 1;
+                    while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                    {
+                        Position.X += 1;
+                    }
+                    Scene.Add(new Arrow(new EntityData(), Position, null, "Left"));
                 }
-                Scene.Add(new Arrow(new EntityData(), Position, null, "Left"));
-            }
-            else if (side == "Top")
-            {
-                while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                else if (side == "Top")
                 {
-                    Position.Y += 1;
+                    while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                    {
+                        Position.Y += 1;
+                    }
+                    Scene.Add(new Arrow(new EntityData(), Position, null, "Top"));
                 }
-                Scene.Add(new Arrow(new EntityData(), Position, null, "Top"));
-            }
-            else if (side == "Bottom")
-            {
-                while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                else if (side == "Bottom")
                 {
-                    Position.Y -= 1;
+                    while (CollideCheck<Solid, ArrowTrap, Arrow>())
+                    {
+                        Position.Y -= 1;
+                    }
+                    Scene.Add(new Arrow(new EntityData(), Position, null, "Bottom"));
                 }
-                Scene.Add(new Arrow(new EntityData(), Position, null, "Bottom"));
             }
             RemoveSelf();
         }
@@ -484,41 +514,83 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (sourceTrap != null)
             {
-                if (side == "Right")
+                if (!collideHole)
                 {
-                    int value = (int)(sourceTrap.Left - Left + 3);
-                    if (value < 0)
+                    if (side == "Right")
                     {
-                        value = 0;
+                        int value = (int)(sourceTrap.Left - Left + 3);
+                        if (value < 0)
+                        {
+                            value = 0;
+                        }
+                        sprite.DrawSubrect(Vector2.UnitX * value + Shake, new Rectangle(value, 0, (int)(sprite.Width - value), 8));
                     }
-                    sprite.DrawSubrect(Vector2.UnitX * value + Shake, new Rectangle(value, 0, (int)(sprite.Width - value), 8));
+                    else if (side == "Left")
+                    {
+                        int value = (int)(sourceTrap.Right - Left + 5);
+                        if (value > sprite.Width)
+                        {
+                            value = (int)sprite.Width;
+                        }
+                        sprite.DrawSubrect(Shake, new Rectangle((int)(sprite.Width - value), 0, value, 8));
+                    }
+                    else if (side == "Top")
+                    {
+                        int value = (int)(sourceTrap.Bottom - Top + 5);
+                        if (value > sprite.Width)
+                        {
+                            value = (int)sprite.Width;
+                        }
+                        sprite.DrawSubrect(Vector2.UnitY * -(sprite.Width - value) + Shake, new Rectangle((int)(sprite.Width - value), 0, value, 8));
+                    }
+                    else if (side == "Bottom")
+                    {
+                        int value = (int)(sourceTrap.Top - Top + 3);
+                        if (value > sprite.Width)
+                        {
+                            value = (int)sprite.Width;
+                        }
+                        sprite.DrawSubrect(Vector2.UnitY * value + Shake, new Rectangle(value, 0, (int)(sprite.Width - value), 8));
+                    }
                 }
-                else if (side == "Left")
+                else
                 {
-                    int value = (int)(sourceTrap.Right - Left + 5);
-                    if (value > sprite.Width)
+                    if (side == "Right")
                     {
-                        value = (int)sprite.Width;
+                        int value = (int)(arrowHole.Right - Left + 3);
+                        if (value < 0)
+                        {
+                            value = 0;
+                        }
+                        sprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, value + 2, 8));
                     }
-                    sprite.DrawSubrect(Shake, new Rectangle((int)(sprite.Width - value), 0, value, 8));
-                }
-                else if (side == "Top")
-                {
-                    int value = (int)(sourceTrap.Bottom - Top + 5);
-                    if (value > sprite.Width)
+                    else if (side == "Left")
                     {
-                        value = (int)sprite.Width;
+                        int value = (int)(Right - arrowHole.Right + 3);
+                        if (value > sprite.Width)
+                        {
+                            value = (int)sprite.Width;
+                        }
+                        sprite.DrawSubrect(Vector2.UnitX * ((int)sprite.Width - value - 3), new Rectangle(0, 0, value + 3, 8));
                     }
-                    sprite.DrawSubrect(Vector2.UnitY * -(sprite.Width - value) + Shake, new Rectangle((int)(sprite.Width - value), 0, value, 8));
-                }
-                else if (side == "Bottom")
-                {
-                    int value = (int)(sourceTrap.Top - Top + 3);
-                    if (value > sprite.Width)
+                    else if (side == "Top")
                     {
-                        value = (int)sprite.Width;
+                        int value = (int)(Bottom - arrowHole.Bottom + 3);
+                        if (value > sprite.Width)
+                        {
+                            value = (int)sprite.Width;
+                        }
+                        sprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, value + 3, 8));
                     }
-                    sprite.DrawSubrect(Vector2.UnitY * value + Shake, new Rectangle(value, 0, (int)(sprite.Width - value), 8));
+                    else if (side == "Bottom")
+                    {
+                        int value = (int)(arrowHole.Top - Top + 3);
+                        if (value > sprite.Width)
+                        {
+                            value = (int)sprite.Width;
+                        }
+                        sprite.DrawSubrect(Vector2.Zero, new Rectangle(0, 0, value + 3, 8));
+                    }
                 }
             }
             else
