@@ -243,6 +243,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Level level = Scene as Level;
                 UninitializeScreen();
                 level.PauseLock = false;
+                level.Session.SetFlag("Map_Opened", false);
                 level.Tracker.GetEntity<CountdownDisplay>()?.StopTimer(false, true);
                 if (Scene.Tracker.GetEntity<Player>() is Player player)
                 {

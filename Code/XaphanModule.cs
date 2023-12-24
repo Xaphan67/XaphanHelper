@@ -1969,10 +1969,11 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     ModSaveData.VisitedRooms.Add(Prefix + "/Ch" + chapterIndex + "/" + room);
                 }
-                if (level.Session.GetFlag("Map_Opened"))
-                {
-                    level.Session.SetFlag("Map_Opened", false);
-                }
+            }
+
+            if (level.Session.GetFlag("Map_Opened"))
+            {
+                level.Session.SetFlag("Map_Opened", false);
             }
 
             // Visited Chapters check

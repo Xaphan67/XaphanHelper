@@ -8,6 +8,7 @@ Version 1.0.59 :
 - Fixed a bug respawning the player in Drone control when exiting a map after using the Drone Teleport ability
 - Fixed a softlock if the Remote Drone was thrown on top of a floor-oriented spring
 - Fixed a bug preventing Event flags of Start Countdown Triggers to trigger at the correct time if the game was paused while the countdown is active
+- Fixed a bug preventing the player to use some upgrades or opening the upgrade screen after interacting with a warp station if the chapter was not using an In-game map
 
 Version 1.0.58 :
 - Added "Hide Flag" and "Events Flags" attributes to Start Countdown Trigger
