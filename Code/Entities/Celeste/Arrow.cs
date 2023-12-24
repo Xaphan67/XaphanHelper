@@ -23,6 +23,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool destroyed;
 
+        private bool destroyImmediate;
+
         public Coroutine DestroyRoutine = new();
 
         public ArrowTrap sourceTrap = null;
@@ -63,6 +65,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (side == "Bottom")
             {
+                Add(new LedgeBlocker());
                 Collider = new Hitbox(2f, 22f, 3f, 3f);
             }
             Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/ArrowTrap" + "/"));
@@ -106,8 +109,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 };
                 staticMover.SolidChecker = ((Solid s) => CollideCheck(s, Position + Vector2.UnitX));
                 staticMover.JumpThruChecker = ((JumpThru jt) => CollideCheck(jt, Position + Vector2.UnitX));
+                staticMover.OnDisable = OnDisable;
                 Add(staticMover);
             }
+        }
+
+        private void OnDisable()
+        {
+            destroyImmediate = true;
+            Add(new Coroutine(Destroy()));
         }
 
         public override void Awake(Scene scene)
@@ -161,13 +171,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player == null || !inWall)
+            if (player == null)
             {
                 Collidable = false;
             }
             if (inWall && !DestroyRoutine.Active)
             {
                 Add(DestroyRoutine = new Coroutine(Destroy()));
+            }
+            if (attachedSolid != null && attachedSolid.GetType() == typeof(FlagTempleGate))
+            {
+                FlagTempleGate gate = attachedSolid as FlagTempleGate;
+                if (!gate.Collidable)
+                {
+                    destroyImmediate = true;
+                }
             }
         }
 
@@ -292,9 +310,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Destroy()
         {
-            yield return 1.3f;
-            StartShaking(0.7f);
-            yield return 0.4f;
+            float timer = 1.3f;
+            while (timer > 0f && !destroyImmediate)
+            {
+                timer -= Engine.DeltaTime;
+                yield return null;
+            }
+            if (!destroyImmediate)
+            {
+                StartShaking(0.7f);
+            }
+            timer = 0.4f;
+            while (timer > 0f && !destroyImmediate)
+            {
+                timer -= Engine.DeltaTime;
+                yield return null;
+            }
             Visible = false;
             destroyed = true;
             Collidable = false;
