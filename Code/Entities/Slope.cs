@@ -112,13 +112,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (side == "Left")
                     {
                         colliderList = new ColliderList(new Hitbox(4, 1, 0, 0));
-                        lightOccludeBlocks.Add(new LightOccludeBlock(Position, 8, 1));
+                        if (!CanJumpThrough)
+                        {
+                            lightOccludeBlocks.Add(new LightOccludeBlock(Position, 8, 1));
+                        }
                         for (int i = 0; i <= SlopeHeight - 1; i++)
                         {
                             if (i > 0)
                             {
                                 colliderList.Add(new Hitbox(4, 1, (Gentle ? i * 16 : i * 8), i * 8));
-                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), i * 8), 8, 1));
+                                if (!CanJumpThrough)
+                                {
+                                    lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), i * 8), 8, 1));
+                                }
                             }
                             colliderList.Add(new Hitbox(Gentle ? 6 : 5, 1, (Gentle ? i * 16 : i * 8), 1 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 8 : 6, 1, (Gentle ? i * 16 : i * 8), 2 + i * 8));
@@ -127,26 +133,35 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 14 : 9, 1, (Gentle ? i * 16 : i * 8), 5 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 16 : 10, 1, (Gentle ? i * 16 : i * 8), 6 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 18 : 11, 1, (Gentle ? i * 16 : i * 8), 7 + i * 8));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 1 + i * 8), 4 + (Gentle ? 6 : 5), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 2 + i * 8), 4 + (Gentle ? 8 : 6), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 3 + i * 8), 4 + (Gentle ? 10 : 7), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 4 + i * 8), 4 + (Gentle ? 12 : 8), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 5 + i * 8), 4 + (Gentle ? 14 : 9), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 6 + i * 8), 4 + (Gentle ? 16 : 10), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + i * 8), 4 + (Gentle ? 18 : 11), 1));
+                            if (!CanJumpThrough)
+                            {
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 1 + i * 8), 4 + (Gentle ? 6 : 5), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 2 + i * 8), 4 + (Gentle ? 8 : 6), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 3 + i * 8), 4 + (Gentle ? 10 : 7), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 4 + i * 8), 4 + (Gentle ? 12 : 8), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 5 + i * 8), 4 + (Gentle ? 14 : 9), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 6 + i * 8), 4 + (Gentle ? 16 : 10), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + i * 8), 4 + (Gentle ? 18 : 11), 1));
+                            }
                         }
                         Collider = colliderList;
                     }
                     else
                     {
                         colliderList = new ColliderList(new Hitbox(4, 1, 20, 0));
-                        lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16, 0), 8, 1));
+                        if (!CanJumpThrough)
+                        {
+                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16, 0), 8, 1));
+                        }
                         for (int i = 0; i <= SlopeHeight - 1; i++)
                         {
                             if (i > 0)
                             {
                                 colliderList.Add(new Hitbox(4, 1, 20 + (Gentle ? i * -16 : i * -8), i * 8));
-                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16 + (Gentle ? i * -16 : i * -8), i * 8), 8, 1));
+                                if (!CanJumpThrough)
+                                {
+                                    lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16 + (Gentle ? i * -16 : i * -8), i * 8), 8, 1));
+                                }
                             }
                             colliderList.Add(new Hitbox(Gentle ? 6 : 5, 1, (Gentle ? 18f - i * 16 : 19f - i * 8), 1 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 8 : 6, 1, (Gentle ? 16f - i * 16 : 18f - i * 8), 2 + i * 8));
@@ -155,13 +170,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 14 : 9, 1, (Gentle ? 10f - i * 16 : 15f - i * 8), 5 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 16 : 10, 1, (Gentle ? 8f - i * 16 : 14f - i * 8), 6 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 18 : 11, 1, (Gentle ? 6f - i * 16 : 13f - i * 8), 7 + i * 8));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 14f - i * 16 : 15f - i * 8), 1 + i * 8), 4 + (Gentle ? 6 : 5), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 12f - i * 16 : 14f - i * 8), 2 + i * 8), 4 + (Gentle ? 8 : 6), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 10f - i * 16 : 13f - i * 8), 3 + i * 8), 4 + (Gentle ? 10 : 7), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 8f - i * 16 : 12f - i * 8), 4 + i * 8), 4 + (Gentle ? 12 : 8), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 6f - i * 16 : 11f - i * 8), 5 + i * 8), 4 + (Gentle ? 14 : 9), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 4f - i * 16 : 10f - i * 8), 6 + i * 8), 4 + (Gentle ? 16 : 10), 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 2f - i * 16 : 9f - i * 8), 7 + i * 8), 4 + (Gentle ? 18 : 11), 1));
+                            if (!CanJumpThrough)
+                            {
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 14f - i * 16 : 15f - i * 8), 1 + i * 8), 4 + (Gentle ? 6 : 5), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 12f - i * 16 : 14f - i * 8), 2 + i * 8), 4 + (Gentle ? 8 : 6), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 10f - i * 16 : 13f - i * 8), 3 + i * 8), 4 + (Gentle ? 10 : 7), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 8f - i * 16 : 12f - i * 8), 4 + i * 8), 4 + (Gentle ? 12 : 8), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 6f - i * 16 : 11f - i * 8), 5 + i * 8), 4 + (Gentle ? 14 : 9), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 4f - i * 16 : 10f - i * 8), 6 + i * 8), 4 + (Gentle ? 16 : 10), 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 2f - i * 16 : 9f - i * 8), 7 + i * 8), 4 + (Gentle ? 18 : 11), 1));
+                            }
                         }
                         Collider = colliderList;
                     }
@@ -171,13 +189,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (side == "Left")
                     {
                         colliderList = new ColliderList(new Hitbox(8, 1, 0, 15));
-                        lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(0, 15), 8, 1));
+                        if (!CanJumpThrough)
+                        {
+                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(0, 15), 8, 1));
+                        }
                         for (int i = 0; i <= SlopeHeight - 1; i++)
                         {
                             if (i > 0)
                             {
                                 colliderList.Add(new Hitbox(8, 1, (Gentle ? i * 16 : i * 8), 15 + i * -8));
-                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 15 + i * -8), 8, 1));
+                                if (!CanJumpThrough)
+                                {
+                                    lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 15 + i * -8), 8, 1));
+                                }
                             }
                             colliderList.Add(new Hitbox(Gentle ? 10 : 9, 1, (Gentle ? i * 16 : i * 8), 7 + 7 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 12 : 10, 1, (Gentle ? i * 16 : i * 8), 7 + 6 - i * 8));
@@ -186,26 +210,35 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 18 : 13, 1, (Gentle ? i * 16 : i * 8), 7 + 3 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 20 : 14, 1, (Gentle ? i * 16 : i * 8), 7 + 2 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 22 : 15, 1, (Gentle ? i * 16 : i * 8), 7 + 1 - i * 8));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 7 - i * 8), Gentle ? 10 : 9, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 6 - i * 8), Gentle ? 12 : 10, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 5 - i * 8), Gentle ? 14 : 11, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 4 - i * 8), Gentle ? 16 : 12, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 3 - i * 8), Gentle ? 18 : 13, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 2 - i * 8), Gentle ? 20 : 14, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 1 - i * 8), Gentle ? 22 : 15, 1));
+                            if (!CanJumpThrough)
+                            {
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 7 - i * 8), Gentle ? 10 : 9, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 6 - i * 8), Gentle ? 12 : 10, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 5 - i * 8), Gentle ? 14 : 11, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 4 - i * 8), Gentle ? 16 : 12, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 3 - i * 8), Gentle ? 18 : 13, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 2 - i * 8), Gentle ? 20 : 14, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 1 - i * 8), Gentle ? 22 : 15, 1));
+                            }
                         }
                         Collider = colliderList;
                     }
                     else
                     {
                         colliderList = new ColliderList(new Hitbox(8, 1, 16, 15));
-                        lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16, 15), 8, 1));
+                        if (!CanJumpThrough)
+                        {
+                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16, 15), 8, 1));
+                        }
                         for (int i = 0; i <= SlopeHeight - 1; i++)
                         {
                             if (i > 0)
                             {
                                 colliderList.Add(new Hitbox(8, 1, 16 + (Gentle ? i * -16 : i * -8), 15 + i * -8));
-                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16 + (Gentle ? i * -16 : i * -8), 15 + i * -8), 8, 1));
+                                if (!CanJumpThrough)
+                                {
+                                    lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16 + (Gentle ? i * -16 : i * -8), 15 + i * -8), 8, 1));
+                                }
                             }
                             colliderList.Add(new Hitbox(Gentle ? 10 : 9, 1, (Gentle ? 14f - i * 16 : 15f - i * 8), 7 + 7 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 12 : 10, 1, (Gentle ? 12f - i * 16 : 14f - i * 8), 7 + 6 - i * 8));
@@ -214,13 +247,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 18 : 13, 1, (Gentle ? 6f - i * 16 : 11f - i * 8), 7 + 3 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 20 : 14, 1, (Gentle ? 4f - i * 16 : 10f - i * 8), 7 + 2 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 22 : 15, 1, (Gentle ? 2f - i * 16 : 9f - i * 8), 7 + 1 - i * 8));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 14f - i * 16 : 15f - i * 8), 7 + 7 - i * 8), Gentle ? 10 : 9, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 12f - i * 16 : 14f - i * 8), 7 + 6 - i * 8), Gentle ? 12 : 10, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 10f - i * 16 : 13f - i * 8), 7 + 5 - i * 8), Gentle ? 14 : 11, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 8f - i * 16 : 12f - i * 8), 7 + 4 - i * 8), Gentle ? 16 : 12, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 6f - i * 16 : 11f - i * 8), 7 + 3 - i * 8), Gentle ? 18 : 13, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 4f - i * 16 : 10f - i * 8), 7 + 2 - i * 8), Gentle ? 20 : 14, 1));
-                            lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 2f - i * 16 : 9f - i * 8), 7 + 1 - i * 8), Gentle ? 22 : 15, 1));
+                            if (!CanJumpThrough)
+                            {
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 14f - i * 16 : 15f - i * 8), 7 + 7 - i * 8), Gentle ? 10 : 9, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 12f - i * 16 : 14f - i * 8), 7 + 6 - i * 8), Gentle ? 12 : 10, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 10f - i * 16 : 13f - i * 8), 7 + 5 - i * 8), Gentle ? 14 : 11, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 8f - i * 16 : 12f - i * 8), 7 + 4 - i * 8), Gentle ? 16 : 12, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 6f - i * 16 : 11f - i * 8), 7 + 3 - i * 8), Gentle ? 18 : 13, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 4f - i * 16 : 10f - i * 8), 7 + 2 - i * 8), Gentle ? 20 : 14, 1));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 2f - i * 16 : 9f - i * 8), 7 + 1 - i * 8), Gentle ? 22 : 15, 1));
+                            }
                         }
                         Collider = colliderList;
                     }

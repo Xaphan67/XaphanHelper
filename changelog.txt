@@ -4,6 +4,7 @@ Version 1.0.59 :
 - Updated the journal of campaigns that use a Merge Chapter Controller
 - The save file slot now show the campaign name instead of the further area name when using a Merge Chapter Controller
 - Adjusted quantity, frequence, rotation and fliping of explosions displayed when a Countdown timer was ticking with it's 'Explosions' attribute set to true
+- Slopes with their 
 - Fixed a bug incorrectly hidding the Countdown timer if the 'Hide Flag' attribute was left blank
 - Fixed a bug respawning the player in Drone control when exiting a map after using the Drone Teleport ability
 - Fixed a softlock if the Remote Drone was thrown on top of a floor-oriented spring
