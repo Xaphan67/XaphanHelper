@@ -111,7 +111,7 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool CanOpenMap(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Can_Open_Map");
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Can_Open_Map");
         }
 
         public static bool UIOpened;
@@ -170,166 +170,166 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool PowerGripCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PowerGrip" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PowerGrip" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool ClimbingKitCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_ClimbingKit" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpiderMagnetCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpiderMagnet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpiderMagnet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool DroneTeleportCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_DroneTeleport" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DroneTeleport" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool JumpBoostCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_JumpBoost" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_JumpBoost" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool BombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Bombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Bombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MegaBombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MegaBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MegaBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool RemoteDroneCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_RemoteDrone" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_RemoteDrone" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool GoldenFeatherCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_GoldenFeather" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_GoldenFeather" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool BinocularsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Binoculars" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Binoculars" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool EtherealDashCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_EtherealDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_EtherealDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool PortableStationCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PortableStation" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PortableStation" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool PulseRadarCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PulseRadar" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PulseRadar" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool DashBootsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_DashBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DashBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool HoverJetCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_HoverJet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_HoverJet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool LightningDashCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_LightningDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_LightningDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MissilesModuleCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SuperMissilesModuleCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SuperMissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         // Metroid Upgrades
 
         public static bool SpazerCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Spazer" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Spazer" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool PlasmaBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PlasmaBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PlasmaBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MorphingBallCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MorphingBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MorphingBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool MorphBombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_MorphBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MorphBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpringBallCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpringBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpringBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool HighJumpBootsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_HighJumpBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_HighJumpBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpeedBoosterCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpeedBooster" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpeedBooster" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         // Common Upgrades
 
         public static bool LongBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_LongBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_LongBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool IceBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_IceBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_IceBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool WaveBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_WaveBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_WaveBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool VariaJacketCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_VariaJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_VariaJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool GravityJacketCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_GravityJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_GravityJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool ScrewAttackCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_ScrewAttack" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ScrewAttack" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static bool SpaceJumpCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpaceJump" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpaceJump" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public static void useIngameMapCheck(Level level)
@@ -902,7 +902,7 @@ namespace Celeste.Mod.XaphanHelper
             if (useMergeChaptersController && SaveData.Instance != null)
             {
                 orig(self);
-                if (!MergeChaptersControllerKeepPrologue || (MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset))
+                if (!MergeChaptersControllerKeepPrologue || (MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.LevelSetStats.AreaOffset))
                 {
                     if (SaveData.Instance == null)
                     {
@@ -932,17 +932,17 @@ namespace Celeste.Mod.XaphanHelper
                             self.Position = Calc.Approach(self.Position, self.IdlePosition, 2400f * Engine.DeltaTime);
                         }
                     }
-                    if (self.Area > SaveData.Instance.GetLevelSetStats().AreaOffset + (MergeChaptersControllerKeepPrologue ? 1 : 0) && self.Area <= (SaveData.Instance.GetLevelSetStats().AreaOffset + SaveData.Instance.GetLevelSetStats().MaxArea))
+                    if (self.Area > SaveData.Instance.LevelSetStats.AreaOffset + (MergeChaptersControllerKeepPrologue ? 1 : 0) && self.Area <= (SaveData.Instance.LevelSetStats.AreaOffset + SaveData.Instance.LevelSetStats.MaxArea))
                     {
-                        if (MergeChaptersControllerKeepPrologue && self.Area > SaveData.Instance.GetLevelSetStats().AreaOffset)
+                        if (MergeChaptersControllerKeepPrologue && self.Area > SaveData.Instance.LevelSetStats.AreaOffset)
                         {
-                            OuiChapterSelectIcon_front.SetValue(self, GFX.Gui[AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + 1].Icon]);
-                            OuiChapterSelectIcon_back.SetValue(self, GFX.Gui.Has(AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + 1].Icon + "_back") ? GFX.Gui[AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + 1].Icon + "_back"] : GFX.Gui[AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + 1].Icon]);
+                            OuiChapterSelectIcon_front.SetValue(self, GFX.Gui[AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + 1].Icon]);
+                            OuiChapterSelectIcon_back.SetValue(self, GFX.Gui.Has(AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + 1].Icon + "_back") ? GFX.Gui[AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + 1].Icon + "_back"] : GFX.Gui[AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + 1].Icon]);
                         }
                         else
                         {
-                            OuiChapterSelectIcon_front.SetValue(self, GFX.Gui[AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset].Icon]);
-                            OuiChapterSelectIcon_back.SetValue(self, GFX.Gui.Has(AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset].Icon + "_back") ? GFX.Gui[AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset].Icon + "_back"] : GFX.Gui[AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset].Icon]);
+                            OuiChapterSelectIcon_front.SetValue(self, GFX.Gui[AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset].Icon]);
+                            OuiChapterSelectIcon_back.SetValue(self, GFX.Gui.Has(AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset].Icon + "_back") ? GFX.Gui[AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset].Icon + "_back"] : GFX.Gui[AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset].Icon]);
                         }
                     }
                 }
@@ -963,8 +963,8 @@ namespace Celeste.Mod.XaphanHelper
             {
                 if (MergeChaptersControllerKeepPrologue)
                 {
-                    areaOffs = SaveData.Instance.GetLevelSetStats().AreaOffset;
-                    int areaOffsRaw = SaveData.Instance.GetLevelSetStats().AreaOffset;
+                    areaOffs = SaveData.Instance.LevelSetStats.AreaOffset;
+                    int areaOffsRaw = SaveData.Instance.LevelSetStats.AreaOffset;
                     int areaMaxRaw = Math.Max(areaOffsRaw, SaveData.Instance.UnlockedAreas_Safe);
                     do
                     {
@@ -982,7 +982,7 @@ namespace Celeste.Mod.XaphanHelper
                 }
                 else
                 {
-                    areaMax = areaOffs = SaveData.Instance.GetLevelSetStats().AreaOffset;
+                    areaMax = areaOffs = SaveData.Instance.LevelSetStats.AreaOffset;
                 }
                 foreach (OuiChapterSelectIcon icon in (List<OuiChapterSelectIcon>)OuiChapterSelect_icons.GetValue(self))
                 {
@@ -1001,7 +1001,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private IEnumerator modOuiChapterPanelIncrementStats(On.Celeste.OuiChapterPanel.orig_IncrementStats orig, OuiChapterPanel self, bool shouldAdvance)
         {
-            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true))
+            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.LevelSetStats.AreaOffset : true))
             {
                 shouldAdvance = false;
             }
@@ -1018,13 +1018,13 @@ namespace Celeste.Mod.XaphanHelper
                 SaveData.Instance.LastArea_Safe = area.ToKey(mode);
                 if (self.OuiIcons != null && area.ID < self.OuiIcons.Count)
                 {
-                    self.OuiIcons[area.ID > SaveData.Instance.GetLevelSetStats().AreaOffset + 1 ? SaveData.Instance.GetLevelSetStats().AreaOffset + 1 : area.ID].Select();
+                    self.OuiIcons[area.ID > SaveData.Instance.LevelSetStats.AreaOffset + 1 ? SaveData.Instance.LevelSetStats.AreaOffset + 1 : area.ID].Select();
                 }
                 self.Overworld.Mountain.Model.EaseState(area.MountainState);
                 MergeChaptersControllerCheck(area);
-                if (MergeChaptersControllerKeepPrologue && area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
+                if (MergeChaptersControllerKeepPrologue && area.ID == SaveData.Instance.LevelSetStats.AreaOffset)
                 {
-                    SaveData.Instance.LastArea_Safe.ID = SaveData.Instance.GetLevelSetStats().AreaOffset;
+                    SaveData.Instance.LastArea_Safe.ID = SaveData.Instance.LevelSetStats.AreaOffset;
                     self.Overworld.Goto<OuiChapterPanel>();
                 }
                 else
@@ -1048,13 +1048,13 @@ namespace Celeste.Mod.XaphanHelper
                 SaveData.Instance.LastArea_Safe = area.ToKey(mode);
                 if (self.OuiIcons != null && area.ID < self.OuiIcons.Count)
                 {
-                    self.OuiIcons[area.ID > SaveData.Instance.GetLevelSetStats().AreaOffset + 1 ? SaveData.Instance.GetLevelSetStats().AreaOffset + 1 : area.ID].Select();
+                    self.OuiIcons[area.ID > SaveData.Instance.LevelSetStats.AreaOffset + 1 ? SaveData.Instance.LevelSetStats.AreaOffset + 1 : area.ID].Select();
                 }
                 self.Overworld.Mountain.Model.EaseState(area.MountainState);
                 MergeChaptersControllerCheck(area);
-                if (MergeChaptersControllerKeepPrologue && area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
+                if (MergeChaptersControllerKeepPrologue && area.ID == SaveData.Instance.LevelSetStats.AreaOffset)
                 {
-                    SaveData.Instance.LastArea_Safe.ID = SaveData.Instance.GetLevelSetStats().AreaOffset;
+                    SaveData.Instance.LastArea_Safe.ID = SaveData.Instance.LevelSetStats.AreaOffset;
                     self.Overworld.Goto<OuiChapterPanel>();
                 }
                 else
@@ -1070,7 +1070,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private IEnumerator modOuiChapterPanelLeave(On.Celeste.OuiChapterPanel.orig_Leave orig, OuiChapterPanel self, Oui next)
         {
-            if (!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.GetLevelSetStats().AreaOffset))
+            if (!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.LevelSetStats.AreaOffset))
             {
                 yield return new SwapImmediately(orig(self, next));
             }
@@ -1080,7 +1080,7 @@ namespace Celeste.Mod.XaphanHelper
         {
             if (useMergeChaptersController)
             {
-                if (MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
+                if (MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.LevelSetStats.AreaOffset)
                 {
                     yield return new SwapImmediately(orig(self, from));
                 }
@@ -1106,7 +1106,7 @@ namespace Celeste.Mod.XaphanHelper
             else
             {
                 AreaData areaData = AreaData.Get(SaveData.Instance.LastArea_Safe);
-                MapMetaMountain mapMetaMountain = areaData?.GetMeta()?.Mountain;
+                MapMetaMountain mapMetaMountain = areaData?.Meta?.Mountain;
                 Audio.SetMusic(mapMetaMountain?.BackgroundMusic ?? "event:/music/menu/level_select");
                 Audio.SetAmbience(mapMetaMountain?.BackgroundAmbience ?? "event:/env/amb/worldmap");
                 foreach (KeyValuePair<string, float> item in mapMetaMountain?.BackgroundMusicParams ?? new Dictionary<string, float>())
@@ -1234,7 +1234,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onLevelPause(On.Celeste.Level.orig_Pause orig, Level self, int startIndex, bool minimal, bool quickReset)
         {
-            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true))
+            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.LevelSetStats.AreaOffset : true))
             {
                 if (quickReset)
                 {
@@ -1246,7 +1246,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onReturnMapHintRender(On.Celeste.ReturnMapHint.orig_Render orig, ReturnMapHint self)
         {
-            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && !((MergeChaptersControllerKeepPrologue && SaveData.Instance.CurrentSession.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+            if (useMergeChaptersController && MergeChaptersControllerMode != "Classic" && !((MergeChaptersControllerKeepPrologue && SaveData.Instance.CurrentSession.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)))
             {
                 MTexture mTexture = GFX.Gui["checkpoint"];
                 string text = "";
@@ -1285,7 +1285,7 @@ namespace Celeste.Mod.XaphanHelper
             if (SaveData.Instance != null)
             {
                 AreaStats areaStats = SaveData.Instance.Areas_Safe[self.Area.ID];
-                if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.GetLevelSetStats().Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3 && !SaveData.Instance.DebugMode)
+                if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.LevelSetStats.Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3 && !SaveData.Instance.DebugMode)
                 {
                     AreaModeStats areaModeStats = self.RealStats.Modes[2];
                     bool flag = areaModeStats.Strawberries.Count <= 0;
@@ -1319,7 +1319,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     unlockedBSide = true;
                 }
-                if (ModSaveData.CSideUnlocked.Contains(SaveData.Instance.GetLevelSetStats().Name + ":" + SaveData.Instance.LastArea_Safe.ChapterIndex) && SaveData.Instance.UnlockedModes < 3)
+                if (ModSaveData.CSideUnlocked.Contains(SaveData.Instance.LevelSetStats.Name + ":" + SaveData.Instance.LastArea_Safe.ChapterIndex) && SaveData.Instance.UnlockedModes < 3)
                 {
                     unlockedCSide = true;
                 }
@@ -1333,7 +1333,7 @@ namespace Celeste.Mod.XaphanHelper
                     if (start == Overworld.StartMode.AreaComplete || start == Overworld.StartMode.AreaQuit)
                     {
                         AreaData areaData = AreaData.Get(SaveData.Instance.LastArea_Safe.ID);
-                        areaData = (AreaDataExt.Get(areaData?.GetMeta()?.Parent) ?? areaData);
+                        areaData = (AreaData.Get(areaData?.Meta?.Parent) ?? areaData);
                         if (areaData != null)
                         {
                             SaveData.Instance.LastArea_Safe.ID = areaData.ID;
@@ -1366,7 +1366,7 @@ namespace Celeste.Mod.XaphanHelper
             HeartGemDisplay heart = OuiChapterPanelData.Get<HeartGemDisplay>("heart");
             StrawberriesCounter strawberries = OuiChapterPanelData.Get<StrawberriesCounter>("strawberries");
             AreaStats areaStats = SaveData.Instance.Areas_Safe[self.Area.ID];
-            if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.GetLevelSetStats().Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3 && !SaveData.Instance.DebugMode)
+            if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.LevelSetStats.Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3 && !SaveData.Instance.DebugMode)
             {
                 AreaModeStats areaModeStats = self.DisplayedStats.Modes[2];
                 AreaData areaData = AreaData.Get(self.Area);
@@ -1405,7 +1405,7 @@ namespace Celeste.Mod.XaphanHelper
             orig(self);
             if (!SaveData.Instance.DebugMode)
             {
-                if (ModSaveData.CSideUnlocked.Contains(SaveData.Instance.GetLevelSetStats().Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3)
+                if (ModSaveData.CSideUnlocked.Contains(SaveData.Instance.LevelSetStats.Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3)
                 {
                     object CSideOption;
                     ((IList)OuiChapterPanel_modes.GetValue(self)).Add(
@@ -1425,11 +1425,11 @@ namespace Celeste.Mod.XaphanHelper
         private void MergeChaptersControllerCheck(AreaData data = null)
         {
             useMergeChaptersController = false;
-            lastLevelSet = SaveData.Instance.GetLevelSetStats().Name;
-            MergedChapterAreaOffset = SaveData.Instance.GetLevelSetStats().AreaOffset;
+            lastLevelSet = SaveData.Instance.LevelSetStats.Name;
+            MergedChapterAreaOffset = SaveData.Instance.LevelSetStats.AreaOffset;
             if (data != null)
             {
-                MergedChapterAreaOffset = AreaData.Areas.FindIndex((AreaData area) => area.GetLevelSet() == data.LevelSet);
+                MergedChapterAreaOffset = AreaData.Areas.FindIndex((AreaData area) => area.LevelSet == data.LevelSet);
             }
             MapData MapData = AreaData.Areas[MergedChapterAreaOffset].Mode[0].MapData;
             foreach (LevelData levelData in MapData.Levels)
@@ -1439,9 +1439,9 @@ namespace Celeste.Mod.XaphanHelper
                     if (entity.Name == "XaphanHelper/MergeChaptersController")
                     {
                         useMergeChaptersController = true;
-                        MergeChaptersControllerLevelSet = SaveData.Instance.GetLevelSetStats().Name;
+                        MergeChaptersControllerLevelSet = SaveData.Instance.LevelSetStats.Name;
                         MergeChaptersControllerMode = entity.Attr("mode");
-                        MergeChaptersControllerKeepPrologue = entity.Bool("keepPrologueSeparated") && AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset].Interlude_Safe;
+                        MergeChaptersControllerKeepPrologue = entity.Bool("keepPrologueSeparated") && AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset].Interlude_Safe;
                         break;
                     }
                 }
@@ -1456,7 +1456,7 @@ namespace Celeste.Mod.XaphanHelper
             }
             if (SaveData.Instance != null)
             {
-                if (lastLevelSet != SaveData.Instance.GetLevelSetStats().Name)
+                if (lastLevelSet != SaveData.Instance.LevelSetStats.Name)
                 {
                     MergeChaptersControllerCheck();
                     self.Overworld.Maddy.Hide();
@@ -1479,7 +1479,7 @@ namespace Celeste.Mod.XaphanHelper
                 Audio.SetMusic(null);
                 Audio.SetAmbience(null);
                 yield return 0.5f;
-                if (MergeChaptersControllerKeepPrologue && self.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
+                if (MergeChaptersControllerKeepPrologue && self.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)
                 {
                     LevelEnter.Go(new Session(self.Area, checkpoint)
                     {
@@ -1491,7 +1491,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     LevelEnter.Go(new Session(self.Area, checkpoint)
                     {
-                        Time = ModSaveData.SavedTime.ContainsKey(SaveData.Instance.GetLevelSetStats().Name) ? ModSaveData.SavedTime[SaveData.Instance.GetLevelSetStats().Name] : 0L
+                        Time = ModSaveData.SavedTime.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? ModSaveData.SavedTime[SaveData.Instance.LevelSetStats.Name] : 0L
                     }
                     , fromSaveData: false);
 
@@ -1531,16 +1531,16 @@ namespace Celeste.Mod.XaphanHelper
                 int TotalBSidesDeaths = 0;
                 int TotalCSidesDeaths = 0;
                 long TotalTime = 0;
-                for (int i = 0; i < SaveData.Instance.GetLevelSetStats().Areas.Count; i++)
+                for (int i = 0; i < SaveData.Instance.LevelSetStats.Areas.Count; i++)
                 {
-                    AreaData areaData = AreaData.Get(SaveData.Instance.GetLevelSetStats().AreaOffset + i);
-                    AreaStats areaStats = SaveData.Instance.Areas_Safe[SaveData.Instance.GetLevelSetStats().AreaOffset + i + ((MergeChaptersControllerKeepPrologue && i == 0) ? 1 : 0)];
+                    AreaData areaData = AreaData.Get(SaveData.Instance.LevelSetStats.AreaOffset + i);
+                    AreaStats areaStats = SaveData.Instance.Areas_Safe[SaveData.Instance.LevelSetStats.AreaOffset + i + ((MergeChaptersControllerKeepPrologue && i == 0) ? 1 : 0)];
 
                     bool Visited = false;
                     foreach (string visitedChapter in ModSaveData.VisitedChapters)
                     {
                         string[] visitedChapterData = visitedChapter.Split('_');
-                        if (visitedChapter.Contains(SaveData.Instance.GetLevelSet()) && visitedChapterData[2] == "0" && i == int.Parse(visitedChapterData[1].Remove(0, 2)))
+                        if (visitedChapter.Contains(SaveData.Instance.LevelSet) && visitedChapterData[2] == "0" && i == int.Parse(visitedChapterData[1].Remove(0, 2)))
                         {
                             Visited = true;
                         }
@@ -1633,16 +1633,16 @@ namespace Celeste.Mod.XaphanHelper
                 Table.AddRow();
                 OuiJournalPage.Row total = Table.AddRow().Add(new OuiJournalPage.TextCell(Dialog.Clean("journal_totals"), new Vector2(1f, 0.5f), 0.7f, TextColor)).Add(null);
 
-                AreaStats lastAreaStats = SaveData.Instance.Areas_Safe[SaveData.Instance.GetLevelSetStats().AreaOffset + SaveData.Instance.GetLevelSetStats().Areas.Count - 1];
-                if (lastAreaStats.Modes[0].Completed && !ModSaveData.SavedFlags.Contains(SaveData.Instance.GetLevelSet() + "_GoldenStrawberryGet"))
+                AreaStats lastAreaStats = SaveData.Instance.Areas_Safe[SaveData.Instance.LevelSetStats.AreaOffset + SaveData.Instance.LevelSetStats.Areas.Count - 1];
+                if (lastAreaStats.Modes[0].Completed && !ModSaveData.SavedFlags.Contains(SaveData.Instance.LevelSet + "_GoldenStrawberryGet"))
                 {
                     total.Add(new OuiJournalPage.IconCell("clear")).Add(null);
                 }
-                else if (!lastAreaStats.Modes[0].Completed && ModSaveData.SavedFlags.Contains(SaveData.Instance.GetLevelSet() + "_GoldenStrawberryGet"))
+                else if (!lastAreaStats.Modes[0].Completed && ModSaveData.SavedFlags.Contains(SaveData.Instance.LevelSet + "_GoldenStrawberryGet"))
                 {
                     total.Add(null).Add(new OuiJournalPage.IconCell("goldenStrawberry"));
                 }
-                else if (lastAreaStats.Modes[0].Completed && ModSaveData.SavedFlags.Contains(SaveData.Instance.GetLevelSet() + "_GoldenStrawberryGet"))
+                else if (lastAreaStats.Modes[0].Completed && ModSaveData.SavedFlags.Contains(SaveData.Instance.LevelSet + "_GoldenStrawberryGet"))
                 {
                     total.Add(new OuiJournalPage.IconCell("clear")).Add(new OuiJournalPage.IconCell("goldenStrawberry"));
                 }
@@ -1650,7 +1650,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     total.Add(null).Add(null);
                 }
-                total.Add(new OuiJournalPage.TextCell(SaveData.Instance.TotalStrawberries_Safe.ToString() + "/" + SaveData.Instance.GetLevelSetStats().MaxStrawberries.ToString(), TextJustify, 0.6f, TextColor));
+                total.Add(new OuiJournalPage.TextCell(SaveData.Instance.TotalStrawberries_Safe.ToString() + "/" + SaveData.Instance.LevelSetStats.MaxStrawberries.ToString(), TextJustify, 0.6f, TextColor));
                 total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalASidesDeaths), TextJustify, 0.6f, TextColor));
                 if (SaveData.Instance.UnlockedModes >= 2)
                 {
@@ -1675,7 +1675,7 @@ namespace Celeste.Mod.XaphanHelper
             orig(self);
             if (self.Exists && !self.Corrupted && self.FurthestArea == 99999999 && self.SaveData != null)
             {
-                string name = self.SaveData.GetLevelSetStats().Name;
+                string name = self.SaveData.LevelSetStats.Name;
                 Vector2 width = ActiveFont.Measure(name);
                 ActiveFont.Draw(Dialog.Clean(name), self.Position - Vector2.UnitX * Ease.CubeInOut((float)OuiFileSelectSlot_HighlightEase.GetValue(self)) * 360f + new Vector2(110f, -10f), new Vector2(0.5f, 0.5f), Vector2.One * (width.X > 220f ? 0.55f : 0.8f), Color.Black * 0.6f);
             }
@@ -1684,11 +1684,11 @@ namespace Celeste.Mod.XaphanHelper
         private void modOuiFileSelectShow(On.Celeste.OuiFileSelectSlot.orig_Show orig, OuiFileSelectSlot self)
         {
             orig(self);
-            LevelSetStats levelSetStats = self.SaveData?.GetLevelSetStats();
+            LevelSetStats levelSetStats = self.SaveData?.LevelSetStats;
             if (levelSetStats != null)
             {
                 bool useMergeChaptersController = false;
-                MapData MapData = AreaData.Areas[AreaData.Areas.FindIndex((AreaData area) => area.GetLevelSet() == self.SaveData.LevelSet)].Mode[0].MapData;
+                MapData MapData = AreaData.Areas[AreaData.Areas.FindIndex((AreaData area) => area.LevelSet == self.SaveData.LevelSet)].Mode[0].MapData;
                 foreach (LevelData levelData in MapData.Levels)
                 {
                     foreach (EntityData entity in levelData.Entities)
@@ -1711,7 +1711,7 @@ namespace Celeste.Mod.XaphanHelper
         {
             orig(self, index, fileSelect, data);
             bool useMergeChaptersController = false;
-            MapData MapData = AreaData.Areas[AreaData.Areas.FindIndex((AreaData area) => area.GetLevelSet() == data.LevelSet)].Mode[0].MapData;
+            MapData MapData = AreaData.Areas[AreaData.Areas.FindIndex((AreaData area) => area.LevelSet == data.LevelSet)].Mode[0].MapData;
             foreach (LevelData levelData in MapData.Levels)
             {
                 foreach (EntityData entity in levelData.Entities)
@@ -1752,7 +1752,7 @@ namespace Celeste.Mod.XaphanHelper
         private void modOuiChapterPanelStart(On.Celeste.OuiChapterPanel.orig_Start orig, OuiChapterPanel self, string checkpoint)
         {
             AreaStats areaStats = SaveData.Instance.Areas_Safe[self.Area.ID];
-            if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.GetLevelSetStats().Name + ":" + self.Area.ChapterIndex) && !SaveData.Instance.DebugMode)
+            if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.LevelSetStats.Name + ":" + self.Area.ChapterIndex) && !SaveData.Instance.DebugMode)
             {
                 self.Focused = false;
                 Audio.Play("event:/ui/world_map/chapter/checkpoint_start");
@@ -1768,7 +1768,7 @@ namespace Celeste.Mod.XaphanHelper
         private IEnumerator modOuiChapterPanelIncrementStatsDisplay(On.Celeste.OuiChapterPanel.orig_IncrementStatsDisplay orig, OuiChapterPanel self, AreaModeStats modeStats, AreaModeStats newModeStats, bool doHeartGem, bool doStrawberries, bool doDeaths, bool doRemixUnlock)
         {
             AreaStats areaStats = SaveData.Instance.Areas_Safe[self.Data.ID];
-            if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.GetLevelSetStats().Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3 && !SaveData.Instance.DebugMode)
+            if (self.Area.Mode == AreaMode.BSide && !areaStats.Cassette && ModSaveData.CSideUnlocked.Contains(SaveData.Instance.LevelSetStats.Name + ":" + self.Area.ChapterIndex) && SaveData.Instance.UnlockedModes < 3 && !SaveData.Instance.DebugMode)
             {
                 modeStats = self.DisplayedStats.Modes[2];
                 newModeStats = areaStats.Modes[2];
@@ -1784,7 +1784,7 @@ namespace Celeste.Mod.XaphanHelper
             int num = checkpoint?.IndexOf('|') ?? (-1);
             if (num >= 0)
             {
-                chapterPanel.Area = (AreaDataExt.Get(checkpoint.Substring(0, num))?.ToKey(chapterPanel.Area.Mode) ?? chapterPanel.Area);
+                chapterPanel.Area = (AreaData.Get(checkpoint.Substring(0, num))?.ToKey(chapterPanel.Area.Mode) ?? chapterPanel.Area);
                 checkpoint = checkpoint.Substring(num + 1);
             }
             chapterPanel.EnteringChapter = true;
@@ -1855,7 +1855,7 @@ namespace Celeste.Mod.XaphanHelper
         {
             isInLevel = true;
             string room = level.Session.Level;
-            string Prefix = level.Session.Area.GetLevelSet();
+            string Prefix = level.Session.Area.LevelSet;
             int chapterIndex = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
             AreaKey area = level.Session.Area;
             MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
@@ -2165,7 +2165,7 @@ namespace Celeste.Mod.XaphanHelper
 
             // SoCM only
 
-            if (level.Session.Area.GetLevelSet() == "Xaphan/0")
+            if (level.Session.Area.LevelSet == "Xaphan/0")
             {
                 startedAnySoCMChapter = true;
 
@@ -2711,7 +2711,7 @@ namespace Celeste.Mod.XaphanHelper
             List<string> ToRemove = new();
             foreach (string flag in ModSaveData.SavedFlags)
             {
-                if (flag.Contains("GoldenStrawberry") && flag != level.Session.Area.GetLevelSet() + "_GoldenStrawberryGet")
+                if (flag.Contains("GoldenStrawberry") && flag != level.Session.Area.LevelSet + "_GoldenStrawberryGet")
                 {
                     ToRemove.Add(flag);
                 }
@@ -2747,13 +2747,13 @@ namespace Celeste.Mod.XaphanHelper
             ModSaveData.CanDisplayAchievementsPopups = false;
             if ((!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerMode != "Rooms")) && mode != LevelExit.Mode.SaveAndQuit)
             {
-                ModSaveData.startAsDrone.Remove(level.Session.Area.GetLevelSet());
-                ModSaveData.droneStartChapter.Remove(level.Session.Area.GetLevelSet());
-                ModSaveData.droneStartRoom.Remove(level.Session.Area.GetLevelSet());
-                ModSaveData.droneStartSpawn.Remove(level.Session.Area.GetLevelSet());
-                ModSaveData.droneCurrentSpawn.Remove(level.Session.Area.GetLevelSet());
-                ModSaveData.fakePlayerFacing.Remove(level.Session.Area.GetLevelSet());
-                ModSaveData.fakePlayerPosition.Remove(level.Session.Area.GetLevelSet());
+                ModSaveData.startAsDrone.Remove(level.Session.Area.LevelSet);
+                ModSaveData.droneStartChapter.Remove(level.Session.Area.LevelSet);
+                ModSaveData.droneStartRoom.Remove(level.Session.Area.LevelSet);
+                ModSaveData.droneStartSpawn.Remove(level.Session.Area.LevelSet);
+                ModSaveData.droneCurrentSpawn.Remove(level.Session.Area.LevelSet);
+                ModSaveData.fakePlayerFacing.Remove(level.Session.Area.LevelSet);
+                ModSaveData.fakePlayerPosition.Remove(level.Session.Area.LevelSet);
             }
             NoDroneSpawnSound = false;
             SaveSettings();
@@ -2767,7 +2767,7 @@ namespace Celeste.Mod.XaphanHelper
             if (useMetroidGameplay)
             {
                 // Find the "Retry" item and remove it from the menu if it exist
-                int retryIndex = menu.GetItems().FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETRY"));
+                int retryIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETRY"));
                 if (retryIndex != -1)
                 {
                     menu.Remove(menu.Items[retryIndex]);
@@ -2776,7 +2776,7 @@ namespace Celeste.Mod.XaphanHelper
             if (level.Session.GetFlag("boss_Challenge_Mode") && !level.Session.GetFlag("In_bossfight"))
             {
                 // Find the position of "Retry"
-                int retryIndex = menu.GetItems().FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETRY"));
+                int retryIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETRY"));
 
                 if (retryIndex == -1)
                 {
@@ -2795,10 +2795,10 @@ namespace Celeste.Mod.XaphanHelper
                 GiveUpCMButton.ConfirmSfx = "event:/ui/main/message_confirm";
                 menu.Insert(retryIndex + 1, GiveUpCMButton);
             }
-            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true))
+            if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.LevelSetStats.AreaOffset : true))
             {
                 // Find the "Restart chapter" button and remove it from the menu if it exist
-                int restartAreaIndex = menu.GetItems().FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RESTARTAREA"));
+                int restartAreaIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RESTARTAREA"));
                 if (restartAreaIndex != -1)
                 {
                     menu.Remove(menu.Items[restartAreaIndex]);
@@ -2818,12 +2818,12 @@ namespace Celeste.Mod.XaphanHelper
             if (useMergeChaptersController && (level.Session.Area.Mode == AreaMode.BSide || level.Session.Area.Mode == AreaMode.CSide))
             {
                 // Find the position of "Return to map"
-                int returnToMapIndex = menu.GetItems().FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETURN"));
+                int returnToMapIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETURN"));
 
                 if (returnToMapIndex == -1)
                 {
                     // Bottm of the menu if "Return to map" is not found
-                    returnToMapIndex = menu.GetItems().Count - 1;
+                    returnToMapIndex = menu.Items.Count - 1;
                 }
 
                 // remove "Return to map" from the menu
@@ -3008,7 +3008,7 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         ModSaveData.GlobalFlags.Remove(value);
                     }
-                    LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + (MergeChaptersControllerKeepPrologue ? 1 : 0), AreaMode.Normal)), fromSaveData: false);
+                    LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (MergeChaptersControllerKeepPrologue ? 1 : 0), AreaMode.Normal)), fromSaveData: false);
                 });
                 foreach (LevelEndingHook component in level.Tracker.GetComponents<LevelEndingHook>())
                 {
@@ -3097,9 +3097,9 @@ namespace Celeste.Mod.XaphanHelper
             {
                 if (self.Session.Level == MapData.StartLevel().Name)
                 {
-                    if (!ModSaveData.Checkpoints.Contains(self.Session.Area.GetLevelSet() + "|" + self.Session.Area.ChapterIndex) && area.ID != SaveData.Instance.GetLevelSetStats().AreaOffset)
+                    if (!ModSaveData.Checkpoints.Contains(self.Session.Area.LevelSet + "|" + self.Session.Area.ChapterIndex) && area.ID != SaveData.Instance.LevelSetStats.AreaOffset)
                     {
-                        ModSaveData.Checkpoints.Add(self.Session.Area.GetLevelSet() + "|" + self.Session.Area.ChapterIndex);
+                        ModSaveData.Checkpoints.Add(self.Session.Area.LevelSet + "|" + self.Session.Area.ChapterIndex);
                         self.AutoSave();
                     }
                 }
@@ -3149,7 +3149,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     minimapEnabled = false;
                 }
-                if (allRoomsUseTileController && ModSettings.ShowMiniMap && ModSaveData.SavedFlags.Contains(self.Session.Area.GetLevelSet() + "_Can_Open_Map") && !minimapEnabled)
+                if (allRoomsUseTileController && ModSettings.ShowMiniMap && ModSaveData.SavedFlags.Contains(self.Session.Area.LevelSet + "_Can_Open_Map") && !minimapEnabled)
                 {
                     if (self.Tracker.GetEntity<MiniMap>() == null)
                     {
@@ -3185,7 +3185,7 @@ namespace Celeste.Mod.XaphanHelper
 
             if (useIngameMap || useUpgrades)
             {
-                string Prefix = self.Session.Area.GetLevelSet();
+                string Prefix = self.Session.Area.LevelSet;
                 int chapterIndex = self.Session.Area.ChapterIndex == -1 ? 0 : self.Session.Area.ChapterIndex;
                 string room = self.Session.Level;
                 if (self.CanPause && (self.CanRetry || PlayerIsControllingRemoteDrone()) && player != null && player.StateMachine.State == Player.StNormal && player.Speed == Vector2.Zero && !self.Session.GetFlag("In_bossfight") && player.OnSafeGround && ModSettings.OpenMap.Pressed && !self.Session.GetFlag("Map_Opened"))
@@ -3239,10 +3239,10 @@ namespace Celeste.Mod.XaphanHelper
                     if (!self.Session.GetFlag("XaphanHelper_Loaded_Player") && !ModSaveData.LoadedPlayer && !self.Paused)
                     {
                         bool hasInterlude = false;
-                        int maxChapters = SaveData.Instance.GetLevelSetStats().Areas.Count;
+                        int maxChapters = SaveData.Instance.LevelSetStats.Areas.Count;
                         for (int i = 0; i < maxChapters; i++)
                         {
-                            if (AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i)].Interlude)
+                            if (AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i)].Interlude)
                             {
                                 hasInterlude = true;
                                 break;
@@ -3253,7 +3253,7 @@ namespace Celeste.Mod.XaphanHelper
                         if (ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet) && ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet))
                         {
                             int chapter = (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet]) - (hasInterlude ? 0 : 1);
-                            destinationMapData = AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + chapter].Mode[0].MapData;
+                            destinationMapData = AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + chapter].Mode[0].MapData;
                             if (destinationMapData.Get(ModSaveData.SavedRoom[self.Session.Area.LevelSet]) == null)
                             {
                                 loadAtStartOfCampaign = true;
@@ -3267,7 +3267,7 @@ namespace Celeste.Mod.XaphanHelper
                             || !ModSaveData.SavedMusic.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedAmbience.ContainsKey(self.Session.Area.LevelSet)
                             || !ModSaveData.SavedNoLoadEntities.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet)
                             || !ModSaveData.SavedFromBeginning.ContainsKey(self.Session.Area.LevelSet) || !ModSaveData.SavedSesionFlags.ContainsKey(self.Session.Area.LevelSet)
-                            || !ModSaveData.SavedSessionStrawberries.ContainsKey(self.Session.Area.LevelSet) || (MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)
+                            || !ModSaveData.SavedSessionStrawberries.ContainsKey(self.Session.Area.LevelSet) || (MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)
                             || loadAtStartOfCampaign)
                         {
                             ModSaveData.LoadedPlayer = true;
@@ -3312,7 +3312,7 @@ namespace Celeste.Mod.XaphanHelper
                         }
                         else
                         {
-                            LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet] - (hasInterlude ? 0 : 1))))
+                            LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet] - (hasInterlude ? 0 : 1))))
                             {
                                 Time = ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedTime[self.Session.Area.LevelSet] : 0L
                             }, fromSaveData: false);
@@ -3321,7 +3321,7 @@ namespace Celeste.Mod.XaphanHelper
 
                     // Save the room as the one that the player must load into when starting the campaign if using a MergeChaptersController with mode set to Rooms
 
-                    else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
+                    else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
                     {
                         ModSaveData.LoadedPlayer = true;
                         if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))
@@ -3479,7 +3479,7 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
 
-                if (useMergeChaptersController && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+                if (useMergeChaptersController && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)))
                 {
                     if (!ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet))
                     {
@@ -3595,11 +3595,11 @@ namespace Celeste.Mod.XaphanHelper
                         self.Add(new TransitionBlackEffect(true));
                         self.TimerHidden = true;
                         bool faceLeft = false;
-                        if (ModSaveData.fakePlayerFacing[self.Session.Area.GetLevelSet()] == Facings.Left)
+                        if (ModSaveData.fakePlayerFacing[self.Session.Area.LevelSet] == Facings.Left)
                         {
                             faceLeft = true;
                         }
-                        self.Add(new TeleportCutscene(player, ModSaveData.droneStartRoom[self.Session.Area.GetLevelSet()], Vector2.Zero, 0, 0, true, 0f, "Fade", wipeDuration, fromElevator, wakeUpAnim: true, spawnPositionX: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].X, spawnPositionY: ModSaveData.fakePlayerPosition[self.Session.Area.GetLevelSet()].Y, faceLeft: faceLeft, drone: true));
+                        self.Add(new TeleportCutscene(player, ModSaveData.droneStartRoom[self.Session.Area.LevelSet], Vector2.Zero, 0, 0, true, 0f, "Fade", wipeDuration, fromElevator, wakeUpAnim: true, spawnPositionX: ModSaveData.fakePlayerPosition[self.Session.Area.LevelSet].X, spawnPositionY: ModSaveData.fakePlayerPosition[self.Session.Area.LevelSet].Y, faceLeft: faceLeft, drone: true));
                     }
                     else
                     {
@@ -3613,7 +3613,7 @@ namespace Celeste.Mod.XaphanHelper
 
             if (useIngameMap)
             {
-                string Prefix = self.Session.Area.GetLevelSet();
+                string Prefix = self.Session.Area.LevelSet;
                 int chapterIndex = self.Session.Area.ChapterIndex == -1 ? 0 : self.Session.Area.ChapterIndex;
                 if (player != null && !self.Paused && !self.Transitioning)
                 {
@@ -3691,7 +3691,7 @@ namespace Celeste.Mod.XaphanHelper
 
             // SoCM Only
 
-            if (self.Session.Area.GetLevelSet() == "Xaphan/0")
+            if (self.Session.Area.LevelSet == "Xaphan/0")
             {
                 // Backward saves compatibility
 
@@ -3762,7 +3762,7 @@ namespace Celeste.Mod.XaphanHelper
                         }
                         foreach (string flag in ModSaveData.SavedFlags)
                         {
-                            string Prefix = level.Session.Area.GetLevelSet();
+                            string Prefix = level.Session.Area.LevelSet;
                             int chapterIndex = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
                             string[] str = flag.Split('_');
                             if (str[0] == Prefix && str[1] == "Ch" + chapterIndex)

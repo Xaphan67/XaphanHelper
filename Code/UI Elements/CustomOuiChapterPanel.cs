@@ -287,14 +287,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (XaphanModule.MergeChaptersControllerKeepPrologue)
             {
                 Area.ID -= 1;
-                if (Area.ID > SaveData.Instance.GetLevelSetStats().AreaOffset)
+                if (Area.ID > SaveData.Instance.LevelSetStats.AreaOffset)
                 {
-                    Area.ID = SaveData.Instance.GetLevelSetStats().AreaOffset;
+                    Area.ID = SaveData.Instance.LevelSetStats.AreaOffset;
                 }
             }
             else
             {
-                Area.ID = SaveData.Instance.GetLevelSetStats().AreaOffset;
+                Area.ID = SaveData.Instance.LevelSetStats.AreaOffset;
             }
             Data = AreaData.Areas[Area.ID + (XaphanModule.MergeChaptersControllerKeepPrologue ? 1 : 0)];
             RealStats = SaveData.Instance.Areas_Safe[Area.ID];
@@ -447,9 +447,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Audio.SetMusic(null);
             Audio.SetAmbience(null);
             yield return 0.5f;
-            LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + ((XaphanModule.MergeChaptersControllerKeepPrologue && chapterIndex == 0) ? 1 : 0) + chapterIndex, Area.Mode), checkpoint)
+            LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + ((XaphanModule.MergeChaptersControllerKeepPrologue && chapterIndex == 0) ? 1 : 0) + chapterIndex, Area.Mode), checkpoint)
             {
-                Time = XaphanModule.ModSaveData.SavedTime.ContainsKey(SaveData.Instance.GetLevelSetStats().Name) ? XaphanModule.ModSaveData.SavedTime[SaveData.Instance.GetLevelSetStats().Name] : 0L
+                Time = XaphanModule.ModSaveData.SavedTime.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? XaphanModule.ModSaveData.SavedTime[SaveData.Instance.LevelSetStats.Name] : 0L
             }, fromSaveData: false);
         }
 
@@ -650,12 +650,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             else
                             {
                                 bool FoundCheckpoints = false;
-                                for (int i = 0; i <= SaveData.Instance.GetLevelSetStats().MaxArea; i++)
+                                for (int i = 0; i <= SaveData.Instance.LevelSetStats.MaxArea; i++)
                                 {
-                                    if (SaveData.Instance.FoundAnyCheckpoints(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + i)) || XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.GetLevelSetStats().Name + "|" + i))
+                                    if (SaveData.Instance.FoundAnyCheckpoints(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + i)) || XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.LevelSetStats.Name + "|" + i))
                                     {
                                         FoundCheckpoints = true;
-                                        if (XaphanModule.MergeChaptersControllerKeepPrologue && i == 1 && !SaveData.Instance.FoundAnyCheckpoints(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + i)) && XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.GetLevelSetStats().Name + "|" + i))
+                                        if (XaphanModule.MergeChaptersControllerKeepPrologue && i == 1 && !SaveData.Instance.FoundAnyCheckpoints(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + i)) && XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.LevelSetStats.Name + "|" + i))
                                         {
                                             FoundCheckpoints = false;
                                         }
@@ -710,7 +710,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
             }
             bool flag = false;
-            if (XaphanModule.ModSaveData.SavedFlags.Contains(Area.GetLevelSet() + "_GoldenStrawberryGet"))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains(Area.LevelSet + "_GoldenStrawberryGet"))
             {
                 flag = true;
             }
@@ -780,18 +780,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     string FixedCheckpointName = str != null ? str[1] : options[num].CheckpointLevelName;
                     if (options[num].ChapterIndex == CurrentDrawChapter)
                     {
-                        DrawCheckpoint(center, options[num], AreaData.GetCheckpointID(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + options[num].ChapterIndex, Area.Mode), FixedCheckpointName) + 1, options[num].ChapterIndex);
+                        DrawCheckpoint(center, options[num], AreaData.GetCheckpointID(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + options[num].ChapterIndex, Area.Mode), FixedCheckpointName) + 1, options[num].ChapterIndex);
                     }
                     else
                     {
                         CurrentDrawChapter--;
-                        DrawCheckpoint(center, options[num], AreaData.GetCheckpointID(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + options[num].ChapterIndex, Area.Mode), FixedCheckpointName) + 1, options[num].ChapterIndex);
+                        DrawCheckpoint(center, options[num], AreaData.GetCheckpointID(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + options[num].ChapterIndex, Area.Mode), FixedCheckpointName) + 1, options[num].ChapterIndex);
                     }
                 }
             }
             GFX.Gui["areaselect/title"].Draw(Position + new Vector2(-60f, 0f), Vector2.Zero, Data.TitleBaseColor);
             GFX.Gui["areaselect/accent"].Draw(Position + new Vector2(-60f, 0f), Vector2.Zero, Data.TitleAccentColor);
-            string text = ActiveFont.FontSize.AutoNewline(Dialog.Clean(SaveData.Instance.GetLevelSetStats().Name), 600);
+            string text = ActiveFont.FontSize.AutoNewline(Dialog.Clean(SaveData.Instance.LevelSetStats.Name), 600);
             ActiveFont.Draw(text, Position + IconOffset + new Vector2(-100 - ActiveFont.Measure(text).X / 2, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 1f, Data.TitleTextColor * 0.8f);
             if (spotlightAlpha > 0f)
             {
@@ -870,7 +870,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private void UpdateStats(bool wiggle = true, bool? overrideStrawberryWiggle = null, bool? overrideDeathWiggle = null, bool? overrideHeartWiggle = null)
         {
-            LevelSetStats levelSetStats = SaveData.Instance.GetLevelSetStats();
+            LevelSetStats levelSetStats = SaveData.Instance.LevelSetStats;
             AreaModeStats areaModeStats = DisplayedStats.Modes[(int)Area.Mode];
             AreaData areaData = AreaData.Get(Area);
             strawberries.Visible = (levelSetStats.TotalStrawberries != 0);
@@ -891,7 +891,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             int CSideTotalHearts = 0;
             foreach (AreaStats areaStats in SaveData.Instance.Areas_Safe)
             {
-                if (areaStats.LevelSet == Area.LevelSet && (XaphanModule.MergeChaptersControllerKeepPrologue ? areaStats.ID != SaveData.Instance.GetLevelSetStats().AreaOffset : true))
+                if (areaStats.LevelSet == Area.LevelSet && (XaphanModule.MergeChaptersControllerKeepPrologue ? areaStats.ID != SaveData.Instance.LevelSetStats.AreaOffset : true))
                 {
                     for (int i = 0; i < 3; i++)
                     {
@@ -1201,11 +1201,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private MTexture GetCheckpointPreview(AreaKey area, string level, int chapterIndex = -1)
         {
             string checkpointPreviewName = GetCheckpointPreviewName(area, level);
-            if (chapterIndex != -1 && checkpointPreviewName.Contains(AreaData.Areas[area.ID + chapterIndex].Mode[(int)area.Mode].MapData.StartLevel().Name) && (XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.GetLevelSetStats().Name + "|" + chapterIndex) || SaveData.Instance.DebugMode || SaveData.Instance.CheatMode))
+            if (chapterIndex != -1 && checkpointPreviewName.Contains(AreaData.Areas[area.ID + chapterIndex].Mode[(int)area.Mode].MapData.StartLevel().Name) && (XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.LevelSetStats.Name + "|" + chapterIndex) || SaveData.Instance.DebugMode || SaveData.Instance.CheatMode))
             {
                 checkpointPreviewName = checkpointPreviewName.Replace(AreaData.Areas[area.ID + chapterIndex].Mode[(int)area.Mode].MapData.StartLevel().Name, "start");
             }
-            if (area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset && chapterIndex == 0 && XaphanModule.MergeChaptersControllerKeepPrologue)
+            if (area.ID == SaveData.Instance.LevelSetStats.AreaOffset && chapterIndex == 0 && XaphanModule.MergeChaptersControllerKeepPrologue)
             {
                 checkpointPreviewName = checkpointPreviewName.Replace(AreaData.Areas[area.ID + chapterIndex].Name, AreaData.Areas[area.ID + chapterIndex + 1].Name);
                 checkpointPreviewName = checkpointPreviewName.Replace(AreaData.Areas[area.ID + chapterIndex].Mode[(int)area.Mode].MapData.StartLevel().Name, "start");
@@ -1224,11 +1224,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 string[] str = level?.Split('|');
                 level = str[0] + "|" + str[1];
-                area = (AreaDataExt.Get(level.Substring(0, num))?.ToKey(area.Mode) ?? area);
+                area = (AreaData.Get(level.Substring(0, num))?.ToKey(area.Mode) ?? area);
                 level = level.Substring(num + 1);
             }
             string text = area.ToString();
-            if (area.GetLevelSet() != "Celeste")
+            if (area.LevelSet != "Celeste")
             {
                 text = area.GetSID();
             }
@@ -1295,27 +1295,27 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             ModeProperties mode = areaData.Mode[(int)area.Mode];
             HashSet<string> hashSet;
             hashSet = new HashSet<string>();
-            int MaxAreas = save.GetLevelSetStats().MaxArea;
+            int MaxAreas = save.LevelSetStats.MaxArea;
             for (int i = 0; i <= MaxAreas; i++)
             {
-                HashSet<string> checkpointList = save.GetCheckpoints(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + i));
+                HashSet<string> checkpointList = save.GetCheckpoints(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + i));
                 areaData = AreaData.Areas[area.ID + i];
                 mode = areaData.Mode[(int)area.Mode];
                 if (mode.Checkpoints != null)
                 {
                     CheckpointData[] array = mode.Checkpoints;
-                    if (i > 0 && (XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.GetLevelSetStats().Name + "|" + i) || SaveData.Instance.DebugMode || SaveData.Instance.CheatMode))
+                    if (i > 0 && (XaphanModule.ModSaveData.Checkpoints.Contains(SaveData.Instance.LevelSetStats.Name + "|" + i) || SaveData.Instance.DebugMode || SaveData.Instance.CheatMode))
                     {
                         if (!XaphanModule.MergeChaptersControllerKeepPrologue || (XaphanModule.MergeChaptersControllerKeepPrologue && i > 1))
                         {
-                            hashSet.Add(areaData.GetSID() + "|" + mode.MapData.StartLevel().Name + "|" + i);
+                            hashSet.Add(areaData.SID + "|" + mode.MapData.StartLevel().Name + "|" + i);
                         }
                     }
                     foreach (CheckpointData checkpointData in array)
                     {
                         if (checkpointList.Contains(checkpointData.Level))
                         {
-                            hashSet.Add((AreaData.Get(checkpointData.GetArea()) ?? areaData).GetSID() + "|" + checkpointData.Level + "|" + i);
+                            hashSet.Add((AreaData.Get(checkpointData.Area) ?? areaData).SID + "|" + checkpointData.Level + "|" + i);
                         }
                     }
                 }
@@ -1332,7 +1332,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 textureName = text;
                 return textureName;
             }
-            string str = SaveData.Instance?.GetLevelSet() ?? "Celeste";
+            string str = SaveData.Instance?.LevelSet ?? "Celeste";
             string text2 = textureName.Replace("areaselect/", "areaselect/" + str + "/");
             if (GFX.Gui.Has(text2))
             {

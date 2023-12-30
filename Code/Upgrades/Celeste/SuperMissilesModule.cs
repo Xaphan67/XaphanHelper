@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.SuperMissilesModule && !XaphanModule.ModSaveData.SuperMissilesModuleInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.SuperMissilesModule && !XaphanModule.ModSaveData.SuperMissilesModuleInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

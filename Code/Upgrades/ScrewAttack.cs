@@ -31,7 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.ScrewAttack && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).ScrewAttackInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.ScrewAttack && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).ScrewAttackInactive.Contains(level.Session.Area.LevelSet);
         }
 
         private void modLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)

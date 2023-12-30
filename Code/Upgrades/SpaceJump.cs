@@ -61,7 +61,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.SpaceJump >= 2 && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpaceJumpInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.SpaceJump >= 2 && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpaceJumpInactive.Contains(level.Session.Area.LevelSet);
         }
 
         private void patchJumpGraceTimer(ILContext il)

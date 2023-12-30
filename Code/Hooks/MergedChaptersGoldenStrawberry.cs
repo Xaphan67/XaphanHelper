@@ -84,7 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         {
             if (self.Golden && XaphanModule.useMergeChaptersController)
             {
-                string Prefix = self.SceneAs<Level>().Session.Area.GetLevelSet();
+                string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
             }
             yield return new SwapImmediately(orig(self, collectIndex));
@@ -93,7 +93,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         public static void Unload()
         {
             On.Celeste.Strawberry.OnPlayer -= onStrawberryOnPlayer;
-            On.Celeste.Player.Die += onPlayerDie;
+            On.Celeste.Player.Die -= onPlayerDie;
             On.Celeste.PlayerDeadBody.End -= onPlayerDeadBodyEnd;
             Everest.Events.Level.OnExit -= onLevelExit;
             On.Celeste.Level.RegisterAreaComplete -= onLevelRegisterAreaComplete;
@@ -133,7 +133,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 wiggler.Start();
                 self.Depth = -1000000;
             }
-            if (self.SceneAs<Level>().Session.Area.GetLevelSet() == "Xaphan/0")
+            if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0")
             {
                 self.SceneAs<Level>().Session.SetFlag("SoCM-CarryGolden", true);
             }
@@ -148,7 +148,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 List<string> ToRemove = new();
                 foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
                 {
-                    if (flag.Contains(self.SceneAs<Level>().Session.Area.GetLevelSet()) && flag.Contains("_GoldenStrawberry"))
+                    if (flag.Contains(self.SceneAs<Level>().Session.Area.LevelSet) && flag.Contains("_GoldenStrawberry"))
                     {
                         ToRemove.Add(flag);
                     }
@@ -157,7 +157,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 {
                     XaphanModule.ModSaveData.SavedFlags.Remove(flag);
                 }
-                if (self.SceneAs<Level>().Session.Area.GetLevelSet() == "Xaphan/0")
+                if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0")
                 {
                     self.SceneAs<Level>().Session.SetFlag("SoCM-CarryGolden", false);
                 }

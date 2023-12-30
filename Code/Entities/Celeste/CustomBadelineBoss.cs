@@ -896,7 +896,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool CanChangeMusic(bool value)
         {
-            if ((Scene as Level).Session.Area.GetLevelSet() == "Celeste")
+            if ((Scene as Level).Session.Area.LevelSet == "Celeste")
             {
                 return value;
             }

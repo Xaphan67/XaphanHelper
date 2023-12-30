@@ -18,7 +18,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
 
         public static string GetWarpId(Level level, int warpIndex)
         {
-            string levelSet = level.Session.Area.GetLevelSet();
+            string levelSet = level.Session.Area.LevelSet;
             int chapterIndex = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
             MapData mapData = AreaData.Areas[level.Session.Area.ID].Mode[0].MapData;
             string room = level.Session.Level;

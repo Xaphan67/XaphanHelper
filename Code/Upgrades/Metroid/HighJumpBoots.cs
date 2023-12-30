@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.HighJumpBoots && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).HighJumpBootsInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.HighJumpBoots && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).HighJumpBootsInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

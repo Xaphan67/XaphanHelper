@@ -57,7 +57,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             foreach (KeyValuePair<string, int> maxHealth in XaphanModule.ModSaveData.MaxHealth)
             {
                 if (maxHealth.Key == Prefix)
@@ -254,7 +254,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public void AddMaxHealth(int value)
         {
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             MaxHealth += value;
             CurrentHealth = MaxHealth;
             if (!XaphanModule.ModSaveData.MaxHealth.ContainsKey(Prefix))

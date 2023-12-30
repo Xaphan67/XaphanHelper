@@ -511,7 +511,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
-                    string Prefix = level.Session.Area.GetLevelSet();
+                    string Prefix = level.Session.Area.LevelSet;
                     if (!HasGolden() && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         Scene.Add(new CS02_BossDefeated(player));

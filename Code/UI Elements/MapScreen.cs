@@ -586,10 +586,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             worldMapMapDisplays.Clear();
             hasInterlude = false;
-            maxChapters = SaveData.Instance.GetLevelSetStats().Areas.Count;
+            maxChapters = SaveData.Instance.LevelSetStats.Areas.Count;
             for (int i = 0; i < maxChapters; i++)
             {
-                if (AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i)].Interlude)
+                if (AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i)].Interlude)
                 {
                     hasInterlude = true;
                     break;

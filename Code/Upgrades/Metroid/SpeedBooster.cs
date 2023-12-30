@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.SpeedBooster && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpeedBoosterInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.SpeedBooster && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpeedBoosterInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

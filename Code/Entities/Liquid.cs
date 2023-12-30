@@ -257,10 +257,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void Unload()
         {
             On.Celeste.Player.Update -= PlayerOnUpdate;
-            IL.Celeste.Player.NormalUpdate += modNormalUpdate;
-            IL.Celeste.Player.Jump += modJump;
-            IL.Celeste.Player.SuperJump += modSuperJump;
-            IL.Celeste.Player.SuperWallJump += modSuperWallJump;
+            IL.Celeste.Player.NormalUpdate -= modNormalUpdate;
+            IL.Celeste.Player.Jump -= modJump;
+            IL.Celeste.Player.SuperJump -= modSuperJump;
+            IL.Celeste.Player.SuperWallJump -= modSuperWallJump;
             On.Celeste.Player.ClimbJump -= PlayerOnClimbJump;
             IL.Celeste.Player.ClimbUpdate -= onPlayerClimbUpdate;
             On.Celeste.Player.SwimCheck -= onPlayerSwimCheck;

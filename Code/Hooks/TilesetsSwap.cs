@@ -16,7 +16,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static Autotiler.Generated onAutotilerGenerate(On.Celeste.Autotiler.orig_Generate orig, Autotiler self, VirtualMap<char> mapData, int startX, int startY, int tilesX, int tilesY, bool forceSolid, char forceID, Autotiler.Behaviour behaviour)
         {
-            if (SaveData.Instance.GetLevelSetStats().Name == "Xaphan/0" && mapData != null && !forceSolid) // Swap tilesets only in SoCM
+            if (SaveData.Instance.LevelSetStats.Name == "Xaphan/0" && mapData != null && !forceSolid) // Swap tilesets only in SoCM
             {
                 if (self == GFX.FGAutotiler) // Foreground Tiles
                 {

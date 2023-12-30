@@ -19,7 +19,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void OnEnter(Player player)
         {
             base.OnEnter(player);
-            string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex == -1 ? 0 : SceneAs<Level>().Session.Area.ChapterIndex;
             string room = SceneAs<Level>().Session.Level;
             if (inverted ? !XaphanModule.ModSaveData.GlobalFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag) : XaphanModule.ModSaveData.GlobalFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))

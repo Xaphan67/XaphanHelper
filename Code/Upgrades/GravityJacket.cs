@@ -75,7 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.GravityJacket && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).GravityJacketInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.GravityJacket && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).GravityJacketInactive.Contains(level.Session.Area.LevelSet);
         }
 
         private void modNormalUpdate(ILContext il)

@@ -19,7 +19,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void OnEnter(Player player)
         {
             base.OnEnter(player);
-            string prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string prefix = SceneAs<Level>().Session.Area.LevelSet;
             AreaKey area = SceneAs<Level>().Session.Area;
             MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
             bool temporary = false;

@@ -128,7 +128,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Added(scene);
             Level = SceneAs<Level>();
-            string Prefix = Level.Session.Area.GetLevelSet();
+            string Prefix = Level.Session.Area.LevelSet;
             int chapterIndex = Level.Session.Area.ChapterIndex;
             if (!string.IsNullOrEmpty(flag))
             {
@@ -149,7 +149,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Slope.SetCollisionBeforeUpdate(this);
             base.Update();
-            string Prefix = Level.Session.Area.GetLevelSet();
+            string Prefix = Level.Session.Area.LevelSet;
             int chapterIndex = Level.Session.Area.ChapterIndex;
             if (!string.IsNullOrEmpty(flag))
             {

@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.WaveBeam && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).WaveBeamInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.WaveBeam && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).WaveBeamInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

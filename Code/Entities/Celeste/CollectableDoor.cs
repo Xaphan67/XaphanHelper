@@ -126,13 +126,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     return Requires;
                 }
-                string levelSetToCheck = (string.IsNullOrEmpty(levelSet) ? SceneAs<Level>().Session.Area.GetLevelSet() : levelSet);
+                string levelSetToCheck = (string.IsNullOrEmpty(levelSet) ? SceneAs<Level>().Session.Area.LevelSet : levelSet);
                 if (mode == "TotalHearts")
                 {
                     int TotalheartCount = 0;
                     foreach (AreaStats item in SaveData.Instance.Areas_Safe)
                     {
-                        if (item.GetLevelSet() == levelSetToCheck)
+                        if (item.LevelSet == levelSetToCheck)
                         {
                             int heartCount = 0;
                             for (int i = 0; i < item.Modes.Length; i++)
@@ -151,7 +151,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     foreach (AreaStats item in SaveData.Instance.Areas_Safe)
                     {
-                        if (item.GetLevelSet() == SceneAs<Level>().Session.Area.GetLevelSet() && item.GetSID() == SceneAs<Level>().Session.Area.SID)
+                        if (item.LevelSet == SceneAs<Level>().Session.Area.LevelSet && item.SID == SceneAs<Level>().Session.Area.SID)
                         {
                             if (item.Modes[(int)SceneAs<Level>().Session.Area.Mode].HeartGem)
                             {
@@ -170,7 +170,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     int TotalCassetteCount = 0;
                     foreach (AreaStats item in SaveData.Instance.Areas_Safe)
                     {
-                        if (item.GetLevelSet() == levelSetToCheck)
+                        if (item.LevelSet == levelSetToCheck)
                         {
                             int cassetteCount = 0;
                             if (item.Cassette)
@@ -186,7 +186,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     foreach (AreaStats item in SaveData.Instance.Areas_Safe)
                     {
-                        if (item.GetLevelSet() == SceneAs<Level>().Session.Area.GetLevelSet() && item.GetSID() == SceneAs<Level>().Session.Area.SID)
+                        if (item.LevelSet == SceneAs<Level>().Session.Area.LevelSet && item.SID == SceneAs<Level>().Session.Area.SID)
                         {
                             if (item.Cassette)
                             {
@@ -205,7 +205,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     int TotalStrawberryCount = 0;
                     foreach (AreaStats item in SaveData.Instance.Areas_Safe)
                     {
-                        if (item.GetLevelSet() == levelSetToCheck)
+                        if (item.LevelSet == levelSetToCheck)
                         {
                             AreaData areaData = AreaData.Get(item.ID_Safe);
                             int strawberryCount = 0;
@@ -223,7 +223,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     int TotalStrawberryCount = 0;
                     foreach (AreaStats item in SaveData.Instance.Areas_Safe)
                     {
-                        if (item.GetLevelSet() == SceneAs<Level>().Session.Area.GetLevelSet() && item.GetSID() == SceneAs<Level>().Session.Area.SID)
+                        if (item.LevelSet == SceneAs<Level>().Session.Area.LevelSet && item.SID == SceneAs<Level>().Session.Area.SID)
                         {
                             AreaData areaData = AreaData.Get(item.ID_Safe);
                             int strawberryCount = 0;
@@ -335,7 +335,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex;
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
@@ -673,7 +673,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void registerDoorOpenInSaveData()
         {
-            string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID))
             {

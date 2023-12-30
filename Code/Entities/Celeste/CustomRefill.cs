@@ -260,7 +260,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             int maxSuperMissileCount = 5;
             if (type.Contains("Missiles"))
             {
-                string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+                string Prefix = SceneAs<Level>().Session.Area.LevelSet;
                 foreach (string missileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades : XaphanModule.ModSaveData.DroneMissilesUpgrades)
                 {
                     if (missileUpgrade.Contains(Prefix))

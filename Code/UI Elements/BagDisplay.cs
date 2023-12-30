@@ -249,7 +249,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             foreach (string VisitedChapter in XaphanModule.ModSaveData.VisitedChapters)
             {
                 string[] str = VisitedChapter.Split('_');
-                if (str[0] == level.Session.Area.GetLevelSet())
+                if (str[0] == level.Session.Area.LevelSet)
                 {
                     GetCustomUpgradesData(int.Parse(str[1].Remove(0, 2)), int.Parse(str[2]));
                 }

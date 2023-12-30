@@ -29,7 +29,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.EtherealDash && !XaphanModule.ModSaveData.EtherealDashInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.EtherealDash && !XaphanModule.ModSaveData.EtherealDashInactive.Contains(level.Session.Area.LevelSet);
         }
 
         public static bool isActive;

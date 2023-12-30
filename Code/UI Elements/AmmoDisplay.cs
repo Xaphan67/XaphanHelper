@@ -70,7 +70,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             foreach (KeyValuePair<string, int> maxMissiles in XaphanModule.ModSaveData.MaxMissiles)
             {
                 if (maxMissiles.Key == Prefix)
@@ -238,7 +238,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public void AddMissile(int value)
         {
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             MaxMissiles += value;
             CurrentMissiles += value;
             if (!XaphanModule.ModSaveData.MaxMissiles.ContainsKey(Prefix))
@@ -253,7 +253,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public void AddSuperMissile(int value)
         {
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             MaxSuperMissiles += value;
             CurrentSuperMissiles += value;
             if (!XaphanModule.ModSaveData.MaxSuperMissiles.ContainsKey(Prefix))
@@ -268,7 +268,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public void AddPowerBomb(int value)
         {
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             MaxPowerBombs += value;
             CurrentPowerBombs += value;
             if (!XaphanModule.ModSaveData.MaxPowerBombs.ContainsKey(Prefix))

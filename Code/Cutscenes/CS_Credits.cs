@@ -64,27 +64,27 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public bool DashBootsCollected(Level level)
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_DashBoots");
+            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DashBoots");
         }
 
         public bool PowerGripCollected(Level level)
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_PowerGrip");
+            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PowerGrip");
         }
 
         public bool ClimbingKitCollected(Level level)
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_ClimbingKit");
+            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit");
         }
 
         public bool BombsCollected(Level level)
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_Bombs");
+            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Bombs");
         }
 
         public bool SpaceJumpCollected(Level level)
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.GetLevelSet() + "_Upgrade_SpaceJump");
+            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpaceJump");
         }
 
         public CS_Credits(Player player)
@@ -288,7 +288,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             foreach (AreaStats item in SaveData.Instance.Areas_Safe)
             {
-                if (item.GetLevelSet() == "Xaphan/0")
+                if (item.LevelSet == "Xaphan/0")
                 {
                     AreaModeStats areaModeStats = item.Modes[0];
                     int strawberryCount = 0;

@@ -58,7 +58,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public bool Active(Level level)
         {
-            return XaphanModule.ModSettings.LightningDash && !XaphanModule.ModSaveData.LightningDashInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.LightningDash && !XaphanModule.ModSaveData.LightningDashInactive.Contains(level.Session.Area.LevelSet);
         }
 
         private static void onPlayerDie(Player player)

@@ -125,7 +125,7 @@ namespace Celeste.Mod.XaphanHelper
         private static void onLevelEnter(Session session, bool fromSaveData)
         {
             fixedAchievements = false;
-            CheckStatsFlagsController(AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset)].Mode[0].MapData);
+            CheckStatsFlagsController(AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset)].Mode[0].MapData);
             if (useStatsFlagsController)
             {
                 GetStats(session);
@@ -141,11 +141,11 @@ namespace Celeste.Mod.XaphanHelper
         public static void GetStats(Session session)
         {
             hasInterlude = false;
-            string Prefix = session.Area.GetLevelSet();
-            maxChapters = SaveData.Instance.GetLevelSetStats().Areas.Count;
+            string Prefix = session.Area.LevelSet;
+            maxChapters = SaveData.Instance.LevelSetStats.Areas.Count;
             for (int i = 0; i < maxChapters; i++)
             {
-                if (AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i)].Interlude)
+                if (AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i)].Interlude)
                 {
                     hasInterlude = true;
                     break;
@@ -178,10 +178,10 @@ namespace Celeste.Mod.XaphanHelper
             TotalSubAreaStrawberries = new Dictionary<int, int>[maxChapters];
             heartCount = 0;
             cassetteCount = 0;
-            TotalASideHearts = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.GetLevelSet()).MaxHeartGems;
+            TotalASideHearts = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxHeartGems;
             for (int i = !hasInterlude ? 1 : 0; i < maxChapters; i++)
             {
-                MapData MapData = AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i - (!hasInterlude ? 1 : 0))].Mode[0].MapData;
+                MapData MapData = AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i - (!hasInterlude ? 1 : 0))].Mode[0].MapData;
                 RoomControllerData.Clear();
                 TilesControllerData.Clear();
                 EntitiesData.Clear();
@@ -207,9 +207,9 @@ namespace Celeste.Mod.XaphanHelper
                 TotalSubAreaStrawberries[i] = getSubAreaStrawberries(Prefix, i, true);
                 for (int j = 0; j <= 2; j++)
                 {
-                    if (AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i - (!hasInterlude ? 1 : 0))].HasMode((AreaMode)j))
+                    if (AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i - (!hasInterlude ? 1 : 0))].HasMode((AreaMode)j))
                     {
-                        MapData ModeMapData = AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + i - (!hasInterlude ? 1 : 0))].Mode[j].MapData;
+                        MapData ModeMapData = AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i - (!hasInterlude ? 1 : 0))].Mode[j].MapData;
                         GetGoldenBerries(i, ModeMapData, j);
                     }
                 }
@@ -278,7 +278,7 @@ namespace Celeste.Mod.XaphanHelper
             orig(self);
             if (useStatsFlagsController && initialized)
             {
-                string Prefix = self.Session.Area.GetLevelSet();
+                string Prefix = self.Session.Area.LevelSet;
                 if (CurrentTiles != null && TotalTiles != null && XaphanModule.useIngameMap)
                 {
                     int chaptersFullyExplored = 0;
@@ -437,7 +437,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     self.Session.SetFlag("XaphanHelper_StatFlag_Hearts");
                 }
-                if (cassetteCount == SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.GetLevelSet()).MaxCassettes)
+                if (cassetteCount == SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxCassettes)
                 {
                     self.Session.SetFlag("XaphanHelper_StatFlag_Cassettes");
                 }
@@ -710,10 +710,10 @@ namespace Celeste.Mod.XaphanHelper
 
         private static void GetGoldenBerries(int chapterIndex, MapData MapData, int Mode)
         {
-            string Prefix = SaveData.Instance.GetLevelSetStats().Name;
+            string Prefix = SaveData.Instance.LevelSetStats.Name;
             foreach (AreaStats item in SaveData.Instance.Areas_Safe)
             {
-                if (item.GetLevelSet() == Prefix && item.ID == SaveData.Instance.GetLevelSetStats().AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0))
+                if (item.LevelSet == Prefix && item.ID == SaveData.Instance.LevelSetStats.AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0))
                 {
                     foreach (EntityData goldenberry in MapData.Goldenberries)
                     {
@@ -729,10 +729,10 @@ namespace Celeste.Mod.XaphanHelper
 
         private static void GetCurrentItems(int chapterIndex)
         {
-            string Prefix = SaveData.Instance.GetLevelSetStats().Name;
+            string Prefix = SaveData.Instance.LevelSetStats.Name;
             foreach (AreaStats item in SaveData.Instance.Areas_Safe)
             {
-                if (item.GetLevelSet() == Prefix && item.ID == SaveData.Instance.GetLevelSetStats().AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0))
+                if (item.LevelSet == Prefix && item.ID == SaveData.Instance.LevelSetStats.AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0))
                 {
                     int strawberryCount = 0;
                     if (item.Modes[0].TotalStrawberries > 0 || item.TotalStrawberries > 0)
@@ -744,13 +744,13 @@ namespace Celeste.Mod.XaphanHelper
                         strawberryCount--;
                     }
                     CurrentStrawberries[chapterIndex] = strawberryCount;
-                    TotalStrawberries[chapterIndex] = AreaData.Areas[SaveData.Instance.GetLevelSetStats().AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0)].Mode[0].TotalStrawberries;
+                    TotalStrawberries[chapterIndex] = AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0)].Mode[0].TotalStrawberries;
                     if (item.Modes[0].HeartGem)
                     {
                         heartCount += 1;
                         ASideHearts[chapterIndex] = true;
                     }
-                    AreaData area = AreaData.Areas[(SaveData.Instance.GetLevelSetStats().AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0))];
+                    AreaData area = AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0))];
                     if (area.HasMode(AreaMode.BSide))
                     {
                         TotalASideHearts--;

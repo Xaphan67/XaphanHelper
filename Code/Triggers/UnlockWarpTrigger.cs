@@ -28,7 +28,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             {
                 Chapter = 0;
             }
-            string warpId = $"{player.SceneAs<Level>().Session.Area.GetLevelSet()}_Ch{Chapter}_{Room}{warpSuffix}";
+            string warpId = $"{player.SceneAs<Level>().Session.Area.LevelSet}_Ch{Chapter}_{Room}{warpSuffix}";
             WarpManager.ActivateWarp(warpId);
             RemoveSelf();
         }

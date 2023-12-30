@@ -1,10 +1,13 @@
+Version 1.0.60 :
+- Updated to support Everest core
+
 Version 1.0.59 :
 - If the player has not collected the Climbing Kit upgrade, and press the jump button while grabbing a wall, they will now do a wall jump away from the wall instead of doing nothing
 - Golden Strawberries now carry from chapter to chapter when using a Merge Chapter Controller
 - Updated the journal of campaigns that use a Merge Chapter Controller
 - The save file slot now show the campaign name instead of the further area name when using a Merge Chapter Controller
 - Adjusted quantity, frequence, rotation and fliping of explosions displayed when a Countdown timer was ticking with it's 'Explosions' attribute set to true
-- Slopes with their 
+- Slopes with their 'Can Jump Trough" attrubute no longer block light
 - Fixed a bug incorrectly hidding the Countdown timer if the 'Hide Flag' attribute was left blank
 - Fixed a bug respawning the player in Drone control when exiting a map after using the Drone Teleport ability
 - Fixed a softlock if the Remote Drone was thrown on top of a floor-oriented spring

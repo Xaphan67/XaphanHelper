@@ -91,7 +91,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
             if (upgrade == "MapShard")
             {
@@ -155,7 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             bool haveGolden = SceneAs<Level>().Session.GrabbedGolden;
             if (!haveGolden || (haveGolden && (upgrade == "MapShard" || upgrade == "Map")))
             {
@@ -368,7 +368,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 session.SetFlag("Upgrade_" + upgrade, true);
             }
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             if (upgrade == "MapShard")
             {
                 if (mapShardIndex == 0)

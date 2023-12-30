@@ -178,7 +178,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             ScreenTilesX = 320;
             ScreenTilesY = 184;
             AreaKey area = level.Session.Area;
-            Prefix = level.Session.Area.GetLevelSet();
+            Prefix = level.Session.Area.LevelSet;
             this.mode = mode;
             currentRoom = level.Session.Level;
             if (chapter == -1)

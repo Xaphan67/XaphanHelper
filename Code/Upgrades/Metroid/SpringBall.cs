@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.SpringBall && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpringBallInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.SpringBall && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpringBallInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     badeline.RemoveSelf();
                 }
             }
-            string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
             {
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated");

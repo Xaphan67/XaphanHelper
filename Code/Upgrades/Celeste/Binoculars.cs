@@ -33,7 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.Binoculars && !XaphanModule.ModSaveData.BinocularsInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.Binoculars && !XaphanModule.ModSaveData.BinocularsInactive.Contains(level.Session.Area.LevelSet);
         }
 
         public static bool isActive;

@@ -197,7 +197,7 @@ namespace Celeste.Mod.XaphanHelper
 
             int currentTotalCassettes = StatsFlags.cassetteCount;
             int currentTotalASideHearts = StatsFlags.heartCount;
-            int maxTotalCassettes = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.GetLevelSet()).MaxCassettes;
+            int maxTotalCassettes = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxCassettes;
             int maxTotalASideHearts = StatsFlags.TotalASideHearts;
 
             list.Add(new AchievementData(

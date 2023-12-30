@@ -34,7 +34,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.VariaJacket && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).VariaJacketInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.VariaJacket && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).VariaJacketInactive.Contains(level.Session.Area.LevelSet);
         }
 
         private IEnumerator modLookoutLookRoutine(On.Celeste.Lookout.orig_LookRoutine orig, Lookout self, Player player)

@@ -241,7 +241,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             }
             else
             {
-                LevelSetStats stats = SaveData.Instance.GetLevelSetStats();
+                LevelSetStats stats = SaveData.Instance.LevelSetStats;
                 foreach (AreaStats areaStat in stats.Areas)
                 {
                     time += areaStat.TotalTimePlayed;
@@ -259,7 +259,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             }
             else
             {
-                LevelSetStats stats = SaveData.Instance.GetLevelSetStats();
+                LevelSetStats stats = SaveData.Instance.LevelSetStats;
                 foreach (AreaStats areaStat in stats.Areas)
                 {
                     time += areaStat.TotalTimePlayed;
@@ -335,7 +335,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                 CurrentHearts = StatsFlags.heartCount;
                 CurrentCassettes = StatsFlags.cassetteCount;
                 TotalHearts = StatsFlags.TotalASideHearts;
-                TotalCassettes = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.GetLevelSet()).MaxCassettes;
+                TotalCassettes = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxCassettes;
             }
             if ((TotalStrawberries + TotalHearts + TotalCassettes) != 0)
             {

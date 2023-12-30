@@ -92,8 +92,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Deactivate();
             }
 
-            string prefix = level.Session.Area.GetLevelSet();
-            if (XaphanModule.useMergeChaptersController && XaphanModule.MergeChaptersControllerMode == "Warps" && HasPlayerOnTop() && !XaphanModule.PlayerHasGolden && !level.Frozen && level.Tracker.GetEntity<CountdownDisplay>() == null && level.Tracker.GetEntity<Player>() != null && level.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !XaphanModule.PlayerIsControllingRemoteDrone() && activated && !ShouldSave && !((XaphanModule.MergeChaptersControllerKeepPrologue && level.Session.Area.ID == SaveData.Instance.GetLevelSetStats().AreaOffset)))
+            string prefix = level.Session.Area.LevelSet;
+            if (XaphanModule.useMergeChaptersController && XaphanModule.MergeChaptersControllerMode == "Warps" && HasPlayerOnTop() && !XaphanModule.PlayerHasGolden && !level.Frozen && level.Tracker.GetEntity<CountdownDisplay>() == null && level.Tracker.GetEntity<Player>() != null && level.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !XaphanModule.PlayerIsControllingRemoteDrone() && activated && !ShouldSave && !((XaphanModule.MergeChaptersControllerKeepPrologue && level.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)))
             {
                 if (!XaphanModule.ModSaveData.SavedChapter.ContainsKey(prefix))
                 {

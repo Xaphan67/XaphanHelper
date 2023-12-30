@@ -495,7 +495,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator SaveRoutine(Player player)
         {
-            string prefix = level.Session.Area.GetLevelSet();
+            string prefix = level.Session.Area.LevelSet;
             Saving = true;
             MetroidGameplayController.IsLoadingFromSave(false);
             Audio.Play("event:/game/xaphan/save_game");

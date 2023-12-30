@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.DroneTeleport && !XaphanModule.ModSaveData.DroneTeleportInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.DroneTeleport && !XaphanModule.ModSaveData.DroneTeleportInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

@@ -59,7 +59,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Audio.Play(sound, Position);
             PlayLit();
             SceneAs<Level>().Session.SetFlag(activeFlag, true);
-            string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + activeFlag))
             {

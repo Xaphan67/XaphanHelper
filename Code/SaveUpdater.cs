@@ -28,12 +28,12 @@ namespace Celeste.Mod.XaphanHelper
                     }
 
                     Dictionary<string, string> RoomsNamesConversion = new();
-                    for (int i = SaveData.Instance.GetLevelSetStats().AreaOffset; i < SaveData.Instance.GetLevelSetStats().AreaOffset + SaveData.Instance.GetLevelSetStats().Areas.Count; i++)
+                    for (int i = SaveData.Instance.LevelSetStats.AreaOffset; i < SaveData.Instance.LevelSetStats.AreaOffset + SaveData.Instance.LevelSetStats.Areas.Count; i++)
                     {
                         // Get list of new room names
 
                         RoomsNamesConversion.Clear();
-                        if (i == SaveData.Instance.GetLevelSetStats().AreaOffset) // Prologue
+                        if (i == SaveData.Instance.LevelSetStats.AreaOffset) // Prologue
                         {
                             RoomsNamesConversion.Add("A-00", "A-01");
                             RoomsNamesConversion.Add("A-01", "A-02");
@@ -54,7 +54,7 @@ namespace Celeste.Mod.XaphanHelper
                             RoomsNamesConversion.Add("S-End", "A-12");
                             RoomsNamesConversion.Add("U-00", "A-U0");
                         }
-                        else if (i == SaveData.Instance.GetLevelSetStats().AreaOffset + 1) // Ancient Ruins
+                        else if (i == SaveData.Instance.LevelSetStats.AreaOffset + 1) // Ancient Ruins
                         {
                             RoomsNamesConversion.Add("A-00", "B-01");
                             RoomsNamesConversion.Add("A-01", "B-02");
@@ -105,7 +105,7 @@ namespace Celeste.Mod.XaphanHelper
                             RoomsNamesConversion.Add("U-00", "B-U0");
                             RoomsNamesConversion.Add("U-01", "B-U1");
                         }
-                        else if (i == SaveData.Instance.GetLevelSetStats().AreaOffset + 2) // Forgotten Abysses
+                        else if (i == SaveData.Instance.LevelSetStats.AreaOffset + 2) // Forgotten Abysses
                         {
                             RoomsNamesConversion.Add("A-00", "G-01");
                             RoomsNamesConversion.Add("A-01", "G-02");
@@ -221,7 +221,7 @@ namespace Celeste.Mod.XaphanHelper
 
                         // Adjust in-game map explored and warps
 
-                        int index = i - SaveData.Instance.GetLevelSetStats().AreaOffset;
+                        int index = i - SaveData.Instance.LevelSetStats.AreaOffset;
                         HashSet<string> oldVisitedRooms = new();
                         HashSet<string> oldVisitedRoomsTiles = new();
                         HashSet<string> newVisitedRooms = new();

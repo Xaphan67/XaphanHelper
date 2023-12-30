@@ -404,7 +404,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private void ReturnToOrigChapter(Level level)
         {
             AreaKey area = SceneAs<Level>().Session.Area;
-            string Prefix = area.GetLevelSet();
+            string Prefix = area.LevelSet;
             int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
             XaphanModule.ModSaveData.DestinationRoom = startRoom;
             XaphanModule.ModSaveData.Spawn = SpawnPosition;

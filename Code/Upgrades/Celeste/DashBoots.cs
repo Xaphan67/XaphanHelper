@@ -37,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             if (XaphanModule.useUpgrades)
             {
-                return XaphanModule.ModSettings.DashBoots && !XaphanModule.ModSaveData.DashBootsInactive.Contains(level.Session.Area.GetLevelSet());
+                return XaphanModule.ModSettings.DashBoots && !XaphanModule.ModSaveData.DashBootsInactive.Contains(level.Session.Area.LevelSet);
             }
             return true;
         }

@@ -25,7 +25,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void OnEnter(Player player)
         {
             base.OnEnter(player);
-            string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             if (string.IsNullOrEmpty(levelSet))
             {
                 levelSet = Prefix;

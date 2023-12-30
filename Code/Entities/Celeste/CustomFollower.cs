@@ -193,7 +193,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             switch (type)
             {

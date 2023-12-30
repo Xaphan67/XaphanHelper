@@ -19,15 +19,15 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             base.Added(scene);
             if (!RequireMapUpgradeToOpen)
             {
-                if (!XaphanModule.ModSaveData.SavedFlags.Contains(SceneAs<Level>().Session.Area.GetLevelSet() + "_Can_Open_Map"))
+                if (!XaphanModule.ModSaveData.SavedFlags.Contains(SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map"))
                 {
-                    XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.GetLevelSet() + "_Can_Open_Map");
+                    XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map");
                 }
                 if (XaphanModule.PlayerHasGolden)
                 {
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(SceneAs<Level>().Session.Area.GetLevelSet() + "_Can_Open_Map_GoldenStrawberry"))
+                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map_GoldenStrawberry"))
                     {
-                        XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.GetLevelSet() + "_Can_Open_Map_GoldenStrawberry");
+                        XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map_GoldenStrawberry");
                     }
                 }
             }

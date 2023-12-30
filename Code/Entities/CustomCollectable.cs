@@ -79,7 +79,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
@@ -170,7 +170,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             else
             {
                 Session session = SceneAs<Level>().Session;
-                string Prefix = session.Area.GetLevelSet();
+                string Prefix = session.Area.LevelSet;
                 int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
                 if (!registerInSaveData ? SceneAs<Level>().Session.GetFlag(flag) : XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
                 {
@@ -183,7 +183,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             float timer = 0.02f;
             Session session = SceneAs<Level>().Session;
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
             while (timer > 0)
             {
@@ -333,7 +333,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (registerInSaveData)
             {
-                string Prefix = session.Area.GetLevelSet();
+                string Prefix = session.Area.LevelSet;
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                 {
                     XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);

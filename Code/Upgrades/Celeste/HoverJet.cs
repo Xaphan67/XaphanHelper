@@ -51,7 +51,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.HoverJet && !XaphanModule.ModSaveData.HoverJetInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.HoverJet && !XaphanModule.ModSaveData.HoverJetInactive.Contains(level.Session.Area.LevelSet);
         }
 
         private static void ilPlayerNormalUpdate(ILContext il)

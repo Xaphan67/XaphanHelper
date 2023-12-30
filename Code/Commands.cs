@@ -8,7 +8,7 @@ namespace Celeste.Mod.XaphanHelper
     {
         private static Level level = Engine.Scene as Level;
 
-        private static string prefix = level.Session.Area.GetLevelSet();
+        private static string prefix = level.Session.Area.LevelSet;
 
         private static int chapterIndex = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
 
@@ -466,7 +466,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     XaphanModule.ModSaveData.GlobalFlags.Remove(value);
                 }
-                LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.GetLevelSetStats().AreaOffset + (XaphanModule.MergeChaptersControllerKeepPrologue ? 1 : 0), AreaMode.Normal)), fromSaveData: false);
+                LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (XaphanModule.MergeChaptersControllerKeepPrologue ? 1 : 0), AreaMode.Normal)), fromSaveData: false);
             }
             else
             {

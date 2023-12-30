@@ -36,7 +36,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public bool Active(Level level)
         {
-            return XaphanModule.ModSettings.GoldenFeather && !XaphanModule.ModSaveData.GoldenFeatherInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.GoldenFeather && !XaphanModule.ModSaveData.GoldenFeatherInactive.Contains(level.Session.Area.LevelSet);
         }
 
         public static bool isActive;

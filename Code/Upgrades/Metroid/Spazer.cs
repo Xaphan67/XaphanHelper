@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.Spazer && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpazerInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.Spazer && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).SpazerInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

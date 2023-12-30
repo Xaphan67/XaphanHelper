@@ -37,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex;
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
@@ -160,7 +160,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new VertexLight(lightningSprite.Center, Color.White, 1f, 32, 64));
             if (registerInSaveData)
             {
-                string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+                string Prefix = SceneAs<Level>().Session.Area.LevelSet;
                 int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                 {
@@ -267,7 +267,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(new VertexLight(lightningSprite.Center - Vector2.UnitY, Color.White, 1f, 32, 64));
                 if (registerInSaveData)
                 {
-                    string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+                    string Prefix = SceneAs<Level>().Session.Area.LevelSet;
                     int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                     {

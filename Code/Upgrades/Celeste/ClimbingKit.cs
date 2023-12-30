@@ -49,7 +49,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             if (XaphanModule.useUpgrades)
             {
-                return XaphanModule.ModSettings.ClimbingKit && !XaphanModule.ModSaveData.ClimbingKitInactive.Contains(level.Session.Area.GetLevelSet());
+                return XaphanModule.ModSettings.ClimbingKit && !XaphanModule.ModSaveData.ClimbingKitInactive.Contains(level.Session.Area.LevelSet);
             }
             return true;
         }

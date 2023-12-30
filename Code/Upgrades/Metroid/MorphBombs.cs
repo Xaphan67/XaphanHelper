@@ -27,7 +27,7 @@
 
         public static bool Active(Level level)
         {
-            return XaphanModule.ModSettings.MorphBombs && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).MorphBombsInactive.Contains(level.Session.Area.GetLevelSet());
+            return XaphanModule.ModSettings.MorphBombs && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).MorphBombsInactive.Contains(level.Session.Area.LevelSet);
         }
     }
 }

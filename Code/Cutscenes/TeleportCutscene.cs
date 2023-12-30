@@ -202,7 +202,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.OnEndOfFrame += () =>
             {
                 XaphanModule.ShowUI = false;
-                string Prefix = level.Session.Area.GetLevelSet();
+                string Prefix = level.Session.Area.LevelSet;
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_teleporting");
                 Leader.StoreStrawberries(player.Leader);
                 level.Remove(player);
@@ -420,10 +420,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
                 if (drone)
                 {
-                    XaphanModule.ModSaveData.fakePlayerFacing.Remove(level.Session.Area.GetLevelSet());
-                    XaphanModule.ModSaveData.fakePlayerPosition.Remove(level.Session.Area.GetLevelSet());
-                    XaphanModule.ModSaveData.droneStartRoom.Remove(level.Session.Area.GetLevelSet());
-                    XaphanModule.ModSaveData.droneStartSpawn.Remove(level.Session.Area.GetLevelSet());
+                    XaphanModule.ModSaveData.fakePlayerFacing.Remove(level.Session.Area.LevelSet);
+                    XaphanModule.ModSaveData.fakePlayerPosition.Remove(level.Session.Area.LevelSet);
+                    XaphanModule.ModSaveData.droneStartRoom.Remove(level.Session.Area.LevelSet);
+                    XaphanModule.ModSaveData.droneStartSpawn.Remove(level.Session.Area.LevelSet);
                     XaphanModule.TeleportBackFromDrone = false;
                 }
 

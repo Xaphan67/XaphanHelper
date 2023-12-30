@@ -42,7 +42,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         {
             base.Update();
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             bool allConditionFlagsSet = true;
             if (!string.IsNullOrEmpty(conditionFlags))

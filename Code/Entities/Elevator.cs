@@ -267,7 +267,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void ExitRoom(Player player)
         {
-            string Prefix = area.GetLevelSet();
+            string Prefix = area.LevelSet;
             int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
             if (ToChapter == currentChapter)
             {

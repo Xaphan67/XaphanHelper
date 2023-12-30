@@ -65,7 +65,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Sprite.Scale = new Vector2(0.1f, 0.1f);
                 Sprite.Position = position + Vector2.One;
                 StatusScreen = level.Tracker.GetEntity<StatusScreen>();
-                LevelSet = level.Session.Area.GetLevelSet();
+                LevelSet = level.Session.Area.LevelSet;
                 internalName = spriteName;
                 Depth = -10001;
             }
@@ -184,7 +184,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             foreach (string VisitedChapter in XaphanModule.ModSaveData.VisitedChapters)
             {
                 string[] str = VisitedChapter.Split('_');
-                if (str[0] == level.Session.Area.GetLevelSet())
+                if (str[0] == level.Session.Area.LevelSet)
                 {
                     GetCustomUpgradesData(int.Parse(str[1].Remove(0, 2)), int.Parse(str[2]));
                 }
@@ -282,7 +282,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (!XaphanModule.useMetroidGameplay)
             {
                 float scale = 0.4f;
-                string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+                string Prefix = SceneAs<Level>().Session.Area.LevelSet;
                 if (XaphanModule.ModSettings.PowerGrip)
                 {
                     int staminaCount = 0;

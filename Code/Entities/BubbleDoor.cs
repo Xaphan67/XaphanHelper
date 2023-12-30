@@ -96,7 +96,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             if (color != "Blue" && color != "Grey")
             {
-                if (XaphanModule.ModSaveData.DoorsOpened.Contains(SceneAs<Level>().Session.Area.GetLevelSet() + "_" + ID))
+                if (XaphanModule.ModSaveData.DoorsOpened.Contains(SceneAs<Level>().Session.Area.LevelSet + "_" + ID))
                 {
                     color = "Blue";
                 }
@@ -291,7 +291,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collidable = false;
                 if (XaphanModule.useMetroidGameplay && color != "Blue" && color != "Grey")
                 {
-                    XaphanModule.ModSaveData.DoorsOpened.Add(SceneAs<Level>().Session.Area.GetLevelSet() + "_" + ID);
+                    XaphanModule.ModSaveData.DoorsOpened.Add(SceneAs<Level>().Session.Area.LevelSet + "_" + ID);
                 }
                 Add(new Coroutine(Wait()));
             }

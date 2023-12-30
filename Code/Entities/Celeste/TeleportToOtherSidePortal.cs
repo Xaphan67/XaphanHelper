@@ -67,7 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             bool hasFlags = true;
             foreach (AreaStats item in SaveData.Instance.Areas_Safe)
             {
-                if (item.GetLevelSet() == SceneAs<Level>().Session.Area.GetLevelSet() && item.GetSID() == SceneAs<Level>().Session.Area.SID)
+                if (item.LevelSet == SceneAs<Level>().Session.Area.LevelSet && item.SID == SceneAs<Level>().Session.Area.SID)
                 {
                     if (item.Cassette)
                     {
@@ -75,7 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (XaphanModule.ModSaveData.CSideUnlocked.Contains(SaveData.Instance.GetLevelSetStats().Name + ":" + SceneAs<Level>().Session.Area.ChapterIndex) || SaveData.Instance.UnlockedModes >= 3)
+            if (XaphanModule.ModSaveData.CSideUnlocked.Contains(SaveData.Instance.LevelSetStats.Name + ":" + SceneAs<Level>().Session.Area.ChapterIndex) || SaveData.Instance.UnlockedModes >= 3)
             {
                 hasCSide = true;
             }
@@ -306,9 +306,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     LevelEnter.Go(new Session(new AreaKey(SceneAs<Level>().Session.Area.ID, AreaMode.BSide)), fromSaveData: false);
                     break;
                 case "C-Side":
-                    if (!XaphanModule.ModSaveData.CSideUnlocked.Contains(SceneAs<Level>().Session.Area.GetLevelSet() + ":" + SceneAs<Level>().Session.Area.ChapterIndex))
+                    if (!XaphanModule.ModSaveData.CSideUnlocked.Contains(SceneAs<Level>().Session.Area.LevelSet + ":" + SceneAs<Level>().Session.Area.ChapterIndex))
                     {
-                        XaphanModule.ModSaveData.CSideUnlocked.Add(SceneAs<Level>().Session.Area.GetLevelSet() + ":" + SceneAs<Level>().Session.Area.ChapterIndex);
+                        XaphanModule.ModSaveData.CSideUnlocked.Add(SceneAs<Level>().Session.Area.LevelSet + ":" + SceneAs<Level>().Session.Area.ChapterIndex);
                     }
                     LevelEnter.Go(new Session(new AreaKey(SceneAs<Level>().Session.Area.ID, AreaMode.CSide)), fromSaveData: false);
                     break;

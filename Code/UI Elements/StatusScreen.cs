@@ -594,7 +594,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     if (SelectedSide != -1 && statusDisplay.SelectedDisplay != null)
                     {
                         position.X -= num2 / 2 + 32;
-                        ButtonUI.Render(position, statusDisplay.SelectedDisplay.InactiveList.Contains(level.Session.Area.GetLevelSet()) ? label3 : label4, Input.MenuConfirm, scale, 1f, actionWiggle.Value * 0.05f);
+                        ButtonUI.Render(position, statusDisplay.SelectedDisplay.InactiveList.Contains(level.Session.Area.LevelSet) ? label3 : label4, Input.MenuConfirm, scale, 1f, actionWiggle.Value * 0.05f);
                     }
                 }
             }

@@ -17,7 +17,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void OnEnter(Player player)
         {
             base.OnEnter(player);
-            string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex == -1 ? 0 : SceneAs<Level>().Session.Area.ChapterIndex;
             string[] rooms = Rooms.Split(',');
             foreach (string room in rooms)

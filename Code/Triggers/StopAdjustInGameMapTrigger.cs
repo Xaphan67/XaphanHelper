@@ -33,7 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             {
                                 if (entity.Name == "XaphanHelper/InGameMapRoomAdjustController")
                                 {
-                                    string Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+                                    string Prefix = SceneAs<Level>().Session.Area.LevelSet;
                                     SceneAs<Level>().Session.SetFlag("Ignore_Room_Adjust_" + level.Name, true);
                                     XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ignore_Room_Adjust_Ch" + chapterIndex + "_" + level.Name);
                                     break;

@@ -27,9 +27,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private static void OnPlayerAdded(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
         {
             orig(self, scene);
-            if (XaphanModule.ModSaveData.fakePlayerFacing.ContainsKey(self.SceneAs<Level>().Session.Area.GetLevelSet()) && XaphanModule.ModSaveData.fakePlayerFacing[self.SceneAs<Level>().Session.Area.GetLevelSet()] != 0 && self.GetType() == typeof(FakePlayer))
+            if (XaphanModule.ModSaveData.fakePlayerFacing.ContainsKey(self.SceneAs<Level>().Session.Area.LevelSet) && XaphanModule.ModSaveData.fakePlayerFacing[self.SceneAs<Level>().Session.Area.LevelSet] != 0 && self.GetType() == typeof(FakePlayer))
             {
-                self.Facing = XaphanModule.ModSaveData.fakePlayerFacing[self.SceneAs<Level>().Session.Area.GetLevelSet()];
+                self.Facing = XaphanModule.ModSaveData.fakePlayerFacing[self.SceneAs<Level>().Session.Area.LevelSet];
             }
         }
 

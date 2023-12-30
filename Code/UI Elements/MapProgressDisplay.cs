@@ -64,7 +64,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             base.Added(scene);
             MapScreen = Level.Tracker.GetEntity<MapScreen>();
-            Prefix = Level.Session.Area.GetLevelSet();
+            Prefix = Level.Session.Area.LevelSet;
             if (chapterIndex != -1)
             {
                 if (!XaphanModule.ModSaveData.ProgressMode.ContainsKey(Prefix))
@@ -102,7 +102,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             base.Update();
             AreaKey area = Level.Session.Area;
-            string Prefix = Level.Session.Area.GetLevelSet();
+            string Prefix = Level.Session.Area.LevelSet;
             if (chapterIndex != -1)
             {
                 if (InGameMapControllerData.ShowProgress == "AfterChapterComplete")
@@ -119,7 +119,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     foreach (AreaStats areaStats in SaveData.Instance.Areas_Safe)
                     {
-                        if (areaStats.GetLevelSet() == Prefix && !SaveData.Instance.Areas_Safe[areaStats.ID].Modes[(int)area.Mode].Completed)
+                        if (areaStats.LevelSet == Prefix && !SaveData.Instance.Areas_Safe[areaStats.ID].Modes[(int)area.Mode].Completed)
                         {
                             Hidden = true;
                             mode = 2;
@@ -134,7 +134,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     foreach (AreaStats areaStats in SaveData.Instance.Areas_Safe)
                     {
-                        if (areaStats.GetLevelSet() == Prefix && !SaveData.Instance.Areas_Safe[areaStats.ID].Modes[(int)area.Mode].Completed)
+                        if (areaStats.LevelSet == Prefix && !SaveData.Instance.Areas_Safe[areaStats.ID].Modes[(int)area.Mode].Completed)
                         {
                             Hidden = true;
                             mode = 2;

@@ -84,7 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
             if (upgrade == "MapShard")
             {
@@ -136,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Visible = false;
             }
-            Prefix = SceneAs<Level>().Session.Area.GetLevelSet();
+            Prefix = SceneAs<Level>().Session.Area.LevelSet;
             if (FlagRegiseredInSaveData() || SceneAs<Level>().Session.GetFlag(upgrade))
             {
                 RemoveSelf();
@@ -279,7 +279,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 session.SetFlag("Upgrade_" + upgrade, true);
             }
-            string Prefix = session.Area.GetLevelSet();
+            string Prefix = session.Area.LevelSet;
             if (upgrade == "MapShard")
             {
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_MapShard"))

@@ -84,7 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Visible = false;
             }
-            if (XaphanModule.ModSaveData.AmmoCollected.Contains(SceneAs<Level>().Session.Area.GetLevelSet() + "_" + ID))
+            if (XaphanModule.ModSaveData.AmmoCollected.Contains(SceneAs<Level>().Session.Area.LevelSet + "_" + ID))
             {
                 RemoveSelf();
             }
@@ -99,7 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             session.Audio.Music.Event = SFX.EventnameByHandle(collectSound);
             session.Audio.Apply(forceSixteenthNoteHack: false);
             session.DoNotLoad.Add(ID);
-            XaphanModule.ModSaveData.AmmoCollected.Add(SceneAs<Level>().Session.Area.GetLevelSet() + "_" + ID);
+            XaphanModule.ModSaveData.AmmoCollected.Add(SceneAs<Level>().Session.Area.LevelSet + "_" + ID);
             sfx = SoundEmitter.Play(collectSound, this);
             AreaKey area = level.Session.Area;
             for (int i = 0; i < 10; i++)
