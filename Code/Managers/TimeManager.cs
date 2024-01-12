@@ -71,17 +71,14 @@ namespace Celeste.Mod.XaphanHelper.Managers
 
         private static void OnCelesteFreeze(On.Celeste.Celeste.orig_Freeze orig, float time)
         {
-            if (Engine.FreezeTimer < time)
+            orig(time);
+            time = Engine.FreezeTimer;
+            if (Engine.Scene != null)
             {
-                Engine.FreezeTimer = time;
-                if (Engine.Scene != null)
+                TimeManager manager = Engine.Scene.Tracker.GetEntity<TimeManager>();
+                if (manager != null)
                 {
-                    Engine.Scene.Tracker.GetEntity<CassetteBlockManager>()?.AdvanceMusic(time);
-                    TimeManager manager = Engine.Scene.Tracker.GetEntity<TimeManager>();
-                    if (manager != null)
-                    {
-                        manager.currentTime -= time;
-                    }
+                    manager.currentTime -= time;
                 }
             }
         }

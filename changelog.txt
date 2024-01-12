@@ -1,5 +1,6 @@
 Version 1.0.60 :
 - Updated to support Everest core
+- Updated Celeste.Freeze hook to allow others mods to hook the orig method
 
 Version 1.0.59 :
 - If the player has not collected the Climbing Kit upgrade, and press the jump button while grabbing a wall, they will now do a wall jump away from the wall instead of doing nothing
