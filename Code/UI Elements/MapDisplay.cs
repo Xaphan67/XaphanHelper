@@ -586,6 +586,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "pipeGate" + entity.Attr("direction"), new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
                     }
+                    else if (entity.Name == "XaphanHelper/BigScreen")
+                    {
+                        EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "bigScreen", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
+                    }
                 }
             }
         }
@@ -1742,6 +1746,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             Icons.Add(new InGameMapIconsData("pipeGate" + entity.Type.Remove(0, 8), entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                         }
+                        else if (entity.Type.Contains("bigScreen"))
+                        {
+                            Icons.Add(new InGameMapIconsData("bigScreen", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                        }
                     }
                 }
                 if (!InGameMapControllerData.HideIconsInUnexploredRooms)
@@ -1821,6 +1829,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 else if (entity.Type.Contains("pipeGate"))
                                 {
                                     Icons.Add(new InGameMapIconsData("pipeGate" + entity.Type.Remove(0, 8), entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                                }
+                                else if (entity.Type.Contains("bigScreen"))
+                                {
+                                    Icons.Add(new InGameMapIconsData("bigScreen", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                                 }
                             }
                         }
@@ -2575,7 +2587,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     Image iconImage = null;
                     string path = icon.Type == "boss" ? "maps/" + Prefix + "/" : "maps/";
-                    if (path.Contains("bubbleDoor") || path.Contains("pipeGate"))
+                    if (path.Contains("bubbleDoor") || path.Contains("pipeGate") || path.Contains("bigScreen"))
                     {
                         path = icon.Type;
                     }
