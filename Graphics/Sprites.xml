@@ -14,7 +14,7 @@
     <Anim id="idle" path="idle" delay="0.1" goto="idle"/>
     <Anim id="idleAim" path="idle_aim" delay="0.1" goto="idleAim"/>
     <Anim id="front" path="front" delay="0.1" goto="front"/>
-    
+
     <Anim id="idleA" path="idle" frames="0" delay="0.2" goto="idle"/>
     <Anim id="idleB" path="idle" frames="0" delay="0.2" goto="idle"/>
     <Anim id="idleC" path="idle" frames="0" delay="0.2" goto="idle"/>
@@ -57,7 +57,7 @@
 
   <lookout path="objects/lookout/" start="idle">
     <Justify x=".5" y="1" />
-    
+
     <Loop id="idle" path="lookout" delay="0.1" frames="5*9,6"/>
     <Anim id="lookRight" path="lookout" delay="0.08" frames="0-4" goto="looking"/>
     <Anim id="lookLeft" path="lookout" delay="0.08" frames="15-17,3,4" goto="looking"/>
@@ -121,7 +121,7 @@
     <Loop id="gravity_lookingDown" path="XaphanHelper/gravity" frames="11"/>
     <Loop id="gravity_lookingDownLeft" path="XaphanHelper/gravity" frames="12"/>
     <Loop id="gravity_lookingLeft" path="XaphanHelper/gravity" frames="13"/>
-    <Loop id="gravity_lookingUpLeft" path="XaphanHelper/gravity" frames="14"/>    
+    <Loop id="gravity_lookingUpLeft" path="XaphanHelper/gravity" frames="14"/>
   </lookout>
 
   <XaphanHelper_player_ceiling path="characters/Xaphan/" start="idleBackpack">
@@ -145,4 +145,13 @@
     <Loop id="hairNoBackpack" path="player_no_backpack/slopeSlideHair" delay="0.01"/>
   </XaphanHelper_player_slide>
 
+  # The animation here will populate the vanilla "player" etc
+  <XaphanHelper_Extend_player path="characters/Xaphan/" start="XaphanHelper_turnAround">
+    <Anim id="XaphanHelper_turnAround" path="player/turnaround" frames="0-3" delay="0.08"/>
+    <Anim id="XaphanHelper_turnAround_reverse" path="player/turnaround" frames="3-0" delay="0.08"/>
+    <Loop id="XaphanHelper_turnAround_end" path="player/turnaround" frames="3" delay = "0"/>
+
+    # if you want to modify them,
+    ## can directly add them into vanilla "player" etc, Includes new IDs for some skins
+  </XaphanHelper_Extend_player>
 </Sprites>

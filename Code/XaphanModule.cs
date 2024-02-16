@@ -686,6 +686,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Player.CallDashEvents += modPlayerCallDashEvents;
             On.Celeste.Player.Render += onPlayerRender;
             On.Celeste.PlayerDeadBody.Render += onPlayerDeadBodyRender;
+            On.Celeste.PlayerSprite.CreateFramesMetadata += PlayerSpriteMetadataHook;
             On.Celeste.ReturnMapHint.Render += onReturnMapHintRender;
             On.Celeste.SaveData.FoundAnyCheckpoints += modSaveDataFoundAnyCheckpoints;
             On.Celeste.Session.Restart += onSessionRestart;
@@ -730,6 +731,7 @@ namespace Celeste.Mod.XaphanHelper
             CustomRefill.Load();
             MergedChaptersGoldenStrawberry.Load();
             Arrow.Load();
+            BigScreen.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -780,6 +782,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Player.CallDashEvents -= modPlayerCallDashEvents;
             On.Celeste.Player.Render -= onPlayerRender;
             On.Celeste.PlayerDeadBody.Render -= onPlayerDeadBodyRender;
+            On.Celeste.PlayerSprite.CreateFramesMetadata -= PlayerSpriteMetadataHook;
             On.Celeste.ReturnMapHint.Render -= onReturnMapHintRender;
             On.Celeste.SaveData.FoundAnyCheckpoints -= modSaveDataFoundAnyCheckpoints;
             On.Celeste.Session.Restart -= onSessionRestart;
@@ -824,6 +827,7 @@ namespace Celeste.Mod.XaphanHelper
             CustomRefill.Unload();
             MergedChaptersGoldenStrawberry.Unload();
             Arrow.Unload();
+            BigScreen.Unload();
         }
 
         // Custom States
@@ -4184,6 +4188,44 @@ namespace Celeste.Mod.XaphanHelper
                 return new Glow(child.Attr("color"));
             }
             return null;
+        }
+
+        public void PlayerSpriteMetadataHook(On.Celeste.PlayerSprite.orig_CreateFramesMetadata orig, string self)
+        {
+
+            string extend_object = "XaphanHelper_Extend_" + self;
+            if (!GFX.SpriteBank.Has(extend_object))
+            {
+                extend_object = "XaphanHelper_Extend_player";
+            }
+
+            SpriteData extendPlayer = GFX.SpriteBank.SpriteData[extend_object];
+            SpriteData objects = GFX.SpriteBank.SpriteData[self];
+
+            PatchSprite(extendPlayer.Sprite, objects.Sprite);
+
+            if (extend_object == "XaphanHelper_Extend_" + self)
+            {
+                orig(extend_object);
+            }
+            orig(self);
+        }
+        private void PatchSprite(Sprite origSprite, Sprite newSprite)
+        {
+            Dictionary<string, Sprite.Animation> newAnims = newSprite.Animations;
+
+            // Shallow copy... sometimes new animations get added mid-update?
+            Dictionary<string, Sprite.Animation> oldAnims = new(origSprite.Animations);
+            foreach (KeyValuePair<string, Sprite.Animation> animEntry in oldAnims)
+            {
+                string origAnimId = animEntry.Key;
+
+                Sprite.Animation origAnim = animEntry.Value;
+                if (!newAnims.ContainsKey(origAnimId))
+                {
+                    newAnims[origAnimId] = origAnim;
+                }
+            }
         }
     }
 }

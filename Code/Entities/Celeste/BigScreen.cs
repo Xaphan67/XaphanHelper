@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Data.SqlTypes;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Cutscenes;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -18,22 +20,56 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private MTexture[,] tiles;
 
-        private MTexture Portrait;
+        public MTexture Portrait;
 
-        private TalkComponent talk;
+        public TalkComponent talk;
 
-        private bool isOn;
+        public bool isOn;
 
-        private bool showPortrait;
+        public bool showPortrait;
 
-        float bgAlpha;
+        public float bgAlpha;
+
+        public float noiseAlpha = 0.1f;
+
+        private MTexture onLedTexture;
+
+        public string PlayerPose = "";
 
         public BigScreen(EntityData data, Vector2 position) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
             Collider = new Hitbox(data.Width, data.Height);
             Depth = 9010;
+            onLedTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlicesOn"];
             Add(new CustomBloom(RenderBloom));
+        }
+
+        public static void Load()
+        {
+            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
+        }
+
+        public static void Unload()
+        {
+            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+        }
+
+        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
+        {
+
+            if (self.Entity is Player player && player != null)
+            {
+                foreach (BigScreen screen in self.SceneAs<Level>().Tracker.GetEntities<BigScreen>())
+                {
+                    if (screen.PlayerPose != "" && screen.Active)
+                    {
+                        id = screen.PlayerPose;
+                        break;
+                    }
+                }
+            }
+            orig(self, id, restart, randomizeFrame);
         }
 
         public override void Added(Scene scene)
@@ -42,12 +78,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Portrait = GFX.Game["objects/Xaphan/BigScreen/Portrait"];
             Add(talk = new TalkComponent(new Rectangle(28, 80, 24, 16), new Vector2(40f, 64f), Interact));
             talk.PlayerMustBeFacing = false;
+            Add(new Coroutine(NoiseRoutine()));
         }
 
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            MTexture mTexture = GFX.Game["scenery/tvSlices"];
+            MTexture mTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlices"];
             tiles = new MTexture[mTexture.Width / 8, mTexture.Height / 8];
             for (int i = 0; i < mTexture.Width / 8; i++)
             {
@@ -73,49 +110,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void Interact(Player player)
         {
             talk.Enabled = false;
-            Add(new Coroutine(Routine(player)));
-        }
-
-        public IEnumerator Routine(Player player)
-        {
-            Level level = SceneAs<Level>();
-            Depth = -90000;
-            level.PauseLock = true;
-            player.StateMachine.State = 11;
-            yield return player.DummyWalkToExact((int)X + 40, false, 1f, true);
-            yield return level.ZoomTo(new Vector2(160f, 84f), 1.75f, 2f);
-            while (bgAlpha <= 0.85f)
-            {
-                bgAlpha += Engine.RawDeltaTime;
-                yield return null;
-            }
-            bgAlpha = 0.85f;
-            yield return 0.2f;
-            if (!isOn)
-            {
-                isOn = true;
-                yield return 1.2f;
-            }
-            showPortrait = true;
-            Textbox textBox = new Textbox("Xaphan_Ch5_Lore");
-            textBox.RenderOffset.X += 125f;
-            textBox.RenderOffset.Y += 700f;
-            Engine.Scene.Add(textBox);
-            while (textBox.Opened)
-            {
-                yield return null;
-            }
-            while (bgAlpha > 0f)
-            {
-                bgAlpha -= Engine.RawDeltaTime;
-                yield return null;
-            }
-            bgAlpha = 0f;
-            yield return level.ZoomBack(1f);
-            level.PauseLock = false;
-            player.StateMachine.State = 0;
-            talk.Enabled = true;
-            Depth = 9010;
+            Scene.Add(new BigScreenCutscene(player));
         }
 
         private void AutoTile(int x, int y)
@@ -196,7 +191,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            BackgroundColor = isOn ? Color.White * 0.6f : Color.Black;
+            BackgroundColor = isOn && noiseAlpha  < 0.8f ? Calc.HexToColor("#291809") * 0.6f : Color.Black;
             if (Scene.OnInterval(0.1f))
             {
                 Seed++;
@@ -221,13 +216,54 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (isOn)
             {
-                DrawNoise(Collider.Bounds, ref seed, Color.White * 0.1f);
+                DrawNoise(Collider.Bounds, ref seed, Color.White * noiseAlpha);
+                onLedTexture.Draw(Position + new Vector2(-8f, 48f));
+            }
+        }
+
+        private IEnumerator NoiseRoutine()
+        {
+            bool justTurnedOn = false;
+            bool vasJustTurnedOn = false;
+            while(true)
+            {
+                if (isOn)
+                {
+                    if (!justTurnedOn)
+                    {
+                        justTurnedOn = true;
+                    }
+                    if (justTurnedOn && !vasJustTurnedOn)
+                    {
+                        noiseAlpha = 0.8f;
+                        yield return 1.2f;
+                        noiseAlpha = 0.05f;
+                        vasJustTurnedOn = true;
+                    }
+                    else
+                    {
+                        yield return Calc.Random.Next(1, 5);
+                        while(noiseAlpha <= 0.2f)
+                        {
+                            noiseAlpha += Engine.DeltaTime;
+                            yield return null;
+                        }
+                        noiseAlpha = 0.2f;
+                        while (noiseAlpha > 0.05f)
+                        {
+                            noiseAlpha -= Engine.DeltaTime;
+                            yield return null;
+                        }
+                        noiseAlpha = 0.05f;
+                    }
+                }
+                yield return null;
             }
         }
 
         public static void DrawNoise(Rectangle bounds, ref uint seed, Color color)
         {
-            MTexture mTexture = GFX.Game["util/noise"];
+            MTexture mTexture = GFX.Game["objects/XaphanHelper/BigScreen/noise"];
             Vector2 vector = new Vector2(PseudoRandRange(ref seed, 0f, mTexture.Width / 2), PseudoRandRange(ref seed, 0f, mTexture.Height / 2));
             Vector2 vector2 = new Vector2(mTexture.Width, mTexture.Height) / 2f;
             for (float num = 0f; num < bounds.Width; num += vector2.X)
