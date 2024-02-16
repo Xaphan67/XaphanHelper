@@ -363,14 +363,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SceneAs<Level>().Add(CollideDetect = new CollideDetector(this));
             if (side == "Right" || side == "Left")
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(-11, 4), this, side)
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-11, 4), this, side)
                 {
                     canShoot = true
                 });
             }
             else
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(4, -11), this, side)
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -11), this, side)
                 {
                     canShoot = true
                 });
@@ -463,19 +463,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (side == "Right")
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(-23, 4), this, side));
+                Scene.Add(nextArrow = new Arrow( Position + new Vector2(-23, 4), this, side));
             }
             else if (side == "Left")
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(-1, 4), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-1, 4), this, side));
             }
             else if (side == "Top")
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(4, 1), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, 1), this, side));
             }
             else if (side == "Bottom")
             {
-                Scene.Add(nextArrow = new Arrow(new EntityData(), Position + new Vector2(4, -23), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -23), this, side));
             }
             Add(new Coroutine(nextArrow.Reload()));
             while (mainCooldown > 0f)

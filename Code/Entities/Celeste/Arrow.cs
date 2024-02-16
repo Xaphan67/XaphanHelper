@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -10,7 +9,6 @@ using MonoMod.Utils;
 namespace Celeste.Mod.XaphanHelper.Entities
 {
     [Tracked(true)]
-    [CustomEntity("XaphanHelper/Arrow")]
     class Arrow : Solid
     {
         private Sprite sprite;
@@ -41,7 +39,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         StaticMover staticMover;
 
-        public Arrow(EntityData data, Vector2 position, ArrowTrap trap, string side) : base(data.Position + position, data.Width, data.Height, false)
+        public Arrow(Vector2 position, ArrowTrap trap, string side) : base(position, 4, 4, false)
         {
             sourceTrap = trap;
             this.side = side;
@@ -470,7 +468,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.X -= 1;
                     }
-                    Scene.Add(new Arrow(new EntityData(), Position, null, "Right"));
+                    Scene.Add(new Arrow(Position, null, "Right"));
                 }
                 else if (side == "Left")
                 {
@@ -478,7 +476,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.X += 1;
                     }
-                    Scene.Add(new Arrow(new EntityData(), Position, null, "Left"));
+                    Scene.Add(new Arrow(Position, null, "Left"));
                 }
                 else if (side == "Top")
                 {
@@ -486,7 +484,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.Y += 1;
                     }
-                    Scene.Add(new Arrow(new EntityData(), Position, null, "Top"));
+                    Scene.Add(new Arrow(Position, null, "Top"));
                 }
                 else if (side == "Bottom")
                 {
@@ -494,7 +492,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.Y -= 1;
                     }
-                    Scene.Add(new Arrow(new EntityData(), Position, null, "Bottom"));
+                    Scene.Add(new Arrow(Position, null, "Bottom"));
                 }
             }
             RemoveSelf();
