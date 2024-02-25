@@ -988,7 +988,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if ((player != null || player.StateMachine.State == Player.StBoost || player.StateMachine.State == Player.StRedDash) && player.StateMachine.State != Player.StDummy)
                 {
-                    if ((Input.Grab.Pressed || (DestroyTimer > 0 && Input.Grab.Check)) && !XaphanModule.ModSettings.SelectItem.Check && !Hold.IsHeld && canDestroy && player.OnSafeGround && player.Speed == Vector2.Zero)
+                    if ((Input.Grab.Pressed || (DestroyTimer > 0 && Input.Grab.Check)) && !XaphanModule.ModSettings.SelectItem.Check && !Hold.IsHeld && canDestroy && player.Speed == Vector2.Zero)
                     {
                         DestroyTimer += Engine.DeltaTime;
                         if (DestroyTimer >= 0.5f)
