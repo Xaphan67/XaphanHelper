@@ -327,7 +327,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Visible = false;
             destroyed = true;
             Collidable = false;
-            Audio.Play("event:/game/general/platform_disintegrate", Center);
+            // Audio.Play("event:/game/general/platform_disintegrate", Center);
             for (int i = 0; i <= 5; i++)
             {
                 Vector2 vector = (side == "Right" || side == "Left") ? new(10 + i * 2f, 4f) : new(4f, 10 + i * 2f);
