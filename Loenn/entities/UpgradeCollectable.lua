@@ -9,7 +9,7 @@ UpgradeCollectable.fieldOrder = {
 }
 UpgradeCollectable.fieldInformation = {
     upgrade = {
-        options = {"Map", "MapShard", "Binoculars", "Bombs", "ClimbingKit", "DashBoots", "DroneTeleport", "EtherealDash", "GoldenFeather", "GravityJacket", "HoverBoots", "IceBeam", "JumpBoost", "LightningDash", "LongBeam", "MegaBombs", "MissilesModule", "PortableStation", "PowerGrip", "PulseRadar", "RemoteDrone", "ScrewAttack", "SpaceJump", "SpiderMagnet", "SuperMissilesModule", "VariaJacket", "WaveBeam"},
+        options = {"Map", "MapShard", "Binoculars", "Bombs", "ClimbingKit", "DashBoots", "DroneTeleport", "EtherealDash", "GoldenFeather", "GravityJacket", "HoverJet", "IceBeam", "JumpBoost", "LightningDash", "LongBeam", "MegaBombs", "MissilesModule", "PortableStation", "PowerGrip", "PulseRadar", "RemoteDrone", "ScrewAttack", "SpaceJump", "SpiderMagnet", "SuperMissilesModule", "VariaJacket", "WaveBeam"},
         editable = false
     },
     nameColor = {
