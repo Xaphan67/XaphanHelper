@@ -151,6 +151,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.LevelExit.Begin += OnLevelExitBegin;
             On.Celeste.ChangeRespawnTrigger.OnEnter += onChangeRespawnTriggerOnEnter;
             On.Celeste.CameraTargetTrigger.OnLeave += onCameratargetTriggerOnLeave;
+            On.Celeste.CameraOffsetTrigger.OnEnter += onCameraOffsetTriggerOnEnter;
+        }
+
+        private static void onCameraOffsetTriggerOnEnter(On.Celeste.CameraOffsetTrigger.orig_OnEnter orig, CameraOffsetTrigger self, Player player)
+        {
+            if (XaphanModule.ModSaveData.startAsDrone.ContainsKey(player.SceneAs<Level>().Session.Area.LevelSet))
+            {
+                if (!XaphanModule.ModSaveData.startAsDrone[player.SceneAs<Level>().Session.Area.LevelSet])
+                {
+                    orig(self, player);
+                }
+            }
+            else
+            {
+                orig(self, player);
+            }
         }
 
         private static void OnLevelExitBegin(On.Celeste.LevelExit.orig_Begin orig, LevelExit self)
@@ -293,6 +309,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.LevelExit.Begin -= OnLevelExitBegin;
             On.Celeste.ChangeRespawnTrigger.OnEnter -= onChangeRespawnTriggerOnEnter;
             On.Celeste.CameraTargetTrigger.OnLeave -= onCameratargetTriggerOnLeave;
+            On.Celeste.CameraOffsetTrigger.OnEnter -= onCameraOffsetTriggerOnEnter;
         }
 
         private static void OnHoldableUpdate(On.Celeste.Holdable.orig_Update orig, Holdable self)
@@ -420,6 +437,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Scene.Add(FakePlayer);
                     }
                     CurrentSpawn = XaphanModule.ModSaveData.droneCurrentSpawn[SceneAs<Level>().Session.Area.LevelSet];
+                    SceneAs<Level>().CameraOffset = Vector2.Zero;
                     GiveAmmo();
                 }
                 else
@@ -650,7 +668,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void ImpactParticles(Vector2 dir)
         {
             float direction;
-            Vector2 position = default(Vector2);
+            Vector2 position;
             Vector2 positionRange;
             if (dir.X > 0f)
             {
@@ -1294,6 +1312,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     player.Position = FakePlayer.Position;
                                     player.DummyGravity = true;
                                 }
+                                SceneAs<Level>().CameraOffset = Vector2.Zero;
                                 if (!normalRespawn)
                                 {
                                     if (player != null && !player.Dead)
