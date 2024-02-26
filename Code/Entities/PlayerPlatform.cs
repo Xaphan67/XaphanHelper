@@ -2,6 +2,7 @@
 using System.Collections;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Upgrades;
+using IL.MonoMod;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -491,7 +492,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void DebugRender(Camera camera)
         {
-
+            if (XaphanModuleSettings.ShowCompleteSlopesHitboxes)
+            {
+                base.DebugRender(camera);
+            }
         }
     }
 }

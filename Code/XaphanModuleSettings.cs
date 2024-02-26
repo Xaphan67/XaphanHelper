@@ -22,6 +22,10 @@ namespace Celeste.Mod.XaphanHelper
         [SettingName("ModOptions_XaphanModule_SpaceJumpIndicator")]
         public JumpIndicatorSize SpaceJumpIndicator { get; set; } = JumpIndicatorSize.Large;
 
+        [SettingName("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes")]
+        [SettingSubText("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc")]
+        public static bool ShowCompleteSlopesHitboxes { get; set; } = false;
+
         public void CreateMiniMapOpacityEntry(TextMenu menu, bool inGame)
         {
             menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"), delegate (int i)
