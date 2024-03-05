@@ -22,9 +22,9 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             levelSet = data.Attr("levelSet");
         }
 
-        public override void OnEnter(Player player)
+        public override void OnStay(Player player)
         {
-            base.OnEnter(player);
+            base.OnStay(player);
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             if (string.IsNullOrEmpty(levelSet))
             {
