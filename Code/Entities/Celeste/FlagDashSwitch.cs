@@ -382,7 +382,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 DisplacePlayerOnTop();
             }
-            if (SceneAs<Level>().Transitioning && wasPressed)
+            if (SceneAs<Level>().Transitioning /*&& wasPressed*/)
             {
                 flagState = SceneAs<Level>().Session.GetFlag(flag);
                 int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
