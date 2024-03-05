@@ -235,7 +235,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Speed.Y = Calc.Approach(Speed.Y, 200f * gravityMultiplier, num * Engine.DeltaTime);
                     }
                 }
-                previousPosition = base.ExactPosition;
+                previousPosition = ExactPosition;
                 MoveH(Speed.X * Engine.DeltaTime, onCollideH);
                 MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
                 if (Center.X > Level.Bounds.Right)

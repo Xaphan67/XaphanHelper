@@ -40,10 +40,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool sloted;
 
+        private Vector2 previousPosition;
+
         public Bomb(Vector2 position, Player player) : base(position)
         {
             this.player = player;
             Collider = new Hitbox(8f, 7f, -4f, -7f);
+            previousPosition = Position;
             Add(bombSprite = new Sprite(GFX.Game, "upgrades/Bomb/"));
             bombSprite.AddLoop("idle", "idle", 1f, 0);
             bombSprite.AddLoop("countdown", "idle", 0.08f);
@@ -61,6 +64,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Hold.OnHitSeeker = HitSeeker;
             Hold.OnSwat = Swat;
             Hold.OnHitSpring = HitSpring;
+            Hold.OnHitSpinner = HitSpinner;
             Hold.SpeedGetter = (() => Speed);
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
@@ -111,6 +115,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Speed = (Center - seeker.Center).SafeNormalize(120f);
             }
             Audio.Play("event:/game/05_mirror_temple/crystaltheo_hit_side", Position);
+        }
+
+        public void HitSpinner(Entity spinner)
+        {
+            if (!Hold.IsHeld && Speed.Length() < 0.01f && LiftSpeed.Length() < 0.01f && (previousPosition - ExactPosition).Length() < 0.01f && OnGround())
+            {
+                int num = Math.Sign(X - spinner.X);
+                if (num == 0)
+                {
+                    num = 1;
+                }
+                Speed.X = num * 80f;
+                Speed.Y = -30f;
+            }
         }
 
         public bool HitSpring(Spring spring)
@@ -352,6 +370,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             Speed.Y = Calc.Approach(Speed.Y, 200f, num * Engine.DeltaTime);
                         }
                     }
+                    previousPosition = ExactPosition;
                     MoveH(Speed.X * Engine.DeltaTime, onCollideH);
                     MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
                     foreach (KeyValuePair<Type, List<Entity>> entityList in Scene.Tracker.Entities)
