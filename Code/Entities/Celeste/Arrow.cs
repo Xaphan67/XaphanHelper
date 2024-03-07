@@ -118,6 +118,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(Destroy()));
         }
 
+        private void OnMove(Vector2 amount)
+        {
+            if (Collidable)
+            {
+                MoveV(amount.Y);
+                MoveH(amount.X);
+            }
+            else
+            {
+                Position += amount;
+            }
+        }
+
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
@@ -141,8 +154,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 DynData<Solid> solidData = new(attachedSolid);
                 List<StaticMover> staticMovers = solidData.Get<List<StaticMover>>("staticMovers");
-                staticMovers.Add(staticMover);
-                staticMover.Platform = attachedSolid;
+                if (!staticMovers.Contains(staticMover)) {
+                    staticMover.OnMove = OnMove;
+                    staticMovers.Add(staticMover);
+                }
             }
         }
 
