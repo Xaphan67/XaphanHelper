@@ -155,6 +155,58 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 }
                             }
                         }
+                        foreach (DroneSwitch droneSwitch in SceneAs<Level>().Tracker.GetEntities<DroneSwitch>())
+                        {
+                            if (!string.IsNullOrEmpty(droneSwitch.flag))
+                            {
+                                droneSwitch.startSpawnPoint = respawn;
+                                droneSwitch.flagState = SceneAs<Level>().Session.GetFlag(droneSwitch.flag);
+                                int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_true", false);
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_false", false);
+                                if (droneSwitch.wasPressed && droneSwitch.registerInSaveData && droneSwitch.saveDataOnlyAfterCheckpoint)
+                                {
+                                    string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag))
+                                    {
+                                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag);
+                                    }
+                                    if (XaphanModule.PlayerHasGolden)
+                                    {
+                                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry"))
+                                        {
+                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        foreach (BombSwitch bombSwitch in SceneAs<Level>().Tracker.GetEntities<BombSwitch>())
+                        {
+                            if (!string.IsNullOrEmpty(bombSwitch.flag))
+                            {
+                                bombSwitch.startSpawnPoint = respawn;
+                                bombSwitch.flagState = SceneAs<Level>().Session.GetFlag(bombSwitch.flag);
+                                int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + bombSwitch.flag + "_true", false);
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + bombSwitch.flag + "_false", false);
+                                if (bombSwitch.wasTriggered && bombSwitch.registerInSaveData && bombSwitch.saveDataOnlyAfterCheckpoint)
+                                {
+                                    string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag))
+                                    {
+                                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag);
+                                    }
+                                    if (XaphanModule.PlayerHasGolden)
+                                    {
+                                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry"))
+                                        {
+                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry");
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if (XaphanModule.PlayerIsControllingRemoteDrone())
                         {
                             Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();

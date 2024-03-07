@@ -3,9 +3,11 @@ using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
+using static Celeste.Tentacles;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/BombSwitch")]
     public class BombSwitch : Entity
     {
@@ -13,9 +15,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool triggered;
 
-        private string flag;
+        public bool wasTriggered;
 
-        private bool registerInSaveData;
+        public string flag;
+
+        public Vector2? startSpawnPoint;
+
+        public bool flagState;
+
+        public bool registerInSaveData;
+
+        public bool saveDataOnlyAfterCheckpoint;
 
         private string sprite;
 
@@ -31,8 +41,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public BombSwitch(EntityData data, Vector2 position) : base(data.Position + position)
         {
+            Tag = Tags.TransitionUpdate;
             flag = data.Attr("flag");
             registerInSaveData = data.Bool("registerInSaveData");
+            saveDataOnlyAfterCheckpoint = data.Bool("saveDataOnlyAfterCheckpoint");
             sprite = data.Attr("sprite", "objects/XaphanHelper/BombSwitch");
             Add(new BombCollider(OnBomb, new Circle(8f, 8f, 8f)));
             Add(switchSprite = new Sprite(GFX.Game, sprite + "/"));
@@ -41,6 +53,131 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = 8999;
         }
 
+        public static void Load()
+        {
+            On.Celeste.ChangeRespawnTrigger.OnEnter += onChangeRespawnTriggerOnEnter;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.ChangeRespawnTrigger.OnEnter -= onChangeRespawnTriggerOnEnter;
+        }
+
+        private static void onChangeRespawnTriggerOnEnter(On.Celeste.ChangeRespawnTrigger.orig_OnEnter orig, ChangeRespawnTrigger self, Player player)
+        {
+            orig(self, player);
+            bool onSolid = true;
+            Vector2 point = self.Target + Vector2.UnitY * -4f;
+            Session session = self.SceneAs<Level>().Session;
+            if (self.Scene.CollideCheck<Solid>(point))
+            {
+                onSolid = self.Scene.CollideCheck<FloatySpaceBlock>(point);
+            }
+            if (onSolid && (!session.RespawnPoint.HasValue || session.RespawnPoint.Value != self.Target))
+            {
+                foreach (BombSwitch bombSwitch in self.SceneAs<Level>().Tracker.GetEntities<BombSwitch>())
+                {
+                    if (!string.IsNullOrEmpty(bombSwitch.flag))
+                    {
+                        bombSwitch.startSpawnPoint = session.RespawnPoint;
+                        bombSwitch.flagState = session.GetFlag(bombSwitch.flag);
+                        int chapterIndex = self.SceneAs<Level>().Session.Area.ChapterIndex;
+                        self.SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + bombSwitch.flag + "_true", false);
+                        self.SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + bombSwitch.flag + "_false", false);
+                        if (bombSwitch.wasTriggered && bombSwitch.registerInSaveData && bombSwitch.saveDataOnlyAfterCheckpoint)
+                        {
+                            string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
+                            if (self.SceneAs<Level>().Session.GetFlag(bombSwitch.flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag))
+                            {
+                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag);
+                            }
+                            else if (self.SceneAs<Level>().Session.GetFlag(bombSwitch.flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag))
+                            {
+                                XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag);
+                            }
+                            if (XaphanModule.PlayerHasGolden)
+                            {
+                                if (self.SceneAs<Level>().Session.GetFlag(bombSwitch.flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry"))
+                                {
+                                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry");
+                                }
+                                else if (self.SceneAs<Level>().Session.GetFlag(bombSwitch.flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry"))
+                                {
+                                    XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+            if (FlagRegiseredInSaveData())
+            {
+                flagState = true;
+                SceneAs<Level>().Session.SetFlag(flag, true);
+            }
+            else
+            {
+                if (SceneAs<Level>().Session.GetFlag("Ch" + chapterIndex + "_" + flag + "_true"))
+                {
+                    flagState = true;
+                    SceneAs<Level>().Session.SetFlag(flag, true);
+                }
+                else if (SceneAs<Level>().Session.GetFlag("Ch" + chapterIndex + "_" + flag + "_false"))
+                {
+                    flagState = false;
+                    SceneAs<Level>().Session.SetFlag(flag, false);
+                }
+                else
+                {
+                    flagState = SceneAs<Level>().Session.GetFlag(flag);
+                    SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_true", false);
+                    SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_false", false);
+                    SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_" + (flagState ? "true" : "false"), true);
+                }
+            }           
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (SceneAs<Level>().Transitioning && wasTriggered)
+            {
+                Logger.Log(LogLevel.Info, "XH", "Test");
+                flagState = SceneAs<Level>().Session.GetFlag(flag);
+                string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_true", false);
+                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_false", false);
+                if (registerInSaveData && saveDataOnlyAfterCheckpoint)
+                {
+                    if (SceneAs<Level>().Session.GetFlag(flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
+                    }
+                    else if (!SceneAs<Level>().Session.GetFlag(flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag);
+                    }
+                    if (XaphanModule.PlayerHasGolden)
+                    {
+                        if (SceneAs<Level>().Session.GetFlag(flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
+                        }
+                        else if (!SceneAs<Level>().Session.GetFlag(flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
+                        }
+                    }
+                }
+            }
+        }
 
         private void OnBomb(Bomb bomb)
         {
@@ -82,8 +219,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (!bomb.Hold.IsHeld)
                 {
+                    wasTriggered = true;
+                    startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
                     SceneAs<Level>().Session.SetFlag(flag, !SceneAs<Level>().Session.GetFlag(flag));
-                    if (registerInSaveData)
+                    if (registerInSaveData && !saveDataOnlyAfterCheckpoint)
                     {
                         string Prefix = SceneAs<Level>().Session.Area.LevelSet;
                         int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;

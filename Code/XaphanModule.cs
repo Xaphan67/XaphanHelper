@@ -732,6 +732,7 @@ namespace Celeste.Mod.XaphanHelper
             MergedChaptersGoldenStrawberry.Load();
             Arrow.Load();
             BigScreen.Load();
+            BombSwitch.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -828,6 +829,7 @@ namespace Celeste.Mod.XaphanHelper
             MergedChaptersGoldenStrawberry.Unload();
             Arrow.Unload();
             BigScreen.Unload();
+            BombSwitch.Unload();
         }
 
         // Custom States
