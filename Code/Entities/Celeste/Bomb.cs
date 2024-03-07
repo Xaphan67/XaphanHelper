@@ -445,7 +445,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return null;
             }
-            Player player = CollideFirst<Player>();
+
+            // Deactivate player being moved away from bomb explosion
+
+            /*Player player = CollideFirst<Player>();
             if (player != null && player.StateMachine.State != 11 && !Scene.CollideCheck<Solid>(Position + new Vector2(0, -10f), player.Center) && !sloted)
             {
                 int dirX = 0;
@@ -474,7 +477,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 player.Speed.Y = ((180f - dist) * dirY) * (GravityJacket.determineIfInWater() && !XaphanModule.ModSettings.GravityJacket ? 0.8f : 1f);
                 player.Speed.X = (180f * dirX) * (GravityJacket.determineIfInWater() && !XaphanModule.ModSettings.GravityJacket ? 0.8f : 1f);
-            }
+            }*/
 
             foreach (Entity entity in Scene.Tracker.GetEntities<BreakBlockIndicator>())
             {

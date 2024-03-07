@@ -5,6 +5,7 @@ Version 1.0.60 :
 - The Remote Drone can now be destroyed on non-safe platforms
 - Flag Dash Switches now register the state of the flag they control when the player exit the room or trigger a checkpoint even if they were not pressed
 - Global Flag Triggers now update the flag they control as long as the player is inside the trigger instead of only when the player enter it
+- Bombs explosion no longer push the player away
 - Fixed a warning displayed on game load about an entity with a non suitable constructor
 - Fixed the Upgrade Collectable Loenn plugin, having the wrong name for the Hover Jet upgrade
 - Fixed a bug allowing Camera Offset Triggers to apply their offset at the player location when the player destroy the Remote Drone after touching one of those triggers while controling the drone
