@@ -5,7 +5,7 @@ local BubbleDoor = {}
 BubbleDoor.name = "XaphanHelper/BubbleDoor"
 BubbleDoor.depth = -9000
 BubbleDoor.fieldOrder = {
-    "x", "y", "directory", "side", "color", "flags", "forceLockedFlag", "openSound", "closeSound", "lockSound", "unlockSound", "onlyNeedOneFlag"
+    "x", "y", "directory", "side", "color", "flags", "forceLockedFlag", "forceInactiveFlag", "openSound", "closeSound", "lockSound", "unlockSound", "onlyNeedOneFlag"
 }
 BubbleDoor.canResize = {false, false}
 BubbleDoor.fieldInformation = {
@@ -26,6 +26,7 @@ BubbleDoor.placements = {
         color = "Blue",
         flags = "",
         forceLockedFlag = "",
+        forceInactiveFlag = "",
         openSound = "",
         closeSound = "",
         unlockSound = "",
@@ -38,7 +39,7 @@ function BubbleDoor.sprite(room, entity)
     local side = entity.side or "Left"
     local color = entity.color or "Blue"
     local directory = entity.directory or "objects/XaphanHelper/BubbleDoor"
-    
+
     local sprites = {}
 
     local sprite = drawableSprite.fromTexture(directory .. "/" .. color .. "/closed00", entity)

@@ -40,6 +40,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public string forceLockedFlag;
 
+        public string forceInactiveFlag;
+
         public bool OnlyNeedOneFlag;
 
         private Sprite doorCap;
@@ -69,6 +71,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             forceLockedFlag = data.Attr("forceLockedFlag");
             forceLockedFlag = string.IsNullOrEmpty(forceLockedFlag) ? null : forceLockedFlag;
+            forceInactiveFlag = data.Attr("forceInactiveFlag");
             OnlyNeedOneFlag = data.Bool("onlyNeedOneFlag", false);
             openSound = data.Attr("openSound", "event:/game/05_mirror_temple/gate_main_open");
             closeSound = data.Attr("closeSound", "event:/game/05_mirror_temple/gate_main_close");
@@ -213,7 +216,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             bool shouldBeActive = !OnlyNeedOneFlag ? allFlagsTrue : oneFlagTrue;
-            if (shouldBeActive && ((!string.IsNullOrEmpty(forceLockedFlag) && !SceneAs<Level>().Session.GetFlag(forceLockedFlag)) || string.IsNullOrEmpty(forceLockedFlag)))
+
+            if (shouldBeActive && 
+                ((!string.IsNullOrEmpty(forceLockedFlag) && !SceneAs<Level>().Session.GetFlag(forceLockedFlag)) || string.IsNullOrEmpty(forceLockedFlag)) &&
+                ((!string.IsNullOrEmpty(forceInactiveFlag) && !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || string.IsNullOrEmpty(forceInactiveFlag))
+                )
             {
                 isActive = true;
             }
