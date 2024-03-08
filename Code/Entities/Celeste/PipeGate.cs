@@ -30,6 +30,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool isInPipe;
 
+        private string forceInactiveFlag;
+
         private string openSound;
 
         private string closeSound;
@@ -60,6 +62,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public PipeGate(EntityData data, Vector2 position) : base(data.Position + position)
         {
+            forceInactiveFlag = data.Attr("forceInactiveFlag");
             openSound = data.Attr("openSound", "");
             closeSound = data.Attr("closeSound", "");
             direction = data.Attr("direction", "Left");
@@ -468,8 +471,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool PlayerIsInside()
         {
-            Player player = Scene.Tracker.GetEntity<Player>();
-            return player != null && player.Right > Left && player.Left < Right && player.Bottom > Top && player.Top < Bottom && Scene.Tracker.GetEntity<Drone>() == null;
+            if (string.IsNullOrEmpty(forceInactiveFlag) || (!string.IsNullOrEmpty(forceInactiveFlag) && !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)))
+            {
+                Player player = Scene.Tracker.GetEntity<Player>();
+                return player != null && player.Right > Left && player.Left < Right && player.Bottom > Top && player.Top < Bottom && Scene.Tracker.GetEntity<Drone>() == null;
+            } else
+            {
+                return false;
+            }
         }
 
         public override void Render()
