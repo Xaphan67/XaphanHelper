@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -63,6 +64,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string moveFlag;
 
+        private string forceInactiveFlag;
+
         private bool drawTrack;
 
         private bool particles;
@@ -75,7 +78,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private ParticleType P_Trail;
 
-        public Sawblade(int id, Vector2[] nodes, string mode, string directory, float radius, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int amount, int index, float speedMult, float startOffset, float spacingOffset, string stopFlag, string swapFlag, string moveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool swapped = false, bool fromFirstLoad = false)
+        public Sawblade(int id, Vector2[] nodes, string mode, string directory, float radius, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int amount, int index, float speedMult, float startOffset, float spacingOffset, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool swapped = false, bool fromFirstLoad = false)
         {
             Tag = Tags.TransitionUpdate;
             Collider = new Circle(radius);
@@ -96,6 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.stopFlag = stopFlag;
             this.swapFlag = swapFlag;
             this.moveFlag = moveFlag;
+            this.forceInactiveFlag = forceInactiveFlag;
             this.drawTrack = drawTrack;
             this.particles = particles;
             this.direction = direction;
@@ -167,7 +171,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        public Sawblade(EntityData data, Vector2 offset, EntityID eid) : this(eid.ID, data.NodesWithPosition(offset), data.Attr("mode", "Restart"), data.Attr("directory", "danger/XaphanHelper/Sawblade"), data.Float("radius", 8f), data.Attr("lineColorA", "2A251F"), data.Attr("lineColorB", "C97F35"), data.Attr("particlesColorA", "696A6A"), data.Attr("particlesColorB", "700808"), data.Int("amount", 1), 0, data.Float("speed", 60f), data.Float("startOffset"), data.Float("spacingOffset"), data.Attr("stopFlag"), data.Attr("swapFlag"), data.Attr("moveFlag"), data.Bool("drawTrack", true), data.Bool("particles", true), 1, fromFirstLoad: true)
+        public Sawblade(EntityData data, Vector2 offset, EntityID eid) : this(eid.ID, data.NodesWithPosition(offset), data.Attr("mode", "Restart"), data.Attr("directory", "danger/XaphanHelper/Sawblade"), data.Float("radius", 8f), data.Attr("lineColorA", "2A251F"), data.Attr("lineColorB", "C97F35"), data.Attr("particlesColorA", "696A6A"), data.Attr("particlesColorB", "700808"), data.Int("amount", 1), 0, data.Float("speed", 60f), data.Float("startOffset"), data.Float("spacingOffset"), data.Attr("stopFlag"), data.Attr("swapFlag"), data.Attr("moveFlag"), data.Attr("forceInactiveFlag"), data.Bool("drawTrack", true), data.Bool("particles", true), 1, fromFirstLoad: true)
         {
         }
 
@@ -178,7 +182,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 for (int i = 0; i < amount; i++)
                 {
-                    Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, i + 1, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, drawTrack, particles, direction));
+                    Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, i + 1, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction));
                 }
             }
             if (trackSfx != null)
@@ -201,6 +205,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 PositionTrackSfx();
                 return;
             }
+            if (!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
+            {
+                saw.Rate = node.Rate = 0f;
+            }
+            else
+            {
+                saw.Rate = node.Rate = 1f;
+            }
             base.Update();
             if (mode == "Flag To Move" && !string.IsNullOrEmpty(moveFlag))
             {
@@ -221,7 +233,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if ((!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
+            if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
             {
                 return;
             }
@@ -333,12 +345,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (SceneAs<Level>().Session.GetFlag(swapFlag) && !swapped)
                         {
-                            Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, index, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, true, false));
+                            Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, index, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, true, false));
                             RemoveSelf();
                         }
                         else if (!SceneAs<Level>().Session.GetFlag(swapFlag) && swapped)
                         {
-                            Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, index, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, false, false));
+                            Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, index, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, false, false));
                             RemoveSelf();
                         }
                     }
