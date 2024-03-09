@@ -20,6 +20,7 @@ LaserEmitter.placements = {
     name = "LaserEmitter",
     data = {
         flag = "",
+        forceInactiveFlag = "",
         side = "Right",
         type = "Kill",
         directory = "objects/XaphanHelper/LaserEmitter",
@@ -38,9 +39,9 @@ function LaserEmitter.sprite(room, entity)
 
     local sprite = drawableSprite.fromTexture(directory .. "/idle00", entity)
     local baseSprite = drawableSprite.fromTexture(directory .. "/baseActive" .. side .. "00", entity)
-    
+
     sprite:addPosition(4, 4)
-   
+
     if side == "Bottom" then
         sprite.rotation = math.pi
         baseSprite:addPosition(4, -4)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -71,6 +72,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public string flag;
 
+        private string forceInactiveFlag;
+
         public string directory;
 
         public bool inverted;
@@ -91,6 +94,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             side = data.Attr("side");
             type = data.Attr("type", "Kill");
             flag = data.Attr("flag");
+            forceInactiveFlag = data.Attr("forceInactiveFlag");
             Base = data.Bool("base", false);
             noBeam = data.Bool("noBeam");
             inverted = data.Bool("inverted");
@@ -198,6 +202,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            if (!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
+            {
+                noBeam = true;
+            }
             if (!noBeam)
             {
                 if (!string.IsNullOrEmpty(flag))
