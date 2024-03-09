@@ -1,6 +1,6 @@
 Version 1.0.60 :
 - Updated to support Everest core
-- Added "Force Inactive Flag" to Bubble Doors
+- Added "Force Inactive Flag" to Bubble Doors and Warp Stations
 - Added a new setting to show complete hitboxes for Slopes
 - Updated Celeste.Freeze hook to allow others mods to hook the orig method
 - The Remote Drone can now be destroyed on non-safe platforms
