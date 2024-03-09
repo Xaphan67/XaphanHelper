@@ -18,6 +18,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string activeFlag;
 
+        private string forceInactiveFlag;
+
         private bool swaped;
 
         private Coroutine moveRoutine = new();
@@ -45,6 +47,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             direction = data.Int("direction", -1);
             swapFlag = data.Attr("swapFlag", "");
             activeFlag = data.Attr("activeFlag", "");
+            forceInactiveFlag = data.Attr("forceInactiveFlag");
             directory = data.Attr("directory", "objects/XaphanHelper/Conveyor");
             if (string.IsNullOrEmpty(directory))
             {
@@ -87,7 +90,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (!moveSpritesRoutine.Active && (string.IsNullOrEmpty(activeFlag) || SceneAs<Level>().Session.GetFlag(activeFlag)))
+            if (!moveSpritesRoutine.Active && ((string.IsNullOrEmpty(forceInactiveFlag) || !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) && (string.IsNullOrEmpty(activeFlag) || SceneAs<Level>().Session.GetFlag(activeFlag))))
             {
                 Add(moveSpritesRoutine = new Coroutine(MoveSprites()));
             }
@@ -96,7 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 direction = -direction;
                 swaped = !swaped;
             }
-            if (string.IsNullOrEmpty(activeFlag) || SceneAs<Level>().Session.GetFlag(activeFlag))
+            if ((string.IsNullOrEmpty(forceInactiveFlag) || !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) && (string.IsNullOrEmpty(activeFlag) || SceneAs<Level>().Session.GetFlag(activeFlag)))
             {
                 if (HasPlayerOnTop())
                 {
@@ -121,7 +124,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator MoveSprites()
         {
-            while ((string.IsNullOrEmpty(activeFlag) || SceneAs<Level>().Session.GetFlag(activeFlag)))
+            while ((string.IsNullOrEmpty(forceInactiveFlag) || !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) && (string.IsNullOrEmpty(activeFlag) || SceneAs<Level>().Session.GetFlag(activeFlag)))
             {
                 foreach (Sprite sprite in sprites)
                 {
