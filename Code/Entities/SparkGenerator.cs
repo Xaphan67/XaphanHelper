@@ -33,7 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             while (true && !SceneAs<Level>().InCredits)
             {
-                float offTime = Calc.Random.NextFloat() * 2f + 1f;
+                float offTime = Calc.Random.NextFloat() * 5f + 1f;
                 while (offTime > 0)
                 {
                     offTime -= Engine.DeltaTime;
