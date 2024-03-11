@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using Celeste.Mod.XaphanHelper.Entities;
-using System;
 
 namespace Celeste.Mod.XaphanHelper.Cutscenes
 {
@@ -11,9 +10,27 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         private readonly Player player;
 
         private BigScreen screen;
-        public BigScreenCutscene(Player player)
+
+        private readonly string dialogID;
+
+        private readonly string music;
+
+        private readonly bool registerInSaveData;
+
+        private bool FlagRegisteredInSaveData()
+        {
+            Session session = SceneAs<Level>().Session;
+            string Prefix = session.Area.LevelSet;
+            int chapterIndex = session.Area.ChapterIndex;
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + session.Level + "_" + screen.ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
+        public BigScreenCutscene(Player player, string dialogID, string music, bool registerInSaveData)
         {
             this.player = player;
+            this.dialogID = dialogID;
+            this.music = music;
+            this.registerInSaveData = registerInSaveData;
         }
 
         public override void OnBegin(Level level)
@@ -25,7 +42,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         public override void OnEnd(Level level)
         {
             player.StateMachine.State = 0;
-            level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_mystery");
+            level.Session.Audio.Music.Event = SFX.EventnameByHandle(music);
             level.Session.Audio.Apply(forceSixteenthNoteHack: false);
             level.TimerHidden = false;
             screen.isOn = true;
@@ -36,6 +53,16 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             player.Sprite.OnLastFrame = resumeSprite;
             screen.talk.Enabled = true;
             screen.Depth = 9010;
+            string Prefix = level.Session.Area.LevelSet;
+            int chapterIndex = level.Session.Area.ChapterIndex;
+            level.Session.SetFlag(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID);
+            if (registerInSaveData)
+            {
+                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID))
+                {
+                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID);
+                }
+            }
         }
 
         public IEnumerator Cutscene(Level level)
@@ -48,7 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             player.Sprite.Play(screen.PlayerPose);
             player.Sprite.OnLastFrame = stopSprite;
             yield return level.ZoomTo(new Vector2(160f, 92f), 1.75f, 2f);
-            if (level.Session.Audio.Music.Event != "event:/music/xaphan/lvl_0_mystery")
+            if (level.Session.Audio.Music.Event != music || !screen.showPortrait)
             {
                 float musicFadeStart = 0f;
                 while (musicFadeStart < 1)
@@ -57,7 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     Audio.SetMusicParam("fade", 1f - musicFadeStart);
                     yield return null;
                 }
-                level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_mystery");
+                level.Session.Audio.Music.Event = SFX.EventnameByHandle(music);
                 level.Session.Audio.Apply(forceSixteenthNoteHack: false);
                 Audio.SetMusicParam("fade", 1f);
             }
@@ -74,7 +101,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return 1.2f;
             }
             screen.showPortrait = true;
-            Textbox textBox = new Textbox("Xaphan_Ch5_Lore");
+            Textbox textBox = new Textbox(dialogID);
             textBox.RenderOffset.X += 125f;
             textBox.RenderOffset.Y += 650f;
             Engine.Scene.Add(textBox);

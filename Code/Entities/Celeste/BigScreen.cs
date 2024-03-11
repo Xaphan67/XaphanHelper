@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Data.SqlTypes;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Microsoft.Xna.Framework;
@@ -12,6 +11,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/BigScreen")]
     public class BigScreen : Entity
     {
+        public EntityID ID;
+
         public const int BGDepth = 9010;
 
         public Color BackgroundColor;
@@ -34,14 +35,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private MTexture onLedTexture;
 
+        private string dialogID;
+
+        private string music;
+
+        private string forceInactiveFlag;
+
+        private bool registerInSaveData;
+
         public string PlayerPose = "";
 
-        public BigScreen(EntityData data, Vector2 position) : base(data.Position + position)
+        private bool skipTurnOnAnim;
+
+        public BigScreen(EntityData data, Vector2 position, EntityID eID) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
             Collider = new Hitbox(data.Width, data.Height);
             Depth = 9010;
+            ID = eID;
             onLedTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlicesOn"];
+            dialogID = data.Attr("dialogID");
+            music = data.Attr("music");
+            forceInactiveFlag = data.Attr("forceInactiveFlag");
+            registerInSaveData = data.Bool("registerInSaveData");
             Add(new CustomBloom(RenderBloom));
         }
 
@@ -75,10 +91,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+            int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             Portrait = GFX.Game["objects/Xaphan/BigScreen/Portrait"];
-            Add(talk = new TalkComponent(new Rectangle(28, 80, 24, 16), new Vector2(40f, 64f), Interact));
-            talk.PlayerMustBeFacing = false;
-            Add(new Coroutine(NoiseRoutine()));
+            if (string.IsNullOrEmpty(forceInactiveFlag) || !SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
+            {
+                Add(talk = new TalkComponent(new Rectangle(28, 80, 24, 16), new Vector2(40f, 64f), Interact));
+                talk.PlayerMustBeFacing = false;
+                showPortrait = isOn = SceneAs<Level>().Session.GetFlag(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID);
+                if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID))
+                {
+                    showPortrait = true;
+                    isOn = true;
+                }
+                if (isOn)
+                {
+                    skipTurnOnAnim = true;
+                }
+                Add(new Coroutine(NoiseRoutine()));
+            }
         }
 
         public override void Awake(Scene scene)
@@ -110,7 +141,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void Interact(Player player)
         {
             talk.Enabled = false;
-            Scene.Add(new BigScreenCutscene(player));
+            Scene.Add(new BigScreenCutscene(player, dialogID, music, registerInSaveData));
         }
 
         private void AutoTile(int x, int y)
@@ -233,7 +264,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         justTurnedOn = true;
                     }
-                    if (justTurnedOn && !vasJustTurnedOn)
+                    if (justTurnedOn && !vasJustTurnedOn && !skipTurnOnAnim)
                     {
                         noiseAlpha = 0.8f;
                         yield return 1.2f;
