@@ -148,7 +148,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             if (SceneAs<Level>().Transitioning && wasTriggered)
             {
-                Logger.Log(LogLevel.Info, "XH", "Test");
                 flagState = SceneAs<Level>().Session.GetFlag(flag);
                 string Prefix = SceneAs<Level>().Session.Area.LevelSet;
                 int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
