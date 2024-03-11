@@ -5,7 +5,7 @@ using Monocle;
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
     [Tracked(true)]
-    class AchievementsScreen : Entity
+    class LorebookScreen : Entity
     {
         protected static XaphanModuleSettings XaphanSettings => XaphanModule.ModSettings;
 
@@ -13,7 +13,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Level level;
 
-        private AchievementsDisplay achievementsDisplay;
+        private LorebookDisplay lorebookDisplay;
 
         public string Title;
 
@@ -41,11 +41,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private bool locked;
 
-        public AchievementsScreen(Level level)
+        public LorebookScreen(Level level)
         {
             this.level = level;
             Tag = Tags.HUD;
-            Title = Dialog.Clean("XaphanHelper_UI_achievements");
+            Title = Dialog.Clean("XaphanHelper_UI_lorebook");
             Add(menuWiggle = Wiggler.Create(0.4f, 4f));
             Add(closeWiggle = Wiggler.Create(0.4f, 4f));
             categorySelection = 0;
@@ -59,7 +59,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Level level = Scene as Level;
             level.PauseLock = true;
             level.Session.SetFlag("Map_Opened", true);
-            Add(new Coroutine(TransitionToAchievements(level)));
+            Add(new Coroutine(TransitionToLorebook(level)));
         }
 
         public override void Update()
@@ -71,7 +71,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     player.StateMachine.State = Player.StDummy;
                     player.DummyAutoAnimate = false;
                 }
-                foreach (AchievementsDisplay.CategoryDisplay categoryDisplay in level.Tracker.GetEntities<AchievementsDisplay.CategoryDisplay>())
+                foreach (LorebookDisplay.CategoryDisplay categoryDisplay in level.Tracker.GetEntities<LorebookDisplay.CategoryDisplay>())
                 {
                     if (categoryDisplay.Selected)
                     {
@@ -98,7 +98,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Update();
         }
 
-        private IEnumerator TransitionToAchievements(Level level)
+        private IEnumerator TransitionToLorebook(Level level)
         {
             float duration = 0.5f;
             CountdownDisplay timerDisplay = SceneAs<Level>().Tracker.GetEntity<CountdownDisplay>();
@@ -112,7 +112,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 Duration = duration
             };
-            Add(new Coroutine(AchievementsRoutine(level)));
+            Add(new Coroutine(LorebookRoutine(level)));
             switchTimer = 0.35f;
             while (switchTimer > 0f)
             {
@@ -139,7 +139,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     yield return null;
                     duration -= Engine.DeltaTime;
                 }
-                Add(new Coroutine(CloseAchievements(true)));
+                Add(new Coroutine(CloseLorebook(true)));
                 level.Add(new StatusScreen(level, true));
             }
         }
@@ -162,12 +162,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     yield return null;
                     duration -= Engine.DeltaTime;
                 }
-                Add(new Coroutine(CloseAchievements(true)));
+                Add(new Coroutine(CloseLorebook(true)));
                 level.Add(new MapScreen(level, true));
             }
         }
 
-        private IEnumerator TransitionToLorebookScreen()
+        private IEnumerator TransitionToAchievementsScreen()
         {
             if (!NoInput)
             {
@@ -185,8 +185,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     yield return null;
                     duration -= Engine.DeltaTime;
                 }
-                Add(new Coroutine(CloseAchievements(true)));
-                level.Add(new LorebookScreen(level));
+                Add(new Coroutine(CloseLorebook(true)));
+                level.Add(new AchievementsScreen(level));
             }
         }
 
@@ -224,15 +224,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 Duration = duration
             };
-            Add(new Coroutine(CloseAchievements(false)));
+            Add(new Coroutine(CloseLorebook(false)));
         }
 
-        private IEnumerator AchievementsRoutine(Level level)
+        private IEnumerator LorebookRoutine(Level level)
         {
             Player player = Scene.Tracker.GetEntity<Player>();
             Scene.Add(BigTitle = new BigTitle(Title, new Vector2(960, 80), true));
-            Scene.Add(achievementsDisplay = new AchievementsDisplay(level));
-            yield return achievementsDisplay.GennerateAchievementsDisplay();
+            Scene.Add(lorebookDisplay = new LorebookDisplay(level));
+            yield return lorebookDisplay.GenerateLorebookDisplay();
             while (switchTimer > 0)
             {
                 yield return null;
@@ -275,9 +275,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 Add(new Coroutine(TransitionToMapScreen()));
                             }
-                            else if (prompt.Selection == 3)
+                            else if (prompt.Selection == 2)
                             {
-                                Add(new Coroutine(TransitionToLorebookScreen()));
+                                Add(new Coroutine(TransitionToAchievementsScreen()));
                             }
                             prompt.ClosePrompt();
                         }
@@ -285,7 +285,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else
                 {
-                    if (!locked)
+                    /*if (!locked)
                     {
                         if (achievementSelection == -1 && Input.MenuRight.Pressed)
                         {
@@ -300,23 +300,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             previousCategorySelection = -1;
                             achievementsDisplay.GenerateAchievementsList(categorySelection);
                         }
-                    }
+                    }*/
                     if (categorySelection != -1)
                     {
-                        if (Input.MenuUp.Pressed && categorySelection > 0)
+                        if (Input.MenuLeft.Pressed && categorySelection > 0)
                         {
                             categorySelection--;
-                            achievementsDisplay.GenerateAchievementsList(categorySelection);
+                            // achievementsDisplay.GenerateAchievementsList(categorySelection);
                             Audio.Play("event:/ui/main/rollover_up");
                         }
-                        if (Input.MenuDown.Pressed && categorySelection < 5)
+                        if (Input.MenuRight.Pressed && categorySelection < 3)
                         {
                             categorySelection++;
-                            achievementsDisplay.GenerateAchievementsList(categorySelection);
+                            // achievementsDisplay.GenerateAchievementsList(categorySelection);
                             Audio.Play("event:/ui/main/rollover_down");
                         }
                     }
-                    if (achievementSelection != -1)
+                    /*if (achievementSelection != -1)
                     {
                         if (Input.MenuUp.Pressed && achievementSelection > 0)
                         {
@@ -342,13 +342,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             }
                             Audio.Play("event:/ui/main/rollover_down");
                         }
-                    }
+                    }*/
                 }
                 if (Input.Pause.Check && switchTimer <= 0)
                 {
                     if (prompt == null)
                     {
-                        Scene.Add(prompt = new SwitchUIPrompt(Vector2.Zero, 2));
+                        Scene.Add(prompt = new SwitchUIPrompt(Vector2.Zero, 3));
                     }
                 }
                 yield return null;
@@ -357,12 +357,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Add(new Coroutine(TransitionToGame()));
         }
 
-        private IEnumerator CloseAchievements(bool switchtoMap)
+        private IEnumerator CloseLorebook(bool switchtoMap)
         {
             Level level = Scene as Level;
             Player player = Scene.Tracker.GetEntity<Player>();
             level.Remove(BigTitle);
-            level.Remove(achievementsDisplay);
+            level.Remove(lorebookDisplay);
             level.Remove(prompt);
             if (!switchtoMap)
             {

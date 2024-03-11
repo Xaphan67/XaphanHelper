@@ -230,6 +230,29 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        private IEnumerator TransitionToLorebookScreen()
+        {
+            if (!NoInput)
+            {
+                NoInput = true;
+                Player player = Scene.Tracker.GetEntity<Player>();
+                float duration = 0.5f;
+                FadeWipe Wipe = new(SceneAs<Level>(), false)
+                {
+                    Duration = duration
+                };
+                SceneAs<Level>().Add(Wipe);
+                duration = duration - 0.25f;
+                while (duration > 0f)
+                {
+                    yield return null;
+                    duration -= Engine.DeltaTime;
+                }
+                Add(new Coroutine(CloseStatus(true)));
+                level.Add(new LorebookScreen(level));
+            }
+        }
+
         private IEnumerator StatusRoutine(Level level)
         {
             Player player = Scene.Tracker.GetEntity<Player>();
@@ -297,7 +320,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 prompt.Selection--;
                             }
                         }
-                        if (Input.MenuRight.Pressed && prompt.Selection < 2)
+                        if (Input.MenuRight.Pressed && prompt.Selection < prompt.maxSelection)
                         {
                             prompt.Selection++;
                             if ((!XaphanModule.useIngameMap || !XaphanModule.CanOpenMap(level)) && prompt.Selection == 1)
@@ -315,6 +338,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             else if (prompt.Selection == 2)
                             {
                                 Add(new Coroutine(TransitionToAchievementsScreen()));
+                            }
+                            else if (prompt.Selection == 3)
+                            {
+                                Add(new Coroutine(TransitionToLorebookScreen()));
                             }
                             prompt.ClosePrompt();
                         }

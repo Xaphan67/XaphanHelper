@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -25,9 +26,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private int alphaStatus = 0;
 
-            SwitchUIPrompt promp;
+            SwitchUIPrompt prompt;
 
-            public ScreenSelect(Vector2 position, int id, SwitchUIPrompt promp) : base(position - new Vector2(125f, 75f))
+            public ScreenSelect(Vector2 position, int id, SwitchUIPrompt prompt) : base(position - new Vector2(125f, 75f))
             {
                 Tag = Tags.HUD;
                 ID = id;
@@ -46,14 +47,19 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     texture = GFX.Gui["common/achievementsScreen"];
                     text = Dialog.Clean("XaphanHelper_UI_achievements");
                 }
-                this.promp = promp;
-                Depth = promp.Depth;
+                else if (ID == 3)
+                {
+                    texture = GFX.Gui["common/lorebookScreen"];
+                    text = Dialog.Clean("XaphanHelper_UI_lorebook");
+                }
+                this.prompt = prompt;
+                Depth = prompt.Depth;
             }
 
             public override void Update()
             {
                 base.Update();
-                if (promp.Selection == ID)
+                if (prompt.Selection == ID)
                 {
                     Selected = true;
                     if (alphaStatus == 0 || (alphaStatus == 1 && selectedAlpha != 0.9f))
@@ -83,7 +89,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             public override void Render()
             {
                 base.Render();
-                if (promp.drawContent)
+                if (prompt.drawContent)
                 {
                     if (Selected)
                     {
@@ -97,9 +103,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float height;
 
+        private float width;
+
         public bool drawContent;
 
         public bool open;
+
+        public int maxSelection;
 
         public int Selection = -1;
 
@@ -113,6 +123,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             Tag = (Tags.HUD | Tags.Persistent);
             Depth = -10003;
+            maxSelection = XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? 3 : 2;
+            width = (maxSelection + 1) * 250 + 50;
             Selection = selection;
         }
 
@@ -125,9 +137,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Removed(Scene scene)
         {
             base.Removed(scene);
-            foreach (ScreenSelect secrenSelect in ScreenSelects)
+            foreach (ScreenSelect screenSelect in ScreenSelects)
             {
-                secrenSelect.RemoveSelf();
+                screenSelect.RemoveSelf();
             }
         }
 
@@ -153,7 +165,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             if (XaphanModule.useIngameMap && XaphanModule.CanOpenMap(SceneAs<Level>()))
             {
-                for (int i = 0; i <= 2; i++)
+                for (int i = 0; i <= maxSelection; i++)
                 {
                     ScreenSelect select = new(PromptPos + new Vector2(150f + 250f * i, 101f), i, this);
                     ScreenSelects.Add(select);
@@ -162,7 +174,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             else
             {
-                for (int i = 0; i <= 1; i++)
+                for (int i = 0; i <= maxSelection - 1; i++)
                 {
                     ScreenSelect select = new(PromptPos + new Vector2(275f + 250f * i, 101f), i == 0 ? 0 : i + 1, this);
                     ScreenSelects.Add(select);
@@ -191,17 +203,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Update()
         {
             base.Update();
-            PromptPos = new Vector2(Engine.Width / 2 - 400, (Engine.Height / 2 - 39) + 200 / 2 - height / 2);
-
+            PromptPos = new Vector2(Engine.Width / 2 - width / 2, (Engine.Height / 2 - 39) + 200 / 2 - height / 2);
         }
 
         public override void Render()
         {
-            Draw.Rect(PromptPos.X, PromptPos.Y, 800, height, Color.Black);
-            Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5, 810, 10, Color.White);
+            Draw.Rect(PromptPos.X, PromptPos.Y, width, height, Color.Black);
+            Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5, width + 10, 10, Color.White);
             Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5, 10, height + 10, Color.White);
-            Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5 + height, 810, 10, Color.White);
-            Draw.Rect(PromptPos.X - 5 + 800, PromptPos.Y - 5, 10, height + 10, Color.White);
+            Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5 + height, width + 10, 10, Color.White);
+            Draw.Rect(PromptPos.X - 5 + width, PromptPos.Y - 5, 10, height + 10, Color.White);
         }
     }
 }

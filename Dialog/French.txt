@@ -276,6 +276,14 @@
 	XaphanHelper_UI_back= Retour
 	Xaphanhelper_UI_Stamina= ENDURANCE
 	Xaphanhelper_UI_Ammo= MUNITIONS
+	XaphanHelper_UI_lorebook= Journal
+	XaphanHelper_UI_Locations= Localisations
+	XaphanHelper_UI_Equipement= Equipement
+	XaphanHelper_UI_Bestiary= Bestiaire
+	XaphanHelper_UI_Adventure= Aventure
+	XaphanHelper_UI_Discovered= Découvert
+	XaphanHelper_UI_Logs= JOURNAUX
+	XaphanHelper_UI_Informations= INFORMATIONS
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= SOUHAITEZ-VOUS SAUVEGARDER ?

@@ -276,6 +276,14 @@
 	XaphanHelper_UI_back= Back
 	Xaphanhelper_UI_Stamina= STAMINA
 	Xaphanhelper_UI_Ammo= AMMO
+	XaphanHelper_UI_lorebook= Lorebook
+	XaphanHelper_UI_Locations= Locations
+	XaphanHelper_UI_Equipement= Equipement
+	XaphanHelper_UI_Bestiary= Bestiary
+	XaphanHelper_UI_Adventure= Adventure
+	XaphanHelper_UI_Discovered= Discovered
+	XaphanHelper_UI_Logs= LOGS
+	XaphanHelper_UI_Informations= INFORMATIONS
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= WOULD YOU LIKE TO SAVE ?

@@ -354,15 +354,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Scene.Add(medalDisplay = new MedalsDisplay(level, new Vector2(155f, 245f), AchievementsData));
             Scene.Add(new CategoryDisplay(level, new Vector2(155f, 470f), 0, "XaphanHelper_UI_General", AchievementsData.FindAll(achievement => achievement.CategoryID == 0)));
             bool visitedChapter = XaphanModule.ModSaveData.VisitedChapters.Contains("Xaphan/0_Ch1_0");
-            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 555f), 1, visitedChapter ? "Xaphan_0_1_AncientRuins" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 1), visitedChapter ? false : true));
+            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 555f), 1, visitedChapter ? "Xaphan_0_1_AncientRuins" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 1), !visitedChapter));
             visitedChapter = XaphanModule.ModSaveData.VisitedChapters.Contains("Xaphan/0_Ch2_0");
-            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 640f), 2, visitedChapter ? "Xaphan_0_2_ForgottenAbyss" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 2), visitedChapter ? false : true));
+            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 640f), 2, visitedChapter ? "Xaphan_0_2_ForgottenAbyss" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 2), !visitedChapter));
             visitedChapter = XaphanModule.ModSaveData.VisitedChapters.Contains("Xaphan/0_Ch3_0");
-            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 725f), 3, visitedChapter ? "Xaphan_0_3_ExoticUndergrowdth" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 3), visitedChapter ? false : true));
+            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 725f), 3, visitedChapter ? "Xaphan_0_3_ExoticUndergrowdth" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 3), !visitedChapter));
             visitedChapter = XaphanModule.ModSaveData.VisitedChapters.Contains("Xaphan/0_Ch4_0");
-            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 810f), 4, visitedChapter ? "Xaphan_0_4_BlazingGorge" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 4), visitedChapter ? false : true));
+            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 810f), 4, visitedChapter ? "Xaphan_0_4_BlazingGorge" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 4), !visitedChapter));
             visitedChapter = XaphanModule.ModSaveData.VisitedChapters.Contains("Xaphan/0_Ch5_0");
-            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 895f), 5, visitedChapter ? "Xaphan_0_5_SubterraneanTerminal" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 5), visitedChapter ? false : true));
+            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 895f), 5, visitedChapter ? "Xaphan_0_5_SubterraneanTerminal" : "???", AchievementsData.FindAll(achievement => achievement.CategoryID == 5), !visitedChapter));
 
             GenerateAchievementsList(0);
 
