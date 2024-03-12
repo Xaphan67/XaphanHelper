@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
@@ -35,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private int alphaStatus = 0;
 
-            public CategoryDisplay(Level level, Vector2 position, int id, string name, bool noDialog = false) : base(position)
+            public CategoryDisplay(Level level, Vector2 position, int id, string name, List<LorebookData> data, bool noDialog = false) : base(position)
             {
                 Tag = Tags.HUD;
                 LorebookScreen = level.Tracker.GetEntity<LorebookScreen>();
@@ -44,19 +46,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 int discoveredLogs = 0;
                 int totalLogs = 0;
-                /*foreach (AchievementData achievement in data)
+                foreach (LorebookData entry in data)
                 {
-                    if (level.Session.GetFlag(achievement.Flag))
+                    if (level.Session.GetFlag("LorebookEntry_" + entry.EntryID))
                     {
-                        completedAchievements++;
+                        discoveredLogs++;
                     }
-                    if (achievement.Hidden && achievement.CurrentValue == 0)
-                    {
-                        hiddenAchievements++;
-                        totalAchievements--;
-                    }
-                    totalAchievements++;
-                }*/
+                    totalLogs++;
+                }
                 Discovered = $"{discoveredLogs} / {totalLogs} {Dialog.Clean("XaphanHelper_UI_Discovered")}";
                 AllLogs = discoveredLogs == totalLogs;
                 Locked = Name == "???";
@@ -122,7 +119,102 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        [Tracked(true)]
+        public class EntryDisplay : Entity
+        {
+            public int ID;
+
+            public float width = 550f;
+
+            public float height = 50f;
+
+            public bool Locked;
+
+            private string Name;
+
+            private Sprite Sprite;
+
+            private LorebookScreen LorebookScreen;
+
+            public bool Selected;
+
+            private float selectedAlpha = 0;
+
+            private int alphaStatus = 0;
+
+            private float scale = 0.85f;
+
+            public float paddingH;
+
+            public int side;
+
+            public EntryDisplay(Level level, Vector2 position, int id, string name, bool noDialog = false) : base(position)
+            {
+                Tag = Tags.HUD;
+                this.paddingH = paddingH;
+                ID = id;
+                Name = noDialog ? name : Dialog.Clean(name);
+                Sprite = new Sprite(GFX.Gui, "lorebook/");
+                Sprite.AddLoop("new", "new", 0.05f);
+                Sprite.Play("new");
+                Sprite.Position = position + Vector2.UnitX * 12f;
+                LorebookScreen = level.Tracker.GetEntity<LorebookScreen>();
+                Locked = Name == "???";
+                Depth = -10001;
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                if (LorebookScreen.entrySelection == ID)
+                {
+                    Selected = true;
+                    if (alphaStatus == 0 || (alphaStatus == 1 && selectedAlpha != 0.9f))
+                    {
+                        alphaStatus = 1;
+                        selectedAlpha = Calc.Approach(selectedAlpha, 0.9f, Engine.DeltaTime);
+                        if (selectedAlpha == 0.9f)
+                        {
+                            alphaStatus = 2;
+                        }
+                    }
+                    if (alphaStatus == 2 && selectedAlpha != 0.1f)
+                    {
+                        selectedAlpha = Calc.Approach(selectedAlpha, 0.1f, Engine.DeltaTime);
+                        if (selectedAlpha == 0.1f)
+                        {
+                            alphaStatus = 1;
+                        }
+                    }
+                }
+                else
+                {
+                    Selected = false;
+                }
+            }
+
+            public override void Render()
+            {
+                base.Render();
+                float lenght = ActiveFont.Measure(Name).X * scale;
+                bool smallText = false;
+                if (lenght > 500f)
+                {
+                    lenght = ActiveFont.Measure(Name).X * (scale - 0.1f);
+                    smallText = true;
+                }
+                if (Selected)
+                {
+                    Draw.Rect(Position, width, height, Color.Yellow * selectedAlpha);
+                }
+                Sprite.Render();
+                ActiveFont.DrawOutline(Name, Position + new Vector2(60 + lenght / 2 - 10, height / 2), new Vector2(0.5f, 0.5f), Vector2.One * (smallText ? 0.75f : scale), Locked ? Color.Gray : Color.White, 2f, Color.Black);
+            }
+        }
+
         Level level;
+
+        public List<LorebookData> LorebookEntriesData;
 
         public LorebookDisplay(Level level)
         {
@@ -131,13 +223,62 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Depth = -10001;
         }
 
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            LorebookEntriesData = LorebookEntries.GenerateLorebookEntriesDataList(level.Session);
+        }
+
         public IEnumerator GenerateLorebookDisplay()
         {
-            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 245f), 0, "XaphanHelper_UI_Locations"));
-            Scene.Add(new CategoryDisplay(level, new Vector2(557f, 245f), 1, "XaphanHelper_UI_Equipement"));
-            Scene.Add(new CategoryDisplay(level, new Vector2(960f, 245f), 2, "XaphanHelper_UI_Bestiary"));
-            Scene.Add(new CategoryDisplay(level, new Vector2(1362f, 245f), 3, "XaphanHelper_UI_Adventure"));
+            Scene.Add(new CategoryDisplay(level, new Vector2(155f, 245f), 0, "XaphanHelper_UI_Locations", LorebookEntriesData.FindAll(entry => entry.CategoryID == 0)));
+            Scene.Add(new CategoryDisplay(level, new Vector2(557f, 245f), 1, "XaphanHelper_UI_Equipement", LorebookEntriesData.FindAll(entry => entry.CategoryID == 1)));
+            Scene.Add(new CategoryDisplay(level, new Vector2(960f, 245f), 2, "XaphanHelper_UI_Bestiary", LorebookEntriesData.FindAll(entry => entry.CategoryID == 2)));
+            Scene.Add(new CategoryDisplay(level, new Vector2(1362f, 245f), 3, "XaphanHelper_UI_Adventure", LorebookEntriesData.FindAll(entry => entry.CategoryID == 3)));
+
+            GenerateEntryList(0);
+
             yield return null;
+        }
+
+        public void GenerateEntryList(int categoryID)
+        {
+            /*if (lockedDisplay != null)
+            {
+                lockedDisplay.RemoveSelf();
+                lockedDisplay = null;
+            }*/
+            foreach (EntryDisplay display in level.Tracker.GetEntities<EntryDisplay>())
+            {
+                display.RemoveSelf();
+            }
+            int YPos = 0;
+            int ID = 0;
+            bool locked = false;
+            foreach (CategoryDisplay categoryDisplay in level.Tracker.GetEntities<CategoryDisplay>())
+            {
+                if (categoryDisplay.ID == categoryID)
+                {
+                    locked = categoryDisplay.Locked;
+                }
+            }
+            if (!locked)
+            {
+                foreach (LorebookData entry in LorebookEntriesData)
+                {
+                    if (entry.CategoryID == categoryID)
+                    {
+                        bool unlocked = SceneAs<Level>().Session.GetFlag("LorebookEntry_" + entry.EntryID);
+                        Scene.Add(new EntryDisplay(level, new Vector2(155f, 481f + YPos), ID, unlocked ? entry.Name : "???", !unlocked));
+                        YPos += 50;
+                        ID++;
+                    }
+                }
+            }
+            /*else
+            {
+                Scene.Add(lockedDisplay = new LockedDisplay(level, new Vector2(755f, 245f)));
+            }*/
         }
 
         public override void Removed(Scene scene)
@@ -147,12 +288,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 display.RemoveSelf();
             }
-            /*foreach (AchievementDisplay display in level.Tracker.GetEntities<AchievementDisplay>())
+            foreach (EntryDisplay display in level.Tracker.GetEntities<EntryDisplay>())
             {
                 display.RemoveSelf();
             }
-            medalDisplay.RemoveSelf();
-            if (lockedDisplay != null)
+            /*if (lockedDisplay != null)
             {
                 lockedDisplay.RemoveSelf();
             }*/

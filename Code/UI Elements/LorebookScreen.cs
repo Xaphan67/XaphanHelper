@@ -37,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int previousCategorySelection = -1;
 
-        public int achievementSelection = -1;
+        public int entrySelection = -1;
 
         private bool locked;
 
@@ -285,34 +285,34 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else
                 {
-                    /*if (!locked)
+                    if (!locked)
                     {
-                        if (achievementSelection == -1 && Input.MenuRight.Pressed)
+                        if (entrySelection == -1 && Input.MenuDown.Pressed)
                         {
                             previousCategorySelection = categorySelection;
                             categorySelection = -1;
-                            achievementSelection = 0;
+                            entrySelection = 0;
                         }
-                        else if (categorySelection == -1 && Input.MenuLeft.Pressed)
+                        else if (categorySelection == -1 && entrySelection == 0 && Input.MenuUp.Pressed)
                         {
-                            achievementSelection = -1;
+                            entrySelection = -1;
                             categorySelection = previousCategorySelection;
                             previousCategorySelection = -1;
-                            achievementsDisplay.GenerateAchievementsList(categorySelection);
+                            lorebookDisplay.GenerateEntryList(categorySelection);
                         }
-                    }*/
+                    }
                     if (categorySelection != -1)
                     {
                         if (Input.MenuLeft.Pressed && categorySelection > 0)
                         {
                             categorySelection--;
-                            // achievementsDisplay.GenerateAchievementsList(categorySelection);
+                            lorebookDisplay.GenerateEntryList(categorySelection);
                             Audio.Play("event:/ui/main/rollover_up");
                         }
                         if (Input.MenuRight.Pressed && categorySelection < 3)
                         {
                             categorySelection++;
-                            // achievementsDisplay.GenerateAchievementsList(categorySelection);
+                            lorebookDisplay.GenerateEntryList(categorySelection);
                             Audio.Play("event:/ui/main/rollover_down");
                         }
                     }
