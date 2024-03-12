@@ -301,20 +301,34 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             lorebookDisplay.GenerateEntryList(categorySelection);
                         }
                     }
-                    if (categorySelection != -1)
+                    if (Input.MenuLeft.Pressed && categorySelection > 0)
                     {
-                        if (Input.MenuLeft.Pressed && categorySelection > 0)
+                        if (previousCategorySelection != -1)
+                        {
+                            categorySelection = previousCategorySelection - 1;
+                            previousCategorySelection = -1;
+                        } else
                         {
                             categorySelection--;
-                            lorebookDisplay.GenerateEntryList(categorySelection);
-                            Audio.Play("event:/ui/main/rollover_up");
                         }
-                        if (Input.MenuRight.Pressed && categorySelection < 3)
+                        entrySelection = -1;
+                        lorebookDisplay.GenerateEntryList(categorySelection);
+                        Audio.Play("event:/ui/main/rollover_up");
+                    }
+                    if (Input.MenuRight.Pressed && categorySelection < 3)
+                    {
+                        if (previousCategorySelection != -1)
+                        {
+                            categorySelection = previousCategorySelection + 1;
+                            previousCategorySelection = -1;
+                        }
+                        else
                         {
                             categorySelection++;
-                            lorebookDisplay.GenerateEntryList(categorySelection);
-                            Audio.Play("event:/ui/main/rollover_down");
                         }
+                        entrySelection = -1;
+                        lorebookDisplay.GenerateEntryList(categorySelection);
+                        Audio.Play("event:/ui/main/rollover_down");
                     }
                     /*if (achievementSelection != -1)
                     {
