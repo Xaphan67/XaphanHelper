@@ -279,8 +279,8 @@
 	XaphanHelper_UI_lorebook= Journal
 	XaphanHelper_UI_Locations= Localisations
 	XaphanHelper_UI_Locations_Desc= Informations sur les lieux visités
-	XaphanHelper_UI_Equipement= Equipement
-	XaphanHelper_UI_Equipement_Desc= Informations sur l'équipement obtenu
+	XaphanHelper_UI_Equipment= Equipement
+	XaphanHelper_UI_Equipment_Desc= Informations sur l'équipement obtenu
 	XaphanHelper_UI_Bestiary= Bestiaire
 	XaphanHelper_UI_Bestiary_Desc= Informations sur les créatures rencontrées
 	XaphanHelper_UI_Adventure= Aventure
@@ -288,7 +288,8 @@
 	XaphanHelper_UI_Discovered= Découvert
 	XaphanHelper_UI_Entries= ENTREES
 	XaphanHelper_UI_Informations= INFORMATIONS
-	XaphanHelper_UI_LorebookEntry_Locked= Vous n'avez pas encore trouvé cette entrée
+	XaphanHelper_UI_LorebookEntry_Locked= Vous n'avez pas encore découvert cette entrée
+	XaphanHelper_UI_LorebookNewEntry= Nouvelle entrée !
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= SOUHAITEZ-VOUS SAUVEGARDER ?

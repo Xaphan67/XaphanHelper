@@ -215,11 +215,15 @@ namespace Celeste.Mod.XaphanHelper
 
         public HashSet<string> Checkpoints = new();
 
-        // Achievements
+        // Achievements and Lorebook
 
-        public bool CanDisplayAchievementsPopups = false;
+        public bool CanDisplayPopups = false;
 
         public HashSet<string> Achievements = new();
+
+        public HashSet<string> LorebookEntries = new();
+
+        public HashSet<string> LorebookEntriesRead = new();
 
         // Drone
 

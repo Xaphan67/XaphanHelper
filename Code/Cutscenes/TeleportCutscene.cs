@@ -430,7 +430,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 Leader.RestoreStrawberries(level.Tracker.GetEntity<Player>().Leader);
                 XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_teleporting");
                 level.Tracker.GetEntity<Player>().StateMachine.State = Player.StNormal;
-                XaphanModule.ModSaveData.CanDisplayAchievementsPopups = true;
+                XaphanModule.ModSaveData.CanDisplayPopups = true;
             };
         }
 

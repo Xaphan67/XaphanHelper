@@ -2753,7 +2753,7 @@ namespace Celeste.Mod.XaphanHelper
             SkipSoCMIntro = false;
             minimapEnabled = false;
             TriggeredCountDown = false;
-            ModSaveData.CanDisplayAchievementsPopups = false;
+            ModSaveData.CanDisplayPopups = false;
             if ((!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerMode != "Rooms")) && mode != LevelExit.Mode.SaveAndQuit)
             {
                 ModSaveData.startAsDrone.Remove(level.Session.Area.LevelSet);
@@ -3180,13 +3180,13 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
 
-            // Add the Achievements Popup UI if current chapter is SoCM
+            // Add the Popup UI if current chapter is SoCM
 
-            if (self.Session.Area.LevelSet == "Xaphan/0" && ModSaveData.CanDisplayAchievementsPopups)
+            if (self.Session.Area.LevelSet == "Xaphan/0" && ModSaveData.CanDisplayPopups)
             {
-                if (self.Tracker.CountEntities<AchievementPopup>() == 0)
+                if (self.Tracker.CountEntities<Popup>() == 0)
                 {
-                    self.Add(new AchievementPopup());
+                    self.Add(new Popup());
                 }
             }
 
@@ -3280,7 +3280,7 @@ namespace Celeste.Mod.XaphanHelper
                             || loadAtStartOfCampaign)
                         {
                             ModSaveData.LoadedPlayer = true;
-                            ModSaveData.CanDisplayAchievementsPopups = true;
+                            ModSaveData.CanDisplayPopups = true;
 
                             // SoCM Only
 

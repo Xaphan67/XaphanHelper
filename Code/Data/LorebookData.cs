@@ -12,7 +12,9 @@
 
         public string Picture;
 
-        public LorebookData(string entryID, int categoryID, string picture)
+        public string Flag;
+
+        public LorebookData(string entryID, int categoryID, string picture, string flag)
         {
             EntryID = entryID;
             CategoryID = categoryID;
@@ -27,6 +29,7 @@
             Name = "LorebookEntry_" + convertedID + "_Name";
             Text = "LorebookEntry_" + convertedID + "_Text";
             Picture = picture;
+            Flag = flag;
         }
     }
 }

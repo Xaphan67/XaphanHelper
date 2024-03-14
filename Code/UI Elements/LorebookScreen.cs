@@ -39,8 +39,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int entrySelection = -1;
 
-        private bool locked;
-
         public LorebookScreen(Level level)
         {
             this.level = level;
@@ -70,14 +68,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     player.StateMachine.State = Player.StDummy;
                     player.DummyAutoAnimate = false;
-                }
-                foreach (LorebookDisplay.CategoryDisplay categoryDisplay in level.Tracker.GetEntities<LorebookDisplay.CategoryDisplay>())
-                {
-                    if (categoryDisplay.Selected)
-                    {
-                        locked = categoryDisplay.Locked;
-                        break;
-                    }
                 }
             }
             if (prompt == null)
@@ -227,6 +217,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Add(new Coroutine(CloseLorebook(false)));
         }
 
+        bool switchedToEntries;
+
         private IEnumerator LorebookRoutine(Level level)
         {
             Player player = Scene.Tracker.GetEntity<Player>();
@@ -285,23 +277,21 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else
                 {
-                    if (!locked)
+                    if (entrySelection == -1 && Input.MenuDown.Pressed)
                     {
-                        if (entrySelection == -1 && Input.MenuDown.Pressed)
-                        {
-                            previousCategorySelection = categorySelection;
-                            categorySelection = -1;
-                            entrySelection = 0;
-                        }
-                        else if (categorySelection == -1 && entrySelection == 0 && Input.MenuUp.Pressed)
-                        {
-                            entrySelection = -1;
-                            categorySelection = previousCategorySelection;
-                            previousCategorySelection = -1;
-                            lorebookDisplay.GenerateEntryList(categorySelection);
-                        }
+                        previousCategorySelection = categorySelection;
+                        categorySelection = -1;
+                        entrySelection = 0;
+                        switchedToEntries = true;
                     }
-                    if (Input.MenuLeft.Pressed && categorySelection > 0)
+                    else if (categorySelection == -1 && entrySelection == 0 && Input.MenuUp.Pressed)
+                    {
+                        entrySelection = -1;
+                        categorySelection = previousCategorySelection;
+                        previousCategorySelection = -1;
+                        lorebookDisplay.GenerateEntryList(categorySelection);
+                    }
+                    if (Input.MenuLeft.Pressed && (categorySelection > 0 || previousCategorySelection > 0))
                     {
                         if (previousCategorySelection != -1)
                         {
@@ -315,7 +305,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         lorebookDisplay.GenerateEntryList(categorySelection);
                         Audio.Play("event:/ui/main/rollover_up");
                     }
-                    if (Input.MenuRight.Pressed && categorySelection < 3)
+                    if (Input.MenuRight.Pressed && ((categorySelection >= 0 && categorySelection < 3) || (previousCategorySelection >= 0 && previousCategorySelection <= 2)))
                     {
                         if (previousCategorySelection != -1)
                         {
@@ -330,33 +320,34 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         lorebookDisplay.GenerateEntryList(categorySelection);
                         Audio.Play("event:/ui/main/rollover_down");
                     }
-                    /*if (achievementSelection != -1)
+                    if (entrySelection != -1 && !switchedToEntries)
                     {
-                        if (Input.MenuUp.Pressed && achievementSelection > 0)
+                        if (Input.MenuUp.Pressed && entrySelection > 0)
                         {
-                            achievementSelection--;
-                            if (achievementSelection <= SceneAs<Level>().Tracker.GetEntities<AchievementsDisplay.AchievementDisplay>().Count - 4 && achievementSelection >= 2)
+                            entrySelection--;
+                            if (entrySelection <= SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>().Count - 6 && entrySelection >= 5)
                             {
-                                foreach (AchievementsDisplay.AchievementDisplay display in SceneAs<Level>().Tracker.GetEntities<AchievementsDisplay.AchievementDisplay>())
+                                foreach (LorebookDisplay.EntryDisplay display in SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>())
                                 {
                                     display.Position.Y += display.height;
                                 }
                             }
                             Audio.Play("event:/ui/main/rollover_up");
                         }
-                        if (Input.MenuDown.Pressed && achievementSelection < SceneAs<Level>().Tracker.GetEntities<AchievementsDisplay.AchievementDisplay>().Count - 1)
+                        if (Input.MenuDown.Pressed && entrySelection < SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>().Count - 1)
                         {
-                            achievementSelection++;
-                            if (achievementSelection >= 3 && SceneAs<Level>().Tracker.GetEntities<AchievementsDisplay.AchievementDisplay>().Count - 1 >= achievementSelection + 2)
+                            entrySelection++;
+                            if (entrySelection >= 6 && SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>().Count - 1 >= entrySelection + 4)
                             {
-                                foreach (AchievementsDisplay.AchievementDisplay display in SceneAs<Level>().Tracker.GetEntities<AchievementsDisplay.AchievementDisplay>())
+                                foreach (LorebookDisplay.EntryDisplay display in SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>())
                                 {
                                     display.Position.Y -= display.height;
                                 }
                             }
                             Audio.Play("event:/ui/main/rollover_down");
                         }
-                    }*/
+                    }
+                    switchedToEntries = false;
                 }
                 if (Input.Pause.Check && switchTimer <= 0)
                 {
