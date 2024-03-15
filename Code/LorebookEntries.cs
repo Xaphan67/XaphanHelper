@@ -153,12 +153,40 @@ namespace Celeste.Mod.XaphanHelper
                 flag: "Upgrade_PulseRadar"
             ));
 
+            list.Add(new LorebookData(
+                entryID: "dr-mod1",
+                categoryID: 1,
+                picture: "lorebook/Xaphan/Equipment/dr-mod1",
+                flag: "Upgrade_MissilesModule"
+            ));
+
+            list.Add(new LorebookData(
+                entryID: "col1",
+                categoryID: 1,
+                picture: "lorebook/Xaphan/Equipment/col1",
+                flag: "XaphanHelper_StatFlag_EnergyTank"
+            ));
+
+            list.Add(new LorebookData(
+                entryID: "col2",
+                categoryID: 1,
+                picture: "lorebook/Xaphan/Equipment/col2",
+                flag: "XaphanHelper_StatFlag_FireRateModule"
+            ));
+
+            list.Add(new LorebookData(
+                entryID: "col3",
+                categoryID: 1,
+                picture: "lorebook/Xaphan/Equipment/col3",
+                flag: "XaphanHelper_StatFlag_Missile"
+            ));
+
             // Bestiary
 
             list.Add(new LorebookData(
                 entryID: "boss-2-1",
                 categoryID: 2,
-                picture: "lorebook/Xaphan/Equipment/boss-2-1",
+                picture: "lorebook/Xaphan/Bestiary/boss-2-1",
                 flag: "XaphanHelper_StatFlag_BossCh2"
             ));
 
