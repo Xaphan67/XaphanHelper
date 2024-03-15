@@ -177,7 +177,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             public override void Update()
             {
                 base.Update();
-                Sprite.Position = Position + Vector2.UnitX * 12f;
                 if (LorebookScreen.entrySelection == ID)
                 {
                     Selected = true;
@@ -242,6 +241,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     float paddingLeft = 0f;
                     if (XaphanModule.ModSaveData.LorebookEntries.Contains(entryID) && !XaphanModule.ModSaveData.LorebookEntriesRead.Contains(entryID))
                     {
+                        Sprite.RenderPosition = Position + Vector2.UnitX * 12f;
                         Sprite.Render();
                         paddingLeft = 40f;
                     }
