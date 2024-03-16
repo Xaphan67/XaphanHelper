@@ -278,13 +278,11 @@
 	Xaphanhelper_UI_Ammo= AMMO
 	XaphanHelper_UI_lorebook= Lorebook
 	XaphanHelper_UI_Locations= Locations
-	XaphanHelper_UI_Locations_Desc= Informations on points of interest encountered
+	XaphanHelper_UI_Locations_Desc= Informations on areas visited
 	XaphanHelper_UI_Equipment= Equipment
 	XaphanHelper_UI_Equipment_Desc= Informations on equipment obtained
-	XaphanHelper_UI_Bestiary= Bestiary
-	XaphanHelper_UI_Bestiary_Desc= Informations on creatures engaged
 	XaphanHelper_UI_Adventure= Adventure
-	XaphanHelper_UI_Adventure_Desc= Informations on where adventure progress might be found
+	XaphanHelper_UI_Adventure_Desc= Informations on story-related events and items
 	XaphanHelper_UI_Discovered= Discovered
 	XaphanHelper_UI_Entries= ENTRIES
 	XaphanHelper_UI_Informations= INFORMATIONS

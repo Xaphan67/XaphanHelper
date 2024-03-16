@@ -281,10 +281,8 @@
 	XaphanHelper_UI_Locations_Desc= Informations sur les lieux visités
 	XaphanHelper_UI_Equipment= Equipement
 	XaphanHelper_UI_Equipment_Desc= Informations sur l'équipement obtenu
-	XaphanHelper_UI_Bestiary= Bestiaire
-	XaphanHelper_UI_Bestiary_Desc= Informations sur les créatures rencontrées
 	XaphanHelper_UI_Adventure= Aventure
-	XaphanHelper_UI_Adventure_Desc= Informations sur les endroits où la progression de l'aventure peut se trouver
+	XaphanHelper_UI_Adventure_Desc= Informations sur les évènements et objets relatifs à l'histoire
 	XaphanHelper_UI_Discovered= Découvert
 	XaphanHelper_UI_Entries= ENTREES
 	XaphanHelper_UI_Informations= INFORMATIONS

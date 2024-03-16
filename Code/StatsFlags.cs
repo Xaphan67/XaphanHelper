@@ -433,6 +433,10 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
                 }
+                if (heartCount >= 1)
+                {
+                    self.Session.SetFlag("XaphanHelper_StatFlag_Heart");
+                }
                 if (heartCount == TotalASideHearts)
                 {
                     self.Session.SetFlag("XaphanHelper_StatFlag_Hearts");

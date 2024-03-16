@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -14,6 +15,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private Level level;
 
         private LorebookDisplay lorebookDisplay;
+
+        private List<LorebookDisplay.EntryDisplay> Displays = new();
 
         public string Title;
 
@@ -279,12 +282,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (entrySelection == -1 && Input.MenuDown.Pressed)
                     {
+                        GetEntryDisplays();
                         previousCategorySelection = categorySelection;
                         categorySelection = -1;
-                        entrySelection = 0;
+                        LorebookDisplay.EntryDisplay firstDisplay = Displays.Find(entry => entry.ID == 0);
+                        entrySelection = firstDisplay.isSubCategory ? 1 : 0;
                         switchedToEntries = true;
                     }
-                    else if (categorySelection == -1 && entrySelection == 0 && Input.MenuUp.Pressed)
+                    else if (categorySelection == -1 && entrySelection == Displays.Find(entry => !entry.isSubCategory).ID && Input.MenuUp.Pressed)
                     {
                         entrySelection = -1;
                         categorySelection = previousCategorySelection;
@@ -322,26 +327,61 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     if (entrySelection != -1 && !switchedToEntries)
                     {
-                        if (Input.MenuUp.Pressed && entrySelection > 0)
+                        if (Input.MenuUp.Pressed && entrySelection > Displays.Find(entry => !entry.isSubCategory).ID)
                         {
-                            entrySelection--;
-                            if (entrySelection <= SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>().Count - 6 && entrySelection >= 5)
+                            LorebookDisplay.EntryDisplay previousDisplay = Displays.Find(entry => entry.ID == entrySelection - 1);
+                            entrySelection -= previousDisplay.isSubCategory ? 2 : 1;
+                            if (entrySelection <= Displays.Count - 6 && entrySelection >= 5)
                             {
-                                foreach (LorebookDisplay.EntryDisplay display in SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>())
+                                foreach (LorebookDisplay.EntryDisplay display in Displays)
                                 {
-                                    display.Position.Y += display.height;
+                                    display.Position.Y += display.height * (previousDisplay.isSubCategory ? entrySelection == Displays.Count - 6 ? 1 : 2 : 1);
                                 }
                             }
+                            LorebookDisplay.EntryDisplay firstDisplay = Displays.Find(entry => entry.ID == 0);
+                            if (firstDisplay.Position.Y <= 480f && entrySelection < 5)
+                            {
+                                while (firstDisplay.Position.Y < 480f)
+                                {
+                                    foreach (LorebookDisplay.EntryDisplay display in Displays)
+                                    {
+                                        display.Position.Y += display.height;
+                                    }
+                                }
+                            }
+                            if (firstDisplay.Position.Y == 531f && entrySelection < 6)
+                            {
+                                while (firstDisplay.Position.Y > 481f)
+                                {
+                                    foreach (LorebookDisplay.EntryDisplay display in Displays)
+                                    {
+                                        display.Position.Y -= display.height;
+                                    }
+                                }
+                            }
+                            
                             Audio.Play("event:/ui/main/rollover_up");
                         }
-                        if (Input.MenuDown.Pressed && entrySelection < SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>().Count - 1)
+                        if (Input.MenuDown.Pressed && entrySelection < Displays.Count - 1)
                         {
-                            entrySelection++;
-                            if (entrySelection >= 6 && SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>().Count - 1 >= entrySelection + 4)
+                            LorebookDisplay.EntryDisplay nextDisplay = Displays.Find(entry => entry.ID == entrySelection + 1);
+                            entrySelection += nextDisplay.isSubCategory ? 2 : 1;
+                            if (entrySelection >= 6 && Displays.Count - 1 >= entrySelection + (nextDisplay.isSubCategory ? 3 : 4))
                             {
-                                foreach (LorebookDisplay.EntryDisplay display in SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>())
+                                foreach (LorebookDisplay.EntryDisplay display in Displays)
                                 {
-                                    display.Position.Y -= display.height;
+                                    display.Position.Y -= display.height * (nextDisplay.isSubCategory ? (entrySelection == Displays.Count - 5 || entrySelection == Displays.Count - 4) ? 1 : 2 : 1);
+                                }
+                            }
+                            LorebookDisplay.EntryDisplay lastDisplay = Displays.Find(entry => entry.ID == Displays.Count - 1);
+                            if (lastDisplay.Position.Y > 933f && entrySelection > Displays.Count - 5)
+                            {
+                                while (lastDisplay.Position.Y > 933f)
+                                {
+                                    foreach (LorebookDisplay.EntryDisplay display in Displays)
+                                    {
+                                        display.Position.Y -= display.height;
+                                    }
                                 }
                             }
                             Audio.Play("event:/ui/main/rollover_down");
@@ -360,6 +400,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             Audio.Play("event:/ui/game/unpause");
             Add(new Coroutine(TransitionToGame()));
+        }
+
+        private void GetEntryDisplays()
+        {
+            List<Entity> DisplaysEntities = SceneAs<Level>().Tracker.GetEntities<LorebookDisplay.EntryDisplay>();
+            Displays.Clear();
+            foreach (Entity entryDisplay in DisplaysEntities)
+            {
+                LorebookDisplay.EntryDisplay display = entryDisplay as LorebookDisplay.EntryDisplay;
+                Displays.Add(display);
+            }
         }
 
         private IEnumerator CloseLorebook(bool switchtoMap)

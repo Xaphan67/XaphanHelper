@@ -6,6 +6,8 @@
 
         public int CategoryID;
 
+        public string SubCategoryID;
+
         public string Name;
 
         public string Text;
@@ -14,10 +16,11 @@
 
         public string Flag;
 
-        public LorebookData(string entryID, int categoryID, string picture, string flag)
+        public LorebookData(string entryID, int categoryID, string picture, string flag, string subCategoryID = null)
         {
             EntryID = entryID;
             CategoryID = categoryID;
+            SubCategoryID = subCategoryID;
 
             string subStr = "";
             if (EntryID.Length > 1)
