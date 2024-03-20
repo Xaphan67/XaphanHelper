@@ -181,11 +181,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Depth = -10001;
             }
 
-            public int GetID()
-            {
-                return ID;
-            }
-
             public override void Update()
             {
                 base.Update();

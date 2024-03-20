@@ -310,7 +310,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         lorebookDisplay.GenerateEntryList(categorySelection);
                         Audio.Play("event:/ui/main/rollover_up");
                     }
-                    if (Input.MenuRight.Pressed && ((categorySelection >= 0 && categorySelection < 3) || (previousCategorySelection >= 0 && previousCategorySelection <= 2)))
+                    if (Input.MenuRight.Pressed && ((categorySelection >= 0 && categorySelection < 2) || (previousCategorySelection >= 0 && previousCategorySelection <= 1)))
                     {
                         if (previousCategorySelection != -1)
                         {
