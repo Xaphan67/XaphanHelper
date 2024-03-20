@@ -151,6 +151,13 @@
     <Anim id="XaphanHelper_turnAround_reverse" path="player/turnaround" frames="3-0" delay="0.08"/>
     <Loop id="XaphanHelper_turnAround_end" path="player/turnaround" frames="3" delay = "0"/>
 
+    <Loop id="XaphanHelper_ceilingIdle" path="player/ceilingIdle" delay="0.1"/>
+    <Loop id="XaphanHelper_ceilingMove" path="player/ceilingMove" delay="0.05"/>
+    <Metadata>
+      <Frames path="player/ceilingIdle" hair="0,-3|0,-3|0,-3|0,-3|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+	    <Frames path="player/ceilingMove" hair="0,-3|0,-3|0,-4|0,-3|0,-3|0,-3|0,-3|0,-4|0,-3|0,-3"/>
+    </Metadata>
+
     # if you want to modify them,
     ## can directly add them into vanilla "player" etc, Includes new IDs for some skins
   </XaphanHelper_Extend_player>
