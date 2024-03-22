@@ -25,6 +25,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Coroutine DestroyRoutine = new();
 
+        public Coroutine ShootRoutine = new();
+
         public ArrowTrap sourceTrap = null;
 
         public string side;
@@ -38,6 +40,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private ArrowHole arrowHole;
 
         StaticMover staticMover;
+
+        private Level Level;
 
         public Arrow(Vector2 position, ArrowTrap trap, string side) : base(position, 4, 4, false)
         {
@@ -129,6 +133,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Position += amount;
             }
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            Level = SceneAs<Level>();
         }
 
         public override void Awake(Scene scene)
@@ -420,24 +430,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             arrowSpeed = 460f;
             Audio.Play("event:/game/05_mirror_temple/bladespinner_spin", Position);
-            while (CollideCheck(sourceTrap) || CollideCheck< ArrowHole >() || !CollideCheck<Solid, Arrow, FlagDashSwitch>() || noCollideDelay > 0f)
+            if (!inWall)
             {
-                if (side == "Right")
+                while ((side == "Right" && Left < sourceTrap.Left) || (side == "Left" && Right > sourceTrap.Right) || (side == "Top" && Bottom > sourceTrap.Bottom) || (side == "Bottom" && Top < sourceTrap.Top))
                 {
-                    MoveTo(Position + Vector2.UnitX * arrowSpeed * Engine.DeltaTime, Vector2.UnitX * arrowSpeed);
+                    MoveArrow();
+                    yield return null;
                 }
-                else if (side == "Left")
-                {
-                    MoveTo(Position - Vector2.UnitX * arrowSpeed * Engine.DeltaTime, Vector2.UnitX * arrowSpeed);
-                }
-                else if (side == "Top")
-                {
-                    MoveTo(Position - Vector2.UnitY * arrowSpeed * Engine.DeltaTime, Vector2.UnitY * arrowSpeed);
-                }
-                else if (side == "Bottom")
-                {
-                    MoveTo(Position + Vector2.UnitY * arrowSpeed * Engine.DeltaTime, Vector2.UnitY * arrowSpeed);
-                }
+            }
+            while (CollideCheck(sourceTrap) || CollideCheck<ArrowHole>() || !CollideCheck<Solid, Arrow, FlagDashSwitch>() || noCollideDelay > 0f)
+            {
+                MoveArrow();
                 foreach (FlagDashSwitch flagDashSwitch in Scene.Tracker.GetEntities<FlagDashSwitch>())
                 {
                     if (CollideCheck(flagDashSwitch))
@@ -522,6 +525,58 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             RemoveSelf();
+        }
+
+        private void MoveArrow()
+        {
+            if (side == "Right")
+            {
+                MoveTo(Position + Vector2.UnitX * arrowSpeed * Engine.DeltaTime, Vector2.UnitX * arrowSpeed);
+                if (Left - 8f > Level.Bounds.Right)
+                {
+                    if (ShootRoutine.Active)
+                    {
+                        ShootRoutine.Cancel();
+                    }
+                    RemoveSelf();
+                }
+            }
+            else if (side == "Left")
+            {
+                MoveTo(Position - Vector2.UnitX * arrowSpeed * Engine.DeltaTime, Vector2.UnitX * arrowSpeed);
+                if (Right + 8f < Level.Bounds.Left)
+                {
+                    if (ShootRoutine.Active)
+                    {
+                        ShootRoutine.Cancel();
+                    }
+                    RemoveSelf();
+                }
+            }
+            else if (side == "Top")
+            {
+                MoveTo(Position - Vector2.UnitY * arrowSpeed * Engine.DeltaTime, Vector2.UnitY * arrowSpeed);
+                if (Bottom + 8f < Level.Bounds.Top)
+                {
+                    if (ShootRoutine.Active)
+                    {
+                        ShootRoutine.Cancel();
+                    }
+                    RemoveSelf();
+                }
+            }
+            else if (side == "Bottom")
+            {
+                MoveTo(Position + Vector2.UnitY * arrowSpeed * Engine.DeltaTime, Vector2.UnitY * arrowSpeed);
+                if (Top + 8f > Level.Bounds.Bottom)
+                {
+                    if (ShootRoutine.Active)
+                    {
+                        ShootRoutine.Cancel();
+                    }
+                    RemoveSelf();
+                }
+            }
         }
 
         public IEnumerator Reload()

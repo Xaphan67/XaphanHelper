@@ -408,7 +408,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (CollideDetect.DetectedPlayer && nextArrow != null && nextArrow.canShoot && mainCooldown <= 0f)
                         {
-                            Add(new Coroutine(nextArrow.Shoot()));
+                            Add(nextArrow.ShootRoutine = new Coroutine(nextArrow.Shoot()));
                             nextArrow = null;
                             if (!onlyOnce)
                             {
@@ -433,7 +433,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return initialDelay;
             while ((string.IsNullOrEmpty(flag) || SceneAs<Level>().Session.GetFlag(flag)) && active)
             {
-                Add(new Coroutine(nextArrow.Shoot()));
+                Add(nextArrow.ShootRoutine = new Coroutine(nextArrow.Shoot()));
                 nextArrow = null;
                 if (!onlyOnce)
                 {
