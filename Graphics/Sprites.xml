@@ -124,26 +124,12 @@
     <Loop id="gravity_lookingUpLeft" path="XaphanHelper/gravity" frames="14"/>
   </lookout>
 
-  <XaphanHelper_player_ceiling path="characters/Xaphan/" start="idleBackpack">
-    <Loop id="idleBackpack" path="player/ceilingIdle" delay="0.1"/>
-    <Loop id="moveBackpack" path="player/ceilingMove" delay="0.05"/>
-    <Loop id="idleNoBackpack" path="player_no_backpack/ceilingIdle" delay="0.1"/>
-    <Loop id="moveNoBackpack" path="player_no_backpack/ceilingMove" delay="0.05"/>
-  </XaphanHelper_player_ceiling>
-
   <XaphanHelper_player_spinJump path="characters/Xaphan/" start="spinBackpack">
     <Loop id="spinBackpack" path="player/spinJump" delay="0.04"/>
     <Loop id="spinNoBackpack" path="player_no_backpack/spinJump" delay="0.04"/>
     <Loop id="hairBackpack" path="player/spinJumpHair" delay="0.04"/>
     <Loop id="hairNoBackpack" path="player_no_backpack/spinJumpHair" delay="0.04"/>
   </XaphanHelper_player_spinJump>
-
-  <XaphanHelper_player_slide path="characters/Xaphan/" start="slideBackpack">
-    <Loop id="slideBackpack" path="player/slopeSlide" delay="0.01"/>
-    <Loop id="slideNoBackpack" path="player_no_backpack/slopeSlide" delay="0.01"/>
-    <Loop id="hairBackpack" path="player/slopeSlideHair" delay="0.01"/>
-    <Loop id="hairNoBackpack" path="player_no_backpack/slopeSlideHair" delay="0.01"/>
-  </XaphanHelper_player_slide>
 
   # The animation here will populate the vanilla "player" etc
   <XaphanHelper_Extend_player path="characters/Xaphan/" start="XaphanHelper_turnAround">
@@ -155,6 +141,9 @@
     <Loop id="XaphanHelper_ceilingMove" path="player/ceilingMove" delay="0.05"/>
 
     <Loop id="XaphanHelper_slopeSlide" path="player/slopeSlide" delay="0.01"/>
+
+    <Loop id="XaphanHelper_spinFast" path="player/spinJump" delay="0.04"/>
+
     <Metadata>
       <Frames path="player/ceilingIdle" hair="0,-3|0,-3|0,-3|0,-3|0,-2|0,-2|0,-2|0,-2|0,-2"/>
 	    <Frames path="player/ceilingMove" hair="0,-3|0,-3|0,-4|0,-3|0,-3|0,-3|0,-3|0,-4|0,-3|0,-3"/>
