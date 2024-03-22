@@ -188,6 +188,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collidable = false;
             }
+            else
+            {
+                if (CollideCheck(player) && player.Bottom > Top && player.Bottom <= Bottom && player.Speed.Y > 0 && (side == "Right" || side == "Left") && !destroyed && inWall)
+                {
+                    player.MoveV(-(player.Bottom - Top));
+                }
+            }
             if (inWall && !DestroyRoutine.Active)
             {
                 Add(DestroyRoutine = new Coroutine(Destroy()));
@@ -360,13 +367,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (arrow.side == "Right" || arrow.side == "Left")
                 {
-                    if (self.Bottom <= arrow.Top && !arrow.destroyed && arrow.inWall)
+                    if ((self.Bottom <= arrow.Top || arrow.HasRider()) && !arrow.destroyed && arrow.inWall)
                     {
                         arrow.Collidable = true;
                     }
                     else
                     {
                         arrow.Collidable = false;
+                        if (self.Bottom > arrow.Top && self.Top + 8 < arrow.Bottom && self.Left >= arrow.Left && self.Right <= arrow.Right && self.Speed.Y >= 0 && !arrow.destroyed && arrow.inWall)
+                        {
+                            self.MoveV(-(self.Bottom - arrow.Top));
+                        }
                     }
                 }
                 else
