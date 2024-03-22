@@ -109,7 +109,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Side = side;
                 isActive = active;
                 oneUse = one;
-                Depth = block.Depth - 1;
+                Depth = block.Depth;
                 Add(blackBg = new Sprite(GFX.Game, block.directory + "/"));
                 blackBg.Add("bg", "bg", 0);
                 blackBg.Play("bg");
