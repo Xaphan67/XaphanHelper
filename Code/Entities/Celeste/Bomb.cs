@@ -398,6 +398,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 }
                             }
                         }
+                        else if (entityList.Key == typeof(Torizo))
+                        {
+                            foreach (Entity entity in entityList.Value)
+                            {
+                                Torizo torizo = (Torizo)entity;
+                                if (torizo.colliders != null && torizo.colliders.Collide(Collider) && torizo.Health > 0 && torizo.Activated)
+                                {
+                                    shouldExplodeImmediately = true;
+                                    torizo.GetHit();
+                                }
+                            }
+                        }
                     }
                     if (Left > SceneAs<Level>().Bounds.Right || Right < SceneAs<Level>().Bounds.Left || Top > SceneAs<Level>().Bounds.Bottom)
                     {

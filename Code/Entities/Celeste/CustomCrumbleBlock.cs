@@ -45,6 +45,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private int rotation;
 
+        public bool Destroyed;
+
         private HashSet<CustomCrumbleBlock> groupedCustomCrumbleBlocks = new();
 
         public CustomCrumbleBlock(EntityData data, Vector2 offset) : this(data.Position, offset, data.Width, data.Height, data.Float("respawnTime", 2f), data.Float("crumbleDelay", 0.4f), data.Bool("oneUse", false), data.Bool("triggerAdjacents", false),
@@ -217,6 +219,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 occluder.Visible = false;
                 Collidable = false;
+                Destroyed = true;
                 DisableStaticMovers();
                 for (int j = 0; j < images.Count; j++)
                 {
@@ -251,6 +254,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 outlineFader.Replace(OutlineFade(0f));
                 occluder.Visible = true;
                 Collidable = true;
+                Destroyed = false;
                 EnableStaticMovers();
                 for (int j = 0; j < images.Count; j++)
                 {
