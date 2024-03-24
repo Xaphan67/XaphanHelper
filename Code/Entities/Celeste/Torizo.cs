@@ -21,6 +21,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public ColliderList colliders;
 
+        private InvisibleBarrier shield;
+
         private Facings Facing;
 
         private bool ShouldSwitchFacing;
@@ -47,7 +49,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("sit", "standUp", 0f, 0);
             Sprite.Add("standUp", "standUp", 0.08f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
             Sprite.Add("idle", "walk", 0f, 0);
-            Sprite.Add("walk", "walk", 0.08f);
+            Sprite.Add("walk", "walk", 0.08f, 0, 1, 2, 3, 4, 5, 6, 7);
+            Sprite.Add("walk2", "walk", 0.08f, 8, 9, 10 ,11, 12, 13, 14);
             Sprite.Add("turn", "turn", 0.08f);
             Sprite.Play("sit");
             Facing = Facings.Right;
@@ -62,7 +65,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Scene != null)
                 {
                     int currentAnimationFrame = Sprite.CurrentAnimationFrame;
-                    if (anim.Equals("walk") && (currentAnimationFrame == 7 || currentAnimationFrame == 14))
+                    if ((anim.Equals("walk") && (currentAnimationFrame == 7)) || (anim.Equals("walk2") && (currentAnimationFrame == 6)))
                     {
                         SceneAs<Level>().Shake(0.3f);
                         Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
@@ -76,6 +79,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             List<Entity> crumbleBlocks = Scene.Tracker.GetEntities<CustomCrumbleBlock>().ToList();
+            if (shield != null)
+            {
+                shield.Collidable = false;
+            }
             foreach (CustomCrumbleBlock crumbleBlock in crumbleBlocks)
             {
                 crumbleBlock.Collidable = false;
@@ -92,6 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collider = new Hitbox(24, 80, 32, 16);
                 colliders = new ColliderList(new Hitbox(8, 32, Position.X + 40, Position.Y + 24), new Hitbox(8, 8, Position.X + 48, Position.Y + 16));
                 Add(pc = new PlayerCollider(onCollidePlayer, new Hitbox(24, 52, 32, 16)));
+                SceneAs<Level>().Add(shield = new InvisibleBarrier(Position + new Vector2(33, 19), 6, 37));
             }
             if (Flashing)
             {
@@ -162,6 +170,55 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         collider.Position.Y = Position.Y + 16;
                     }
                 }
+                if (shield != null)
+                {
+                    if (Facing == Facings.Right)
+                    {
+                        if (Sprite.CurrentAnimationID == "turn")
+                        {
+                            if (Sprite.CurrentAnimationFrame == 0)
+                            {
+                                shield.Position.X = Position.X + 33;
+                            }
+                            else if (Sprite.CurrentAnimationFrame <= 3)
+                            {
+                                shield.Position.X = Position.X + 41;
+                            }
+                            else
+                            {
+                                shield.Position.X = Position.X + 49;
+                            }
+                        }
+                        else
+                        {
+                            shield.Position.X = Position.X + 33;
+                        }
+                        
+                    }
+                    else
+                    {
+                        if (Sprite.CurrentAnimationID == "turn")
+                        {
+                            if (Sprite.CurrentAnimationFrame == 0)
+                            {
+                                shield.Position.X = Position.X + 49;
+                            }
+                            else if (Sprite.CurrentAnimationFrame <= 3)
+                            {
+                                shield.Position.X = Position.X + 41;
+                            }
+                            else
+                            {
+                                shield.Position.X = Position.X + 33;
+                            }
+                        }
+                        else
+                        {
+                            shield.Position.X = Position.X + 49;
+                        }
+                        
+                    }
+                }
             }
             if (Health <= 0)
             {
@@ -169,10 +226,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collider = null;
                 colliders = null;
                 Remove(pc);
+                shield.RemoveSelf();
             }
             foreach (CustomCrumbleBlock crumbleBlock in crumbleBlocks)
             {
                 crumbleBlock.Collidable = crumbleBlock.Destroyed ? false : true;
+            }
+            if (shield != null)
+            {
+                shield.Collidable = true;
             }
         }
 
@@ -211,11 +273,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Rate = Health >= 10 ? 1f : Health >= 7f ? 1.33f : Health >= 4f ? 1.66f : 2f;
             Speed.X = speed * (walkLeft ? -1 : 1);
             float walkDuration = Sprite.CurrentAnimationTotalFrames * 0.08f / Sprite.Rate;
-            while (walkDuration > 0)
-            {
-                walkDuration -= Engine.DeltaTime;
-                yield return null;
-            }
+            yield return walkDuration;
+            Speed.X = 0f;
+            Sprite.Rate = 1f;
+            yield return IddleRoutine(playIddleAnim: false);
+            Sprite.Play("walk2");
+            Sprite.Rate = Health >= 10 ? 1f : Health >= 7f ? 1.33f : Health >= 4f ? 1.66f : 2f;
+            Speed.X = speed * (walkLeft ? -1 : 1);
+            walkDuration = Sprite.CurrentAnimationTotalFrames * 0.08f / Sprite.Rate;
+            yield return walkDuration;
             Speed.X = 0f;
             Sprite.Rate = 1f;
             yield return IddleRoutine();
@@ -226,22 +292,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Position = new Vector2(16, 0);
             Sprite.Play("turn");
             float turnDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
-            while (turnDuration > 0)
-            {
-                turnDuration -= Engine.DeltaTime;
-                yield return null;
-            }
+            yield return turnDuration;
             yield return IddleRoutine(true);
         }
 
-        public IEnumerator IddleRoutine(bool flip = false)
+        public IEnumerator IddleRoutine(bool flip = false, bool playIddleAnim = true)
         {
             ShouldSwitchFacing = flip;
             if (flip)
             {
                 Sprite.Position = new Vector2(Facing == Facings.Right ? 11 : 21, 0);
             }
-            Sprite.Play("idle");
+            if (playIddleAnim)
+            {
+                Sprite.Play("idle");
+            }
             yield return Health >= 10 ? 0.5f : Health >= 7f ? 0.3f : Health >= 4f ? 0.15f : 0.05f;
         }
 
