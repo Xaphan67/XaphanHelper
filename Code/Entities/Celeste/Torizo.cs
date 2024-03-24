@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.Entities;
@@ -24,6 +23,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Facings Facing;
 
+        private bool ShouldSwitchFacing;
+
         private Coroutine Routine = new();
 
         private Sprite Sprite;
@@ -45,10 +46,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
             Sprite.Add("sit", "standUp", 0f, 0);
             Sprite.Add("standUp", "standUp", 0.08f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+            Sprite.Add("idle", "walk", 0f, 0);
             Sprite.Add("walk", "walk", 0.08f);
+            Sprite.Add("turn", "turn", 0.08f);
             Sprite.Play("sit");
             Facing = Facings.Right;
-            Health = 100;
+            Health = 15;
         }
 
         public override void Added(Scene scene)
@@ -78,7 +81,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 crumbleBlock.Collidable = false;
             }
             base.Update();
-            Sprite.FlipX = Facing == Facings.Left;
+            if (ShouldSwitchFacing)
+            {
+                Facing = Facing == Facings.Right ? Facings.Left : Facings.Right;
+                Sprite.FlipX = Facing == Facings.Left;
+                ShouldSwitchFacing = false;
+            }
             if (Activated && pc == null)
             {
                 Collider = new Hitbox(24, 80, 32, 16);
@@ -107,7 +115,50 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
-                        collider.Position.X = Position.X + 48;
+                        if (Facing == Facings.Right)
+                        {
+                            if (Sprite.CurrentAnimationID == "turn")
+                            {
+                                if (Sprite.CurrentAnimationFrame == 0)
+                                {
+                                    collider.Position.X = Position.X + 48;
+                                }
+                                else if (Sprite.CurrentAnimationFrame <= 3)
+                                {
+                                    collider.Position.X = Position.X + 40;
+                                }
+                                else
+                                {
+                                    collider.Position.X = Position.X + 32;
+                                }
+                            }
+                            else
+                            {
+                                collider.Position.X = Position.X + 48;
+                            }
+                        }
+                        else
+                        {
+                            if (Sprite.CurrentAnimationID == "turn")
+                            {
+                                if (Sprite.CurrentAnimationFrame == 0)
+                                {
+                                    collider.Position.X = Position.X + 32;
+                                }
+                                else if (Sprite.CurrentAnimationFrame <= 3)
+                                {
+                                    collider.Position.X = Position.X + 40;
+                                }
+                                else
+                                {
+                                    collider.Position.X = Position.X + 48;
+                                }
+                            }
+                            else
+                            {
+                                collider.Position.X = Position.X + 32;
+                            }
+                        }
                         collider.Position.Y = Position.Y + 16;
                     }
                 }
@@ -127,7 +178,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator SequenceRoutine()
         {
-            yield return 5f;
+            yield return 1f;
             StandUp();
             while (!Activated)
             {
@@ -138,7 +189,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
                 if (player != null && !Routine.Active)
                 {
-                    Add(Routine = new Coroutine(WalkRoutine(player)));
+                    if ((Facing == Facings.Right && player.Center.X > Center.X) || (Facing == Facings.Left && player.Center.X < Center.X)) // If player is in front of Torizo
+                    {
+                        Add(Routine = new Coroutine(WalkRoutine(player)));
+                    }
+                    else
+                    {
+                        Add(Routine = new Coroutine(TurnRoutine()));
+                    }
                 }
                 yield return null;
             }
@@ -146,18 +204,45 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator WalkRoutine(Player player)
         {
-            Sprite.Position.X = 21;
+            Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 0);
             Sprite.Play("walk");
             bool walkLeft = player.Center.X < Center.X;
-            Speed.X = 45f * (walkLeft ? -1 : 1);
-            float walkDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
+            float speed = Health >= 10 ? 45f : Health >= 7f ? 60f : Health >= 4f ? 75f : 90f;
+            Sprite.Rate = Health >= 10 ? 1f : Health >= 7f ? 1.33f : Health >= 4f ? 1.66f : 2f;
+            Speed.X = speed * (walkLeft ? -1 : 1);
+            float walkDuration = Sprite.CurrentAnimationTotalFrames * 0.08f / Sprite.Rate;
             while (walkDuration > 0)
             {
                 walkDuration -= Engine.DeltaTime;
                 yield return null;
             }
             Speed.X = 0f;
-            yield return 1f;
+            Sprite.Rate = 1f;
+            yield return IddleRoutine();
+        }
+
+        public IEnumerator TurnRoutine()
+        {
+            Sprite.Position = new Vector2(16, 0);
+            Sprite.Play("turn");
+            float turnDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
+            while (turnDuration > 0)
+            {
+                turnDuration -= Engine.DeltaTime;
+                yield return null;
+            }
+            yield return IddleRoutine(true);
+        }
+
+        public IEnumerator IddleRoutine(bool flip = false)
+        {
+            ShouldSwitchFacing = flip;
+            if (flip)
+            {
+                Sprite.Position = new Vector2(Facing == Facings.Right ? 11 : 21, 0);
+            }
+            Sprite.Play("idle");
+            yield return Health >= 10 ? 0.5f : Health >= 7f ? 0.3f : Health >= 4f ? 0.15f : 0.05f;
         }
 
         public IEnumerator InvincibilityRoutine()
@@ -188,8 +273,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (Health > 0 && InvincibilityDelay <= 0)
             {
-                Health -= 10;
-                Logger.Log(LogLevel.Info, "XH", "Torizo hit - Remaining health : " + Health);
+                Health -= 1;
                 InvincibilityDelay = 0.75f;
             }
         }
