@@ -43,6 +43,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 MoveH(Speed.X * Engine.DeltaTime, onCollide);
                 MoveV(Speed.Y * Engine.DeltaTime, onCollide);
             }
+
             public IEnumerator GravityRoutine()
             {
                 while (Speed.Y <= 250f)
@@ -71,6 +72,74 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     RemoveSelf();
                 }
+            }
+        }
+
+        private class TorizoWave : Actor
+        {
+            Sprite Sprite;
+
+            private PlayerCollider pc;
+
+            public Vector2 Speed;
+
+            private float MaxXSpeed;
+
+            private float Lifetime = 5f;
+
+            public TorizoWave(Vector2 offset, Vector2 speed, bool toLeft) : base(offset)
+            {
+                Add(pc = new PlayerCollider(onCollidePlayer, new Hitbox(13, 20, -5, -6)));
+                Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
+                Sprite.Origin = Vector2.One * 8;
+                Sprite.FlipX = toLeft;
+                Sprite.AddLoop("wave", "wave", 0.04f);
+                Sprite.Play("wave");
+                Sprite.Scale = Vector2.One * 0.3f;
+                MaxXSpeed = speed.X;
+                Speed = new Vector2(0 * (toLeft ? -1 : 1), speed.Y);
+                Add(new Coroutine(SpeedRoutine(toLeft)));
+                Add(new Coroutine(SpriteRoutine()));
+                Add(new Coroutine(LifeRoutine()));
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                MoveH(Speed.X * Engine.DeltaTime);
+                MoveV(Speed.Y * Engine.DeltaTime);
+            }
+
+            public IEnumerator SpeedRoutine(bool toLeft)
+            {
+                while (Speed.X < MaxXSpeed)
+                {
+                    Speed.X += 3f * (toLeft ? -1 : 1);
+                    yield return null;
+                }
+                Speed.X = MaxXSpeed;
+            }
+
+            public IEnumerator SpriteRoutine()
+            {
+                while (Sprite.Scale.X < 1 && Sprite.Scale.Y < 1)
+                {
+                    Sprite.Scale.X += Engine.DeltaTime;
+                    Sprite.Scale.Y += Engine.DeltaTime;
+                    yield return null;
+                }
+                Sprite.Scale = Vector2.One;
+            }
+
+            public IEnumerator LifeRoutine()
+            {
+                yield return Lifetime;
+                RemoveSelf();
+            }
+
+            private void onCollidePlayer(Player player)
+            {
+                player.Die((player.Position - Position).SafeNormalize());
             }
         }
         private enum Facings
@@ -111,6 +180,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float CannotJumpDelay;
 
+        private float CannotSwipeDelay;
+
         public Torizo(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
@@ -121,6 +192,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("walk2", "walk", 0.08f, 8, 9, 10 ,11, 12, 13, 14);
             Sprite.Add("jumpStart", "jump", 0.08f, 0, 1, 2, 3, 4, 5);
             Sprite.Add("jumpEnd", "jump", 0.08f, 6, 7, 8, 9, 10, 11, 12, 13);
+            Sprite.Add("swipe", "swipe", 0.08f);
             Sprite.Add("turn", "turn", 0.08f);
             Sprite.Play("sit");
             Facing = Facings.Right;
@@ -330,6 +402,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             Add(Routine = new Coroutine(JumpBackRoutine()));
                         }
+                        else if (Math.Abs(player.Center.X - Center.X) >= 120 && Health < 10f && CannotSwipeDelay <= 0f)
+                        {
+                            Add(Routine = new Coroutine(SwipeRoutine()));
+                        }
                         else
                         {
                             Add(Routine = new Coroutine(WalkRoutine(player)));
@@ -343,6 +419,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CannotJumpDelay > 0)
                 {
                     CannotJumpDelay -= Engine.DeltaTime;
+                }
+                if (CannotSwipeDelay > 0)
+                {
+                    CannotSwipeDelay -= Engine.DeltaTime;
                 }
                 yield return null;
             }
@@ -365,6 +445,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Sprite.Play("jumpEnd");
             yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
+            yield return IddleRoutine();
+        }
+
+        public IEnumerator SwipeRoutine()
+        {
+            CannotSwipeDelay = 5f;
+            Sprite.Position = new Vector2(Facing == Facings.Right ? 23 : -7, -8);
+            Sprite.Play("swipe");
+            float swipeDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
+            float waveYPos = 0f;
+            while (swipeDuration > 0)
+            {
+                swipeDuration -= Engine.DeltaTime;
+                if (SceneAs<Level>().OnInterval(0.4f))
+                {
+                    SceneAs<Level>().Add(new TorizoWave(new Vector2(Position.X + (Facing == Facings.Right ? 64 : 24), Position.Y + 24 + waveYPos * 24), new Vector2(175f, 0f), Facing == Facings.Left));
+                    waveYPos += 1f;
+                    if (waveYPos > 1f)
+                    {
+                        waveYPos = 0f;
+                    }
+                }
+                yield return null;
+            }
             yield return IddleRoutine();
         }
 
@@ -402,6 +506,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator IddleRoutine(bool flip = false, bool playIddleAnim = true)
         {
+            Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 0);
             ShouldSwitchFacing = flip;
             if (flip)
             {
