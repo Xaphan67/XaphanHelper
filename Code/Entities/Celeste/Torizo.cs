@@ -34,6 +34,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Speed = new Vector2((speed.X + Calc.Random.Next(-15, 16)) * (toLeft ? -1 : 1), speed.Y + Calc.Random.Next(-15, 16));
                 Add(new Coroutine(GravityRoutine()));
                 onCollide = OnCollide;
+                Depth = 1;
             }
 
             public override void Update()
@@ -142,6 +143,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 player.Die((player.Position - Position).SafeNormalize());
             }
         }
+
         private enum Facings
         {
             Left,
@@ -182,6 +184,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float CannotSwipeDelay;
 
+        private float CannotShootDelay;
+
         public Torizo(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
@@ -193,6 +197,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("jumpStart", "jump", 0.08f, 0, 1, 2, 3, 4, 5);
             Sprite.Add("jumpEnd", "jump", 0.08f, 6, 7, 8, 9, 10, 11, 12, 13);
             Sprite.Add("swipe", "swipe", 0.08f);
+            Sprite.Add("shoot", "shoot", 0.08f);
+            Sprite.Add("shootReverse", "shoot", 0.08f, 5, 4, 3, 2, 1, 0);
             Sprite.Add("turn", "turn", 0.08f);
             Sprite.Play("sit");
             Facing = Facings.Right;
@@ -402,6 +408,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             Add(Routine = new Coroutine(JumpBackRoutine()));
                         }
+                        else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 120 && CannotShootDelay <= 0f)
+                        {
+                            Add(Routine = new Coroutine(ShootRoutine()));
+                        }
                         else if (Math.Abs(player.Center.X - Center.X) >= 120 && Health < 10f && CannotSwipeDelay <= 0f)
                         {
                             Add(Routine = new Coroutine(SwipeRoutine()));
@@ -423,6 +433,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CannotSwipeDelay > 0)
                 {
                     CannotSwipeDelay -= Engine.DeltaTime;
+                }
+                if (CannotShootDelay > 0)
+                {
+                    CannotShootDelay -= Engine.DeltaTime;
                 }
                 yield return null;
             }
@@ -469,6 +483,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 yield return null;
             }
+            yield return IddleRoutine();
+        }
+
+        public IEnumerator ShootRoutine()
+        {
+            Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 8);
+            CannotShootDelay = 5f;
+            Sprite.Play("shoot");
+            float shootAnimDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
+            yield return shootAnimDuration;
+            float shootDuration = 1f;
+            while (shootDuration > 0)
+            {
+                shootDuration -= Engine.DeltaTime;
+                if (SceneAs<Level>().OnInterval(0.06f))
+                {
+                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(110, 210), 0f), Facing == Facings.Left));
+                }
+                yield return null;
+            }
+            Sprite.Play("shootReverse");
+            yield return shootAnimDuration;
             yield return IddleRoutine();
         }
 
