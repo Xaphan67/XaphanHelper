@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.Entities;
@@ -11,6 +12,67 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Torizo")]
     public class Torizo : Actor
     {
+        private class TorizoFireball : Actor
+        {
+            Sprite Sprite;
+
+            private PlayerCollider pc;
+
+            public Vector2 Speed;
+
+            private Collision onCollide;
+
+            public TorizoFireball(Vector2 offset, Vector2 speed, bool toLeft) : base(offset)
+            {
+                Add(pc = new PlayerCollider(onCollidePlayer, new Circle(4f)));
+                Collider = new Hitbox(2, 2);
+                Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
+                Sprite.Origin = Vector2.One * 8;
+                Sprite.AddLoop("fireball", "fireball", 0.08f);
+                Sprite.Add("explode", "fireballExplode", 0.08f);
+                Sprite.Play("fireball");
+                Speed = new Vector2((speed.X + Calc.Random.Next(-15, 16)) * (toLeft ? -1 : 1), speed.Y + Calc.Random.Next(-15, 16));
+                Add(new Coroutine(GravityRoutine()));
+                onCollide = OnCollide;
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                Sprite.Rotation = (float)Math.Atan2(Center.Y + Speed.Y - Center.Y, Center.X + Speed.X - Center.X);
+                MoveH(Speed.X * Engine.DeltaTime, onCollide);
+                MoveV(Speed.Y * Engine.DeltaTime, onCollide);
+            }
+            public IEnumerator GravityRoutine()
+            {
+                while (Speed.Y <= 250f)
+                {
+                    Speed.Y += 4f;
+                    yield return null;
+                }
+            }
+
+            private void OnCollide(CollisionData data)
+            {
+                Collidable = false;
+                Speed = Vector2.Zero;
+                Sprite.Play("explode");
+                Sprite.OnLastFrame = onLastFrame;
+            }
+
+            private void onCollidePlayer(Player player)
+            {
+                player.Die((player.Position - Position).SafeNormalize());
+            }
+
+            private void onLastFrame(string s)
+            {
+                if (Sprite.CurrentAnimationID == "explode")
+                {
+                    RemoveSelf();
+                }
+            }
+        }
         private enum Facings
         {
             Left,
@@ -43,6 +105,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Vector2 Speed;
 
+        private bool MidAir;
+
+        private Collision onCollideV;
+
+        private float CannotJumpDelay;
+
         public Torizo(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
@@ -51,10 +119,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("idle", "walk", 0f, 0);
             Sprite.Add("walk", "walk", 0.08f, 0, 1, 2, 3, 4, 5, 6, 7);
             Sprite.Add("walk2", "walk", 0.08f, 8, 9, 10 ,11, 12, 13, 14);
+            Sprite.Add("jumpStart", "jump", 0.08f, 0, 1, 2, 3, 4, 5);
+            Sprite.Add("jumpEnd", "jump", 0.08f, 6, 7, 8, 9, 10, 11, 12, 13);
             Sprite.Add("turn", "turn", 0.08f);
             Sprite.Play("sit");
             Facing = Facings.Right;
             Health = 15;
+            onCollideV = OnCollideV;
         }
 
         public override void Added(Scene scene)
@@ -74,6 +145,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             };
             Add(new Coroutine(SequenceRoutine()));
             Add(new Coroutine(InvincibilityRoutine()));
+            Add(new Coroutine(GravityRoutine()));
         }
 
         public override void Update()
@@ -113,7 +185,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Speed.Y = Calc.Approach(Speed.Y, 200f, 800f * Engine.DeltaTime);
                 MoveH(Speed.X * Engine.DeltaTime, null);
-                MoveV(Speed.Y * Engine.DeltaTime, null);
+                MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
                 foreach (Collider collider in colliders.colliders)
                 {
                     if (collider.Height == 32)
@@ -218,6 +290,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         
                     }
+                    shield.Position.Y = Position.Y + 19;
                 }
             }
             if (Health <= 0)
@@ -249,19 +322,50 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (Health > 0)
             {
                 Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-                if (player != null && !Routine.Active)
+                if (player != null && !Routine.Active && !MidAir)
                 {
                     if ((Facing == Facings.Right && player.Center.X > Center.X) || (Facing == Facings.Left && player.Center.X < Center.X)) // If player is in front of Torizo
                     {
-                        Add(Routine = new Coroutine(WalkRoutine(player)));
+                        if (Math.Abs(player.Center.X - Center.X) < 80 && CannotJumpDelay <= 0f)
+                        {
+                            Add(Routine = new Coroutine(JumpBackRoutine()));
+                        }
+                        else
+                        {
+                            Add(Routine = new Coroutine(WalkRoutine(player)));
+                        }
                     }
                     else
                     {
                         Add(Routine = new Coroutine(TurnRoutine()));
                     }
                 }
+                if (CannotJumpDelay > 0)
+                {
+                    CannotJumpDelay -= Engine.DeltaTime;
+                }
                 yield return null;
             }
+        }
+
+        public IEnumerator JumpBackRoutine()
+        {
+            CannotJumpDelay = 5f;
+            Sprite.Play("jumpStart");
+            Speed.Y = -225f;
+            Speed.X = 260f * (Facing == Facings.Right ? -1 : 1);
+            MidAir = true;
+            while (MidAir)
+            {
+                if (SceneAs<Level>().OnInterval(0.06f) && Sprite.CurrentAnimationFrame >= 2)
+                {
+                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 24), new Vector2(75f, -125f), Facing == Facings.Left));
+                }
+                yield return null;
+            }
+            Sprite.Play("jumpEnd");
+            yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
+            yield return IddleRoutine();
         }
 
         public IEnumerator WalkRoutine(Player player)
@@ -328,6 +432,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public IEnumerator GravityRoutine()
+        {
+            while (Health > 0)
+            {
+                while (MidAir)
+                {
+                    Speed.Y += 1f;
+                    yield return null;
+                }
+                yield return null;
+            }
+        }
+
         public void StandUp()
         {
             Sprite.Play("standUp");
@@ -354,6 +471,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Activated = true;
                 Sprite.OnLastFrame = null;
+            }
+        }
+
+        private void OnCollideV(CollisionData data)
+        {
+            if (MidAir)
+            {
+                Speed.X = 0f;
+                SceneAs<Level>().Shake(0.6f);
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+                MidAir = false;
             }
         }
 
