@@ -200,6 +200,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("shoot", "shoot", 0.08f);
             Sprite.Add("shootReverse", "shoot", 0.08f, 5, 4, 3, 2, 1, 0);
             Sprite.Add("turn", "turn", 0.08f);
+            Sprite.Add("kneel", "kneel", 0.08f);
             Sprite.Play("sit");
             Facing = Facings.Right;
             Health = 15;
@@ -400,7 +401,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (Health > 0)
             {
                 Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-                if (player != null && !Routine.Active && !MidAir)
+                if (player != null && !Routine.Active && !MidAir && Health > 0)
                 {
                     if ((Facing == Facings.Right && player.Center.X > Center.X) || (Facing == Facings.Left && player.Center.X < Center.X)) // If player is in front of Torizo
                     {
@@ -440,6 +441,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 yield return null;
             }
+            if (Routine.Active)
+            {
+                Routine.Cancel();
+            }
+            Add(Routine = new Coroutine(KneelRoutine()));
         }
 
         public IEnumerator JumpBackRoutine()
@@ -538,6 +544,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             float turnDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
             yield return turnDuration;
             yield return IddleRoutine(true);
+        }
+
+        public IEnumerator KneelRoutine()
+        {
+            Sprite.Stop();
+            yield return 0.75f;
+            Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 16);
+            Sprite.Play("kneel");
         }
 
         public IEnumerator IddleRoutine(bool flip = false, bool playIddleAnim = true)
