@@ -60,12 +60,12 @@ namespace Celeste.Mod.XaphanHelper.Events
             this.player = player;
             boss = level.Entities.FindFirst<Torizo>();
             bounds = new Vector2(level.Bounds.Left, level.Bounds.Top);
-            jumpThru1 = new JumpthruPlatform(bounds + new Vector2(208f, 152f), 32, "Xaphan/ruins_c", 8);
+            jumpThru1 = new JumpthruPlatform(bounds + new Vector2(207f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru2 = new JumpthruPlatform(bounds + new Vector2(240f, 152f), 32, "Xaphan/ruins_c", 8);
-            jumpThru3 = new JumpthruPlatform(bounds + new Vector2(272f, 152f), 32, "Xaphan/ruins_c", 8);
-            jumpThru4 = new JumpthruPlatform(bounds + new Vector2(336f, 152f), 32, "Xaphan/ruins_c", 8);
+            jumpThru3 = new JumpthruPlatform(bounds + new Vector2(273f, 152f), 32, "Xaphan/ruins_c", 8);
+            jumpThru4 = new JumpthruPlatform(bounds + new Vector2(335f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(368f, 152f), 32, "Xaphan/ruins_c", 8);
-            jumpThru6 = new JumpthruPlatform(bounds + new Vector2(400f, 152f), 32, "Xaphan/ruins_c", 8);
+            jumpThru6 = new JumpthruPlatform(bounds + new Vector2(401f, 152f), 32, "Xaphan/ruins_c", 8);
             refill1 = new CustomRefill(jumpThru3.Position + new Vector2(16f, -64f), "Max Dashes", false, 2.5f);
             refill2 = new CustomRefill(jumpThru4.Position + new Vector2(16f, -64f), "Max Dashes", false, 2.5f);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
