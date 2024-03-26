@@ -99,17 +99,30 @@ namespace Celeste.Mod.XaphanHelper.Events
         {
             if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
-                while (player.Right > jumpThru6.Right)
+                while (player.Right > jumpThru6.Right && !player.OnGround())
                 {
                     yield return null;
                 }
-                if (!level.Session.GetFlag("Torizo_Start"))
+                if (player.Dead)
+                {
+                    yield break;
+                }
+                SceneAs<Level>().Session.SetFlag("Torizo_Start", false);
+                if (!level.Session.GetFlag("CS01_BossStart"))
                 {
                     Scene.Add(new CS01_BossStart(player, boss));
+                    while (!level.Session.GetFlag("Torizo_Start"))
+                    {
+                        yield return null;
+                    }
                 }
-                while (!level.Session.GetFlag("Torizo_Start"))
+                else
                 {
-                    yield return null;
+                    while (!boss.playerHasMoved)
+                    {
+                        yield return null;
+                    }
+                    SceneAs<Level>().Session.SetFlag("Torizo_Start", true);
                 }
 
                 // Phase 1
@@ -135,7 +148,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 jumpThru5.RemoveSelf();
 
                 // Phase 3
-                while (boss.Health >= 6)
+                while (boss.Health >= 5)
                 {
                     yield return null;
                 }

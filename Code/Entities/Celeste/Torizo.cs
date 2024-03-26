@@ -186,6 +186,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float CannotShootDelay;
 
+        public bool playerHasMoved;
+
         public Torizo(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
@@ -240,6 +242,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 crumbleBlock.Collidable = false;
             }
             base.Update();
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (!playerHasMoved && player != null && player.Speed != Vector2.Zero)
+            {
+                playerHasMoved = true;
+            }
             if (ShouldSwitchFacing)
             {
                 Facing = Facing == Facings.Right ? Facings.Left : Facings.Right;
