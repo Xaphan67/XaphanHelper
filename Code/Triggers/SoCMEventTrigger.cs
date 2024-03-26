@@ -14,6 +14,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         public SoCMEventTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
+            Tag = Tags.TransitionUpdate;
             Event = data.Attr("event");
         }
 
@@ -25,10 +26,15 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 return;
             }
             triggered = true;
-            Session session = SceneAs<Level>().Session;
             Level level = Scene as Level;
             switch (Event)
             {
+                case "Ch1 - Bombs":
+                    Scene.Add(new E01_Bombs(player, level));
+                    break;
+                case "Ch1 - Boss":
+                    Scene.Add(new E01_Boss(player, level));
+                    break;
                 case "Ch2 - Boss":
                     Scene.Add(new E02_Boss(player, level));
                     break;

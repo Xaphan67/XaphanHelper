@@ -205,6 +205,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Facing = Facings.Right;
             Health = 15;
             onCollideV = OnCollideV;
+            IgnoreJumpThrus = true;
         }
 
         public override void Added(Scene scene)
@@ -249,7 +250,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collider = new Hitbox(24, 80, 32, 16);
                 colliders = new ColliderList(new Hitbox(8, 32, Position.X + 40, Position.Y + 24), new Hitbox(8, 8, Position.X + 48, Position.Y + 16));
-                Add(pc = new PlayerCollider(onCollidePlayer, new Hitbox(24, 52, 32, 16)));
+                Add(pc = new PlayerCollider(onCollidePlayer, new Hitbox(24, 60, 32, 16)));
                 SceneAs<Level>().Add(shield = new InvisibleBarrier(Position + new Vector2(33, 19), 6, 37));
             }
             if (Flashing)
@@ -392,9 +393,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator SequenceRoutine()
         {
-            yield return 1f;
+            while (!SceneAs<Level>().Session.GetFlag("Torizo_Wakeup"))
+            {
+                yield return null;
+            }
             StandUp();
             while (!Activated)
+            {
+                yield return null;
+            }
+            while (!SceneAs<Level>().Session.GetFlag("Torizo_Start"))
             {
                 yield return null;
             }
@@ -450,7 +458,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator JumpBackRoutine()
         {
-            CannotJumpDelay = 5f;
+            CannotJumpDelay = 7f;
             Sprite.Play("jumpStart");
             Speed.Y = -225f;
             Speed.X = 260f * (Facing == Facings.Right ? -1 : 1);
@@ -480,7 +488,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 swipeDuration -= Engine.DeltaTime;
                 if (SceneAs<Level>().OnInterval(0.4f))
                 {
-                    SceneAs<Level>().Add(new TorizoWave(new Vector2(Position.X + (Facing == Facings.Right ? 64 : 24), Position.Y + 24 + waveYPos * 24), new Vector2(175f, 0f), Facing == Facings.Left));
+                    SceneAs<Level>().Add(new TorizoWave(new Vector2(Position.X + (Facing == Facings.Right ? 64 : 24), Position.Y + 40 + waveYPos * 24), new Vector2(175f, 0f), Facing == Facings.Left));
                     waveYPos += 1f;
                     if (waveYPos > 1f)
                     {
