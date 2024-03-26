@@ -37,6 +37,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Depth = 1;
             }
 
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                Audio.Play("event:/game/xaphan/torizo_fireball", Position);
+            }
+
             public override void Update()
             {
                 base.Update();
@@ -56,6 +62,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private void OnCollide(CollisionData data)
             {
+                int soundChance = Calc.Random.Next(1, 4);
+                if (soundChance == 3)
+                {
+                    Audio.Play("event:/game/xaphan/torizo_fireball_explode", Position);
+                }
                 Collidable = false;
                 Speed = Vector2.Zero;
                 Sprite.Play("explode");
@@ -102,6 +113,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(new Coroutine(SpeedRoutine(toLeft)));
                 Add(new Coroutine(SpriteRoutine()));
                 Add(new Coroutine(LifeRoutine()));
+            }
+
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                Audio.Play("event:/game/xaphan/torizo_swipe", Position);
             }
 
             public override void Update()
@@ -222,6 +239,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SceneAs<Level>().Shake(0.3f);
                         Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
+                        Audio.Play("event:/game/xaphan/torizo_walk", Position);
                     }
                 }
             };
@@ -467,6 +485,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             CannotJumpDelay = 7f;
             Sprite.Play("jumpStart");
+            Audio.Play("event:/game/xaphan/torizo_attack_2", Position);
             Speed.Y = -225f;
             Speed.X = 260f * (Facing == Facings.Right ? -1 : 1);
             MidAir = true;
@@ -512,6 +531,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 8);
             CannotShootDelay = 5f;
             Sprite.Play("shoot");
+            Audio.Play("event:/game/xaphan/torizo_attack_1", Position);
             float shootAnimDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
             yield return shootAnimDuration;
             float shootDuration = 1f;
@@ -564,6 +584,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator KneelRoutine()
         {
             Sprite.Stop();
+            Audio.Play("event:/game/xaphan/torizo_death", Position);
             yield return 0.75f;
             Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 16);
             Sprite.Play("kneel");
@@ -625,6 +646,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (Health > 0 && InvincibilityDelay <= 0)
             {
+                Audio.Play("event:/game/xaphan/torizo_hit", Position);
                 Health -= 1;
                 InvincibilityDelay = 0.75f;
             }

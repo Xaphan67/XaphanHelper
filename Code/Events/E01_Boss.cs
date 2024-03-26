@@ -180,8 +180,14 @@ namespace Celeste.Mod.XaphanHelper.Events
                 level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
                 level.Add(jumpThru6);
                 level.Displacement.AddBurst(jumpThru6.Center, 0.5f, 8f, 32f, 0.5f);
+                level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
+                refill1.RemoveSelf();
+                level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                refill2.RemoveSelf();
                 level.Session.SetFlag("D-07_Gate_1", false);
                 level.Session.SetFlag("Torizo_Defeated", true);
+                level.Session.SetFlag("Torizo_Wakeup", false);
+                level.Session.SetFlag("Torizo_Start", false);
                 string Prefix = level.Session.Area.LevelSet;
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated"))
                 {
