@@ -484,6 +484,16 @@ namespace Celeste.Mod.XaphanHelper
                 reqID: "bside1"
             ));
 
+            list.Add(new AchievementData(
+                achievementID: "boss1-1",
+                categoryID: 1,
+                icon: "achievements/Xaphan/Boss",
+                flag: "XaphanHelper_StatFlag_BossCh1",
+                currentValue: session.GetFlag("XaphanHelper_StatFlag_BossCh1") ? 1 : 0,
+                maxValue: 1,
+                medals: 25
+            ));
+
             // Area 2
             list.Add(new AchievementData(
                 achievementID: "gem2-1",
