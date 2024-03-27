@@ -534,6 +534,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Audio.Play("event:/game/xaphan/torizo_attack_1", Position);
             float shootAnimDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
             yield return shootAnimDuration;
+            yield return 0.5f;
             float shootDuration = 1f;
             while (shootDuration > 0)
             {
