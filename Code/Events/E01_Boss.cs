@@ -97,7 +97,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
+            //if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
                 while (player.Right > jumpThru6.Right && !player.OnGround())
                 {
@@ -118,6 +118,12 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 else
                 {
+                    if (level.Session.GetFlag("boss_Checkpoint"))
+                    {
+                        jumpThru2.RemoveSelf();
+                        jumpThru5.RemoveSelf();
+                        boss.SetHealth(8);
+                    }
                     while (!boss.playerHasMoved)
                     {
                         yield return null;
@@ -125,27 +131,35 @@ namespace Celeste.Mod.XaphanHelper.Events
                     SceneAs<Level>().Session.SetFlag("Torizo_Start", true);
                 }
 
-                // Phase 1
+                // Initialise fight
                 level.Session.SetFlag("In_bossfight", true);
                 level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_mini_boss");
                 level.Session.Audio.Apply();
                 level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(448f, 152f));
 
-                // Phase 2
-                while (boss.Health >= 13)
+                if (!level.Session.GetFlag("boss_Checkpoint"))
                 {
-                    yield return null;
+                    // Phase 2
+                    while (boss.Health >= 13)
+                    {
+                        yield return null;
+                    }
+                    level.Add(warningSign2);
+                    level.Add(warningSign5);
+                    Add(new Coroutine(WarningSound()));
+                    yield return 1.5f;
+                    warningSign2.Visible = false;
+                    warningSign5.Visible = false;
+                    level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
+                    jumpThru2.RemoveSelf();
+                    level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
+                    jumpThru5.RemoveSelf();
+                    while (boss.Health >= 9)
+                    {
+                        yield return null;
+                    }
+                    level.Session.SetFlag("boss_Checkpoint");
                 }
-                level.Add(warningSign2);
-                level.Add(warningSign5);
-                Add(new Coroutine(WarningSound()));
-                yield return 1.5f;
-                warningSign2.Visible = false;
-                warningSign5.Visible = false;
-                level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
-                jumpThru2.RemoveSelf();
-                level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
-                jumpThru5.RemoveSelf();
 
                 // Phase 3
                 while (boss.Health >= 5)
@@ -172,6 +186,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 {
                     yield return null;
                 }
+                level.Session.SetFlag("boss_Checkpoint", false);
                 level.Add(jumpThru1);
                 level.Displacement.AddBurst(jumpThru1.Center, 0.5f, 8f, 32f, 0.5f);
                 level.Add(jumpThru2);

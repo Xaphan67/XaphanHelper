@@ -210,6 +210,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Torizo/"));
             Sprite.Add("sit", "standUp", 0f, 0);
             Sprite.Add("standUp", "standUp", 0.08f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+            Sprite.Add("standUpEnd", "standUp", 0f, 11);
             Sprite.Add("idle", "walk", 0f, 0);
             Sprite.Add("walk", "walk", 0.08f, 0, 1, 2, 3, 4, 5, 6, 7);
             Sprite.Add("walk2", "walk", 0.08f, 8, 9, 10 ,11, 12, 13, 14);
@@ -416,16 +417,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public void SetHealth(int health)
+        {
+            Health = health;
+        }
+
         public IEnumerator SequenceRoutine()
         {
-            while (!SceneAs<Level>().Session.GetFlag("Torizo_Wakeup"))
+            if (!SceneAs<Level>().Session.GetFlag("Torizo_Wakeup"))
             {
-                yield return null;
+                while (!SceneAs<Level>().Session.GetFlag("Torizo_Wakeup"))
+                {
+                    yield return null;
+                }
+                StandUp();
+                while (!Activated)
+                {
+                    yield return null;
+                }
             }
-            StandUp();
-            while (!Activated)
+            else
             {
-                yield return null;
+                Sprite.Play("standUpEnd");
+                Activated = true;
+                CannotSwipeDelay = 5f;
+                SceneAs<Level>().Session.SetFlag("Torizo_Start", false);
             }
             while (!SceneAs<Level>().Session.GetFlag("Torizo_Start"))
             {
