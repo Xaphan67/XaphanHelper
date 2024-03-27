@@ -497,7 +497,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.X -= 1;
                     }
-                    Scene.Add(new Arrow(Position, null, "Right"));
+                    Scene.Add(new JumpThruArrow(Position, "Right"));
                 }
                 else if (side == "Left")
                 {
@@ -505,7 +505,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.X += 1;
                     }
-                    Scene.Add(new Arrow(Position, null, "Left"));
+                    Scene.Add(new JumpThruArrow(Position, "Left"));
                 }
                 else if (side == "Top")
                 {
