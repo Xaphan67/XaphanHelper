@@ -214,10 +214,15 @@
 	ModOptions_XaphanModule_MapScreenShowHints= Écran carte - Afficher / chacher les indices
 
 #UI
-	XaphanHelper_UI_ActiveCM_title= ACTIVER LE MODE DEFI ?
-	XaphanHelper_UI_CM_note1= Le mode défi permet de rejouer cette rencontre de boss{n}dans une version plus difficile
-	XaphanHelper_UI_CM_note2= Vous pouvez abandonner le mode défi dans le menu Pause{n}tant que la rencontre n'a pas commencé
+	XaphanHelper_UI_ActiveCM_title= PRÊT POUR UN DEFI ?
+	XaphanHelper_UI_CM_note1= Vous pouvez rejouer cette rencontre de boss{n} ou jouer à une version plus difficile
+	XaphanHelper_UI_CM_note2= Vous pouvez abandonner la rencontre dans le menu Pause{n}tant que vous n'avez pas bougé
 	XaphanHelper_UI_CM_note3= Attention! Les capacités qui ne sont normalement pas accessibles{n}lors de cette rencontre seront temporairement désactivées
+	XaphanHelper_UI_Replay_Normal_Mode= Rejouer le mode normal
+	XaphanHelper_UI_Play_Challenge_Mode= Jouer au mode défi
+	XaphanHelper_UI_Replay_Challenge_Mode= Rejouer au mode défi
+	XaphanHelper_UI_GiveUpNM_title= ABANDONNER CETTE RENCONTRE
+	XaphanHelper_UI_GiveUpNM= Abandonner cette rencontre
 	XaphanHelper_UI_GiveUpCM_title= ABANDONNER LE MODE DEFI ?
 	XaphanHelper_UI_GiveUpCM= Abandonner le mode défi
 	XaphanHelper_UI_GiveUpBSide_title= ABANDONNER LA FACE B ?

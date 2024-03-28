@@ -2782,7 +2782,7 @@ namespace Celeste.Mod.XaphanHelper
                     menu.Remove(menu.Items[retryIndex]);
                 }
             }
-            if (level.Session.GetFlag("boss_Challenge_Mode") && !level.Session.GetFlag("In_bossfight"))
+            if ((level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode")) && !level.Session.GetFlag("In_bossfight"))
             {
                 // Find the position of "Retry"
                 int retryIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETRY"));
@@ -2794,7 +2794,7 @@ namespace Celeste.Mod.XaphanHelper
                 }
 
                 // add the "Giveup Challenge Mode" button
-                TextMenu.Button GiveUpCMButton = new(Dialog.Clean("XaphanHelper_UI_GiveUpCM"));
+                TextMenu.Button GiveUpCMButton = new(Dialog.Clean(level.Session.GetFlag("boss_Normal_Mode") ? "XaphanHelper_UI_GiveUpNM" : "XaphanHelper_UI_GiveUpCM"));
                 GiveUpCMButton.Pressed(() =>
                 {
                     level.PauseMainMenuOpen = false;
@@ -2863,13 +2863,15 @@ namespace Celeste.Mod.XaphanHelper
                 TextMenu menu = new();
                 menu.AutoScroll = false;
                 menu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f - 100f);
-                menu.Add(new TextMenu.Header(Dialog.Clean("XaphanHelper_UI_GiveUpCM_title")));
+                menu.Add(new TextMenu.Header(Dialog.Clean(level.Session.GetFlag("boss_Normal_Mode") ? "XaphanHelper_UI_GiveUpNM_title" : "XaphanHelper_UI_GiveUpCM_title")));
                 menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_continue")).Pressed(delegate
                 {
                     menu.RemoveSelf();
                     CMote.ManageUpgrades(level, true);
+                    level.Session.SetFlag("boss_Normal_Mode_Given_Up", true);
                     level.Session.SetFlag("boss_Challenge_Mode_Given_Up", true);
                     level.Session.SetFlag("Boss_Defeated", true);
+                    level.Session.SetFlag("boss_Normal_Mode", false);
                     level.Session.SetFlag("boss_Challenge_Mode", false);
                     level.Paused = false;
                     Engine.FreezeTimer = 0.15f;

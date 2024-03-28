@@ -214,10 +214,15 @@
 	ModOptions_XaphanModule_MapScreenShowHints= Map Screen - Show / Hide Hints
 
 #UI
-	XaphanHelper_UI_ActiveCM_title= ACTIVATE CHALLENGE MODE?
-	XaphanHelper_UI_CM_note1= The challenge mode allows you to replay this boss encounter{n}in a more difficult version
-	XaphanHelper_UI_CM_note2= You can quit the challenge mode in the Pause menu{n}as long as the encounter has not started
+	XaphanHelper_UI_ActiveCM_title= READY FOR A CHALLENGE?
+	XaphanHelper_UI_CM_note1= You can choose to replay this boss encounter{n} or play a more difficult version
+	XaphanHelper_UI_CM_note2= You can quit the encounter in the Pause menu{n}as long as you had not moved
 	XaphanHelper_UI_CM_note3= Warning! Abilities that are not normally available{n}during this encounter will be temporarily disabled
+	XaphanHelper_UI_Replay_Normal_Mode= Replay Normal Mode
+	XaphanHelper_UI_Play_Challenge_Mode= Play Challenge Mode
+	XaphanHelper_UI_Replay_Challenge_Mode= Replay Challenge Mode
+	XaphanHelper_UI_GiveUpNM_title= GIVE UP THIS ENCOUNTER?
+	XaphanHelper_UI_GiveUpNM= Give Up this Encounter
 	XaphanHelper_UI_GiveUpCM_title= GIVE UP CHALLENGE MODE?
 	XaphanHelper_UI_GiveUpCM= Give Up Challenge Mode
 	XaphanHelper_UI_GiveUpBSide_title= GIVE UP B-SIDE?

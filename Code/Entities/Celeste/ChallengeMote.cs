@@ -17,17 +17,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Level level;
 
-        private CustomFinalBoss boss;
-
         private TextMenu menu;
 
         private Sprite sprite = new(GFX.Game, "objects/XaphanHelper/ChallengeMote/");
 
         private Vector2 BerryPos;
 
+        private Vector2 origBerryPos;
+
         private Strawberry strawberry;
 
         private bool Started;
+
+        private int ChapterIndex;
+
+        private bool BerryAppeared;
+
+        private Coroutine BerryRoutine = new();
 
         public bool SpaceJumpCollected()
         {
@@ -46,6 +52,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public ChallengeMote(EntityData data, Vector2 position, EntityID ID) : base(data.Position + position)
         {
+            Tag = Tags.TransitionUpdate;
             BerryPos = Position + new Vector2(0, -48);
             P_Fire = new ParticleType
             {
@@ -68,6 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             };
             sprite.AddLoop("idle", "idle", 0.16f);
             sprite.Add("completed", "completed", 0.08f);
+            sprite.Add("completedEnd", "completed", 0f, 9);
             sprite.CenterOrigin();
             sprite.Justify = new Vector2(0.5f, 0.5f);
             sprite.Play("idle");
@@ -80,25 +88,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             level = SceneAs<Level>();
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+            ChapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             Add(talk = new TalkComponent(new Rectangle(-12, 8, 24, 8), new Vector2(0f, -12f), Interact));
-            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || level.Session.GetFlag("Boss_Defeated_CM"))
-            {
-                Visible = false;
-                talk.Enabled = false;
-            }
-            else
-            {
-                talk.Enabled = false;
-                if (!level.Session.GetFlag("Boss_Defeated") || level.Session.GetFlag("boss_Challenge_Mode"))
-                {
-                    Visible = false;
-                    talk.Enabled = false;
-                }
-                else
-                {
-                    talk.Enabled = true;
-                }
-            }
+            talk.Enabled = false;
+            Visible = false;
         }
 
         public override void Update()
@@ -106,62 +99,61 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex == -1 ? 0 : SceneAs<Level>().Session.Area.ChapterIndex;
-            strawberry = level.Entities.FindFirst<Strawberry>();
-            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            if (strawberry == null)
             {
-                if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || level.Session.GetFlag("Boss_Defeated_CM")) && strawberry != null && !Started)
+                strawberry = level.Entities.FindFirst<Strawberry>();
+            }
+            if (strawberry != null)
+            {
+                origBerryPos = strawberry.Position;
+            }
+            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            {
+                if (!level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                 {
-                    Started = true;
                     Visible = true;
-                    talk.Enabled = false;
-                    level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
-                    sprite.Play("completed");
-                    sprite.OnLastFrame = onLastFrame;
-                }
-                else if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || level.Session.GetFlag("Boss_Defeated_CM")))
-                {
-                    if (!Started)
+                    talk.Enabled = !BerryRoutine.Active;
+                    talk.PlayerMustBeFacing = false;
+                    if (Scene.OnInterval(0.03f))
                     {
-                        Visible = false;
-                        if (talk != null)
-                        {
-                            talk.Enabled = false;
-                        }
+                        Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
+                        level.ParticlesBG.Emit(P_Fire, position + new Vector2(0, -3f));
+                    }
+                    if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || level.Session.GetFlag("Boss_Defeated_CM")) && strawberry != null && !BerryAppeared)
+                    {
+                        Visible = talk.Enabled = false;
+                        BerryAppeared = true;
+                        level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+                        sprite.Play("completed");
+                        sprite.OnLastFrame = onLastFrame;
+                    } else if (strawberry == null)
+                    {
+                        sprite.Play("completedEnd");
+                    }
+                    if (Started)
+                    {
+                        level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+                        Started = false;
                     }
                 }
                 else
                 {
-                    if (!level.Session.GetFlag("Boss_Defeated") || level.Session.GetFlag("boss_Challenge_Mode") && !level.Session.GetFlag("Boss_Defeated_CM"))
+                    if (strawberry != null && strawberry.Position == BerryPos)
                     {
-                        Visible = false;
-                        if (talk != null)
-                        {
-                            talk.Enabled = false;
-                        }
-                        ManageUpgrades(level, false);
+                        level.Displacement.AddBurst(strawberry.Center, 0.5f, 8f, 32f, 0.5f);
+                        strawberry.Position = origBerryPos;
+                        BerryAppeared = false;
                     }
-                    else
-                    {
-                        Visible = true;
-                        if (Scene.OnInterval(0.03f))
-                        {
-                            Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
-                            level.ParticlesBG.Emit(P_Fire, position + new Vector2(0, -3f));
-                        }
-                        if (talk.Enabled == false && !level.Session.GetFlag("Boss_Defeated_CM"))
-                        {
-                            level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
-                            talk.Enabled = true;
-                            talk.PlayerMustBeFacing = false;
-                        }
-                    }
+                    Visible = talk.Enabled = false;
+                    Started = true;
+                    ManageUpgrades(level, false);
                 }
             }
         }
 
         private void onLastFrame(string s)
         {
-            Add(new Coroutine(BerryApear()));
+            Add(BerryRoutine = new Coroutine(BerryApear()));
         }
 
         private void Interact(Player player)
@@ -219,8 +211,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             (Scene as Level).Flash(Color.White);
             strawberry.Position = dummy.Position;
             Scene.Remove(dummy);
-            level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
-            RemoveSelf();
         }
 
         public IEnumerator Routine(Player player)
@@ -240,20 +230,41 @@ namespace Celeste.Mod.XaphanHelper.Entities
             menu.Add(new TextMenu.SubHeader(Dialog.Clean("XaphanHelper_UI_CM_note2")));
             menu.Add(new TextMenu.SubHeader(Dialog.Clean("XaphanHelper_UI_CM_note3")));
             menu.Add(new TextMenu.SubHeader(""));
-            menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_continue")).Pressed(delegate
+            menu.Add(new TextMenu.Button(Dialog.Clean("XaphanHelper_UI_Replay_Normal_Mode")).Pressed(delegate
             {
                 menu.RemoveSelf();
-                ManageUpgrades(level, false);
-                boss = level.Tracker.GetEntity<CustomFinalBoss>();
-                Audio.Play("event:/game/05_mirror_temple/room_lightlevel_down");
-                level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
-                level.Session.Audio.Apply();
-                level.Session.SetFlag("boss_Challenge_Mode", true);
-                level.Session.SetFlag("Boss_Defeated", false);
-                boss.playerHasMoved = false;
-                boss.hits = 0;
-                level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
-                level.Session.RespawnPoint = level.GetSpawnPoint(Position);
+                if (ChapterIndex == 2 && level.Session.Level == "I-21")
+                {
+                    ManageUpgrades(level, false);
+                    CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
+                    level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
+                    level.Session.Audio.Apply();
+                    level.Session.SetFlag("boss_Normal_Mode", true);
+                    level.Session.SetFlag("Boss_Defeated", false);
+                    boss.playerHasMoved = false;
+                    boss.hits = 0;
+                    level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+                    level.Session.RespawnPoint = level.GetSpawnPoint(Position);
+                }
+            }));
+            string Prefix = level.Session.Area.LevelSet;
+            menu.Add(new TextMenu.Button(Dialog.Clean(XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM") ? "XaphanHelper_UI_Replay_Challenge_Mode" : "XaphanHelper_UI_Play_Challenge_Mode")).Pressed(delegate
+            {
+                menu.RemoveSelf();
+                if (ChapterIndex == 2 && level.Session.Level == "I-21")
+                {
+                    ManageUpgrades(level, false);
+                    CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
+                    Audio.Play("event:/game/05_mirror_temple/room_lightlevel_down");
+                    level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
+                    level.Session.Audio.Apply();
+                    level.Session.SetFlag("boss_Challenge_Mode", true);
+                    level.Session.SetFlag("Boss_Defeated", false);
+                    boss.playerHasMoved = false;
+                    boss.hits = 0;
+                    level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+                    level.Session.RespawnPoint = level.GetSpawnPoint(Position);
+                }
             }));
             menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_cancel")).Pressed(delegate
             {

@@ -261,7 +261,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
+            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode") || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode"))))
             {
                 level.Add(cellingTopSprite);
                 if (level.Session.GetFlag("boss_Checkpoint"))
@@ -292,11 +292,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
 
                 // Initialize fight
-                while (!boss.playerHasMoved && !level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
+                while (!boss.playerHasMoved && !level.Session.GetFlag("boss_Normal_Mode_Given_Up") && !level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
                 {
                     yield return null;
                 }
-                if (level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
+                if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") || level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
                 {
                     if (SpaceJumpCollected())
                     {
@@ -307,6 +307,18 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_item");
                         level.Session.Audio.Apply();
+                    }
+                    if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") && level.Session.GetFlag("boss_Checkpoint"))
+                    {
+                        level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(160f, 320f));
+                        player.StateMachine.State = 11;
+                        yield return new FadeWipe(Scene, wipeIn: false).Duration = 0.5f;
+                        level.CameraOffset = new Vector2(0, 10f * 32f);
+                        level.Camera.Position = bounds + new Vector2(0, 184f);
+                        player.Position = bounds + new Vector2(160f, 320f);
+                        yield return new FadeWipe(Scene, wipeIn: true);
+                        player.StateMachine.State = 0;
+                        level.Session.SetFlag("boss_Checkpoint", false);
                     }
                 }
                 else
@@ -512,7 +524,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                     string Prefix = level.Session.Area.LevelSet;
-                    if (!HasGolden() && !level.Session.GetFlag("boss_Challenge_Mode"))
+                    if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         Scene.Add(new CS02_BossDefeated(player));
                     }
@@ -553,6 +565,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.SetFlag("Upgrade_DashBoots", true);
                         XaphanModule.ModSettings.DashBoots = true;
                     }
+                    level.Session.SetFlag("boss_Normal_Mode", false);
                     if (level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         CMote.ManageUpgrades(level, true);
@@ -560,6 +573,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.SetFlag("boss_Challenge_Mode", false);
                     }
                 }
+                level.Session.SetFlag("boss_Normal_Mode_Given_Up", false);
                 level.Session.SetFlag("boss_Challenge_Mode_Given_Up", false);
                 if (XaphanModule.ModSettings.ShowMiniMap)
                 {
