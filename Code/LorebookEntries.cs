@@ -332,6 +332,14 @@ namespace Celeste.Mod.XaphanHelper
             ));
 
             list.Add(new LorebookData(
+                entryID: "boss-1-1",
+                categoryID: 2,
+                picture: "lorebook/Xaphan/Bestiary/boss-1-1",
+                flag: "XaphanHelper_StatFlag_BossCh1",
+                subCategoryID: "advc2"
+            ));
+
+            list.Add(new LorebookData(
                 entryID: "advc3",
                 categoryID: 2,
                 picture: null,
