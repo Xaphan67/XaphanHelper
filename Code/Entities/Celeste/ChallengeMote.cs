@@ -35,9 +35,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Coroutine BerryRoutine = new();
 
+        private bool AllowsSpaceJump;
+
+        private bool AllowsBombs;
+
+        private bool AllowsSpiderMagnet;
+
         public bool SpaceJumpCollected()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
+        public bool BombsCollected()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_Bombs" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
+        public bool SpiderMagnetCollected()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpiderMagnet" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public bool LightningDashCollected()
@@ -52,6 +68,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public ChallengeMote(EntityData data, Vector2 position, EntityID ID) : base(data.Position + position)
         {
+            AllowsSpaceJump = data.Bool("allowsSpaceJump", false);
+            AllowsBombs = data.Bool("allowsBombs", false);
+            AllowsSpiderMagnet = data.Bool("allowsSpiderMagnet", false);
             Tag = Tags.TransitionUpdate;
             BerryPos = Position + new Vector2(0, -48);
             P_Fire = new ParticleType
@@ -233,32 +252,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
             menu.Add(new TextMenu.Button(Dialog.Clean("XaphanHelper_UI_Replay_Normal_Mode")).Pressed(delegate
             {
                 menu.RemoveSelf();
+                ManageUpgrades(level, false);
+                level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
+                level.Session.Audio.Apply();
+                level.Session.SetFlag("boss_Normal_Mode", true);
+                level.Session.SetFlag("Boss_Defeated", false);
                 if (ChapterIndex == 1 && level.Session.Level == "D-07")
                 {
-                    ManageUpgrades(level, false);
                     Torizo boss = level.Tracker.GetEntity<Torizo>();
-                    level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
-                    level.Session.Audio.Apply();
-                    level.Session.SetFlag("boss_Normal_Mode", true);
-                    level.Session.SetFlag("Boss_Defeated", false);
                     boss.playerHasMoved = false;
                     boss.Health = 15;
-                    level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
-                    level.Session.RespawnPoint = level.GetSpawnPoint(Position);
-                }
-                if (ChapterIndex == 2 && level.Session.Level == "I-21")
+                    
+                } else if (ChapterIndex == 2 && level.Session.Level == "I-21")
                 {
-                    ManageUpgrades(level, false);
                     CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
-                    level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
-                    level.Session.Audio.Apply();
-                    level.Session.SetFlag("boss_Normal_Mode", true);
-                    level.Session.SetFlag("Boss_Defeated", false);
                     boss.playerHasMoved = false;
                     boss.hits = 0;
-                    level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
-                    level.Session.RespawnPoint = level.GetSpawnPoint(Position);
                 }
+                level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+                level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             }));
             string Prefix = level.Session.Area.LevelSet;
             menu.Add(new TextMenu.Button(Dialog.Clean(XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM") ? "XaphanHelper_UI_Replay_Challenge_Mode" : "XaphanHelper_UI_Play_Challenge_Mode")).Pressed(delegate
@@ -319,7 +331,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     XaphanModule.ModSettings.SpaceJump = 2;
                     level.Session.SetFlag("Upgrade_HadSpaceJump", false);
                 }
-                if (level.Session.GetFlag("Upgrade_HadLightningDash"))
+                if (level.Session.GetFlag("Upgrade_HadBombs"))
+                {
+                    level.Session.SetFlag("Upgrade_SpaceJump", true);
+                    XaphanModule.ModSettings.Bombs = true;
+                    level.Session.SetFlag("Upgrade_HadBombs", false);
+                }
+                if (level.Session.GetFlag("Upgrade_HadSpaceJump"))
+                {
+                    level.Session.SetFlag("Upgrade_SpiderMagnet", true);
+                    XaphanModule.ModSettings.SpiderMagnet = true;
+                    level.Session.SetFlag("Upgrade_HadSpiderMagnet", false);
+                }
+                /*if (level.Session.GetFlag("Upgrade_HadLightningDash"))
                 {
                     level.Session.SetFlag("Upgrade_LightningDash", true);
                     XaphanModule.ModSettings.LightningDash = true;
@@ -330,17 +354,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     level.Session.SetFlag("Upgrade_GravityJacket", true);
                     XaphanModule.ModSettings.GravityJacket = true;
                     level.Session.SetFlag("Upgrade_HadGravityJacket", false);
-                }
+                }*/
             }
             else
             {
-                if (SpaceJumpCollected() || level.Session.GetFlag("Upgrade_HadSpaceJump"))
+                if ((SpaceJumpCollected() || level.Session.GetFlag("Upgrade_SpaceJump")) && !AllowsSpaceJump)
                 {
                     level.Session.SetFlag("Upgrade_SpaceJump", false);
                     XaphanModule.ModSettings.SpaceJump = 1;
                     level.Session.SetFlag("Upgrade_HadSpaceJump", true);
                 }
-                if (LightningDashCollected() || level.Session.GetFlag("Upgrade_HadLightningDash"))
+                if ((BombsCollected() || level.Session.GetFlag("Upgrade_Bombs")) && !AllowsBombs)
+                {
+                    level.Session.SetFlag("Upgrade_Bombs", false);
+                    XaphanModule.ModSettings.Bombs = false;
+                    level.Session.SetFlag("Upgrade_HadBombs", true);
+                }
+                if ((SpiderMagnetCollected() || level.Session.GetFlag("Upgrade_SpiderMagnet")) && !AllowsSpiderMagnet)
+                {
+                    level.Session.SetFlag("Upgrade_SpiderMagnet", false);
+                    XaphanModule.ModSettings.SpiderMagnet = false;
+                    level.Session.SetFlag("Upgrade_HadSpiderMagnet", true);
+                }
+                /*if (LightningDashCollected() || level.Session.GetFlag("Upgrade_HadLightningDash"))
                 {
                     level.Session.SetFlag("Upgrade_LightningDash", false);
                     XaphanModule.ModSettings.LightningDash = false;
@@ -351,7 +387,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     level.Session.SetFlag("Upgrade_GravityJacket", false);
                     XaphanModule.ModSettings.GravityJacket = false;
                     level.Session.SetFlag("Upgrade_HadGravityJacket", true);
-                }
+                }*/
             }
         }
     }

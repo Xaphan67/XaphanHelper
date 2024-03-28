@@ -260,11 +260,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                         }
                     }
                     level.Session.SetFlag("In_bossfight", false);
-                    level.Session.SetFlag("boss_Normal_Mode", false);
-                    if (level.Session.GetFlag("boss_Challenge_Mode"))
+                    if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         CMote.ManageUpgrades(level, true);
                         CMote.Visible = true;
+                        level.Session.SetFlag("boss_Normal_Mode", false);
                         level.Session.SetFlag("boss_Challenge_Mode", false);
                     }
                 }
