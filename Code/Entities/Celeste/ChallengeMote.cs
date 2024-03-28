@@ -218,7 +218,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level.PauseLock = true;
             player.StateMachine.State = 11;
             yield return player.DummyWalkToExact((int)X, false, 1f, true);
-            player.Facing = Facings.Right;
+            player.Facing = player.Center.X <= level.Bounds.Left + level.Bounds.Width / 2 ? Facings.Right : Facings.Left;
             Audio.Play("event:/ui/game/pause");
             level.FormationBackdrop.Display = true;
             level.FormationBackdrop.Alpha = 0.5f;
@@ -233,6 +233,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             menu.Add(new TextMenu.Button(Dialog.Clean("XaphanHelper_UI_Replay_Normal_Mode")).Pressed(delegate
             {
                 menu.RemoveSelf();
+                if (ChapterIndex == 1 && level.Session.Level == "D-07")
+                {
+                    ManageUpgrades(level, false);
+                    Torizo boss = level.Tracker.GetEntity<Torizo>();
+                    level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
+                    level.Session.Audio.Apply();
+                    level.Session.SetFlag("boss_Normal_Mode", true);
+                    level.Session.SetFlag("Boss_Defeated", false);
+                    boss.playerHasMoved = false;
+                    boss.Health = 15;
+                    level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+                    level.Session.RespawnPoint = level.GetSpawnPoint(Position);
+                }
                 if (ChapterIndex == 2 && level.Session.Level == "I-21")
                 {
                     ManageUpgrades(level, false);
