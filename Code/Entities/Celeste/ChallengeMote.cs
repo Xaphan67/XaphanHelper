@@ -121,7 +121,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (strawberry == null)
             {
                 strawberry = level.Entities.FindFirst<Strawberry>();
-                origBerryPos = strawberry.Position;
+                if (strawberry != null)
+                {
+                    origBerryPos = strawberry.Position;
+                }
             }
             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
             {
