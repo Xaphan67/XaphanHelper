@@ -26,21 +26,36 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         private JumpThru jumpThru6;
 
+        private CustomRefill refill1;
+
+        private CustomRefill refill2;
+
+        private CustomRefill refill3;
+
+        private Decal arrowDown1;
+
+        private Decal arrowDown2;
+
         private Decal warningSign1;
 
         private Decal warningSign2;
+
+        private Decal warningSign3;
+
+        private Decal warningSign4;
 
         private Decal warningSign5;
 
         private Decal warningSign6;
 
-        private CustomRefill refill1;
-
-        private CustomRefill refill2;
-
         public bool BossDefeated()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
+        public bool BossDefeatedCM()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public bool HasGolden()
@@ -66,10 +81,15 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru4 = new JumpthruPlatform(bounds + new Vector2(335f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(368f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru6 = new JumpthruPlatform(bounds + new Vector2(401f, 152f), 32, "Xaphan/ruins_c", 8);
-            refill1 = new CustomRefill(jumpThru3.Position + new Vector2(16f, -64f), "Max Dashes", false, 2.5f);
-            refill2 = new CustomRefill(jumpThru4.Position + new Vector2(16f, -64f), "Max Dashes", false, 2.5f);
+            refill1 = new CustomRefill(jumpThru3.Position + new Vector2(47f, -64f), "Max Dashes", false, 2.5f);
+            refill2 = new CustomRefill(jumpThru2.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f);
+            refill3 = new CustomRefill(jumpThru5.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f);
+            arrowDown1 = new Decal("Xaphan/Common/arrow_down00.png", jumpThru3.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
+            arrowDown2 = new Decal("Xaphan/Common/arrow_down00.png", jumpThru4.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             warningSign2 = new Decal("Xaphan/Common/warning00.png", jumpThru2.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
+            warningSign3 = new Decal("Xaphan/Common/warning00.png", jumpThru3.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
+            warningSign4 = new Decal("Xaphan/Common/warning00.png", jumpThru4.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             warningSign5 = new Decal("Xaphan/Common/warning00.png", jumpThru5.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             warningSign6 = new Decal("Xaphan/Common/warning00.png", jumpThru6.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
         }
@@ -130,7 +150,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 else
                 {
-                    if (level.Session.GetFlag("boss_Normal_Mode"))
+                    if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         level.Session.SetFlag("D-07_Gate_1", true);
                     }
@@ -144,14 +164,14 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
-                    if (level.Session.GetFlag("boss_Normal_Mode"))
+                    if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         level.Session.SetFlag("Torizo_Wakeup", true);
                     }
                     level.Session.SetFlag("Torizo_Start", true);
                 }
 
-                if (level.Session.GetFlag("boss_Normal_Mode_Given_Up"))
+                if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") || level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
                 {
                     if (level.Session.GetFlag("boss_Checkpoint"))
                     {
@@ -173,23 +193,57 @@ namespace Celeste.Mod.XaphanHelper.Events
                         {
                             yield return null;
                         }
-                        level.Add(warningSign2);
-                        level.Add(warningSign5);
-                        warningSign2.Visible = true;
-                        warningSign5.Visible = true;
-                        Add(new Coroutine(WarningSound()));
-                        yield return 1.5f;
-                        warningSign2.Visible = false;
-                        warningSign5.Visible = false;
-                        level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
-                        jumpThru2.RemoveSelf();
-                        level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
-                        jumpThru5.RemoveSelf();
-                        while (boss.Health >= 9)
+                        if (!level.Session.GetFlag("boss_Challenge_Mode"))
                         {
-                            yield return null;
+                            level.Add(warningSign2);
+                            level.Add(warningSign5);
+                            warningSign2.Visible = true;
+                            warningSign5.Visible = true;
+                            Add(new Coroutine(WarningSound()));
+                            yield return 1.5f;
+                            warningSign2.Visible = false;
+                            warningSign5.Visible = false;
+                            level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
+                            jumpThru2.RemoveSelf();
+                            level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
+                            jumpThru5.RemoveSelf();
+                            while (boss.Health >= 9)
+                            {
+                                yield return null;
+                            }
+                            level.Session.SetFlag("boss_Checkpoint");
                         }
-                        level.Session.SetFlag("boss_Checkpoint");
+                        else
+                        {
+                            level.Add(warningSign3);
+                            level.Add(warningSign4);
+                            warningSign3.Visible = true;
+                            warningSign4.Visible = true;
+                            Add(new Coroutine(WarningSound()));
+                            yield return 1.5f;
+                            warningSign3.Visible = false;
+                            warningSign4.Visible = false;
+                            level.Displacement.AddBurst(jumpThru3.Center, 0.5f, 8f, 32f, 0.5f);
+                            jumpThru3.RemoveSelf();
+                            level.Displacement.AddBurst(jumpThru4.Center, 0.5f, 8f, 32f, 0.5f);
+                            jumpThru4.RemoveSelf();
+                            while (boss.Health >= 9)
+                            {
+                                yield return null;
+                            }
+                            level.Add(warningSign1);
+                            level.Add(warningSign6);
+                            warningSign1.Visible = true;
+                            warningSign6.Visible = true;
+                            Add(new Coroutine(WarningSound()));
+                            yield return 1.5f;
+                            warningSign1.Visible = false;
+                            warningSign6.Visible = false;
+                            level.Displacement.AddBurst(jumpThru1.Center, 0.5f, 8f, 32f, 0.5f);
+                            jumpThru1.RemoveSelf();
+                            level.Displacement.AddBurst(jumpThru6.Center, 0.5f, 8f, 32f, 0.5f);
+                            jumpThru6.RemoveSelf();
+                        }
                     }
 
                     // Phase 3
@@ -197,22 +251,46 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
-                    level.Add(warningSign1);
-                    level.Add(warningSign6);
-                    warningSign1.Visible = true;
-                    warningSign6.Visible = true;
-                    Add(new Coroutine(WarningSound()));
-                    yield return 1.5f;
-                    warningSign1.Visible = false;
-                    warningSign6.Visible = false;
-                    level.Displacement.AddBurst(jumpThru1.Center, 0.5f, 8f, 32f, 0.5f);
-                    jumpThru1.RemoveSelf();
-                    level.Displacement.AddBurst(jumpThru6.Center, 0.5f, 8f, 32f, 0.5f);
-                    jumpThru6.RemoveSelf();
-                    level.Add(refill1);
-                    level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                    level.Add(refill2);
-                    level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                    if (!level.Session.GetFlag("boss_Challenge_Mode"))
+                    {
+                        level.Add(warningSign1);
+                        level.Add(warningSign6);
+                        warningSign1.Visible = true;
+                        warningSign6.Visible = true;
+                        Add(new Coroutine(WarningSound()));
+                        yield return 1.5f;
+                        warningSign1.Visible = false;
+                        warningSign6.Visible = false;
+                        level.Displacement.AddBurst(jumpThru1.Center, 0.5f, 8f, 32f, 0.5f);
+                        jumpThru1.RemoveSelf();
+                        level.Displacement.AddBurst(jumpThru6.Center, 0.5f, 8f, 32f, 0.5f);
+                        jumpThru6.RemoveSelf();
+                        level.Add(refill1);
+                        level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
+                    }
+                    else
+                    {
+                        level.Add(arrowDown1);
+                        level.Add(arrowDown2);
+                        level.Add(jumpThru3);
+                        level.Displacement.AddBurst(jumpThru3.Center, 0.5f, 8f, 32f, 0.5f);
+                        level.Add(jumpThru4);
+                        level.Displacement.AddBurst(jumpThru4.Center, 0.5f, 8f, 32f, 0.5f);
+                        level.Add(warningSign2);
+                        level.Add(warningSign5);
+                        warningSign2.Visible = true;
+                        warningSign5.Visible = true;
+                        Add(new Coroutine(WarningSound()));
+                        yield return 1.5f;
+                        arrowDown1.Visible = false;
+                        arrowDown2.Visible = false;
+                        warningSign2.Visible = false;
+                        warningSign5.Visible = false;
+                        level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
+                        jumpThru2.RemoveSelf();
+                        level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
+                        jumpThru5.RemoveSelf();
+                    }
 
                     // End
                     while (boss.Health > 0)
@@ -230,8 +308,17 @@ namespace Celeste.Mod.XaphanHelper.Events
                     level.Displacement.AddBurst(jumpThru6.Center, 0.5f, 8f, 32f, 0.5f);
                     level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
                     refill1.RemoveSelf();
-                    level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
-                    refill2.RemoveSelf();
+                    if (level.Session.GetFlag("boss_Challenge_Mode"))
+                    {
+                        level.Add(jumpThru3);
+                        level.Displacement.AddBurst(jumpThru3.Center, 0.5f, 8f, 32f, 0.5f);
+                        level.Add(jumpThru4);
+                        level.Displacement.AddBurst(jumpThru4.Center, 0.5f, 8f, 32f, 0.5f);
+                        level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                        refill2.RemoveSelf();
+                        level.Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
+                        refill3.RemoveSelf();
+                    }
                     string Prefix = level.Session.Area.LevelSet;
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated"))
                     {
@@ -247,15 +334,15 @@ namespace Celeste.Mod.XaphanHelper.Events
                     if (level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         level.Session.SetFlag("Boss_Defeated_CM", true);
-                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM"))
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated_CM"))
                         {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated_CM");
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated_CM");
                         }
                         if (XaphanModule.PlayerHasGolden)
                         {
-                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM_GoldenStrawberry"))
+                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated_CM_GoldenStrawberry"))
                             {
-                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated_CM_GoldenStrawberry");
+                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated_CM_GoldenStrawberry");
                             }
                         }
                     }
@@ -273,7 +360,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     if (boss.Activated)
                     {
                         boss.ForcedDestroy = true;
-                        yield return boss.KneelRoutine();
+                        yield return boss.KneelRoutine(true);
                     }
                     else
                     {

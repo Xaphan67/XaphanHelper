@@ -325,6 +325,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool ForcedDestroy;
 
+        private bool MustJumpAway;
+
         public Torizo(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             OrigPosition = Position;
@@ -562,7 +564,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Sprite.Play("standUpEnd");
                 Activated = true;
-                CannotSwipeDelay = 5f;
+                CannotSwipeDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 1f : 5f;
                 SceneAs<Level>().Session.SetFlag("Torizo_Start", false);
             }
             while (!SceneAs<Level>().Session.GetFlag("Torizo_Start"))
@@ -576,15 +578,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if ((Facing == Facings.Right && player.Center.X > Center.X) || (Facing == Facings.Left && player.Center.X < Center.X)) // If player is in front of Torizo
                     {
-                        if (Math.Abs(player.Center.X - Center.X) < 80 && CannotJumpDelay <= 0f)
+                        if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? MustJumpAway : Math.Abs(player.Center.X - Center.X) < 80 && CannotJumpDelay <= 0f)
                         {
+                            MustJumpAway = false;
                             Add(Routine = new Coroutine(JumpBackRoutine()));
                         }
                         else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 120 && CannotShootDelay <= 0f)
                         {
                             Add(Routine = new Coroutine(ShootRoutine()));
                         }
-                        else if (Math.Abs(player.Center.X - Center.X) >= 120 && Health < 10f && CannotSwipeDelay <= 0f)
+                        else if ((SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? Math.Abs(player.Center.X - Center.X) >= 80 : Math.Abs(player.Center.X - Center.X) >= 120 && Health < 10f) && CannotSwipeDelay <= 0f)
                         {
                             Add(Routine = new Coroutine(SwipeRoutine()));
                         }
@@ -641,7 +644,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             MidAir = true;
             while (MidAir)
             {
-                if (SceneAs<Level>().OnInterval(0.06f) && Sprite.CurrentAnimationFrame >= 2)
+                if (SceneAs<Level>().OnInterval(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.04f : 0.06f) && Sprite.CurrentAnimationFrame >= 2)
                 {
                     SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 24), new Vector2(75f, -125f), Facing == Facings.Left));
                 }
@@ -654,7 +657,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator SwipeRoutine()
         {
-            CannotSwipeDelay = 5f;
             Sprite.Position = new Vector2(Facing == Facings.Right ? 23 : -7, -8);
             Sprite.Play("swipe");
             float swipeDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
@@ -662,9 +664,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (swipeDuration > 0)
             {
                 swipeDuration -= Engine.DeltaTime;
-                if (SceneAs<Level>().OnInterval(0.4f))
+                if (SceneAs<Level>().OnInterval(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.3f : 0.4f))
                 {
-                    SceneAs<Level>().Add(new TorizoWave(new Vector2(Position.X + (Facing == Facings.Right ? 64 : 24), Position.Y + 40 + waveYPos * 24), new Vector2(175f, 0f), Facing == Facings.Left));
+                    SceneAs<Level>().Add(new TorizoWave(new Vector2(Position.X + (Facing == Facings.Right ? 64 : 24), Position.Y + 40 + waveYPos * 24), new Vector2(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 225f : 175f, 0f), Facing == Facings.Left));
                     waveYPos += 1f;
                     if (waveYPos > 1f)
                     {
@@ -673,30 +675,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 yield return null;
             }
+            CannotSwipeDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? Calc.Random.Next(3, 6) : 5f;
             yield return IddleRoutine();
         }
 
         public IEnumerator ShootRoutine()
         {
             Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 8);
-            CannotShootDelay = 5f;
             Sprite.Play("shoot");
             Audio.Play("event:/game/xaphan/torizo_attack_1", Position);
             float shootAnimDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
             yield return shootAnimDuration;
-            yield return 0.5f;
+            yield return SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.2f : 0.5f;
             float shootDuration = 1f;
             while (shootDuration > 0)
             {
                 shootDuration -= Engine.DeltaTime;
                 if (SceneAs<Level>().OnInterval(0.06f))
                 {
-                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(110, 210), 0f), Facing == Facings.Left));
+                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode")? 60 : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 260 : 210), 0f), Facing == Facings.Left));
                 }
                 yield return null;
             }
             Sprite.Play("shootReverse");
             yield return shootAnimDuration;
+            CannotShootDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? Calc.Random.Next(3, 6) : 5f;
             yield return IddleRoutine();
         }
 
@@ -732,7 +735,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return IddleRoutine(true);
         }
 
-        public IEnumerator KneelRoutine()
+        public IEnumerator KneelRoutine(bool skipAnim = false)
         {
             Health = 0;
             colliders = null;
@@ -744,18 +747,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Activated = false;
             Defeated = true;
             Sprite.Stop();
-            Audio.Play("event:/game/xaphan/torizo_death", Position);
-            float musicFadeStart = 0f;
-            while (musicFadeStart < 1)
+            if (!skipAnim)
             {
-                musicFadeStart += Engine.DeltaTime;
-                Audio.SetMusicParam("fade", 1f - musicFadeStart);
-                yield return null;
+                Audio.Play("event:/game/xaphan/torizo_death", Position);
+                float musicFadeStart = 0f;
+                while (musicFadeStart < 1)
+                {
+                    musicFadeStart += Engine.DeltaTime;
+                    Audio.SetMusicParam("fade", 1f - musicFadeStart);
+                    yield return null;
+                }
+                yield return 0.75f;
             }
-            yield return 0.75f;
             Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 16);
             Sprite.Play("kneel");
-            yield return 1.5f;
+            if (!skipAnim)
+            {
+                yield return 1.5f;
+            }
             SceneAs<Level>().Displacement.AddBurst(Position + Collider.Center, 0.5f, 16f, 64f, 0.5f);
             for (int i = 0; i < 6; i++)
             {
@@ -796,7 +805,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Sprite.Play("idle");
             }
-            yield return Health >= 10 ? 0.5f : Health >= 7f ? 0.3f : Health >= 4f ? 0.15f : 0.05f;
+            if (!SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+            {
+                yield return Health >= 10 ? 0.5f : Health >= 7f ? 0.3f : Health >= 4f ? 0.15f : 0.05f;
+            }
+            else
+            {
+                yield return Health >= 10 ? 0.3f : Health >= 7f ? 0.15f : Health >= 4f ? 0.05f : 0f;
+            }
         }
 
         public IEnumerator InvincibilityRoutine()
@@ -848,6 +864,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Audio.Play("event:/game/xaphan/torizo_hit", Position);
                 Health -= 1;
+                if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+                {
+                    if (Health == 14 || Health == 12 || Health == 9 || Health == 6 || Health <= 3)
+                    {
+                        MustJumpAway = true;
+                    }
+                }
                 InvincibilityDelay = 0.75f;
             }
         }

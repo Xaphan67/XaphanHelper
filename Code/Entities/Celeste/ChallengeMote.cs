@@ -276,20 +276,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
             menu.Add(new TextMenu.Button(Dialog.Clean(XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM") ? "XaphanHelper_UI_Replay_Challenge_Mode" : "XaphanHelper_UI_Play_Challenge_Mode")).Pressed(delegate
             {
                 menu.RemoveSelf();
-                if (ChapterIndex == 2 && level.Session.Level == "I-21")
+                ManageUpgrades(level, false);
+                Audio.Play("event:/game/05_mirror_temple/room_lightlevel_down");
+                level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
+                level.Session.Audio.Apply();
+                level.Session.SetFlag("boss_Challenge_Mode", true);
+                level.Session.SetFlag("Boss_Defeated", false);
+                if (ChapterIndex == 1 && level.Session.Level == "D-07")
                 {
-                    ManageUpgrades(level, false);
+                    Torizo boss = level.Tracker.GetEntity<Torizo>();
+                    boss.playerHasMoved = false;
+                    boss.Health = 15;
+
+                }
+                else if (ChapterIndex == 2 && level.Session.Level == "I-21")
+                {
                     CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
-                    Audio.Play("event:/game/05_mirror_temple/room_lightlevel_down");
-                    level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
-                    level.Session.Audio.Apply();
-                    level.Session.SetFlag("boss_Challenge_Mode", true);
-                    level.Session.SetFlag("Boss_Defeated", false);
                     boss.playerHasMoved = false;
                     boss.hits = 0;
-                    level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
-                    level.Session.RespawnPoint = level.GetSpawnPoint(Position);
                 }
+                level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+                level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             }));
             menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_cancel")).Pressed(delegate
             {
