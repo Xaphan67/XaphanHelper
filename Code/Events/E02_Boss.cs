@@ -509,6 +509,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         crumblePlatform1.RemoveSelf();
                         level.Displacement.AddBurst(crumblePlatform2.Center, 0.5f, 8f, 32f, 0.5f);
                         crumblePlatform2.RemoveSelf();
+                        Add(new Coroutine(TriggerWall("cellingTop", true, 8, 8)));
                         level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_2_abyss_deeper");
                         level.Session.Audio.Apply();
                     }
