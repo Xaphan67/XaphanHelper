@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Entities;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -182,6 +183,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 {
                     // Initialise fight
                     level.Session.SetFlag("In_bossfight", true);
+                    level.Add(new BossHealthBar(boss, 15, level.Session.GetFlag("boss_Challenge_Mode") ? 0 : 7, level.Session.GetFlag("boss_Challenge_Mode")));
                     level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_mini_boss");
                     level.Session.Audio.Apply();
                     level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(448f, 152f));
@@ -297,6 +299,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
+                    level.Remove(level.Tracker.GetEntity<BossHealthBar>());
                     level.Session.SetFlag("boss_Checkpoint", false);
                     level.Add(jumpThru1);
                     level.Displacement.AddBurst(jumpThru1.Center, 0.5f, 8f, 32f, 0.5f);

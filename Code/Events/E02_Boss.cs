@@ -352,6 +352,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.Audio.Apply();
                         level.Session.SetFlag("Boss_Appeared", true);
                         level.Session.SetFlag("In_bossfight", true);
+                        level.Add(new BossHealthBar(boss, 15, 7));
                         Add(new Coroutine(TriggerWall("ground", true, 24, 1)));
                     }
                     else
@@ -367,6 +368,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.Audio.Apply();
                         level.Session.SetFlag("Boss_Appeared", true);
                         level.Session.SetFlag("In_bossfight", true);
+                        level.Add(new BossHealthBar(boss, 15, level.Session.GetFlag("boss_Challenge_Mode") ? 0 : 7, level.Session.GetFlag("boss_Challenge_Mode")));
                         level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(160f, 320f));
 
                         // Phase 2
@@ -490,6 +492,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
+                    level.Remove(level.Tracker.GetEntity<BossHealthBar>());
                     level.Session.SetFlag("boss_Checkpoint", false);
                     level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(160f, 320f));
                     jumpThru2.RemoveSelf();
