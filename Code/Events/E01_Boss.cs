@@ -349,6 +349,10 @@ namespace Celeste.Mod.XaphanHelper.Events
                             }
                         }
                     }
+                    while (boss.Visible)
+                    {
+                        yield return null;
+                    }
                     level.Session.SetFlag("In_bossfight", false);
                     if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                     {
