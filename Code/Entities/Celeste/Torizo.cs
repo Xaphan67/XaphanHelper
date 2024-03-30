@@ -12,6 +12,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Torizo")]
     public class Torizo : Actor
     {
+        [Tracked(true)]
         private class TorizoFireball : Actor
         {
             Sprite Sprite;
@@ -87,6 +88,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        [Tracked(true)]
         private class TorizoWave : Actor
         {
             Sprite Sprite;
@@ -373,6 +375,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             };
+            foreach (TorizoFireball fireball in SceneAs<Level>().Tracker.GetEntities<TorizoFireball>())
+            {
+                fireball.RemoveSelf();
+            }
+            foreach (TorizoWave wave in SceneAs<Level>().Tracker.GetEntities<TorizoWave>())
+            {
+                wave.RemoveSelf();
+            }
             Add(new Coroutine(SequenceRoutine()));
             Add(new Coroutine(InvincibilityRoutine()));
             Add(new Coroutine(GravityRoutine()));
@@ -583,6 +593,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             MustJumpAway = false;
                             Add(Routine = new Coroutine(JumpBackRoutine()));
                         }
+                        else if (Math.Abs(player.Center.X - Center.X) < 80 && SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") && CannotShootDelay <= 0f)
+                        {
+                            Add(Routine = new Coroutine(ShootRoutine(true)));
+                        }
                         else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 120 && CannotShootDelay <= 0f)
                         {
                             Add(Routine = new Coroutine(ShootRoutine()));
@@ -640,11 +654,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Play("jumpStart");
             Audio.Play("event:/game/xaphan/torizo_attack_2", Position);
             Speed.Y = -225f;
-            Speed.X = 260f * (Facing == Facings.Right ? -1 : 1);
+            bool SolidBehind = false;
+            if (CollideCheck<Solid, InvisibleBarrier>(Position + Vector2.UnitX * (Facing == Facings.Right ? -56 : 56)))
+            {
+                SolidBehind = true;
+            }
+            Speed.X = 260f * (Facing == Facings.Right ? -1 : 1) * (SolidBehind ? -1 : 1) ;
             MidAir = true;
             while (MidAir)
             {
-                if (SceneAs<Level>().OnInterval(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.04f : 0.06f) && Sprite.CurrentAnimationFrame >= 2)
+                if (SceneAs<Level>().OnInterval(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.04f : 0.06f) && Sprite.CurrentAnimationFrame >= 2 && !SolidBehind)
                 {
                     SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 24), new Vector2(75f, -125f), Facing == Facings.Left));
                 }
@@ -679,7 +698,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return IddleRoutine();
         }
 
-        public IEnumerator ShootRoutine()
+        public IEnumerator ShootRoutine(bool close = false)
         {
             Sprite.Position = new Vector2(Facing == Facings.Right ? 21 : 11, 8);
             Sprite.Play("shoot");
@@ -693,13 +712,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 shootDuration -= Engine.DeltaTime;
                 if (SceneAs<Level>().OnInterval(0.06f))
                 {
-                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode")? 60 : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 260 : 210), 0f), Facing == Facings.Left));
+                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode")? (close ? 10 : 60) : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 110 : 260) : 210), 0f), Facing == Facings.Left));
                 }
                 yield return null;
             }
             Sprite.Play("shootReverse");
             yield return shootAnimDuration;
-            CannotShootDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? Calc.Random.Next(3, 6) : 5f;
+            CannotShootDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? Calc.Random.Next(3, 6) - (close ? 2f : 0f) : 5f;
             yield return IddleRoutine();
         }
 
