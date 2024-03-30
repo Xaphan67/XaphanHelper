@@ -10,6 +10,7 @@ Version 1.0.60 :
 - Fixed a warning displayed on game load about an entity with a non suitable constructor
 - Fixed the Upgrade Collectable Loenn plugin, having the wrong name for the Hover Jet upgrade
 - Fixed a bug allowing Camera Offset Triggers to apply their offset at the player location when the player destroy the Remote Drone after touching one of those triggers while controling the drone
+- SoCM bosses now display a health bar. The player can interact with the Challenge Mote after defeating them to replay the encounter or play the challenge mode version
 
 Version 1.0.59 :
 - If the player has not collected the Climbing Kit upgrade, and press the jump button while grabbing a wall, they will now do a wall jump away from the wall instead of doing nothing
