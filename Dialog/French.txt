@@ -300,3 +300,6 @@
 	Xaphanhelper_UI_Metroid_Suits= COSTUMES
 	Xaphanhelper_UI_Metroid_Misc= DIVERS
 	Xaphanhelper_UI_Metroid_Boots= BOTTES
+
+#Temporary
+	LorebookEntry_Boss_2_1_Name= Monstre des ombres

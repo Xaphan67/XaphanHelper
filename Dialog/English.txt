@@ -300,3 +300,6 @@
 	Xaphanhelper_UI_Metroid_Suits= SUITS
 	Xaphanhelper_UI_Metroid_Misc= MISC
 	Xaphanhelper_UI_Metroid_Boots= BOOTS
+
+#Temporary
+	LorebookEntry_Boss_2_1_Name= Shadow Monster
