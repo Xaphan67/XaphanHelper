@@ -141,7 +141,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     }
                 }
                 level.Session.SetFlag("Torizo_Start", false);
-                if (!level.Session.GetFlag("CS01_BossStart"))
+                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch1_BossStart"))
                 {
                     Scene.Add(new CS01_BossStart(player, boss));
                     while (!level.Session.GetFlag("Torizo_Start"))

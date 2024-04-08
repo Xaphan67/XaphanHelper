@@ -27,7 +27,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.Session.SetFlag("D-07_Gate_1", true);
             level.Session.SetFlag("Torizo_Wakeup", true);
             level.Session.SetFlag("Torizo_Start", true);
-            level.Session.SetFlag("CS01_BossStart", true);
+            XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch1_BossStart");
+            level.Session.SetFlag("CS_01_BossStart", true);
             player.Facing = Facings.Left;
             player.StateMachine.State = 0;
         }
