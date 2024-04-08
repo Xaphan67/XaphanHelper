@@ -70,7 +70,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Vector2 spriteOffset;
 
-        private bool haveGolden;
+        private static bool haveGolden;
 
         public Color EnabledColor = Color.White;
 
@@ -83,7 +83,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex;
-            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (haveGolden ? "_GoldenStrawberry" : ""));
         }
 
         public Vector2? startSpawnPoint;
@@ -301,7 +301,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag);
                             }
-                            if (XaphanModule.PlayerHasGolden)
+                            if (haveGolden)
                             {
                                 if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag + "_GoldenStrawberry"))
                                 {
@@ -382,7 +382,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 DisplacePlayerOnTop();
             }
-            if (SceneAs<Level>().Transitioning /*&& wasPressed*/)
+            if (SceneAs<Level>().Transitioning && wasPressed)
             {
                 flagState = SceneAs<Level>().Session.GetFlag(flag);
                 int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
@@ -395,7 +395,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
                     }
-                    if (XaphanModule.PlayerHasGolden)
+                    if (haveGolden)
                     {
                         if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
                         {
@@ -603,7 +603,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
                             }
-                            if (XaphanModule.PlayerHasGolden)
+                            if (haveGolden)
                             {
                                 if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
                                 {
