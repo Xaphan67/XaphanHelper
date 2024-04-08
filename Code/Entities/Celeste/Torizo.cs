@@ -558,6 +558,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator SequenceRoutine()
         {
             Activated = Defeated = false;
+            MustJumpAway = false;
+            Sprite.Rate = 1f;
             if (!SceneAs<Level>().Session.GetFlag("Torizo_Wakeup"))
             {
                 while (!SceneAs<Level>().Session.GetFlag("Torizo_Wakeup"))
