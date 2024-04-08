@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
@@ -61,15 +62,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         break;
                     }
                 }
-                if (!PopupRoutine.Active)
+                if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                 {
-                    foreach (LorebookData entry in lorebookEntries)
+                    if (!PopupRoutine.Active)
                     {
-                        if (SceneAs<Level>().Session.GetFlag(entry.Flag) && !XaphanModule.ModSaveData.LorebookEntries.Contains(entry.EntryID))
+                        foreach (LorebookData entry in lorebookEntries)
                         {
-                            XaphanModule.ModSaveData.LorebookEntries.Add(entry.EntryID);
-                            Add(PopupRoutine = new Coroutine(DisplayLorebookPopup(entry)));
-                            break;
+                            if (SceneAs<Level>().Session.GetFlag(entry.Flag) && !XaphanModule.ModSaveData.LorebookEntries.Contains(entry.EntryID))
+                            {
+                                XaphanModule.ModSaveData.LorebookEntries.Add(entry.EntryID);
+                                Add(PopupRoutine = new Coroutine(DisplayLorebookPopup(entry)));
+                                break;
+                            }
                         }
                     }
                 }
