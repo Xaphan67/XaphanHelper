@@ -263,11 +263,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     boss.playerHasMoved = false;
                     boss.Health = 15;
                     
-                } else if (ChapterIndex == 2 && level.Session.Level == "I-21")
+                } else if (ChapterIndex == 2 && level.Session.Level == (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? "I-21" : "D-03"))
                 {
                     CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
                     boss.playerHasMoved = false;
-                    boss.hits = 0;
+                    boss.SetHits(0);
                 }
                 level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
                 level.Session.RespawnPoint = level.GetSpawnPoint(Position);
@@ -289,7 +289,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     boss.Health = 15;
 
                 }
-                else if (ChapterIndex == 2 && level.Session.Level == "I-21")
+                else if (ChapterIndex == 2 && level.Session.Level == (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? "I-21" : "D-03"))
                 {
                     CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
                     boss.playerHasMoved = false;

@@ -261,7 +261,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode") || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode"))))
+            if (!BossDefeated() || HasGolden() || (BossDefeated() && (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))))
             {
                 level.Add(cellingTopSprite);
                 if (level.Session.GetFlag("boss_Checkpoint"))
@@ -278,7 +278,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 level.Add(refill);
                 level.Displacement.AddBurst(refill.Center, 0.5f, 8f, 32f, 0.5f);
                 ChallengeMote CMote = level.Tracker.GetEntity<ChallengeMote>();
-                if (level.Session.GetFlag("boss_Challenge_Mode"))
+                if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                 {
                     if (CMote != null)
                     {
@@ -534,7 +534,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                     }
                     else
                     {
-                        level.Session.SetFlag("Boss_Defeated", true);
                         if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated"))
                         {
                             XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated");
