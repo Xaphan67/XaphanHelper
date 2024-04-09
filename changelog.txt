@@ -4,6 +4,7 @@ Version 1.0.60 :
 - Added a new setting to show complete hitboxes for Slopes
 - Updated Celeste.Freeze hook to allow others mods to hook the orig method
 - The Remote Drone can now be destroyed on non-safe platforms
+- Slopes and Magnetic Ceilings no longer draw a player sprite on top of the player entity when sliding on a slope or attaching onto a ceiling. Instead, they the animation is now added to the player sprites directly
 - Global Flag Triggers now update the flag they control as long as the player is inside the trigger instead of only when the player enter it
 - Bombs explosion no longer push the player away
 - Fixed a warning displayed on game load about an entity with a non suitable constructor
