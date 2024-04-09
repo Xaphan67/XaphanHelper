@@ -133,9 +133,11 @@
 
   # The animation here will populate the vanilla "player" etc
   <XaphanHelper_Extend_player path="characters/Xaphan/" start="XaphanHelper_turnAround">
+    # SoCM Only
     <Anim id="XaphanHelper_turnAround" path="player/turnaround" frames="0-3" delay="0.08"/>
     <Anim id="XaphanHelper_turnAround_reverse" path="player/turnaround" frames="3-0" delay="0.08"/>
     <Loop id="XaphanHelper_turnAround_end" path="player/turnaround" frames="3" delay = "0"/>
+    # End of SoCM only
 
     <Loop id="XaphanHelper_ceilingIdle" path="player/ceilingIdle" delay="0.1"/>
     <Loop id="XaphanHelper_ceilingMove" path="player/ceilingMove" delay="0.05"/>
@@ -154,5 +156,27 @@
     ## can directly add them into vanilla "player" etc, Includes new IDs for some skins
   </XaphanHelper_Extend_player>
 
-  <XaphanHelper_Extend__player_no_backpack path="characters/player_no_backpack/" copy="XaphanHelper_Extend_player" />
+  <XaphanHelper_Extend_player_no_backpack path="characters/Xaphan/" start="XaphanHelper_turnAround">
+    # SoCM Only - Uses backpack animations for now
+    <Anim id="XaphanHelper_turnAround" path="player/turnaround" frames="0-3" delay="0.08"/>
+    <Anim id="XaphanHelper_turnAround_reverse" path="player/turnaround" frames="3-0" delay="0.08"/>
+    <Loop id="XaphanHelper_turnAround_end" path="player/turnaround" frames="3" delay = "0"/>
+    # End of SoCM only
+
+    <Loop id="XaphanHelper_ceilingIdle" path="player_no_backpack/ceilingIdle" delay="0.1"/>
+    <Loop id="XaphanHelper_ceilingMove" path="player_no_backpack/ceilingMove" delay="0.05"/>
+
+    <Loop id="XaphanHelper_slopeSlide" path="player_no_backpack/slopeSlide" delay="0.01"/>
+
+    <Loop id="XaphanHelper_spinFast" path="player_no_backpack/spinJump" delay="0.04"/>
+
+    <Metadata>
+      <Frames path="player_no_backpack/ceilingIdle" hair="0,-3|0,-3|0,-3|0,-3|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+	    <Frames path="player_no_backpack/ceilingMove" hair="0,-3|0,-3|0,-4|0,-3|0,-3|0,-3|0,-3|0,-4|0,-3|0,-3"/>
+      <Frames path="player_no_backpack/slopeSlide" hair="0,-1|1,-1|1,-1|1,-1|1,0|1,0|1,0|1,0|1,0"/>
+    </Metadata>
+
+    # if you want to modify them,
+    ## can directly add them into vanilla "player" etc, Includes new IDs for some skins
+  </XaphanHelper_Extend_player_no_backpack>
 </Sprites>
