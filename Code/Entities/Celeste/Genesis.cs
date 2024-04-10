@@ -275,7 +275,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Facing = Facings.Right;
             Health = 15;
             onCollideV = OnCollideV;
-            Add(pc = new PlayerCollider(OnPlayer));
+            Add(pc = new PlayerCollider(OnPlayer, new Hitbox(25, 15)));
             Add(bc = new BombCollider(OnBomb, new Hitbox(10, 15)));
         }
 
@@ -383,6 +383,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Sprite.Color = Color.White;
             }
+            pc.Collider.Position = new Vector2(Facing == Facings.Right ? 19 : 4, !Sprite.FlipY ? 4 : 6);
             bc.Collider.Position = new Vector2(Facing == Facings.Right ? 34 : 4, !Sprite.FlipY ? 4 : 6);
             Collidable = !MidAir && Sprite.CurrentAnimationID != "turn";
             MoveH(Speed.X * Engine.DeltaTime, null);
