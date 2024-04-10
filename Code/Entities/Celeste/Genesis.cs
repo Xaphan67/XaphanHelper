@@ -88,12 +88,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private float alpha;
 
-            private PlayerCollider pc;
-
             public GenesisSlashEffect(Vector2 offset, bool flip) : base(offset)
             {
                 Collider = new Hitbox(24, 26, 2 , 4);
-                Add(pc = new PlayerCollider(onCollidePlayer, Collider));
+                Add(new PlayerCollider(onCollidePlayer));
                 Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Genesis/"));
                 Sprite.AddLoop("effect", "slashEffect", 0.08f);
                 Sprite.Play("effect");
@@ -132,7 +130,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Facings Facing;
 
-        private BombCollider bc;
+        private PlayerCollider pc;
+
+        public BombCollider bc;
 
         private bool ShouldSwitchFacing;
 
@@ -141,6 +141,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Sprite Sprite;
 
         public int Health;
+
+        private float InvincibilityDelay;
+
+        private bool Flashing;
 
         public Vector2 Speed;
 
@@ -157,6 +161,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private float CannotShootDelay;
 
         private bool IsSlashingBomb;
+
+        public bool IsStun;
 
         public bool playerHasMoved;
 
@@ -176,18 +182,78 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Facing = Facings.Right;
             Health = 15;
             onCollideV = OnCollideV;
-            Add(bc = new BombCollider(onBomb, new Hitbox(10, 15)));
+            Add(pc = new PlayerCollider(OnPlayer));
+            Add(bc = new BombCollider(OnBomb, new Hitbox(10, 15)));
         }
 
         public override void Added(Scene scene)
         {
             base.Added(scene);
             Add(new Coroutine(SequenceRoutine()));
+            Add(new Coroutine(InvincibilityRoutine()));
         }
 
-        private void onBomb(Bomb bomb)
+        public void OnPlayer(Player player)
         {
-            if (Collidable && !IsSlashingBomb)
+            if (player.StateMachine.State == Player.StDash)
+            {
+                if (Routine.Active)
+                {
+                    Routine.Cancel();
+                }
+                Speed = Vector2.Zero;
+                Add(Routine = new Coroutine(IddleRoutine()));
+                Add(new Coroutine(HitRoutine(player)));
+                IsStun = true;
+            }
+            else if (!IsStun)
+            {
+                player.Die((player.Position - Position).SafeNormalize());
+            }
+        }
+
+        private IEnumerator HitRoutine(Player player)
+        {
+            if (player != null && !player.Dead)
+            {
+                player.StartAttract(Center + Vector2.UnitX * (Facing == Facings.Right ? 18f : - 18f) + Vector2.UnitY * 4f);
+            }
+            float timer = 0.15f;
+            while (player != null && !player.Dead && !player.AtAttractTarget)
+            {
+                yield return null;
+                timer -= Engine.DeltaTime;
+            }
+            if (timer > 0f)
+            {
+                yield return timer;
+            }
+            if (player != null)
+            {
+                Celeste.Freeze(0.1f);
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+            }
+            Audio.Play("event:/game/xaphan/genesis_growl", Position);
+            PushPlayer(player);
+        }
+
+        private void PushPlayer(Player player)
+        {
+            if (player != null && !player.Dead)
+            {
+                int pos = player.Center.X > Center.X ? 1 : -1;
+                player.FinalBossPushLaunch(pos);
+                player.Speed *= 0.95f;
+                player.Speed.Y *= 0.7f;
+            }
+            SceneAs<Level>().Displacement.AddBurst(player.Position, 0.4f, 12f, 36f, 0.5f);
+            SceneAs<Level>().Displacement.AddBurst(player.Position, 0.4f, 24f, 48f, 0.5f);
+            SceneAs<Level>().Displacement.AddBurst(player.Position, 0.4f, 36f, 60f, 0.5f);
+        }
+
+        private void OnBomb(Bomb bomb)
+        {
+            if (Collidable && !IsSlashingBomb && !IsStun)
             {
                 if (bomb != null && !bomb.Hold.IsHeld && !bomb.explode)
                 {
@@ -215,6 +281,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Facing = Facing == Facings.Right ? Facings.Left : Facings.Right;
                 Sprite.FlipX = Facing == Facings.Left;
                 ShouldSwitchFacing = false;
+            }
+            if (Flashing)
+            {
+                Sprite.Color = Color.Red;
+            }
+            else
+            {
+                Sprite.Color = Color.White;
             }
             bc.Collider.Position = new Vector2(Facing == Facings.Right ? 34 : 4, !Sprite.FlipY ? 4 : 6);
             Collidable = !MidAir && Sprite.CurrentAnimationID != "turn";
@@ -274,7 +348,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Add(Routine = new Coroutine(TurnRoutine()));
                     }
                 }
-                if (player != null && (Facing == Facings.Right ? player.Left >= Right - 16f && player.Left <= Right + 8f : player.Right <= Left + 16f && player.Right >= Left - 8f) && player.Top >= Top && player.Bottom <= Bottom && !Sprite.FlipY && !IsSlashingBomb)
+                if (player != null && player.StateMachine.State != Player.StDash && !player.DashAttacking && (Facing == Facings.Right ? player.Left >= Right - 16f && player.Left <= Right + 8f : player.Right <= Left + 16f && player.Right >= Left - 8f) && player.Top >= Top && player.Bottom <= Bottom && !Sprite.FlipY && !IsSlashingBomb && !IsStun)
                 {
                     IsSlashingBomb = true;
                     if (Routine.Active)
@@ -323,6 +397,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Speed.X = 0f;
             Sprite.Play("roar");
             yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
+            yield return 0.5f;
             float shootDuration = 1.2f;
             Audio.Play("event:/game/xaphan/genesis_spit", Position);
             while (shootDuration > 0)
@@ -419,14 +494,60 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                if (!SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+                float timer = 0f;
+                if (IsStun)
                 {
-                    yield return Health >= 10 ? 0.5f : Health >= 7f ? 0.3f : Health >= 4f ? 0.15f : 0.05f;
+                    timer = 2f;
                 }
                 else
                 {
-                    yield return Health >= 10 ? 0.3f : Health >= 7f ? 0.15f : Health >= 4f ? 0.05f : 0f;
+                    if (!SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+                    {
+                        timer = Health >= 10 ? 0.5f : Health >= 7f ? 0.3f : Health >= 4f ? 0.15f : 0.05f;
+                    }
+                    else
+                    {
+                        timer = Health >= 10 ? 0.3f : Health >= 7f ? 0.15f : Health >= 4f ? 0.05f : 0f;
+                    }
                 }
+                while (timer > 0f && (InvincibilityDelay <= 0 || InvincibilityDelay > 0.25f))
+                {
+                    timer -= Engine.DeltaTime;
+                    yield return null;
+                }
+                if (InvincibilityDelay > 0)
+                {
+                    yield return LeapRoutine();
+                }
+            }
+            IsStun = false;
+        }
+
+        public IEnumerator InvincibilityRoutine()
+        {
+            while (Health > 0)
+            {
+                while (InvincibilityDelay > 0)
+                {
+                    if (Scene.OnRawInterval(0.06f))
+                    {
+                        Flashing = !Flashing;
+                    }
+                    InvincibilityDelay -= Engine.DeltaTime;
+                    yield return null;
+                }
+                Flashing = false;
+                yield return null;
+            }
+        }
+
+        public void GetHit()
+        {
+            if (Health > 0 && InvincibilityDelay <= 0)
+            {
+                Audio.Play("event:/game/xaphan/genesis_hit", Position);
+                Health -= 1;
+                InvincibilityDelay = 0.75f;
             }
         }
 

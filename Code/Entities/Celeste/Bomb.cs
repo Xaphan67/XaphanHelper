@@ -410,6 +410,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 }
                             }
                         }
+                        else if (entityList.Key == typeof(Genesis))
+                        {
+                            foreach (Entity entity in entityList.Value)
+                            {
+                                Genesis genesis = (Genesis)entity;
+                                if (genesis.bc.Check(this) && genesis.IsStun && genesis.Health > 0)
+                                {
+                                    shouldExplodeImmediately = true;
+                                    genesis.GetHit();
+                                }
+                            }
+                        }
                     }
                     if (Left > SceneAs<Level>().Bounds.Right || Right < SceneAs<Level>().Bounds.Left || Top > SceneAs<Level>().Bounds.Bottom)
                     {
