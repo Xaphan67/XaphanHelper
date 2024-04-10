@@ -4,6 +4,7 @@ using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
+using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -16,15 +17,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Sprite Sprite;
 
-            private PlayerCollider pc;
-
             public Vector2 Speed;
 
-            private Collision onCollide;
+            private Collision onCollideH;
+
+            private Collision onCollideV;
 
             public GenesisAcid(Vector2 offset, Vector2 speed, bool toLeft, bool upsideDown = false) : base(offset)
             {
-                Add(pc = new PlayerCollider(onCollidePlayer, Collider));
+                Add(new PlayerCollider(onCollidePlayer));
                 Collider = new Hitbox(4, 4, upsideDown ? (toLeft ? -8 : -1) : (toLeft ? -8 : -1), upsideDown ? (toLeft ? 2 : -1) : -1);
                 Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Genesis/"));
                 Sprite.Origin = new Vector2(toLeft ? 4f : 10f, 3f);
@@ -33,7 +34,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Sprite.Play("acid");
                 Speed = new Vector2((speed.X + Calc.Random.Next(-15, 16)) * (toLeft ? -1 : 1), speed.Y + Calc.Random.Next(-15, 16));
                 Add(new Coroutine(GravityRoutine()));
-                onCollide = OnCollide;
+                onCollideH = OnCollideH;
+                onCollideV = OnCollideV;
                 Depth = 1;
             }
 
@@ -44,8 +46,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Sprite.Rotation = (float)Math.Atan2(Center.Y + Speed.Y - Center.Y, Center.X + Speed.X - Center.X);
                 }
-                MoveH(Speed.X * Engine.DeltaTime, onCollide);
-                MoveV(Speed.Y * Engine.DeltaTime, onCollide);
+                MoveH(Speed.X * Engine.DeltaTime, onCollideH);
+                MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
             }
 
             public IEnumerator GravityRoutine()
@@ -57,7 +59,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
-            private void OnCollide(CollisionData data)
+            private void OnCollideH(CollisionData data)
+            {
+                SceneAs<Level>().Add(new GenesisAcidSurface(Position, new Vector2(data.Direction.X, 0)));
+                onCollide();
+            }
+
+            private void OnCollideV(CollisionData data)
+            {
+                SceneAs<Level>().Add(new GenesisAcidSurface(Position, Vector2.UnitY));
+                onCollide();
+            }
+
+            private void onCollide()
             {
                 Collidable = false;
                 Speed = Vector2.Zero;
@@ -78,6 +92,85 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Sprite.CurrentAnimationID == "explode")
                 {
                     RemoveSelf();
+                }
+            }
+        }
+
+        private class GenesisAcidSurface : Entity
+        {
+            private MTexture Texture;
+
+            private float alpha;
+
+            private Vector2 Direction;
+
+            public GenesisAcidSurface(Vector2 offset, Vector2 direction) : base(offset)
+            {
+                Collider = new Hitbox(8, 8, direction.X == -1 ? -15 : 2);
+                Direction = direction;
+                Add(new PlayerCollider(onCollidePlayer));
+                if (direction.Y == 1)
+                {
+                    Texture = GFX.Game["characters/Xaphan/Genesis/acidSurface0" + Calc.Random.Next(0, 2)];
+                }
+                else
+                {
+                    if (direction.X == -1)
+                    {
+                        Texture = GFX.Game["characters/Xaphan/Genesis/acidSurfaceR0" + Calc.Random.Next(0, 2)];
+                    }
+                    else if (direction.X == 1)
+                    {
+                        Texture = GFX.Game["characters/Xaphan/Genesis/acidSurfaceL0" + Calc.Random.Next(0, 2)];
+                    }
+                }
+                alpha = 1f;
+                Add(new Coroutine(LifeTimeRoutine()));
+                Depth = -10000;
+            }
+
+            private void onCollidePlayer(Player player)
+            {
+                player.Die((player.Position - Position).SafeNormalize());
+            }
+
+            private IEnumerator LifeTimeRoutine()
+            {
+                float timer = 15f;
+                while (timer > 0)
+                {
+                    timer -= Engine.DeltaTime;
+                    if (timer <= 1f)
+                    {
+                        alpha -= Engine.DeltaTime;
+                    }
+                    yield return null;
+                }
+                RemoveSelf();
+            }
+
+            public override void Update()
+            {
+                base.Update();
+            }
+
+            public override void Render()
+            {
+                base.Render();
+                if (Direction.Y == 1)
+                {
+                    Texture.Draw(Position + Vector2.UnitY * 3, Vector2.Zero, Color.White * alpha);
+                }
+                else
+                {
+                    if (Direction.X == -1)
+                    {
+                        Texture.Draw(Position + Vector2.UnitX * -16, Vector2.Zero, Color.White * alpha);
+                    }
+                    else if (Direction.X == 1)
+                    {
+                        Texture.Draw(Position + Vector2.UnitX * 3, Vector2.Zero, Color.White * alpha);
+                    }
                 }
             }
         }
