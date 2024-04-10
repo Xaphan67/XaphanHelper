@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -40,6 +41,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float CannotDashDelay;
 
+        private bool IsSlashingBomb;
+
         public bool playerHasMoved;
 
         public Genesis(EntityData data, Vector2 offset) : base(data.Position + offset)
@@ -51,6 +54,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("turn", "turn", 0.08f);
             Sprite.Add("leapUp", "leap", 0f, 0);
             Sprite.Add("dash", "leap", 0.08f);
+            Sprite.Add("slash", "slash", 0.12f , 1, 0, 1);
             Sprite.Play("idle");
             Facing = Facings.Right;
             Health = 15;
@@ -103,11 +107,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Add(Routine = new Coroutine(LeapRoutine()));
                             }
-                            /*else if (Math.Abs(player.Center.X - Center.X) < 80 && SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") && CannotShootDelay <= 0f)
-                            {
-                                Add(Routine = new Coroutine(ShootRoutine(true)));
-                            }
-                            else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 120 && CannotShootDelay <= 0f)
+                            /*else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 120 && CannotShootDelay <= 0f)
                             {
                                 Add(Routine = new Coroutine(ShootRoutine()));
                             }
@@ -137,6 +137,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Add(Routine = new Coroutine(TurnRoutine()));
                     }
                 }
+                if (CollideCheck<Bomb>(new Vector2(Position.X, Position.Y + 4f)) && !IsSlashingBomb)
+                {
+                    Bomb bomb = SceneAs<Level>().Tracker.GetNearestEntity<Bomb>(Facing == Facings.Right ? CenterRight : CenterLeft);
+                    if (bomb != null && !bomb.Hold.IsHeld && !bomb.explode && Facing == Facings.Right ? bomb.Right > Right - 12f : bomb.Left < Left + 12f)
+                    {
+                        IsSlashingBomb = true;
+                        if (Routine.Active)
+                        {
+                            Routine.Cancel();
+                        }
+                        Add(Routine = new Coroutine(SlashRoutine(bomb)));
+                    }
+                }
                 if (CannotLeapDelay > 0)
                 {
                     CannotLeapDelay -= Engine.DeltaTime;
@@ -155,7 +168,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator LeapRoutine()
         {
-            Sprite.Position.Y = -8f;
+            Sprite.Position = new Vector2(0, - 8f);
             Sprite.Play("leapUp");
             Speed.X = 0f;
             Speed.Y = -325f;
@@ -166,9 +179,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public IEnumerator SlashRoutine(Bomb bomb)
+        {
+            Sprite.Position = new Vector2(-4f, -8f);
+            Speed.X = 0f;
+            Sprite.Play("slash");
+            bool throwLeft = bomb.Center.X < Center.X;
+            bomb.Speed = new Vector2(throwLeft ? -200f : 200f, -150f);
+            yield return Sprite.CurrentAnimationTotalFrames * 0.12f + 0.1f;
+            IsSlashingBomb = false;
+        }
+
         public IEnumerator DashRoutine(Player player)
         {
-            Sprite.Position.Y = -8f;
+            Sprite.Position = new Vector2(0, -8f);
             Sprite.Play("dash");
             Sprite.FlipY = false;
             noFlip = true;
@@ -184,7 +208,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator WalkRoutine(Player player)
         {
-            Sprite.Position.Y = 0f;
+            Sprite.Position = Vector2.Zero;
             Sprite.Play("walk");
             bool walkLeft = player.Center.X < Center.X;
             float speed = Health >= 10 ? 75f : Health >= 7f ? 100f : Health >= 4f ? 125f : 150f;
@@ -198,7 +222,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator TurnRoutine()
         {
-            Sprite.Position.Y = 0f;
+            Sprite.Position = Vector2.Zero;
             Sprite.Play("turn");
             float turnDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
             yield return turnDuration;
@@ -207,7 +231,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator IddleRoutine(bool flip = false, bool playIddleAnim = true)
         {
-            Sprite.Position.Y = 0f;
+            Sprite.Position = Vector2.Zero;
             ShouldSwitchFacing = flip;
             if (playIddleAnim)
             {
