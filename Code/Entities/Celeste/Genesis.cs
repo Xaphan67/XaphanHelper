@@ -3,8 +3,10 @@ using System.Collections;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using static Celeste.GaussianBlur;
+using static Celeste.Mod.XaphanHelper.Effects.Glow;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -216,6 +218,263 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        [Pooled]
+        [Tracked(false)]
+        public class GenesisBeam : Entity
+        {
+            public static ParticleType P_Dissipate;
+
+            public const float ChargeTime = 1.4f;
+
+            public const float FollowTime = 0.9f;
+
+            public const float ActiveTime = 0.12f;
+
+            private Genesis boss;
+
+            private Player player;
+
+            private Sprite beamSprite;
+
+            private Sprite beamStartSprite;
+
+            public float chargeTimer;
+
+            private float followTimer;
+
+            private float activeTimer;
+
+            private float angle;
+
+            private float beamAlpha;
+
+            private float sideFadeAlpha;
+
+            private VertexPositionColor[] fade = new VertexPositionColor[24];
+
+            public GenesisBeam()
+            {
+                Add(beamSprite = new Sprite(GFX.Game, "characters/Xaphan/Genesis/"));
+                beamSprite.Justify = new Vector2(0f, 0.5f);
+                beamSprite.AddLoop("charge", "beam", 0.06f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+                beamSprite.Add("lock", "beam", 0.03f, 14, 15, 16, 17, 18, 19, 20,21, 22, 23, 24, 25);
+                beamSprite.Add("shoot", "beam", 0.04f, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36);
+                beamSprite.Play("charge");
+                beamSprite.OnLastFrame = delegate (string anim)
+                {
+                    if (anim == "shoot")
+                    {
+                        Destroy();
+                    }
+                };
+                Add(beamStartSprite = new Sprite(GFX.Game, "characters/Xaphan/Genesis/"));
+                beamStartSprite.Justify = new Vector2(0f, 0.5f);
+                beamStartSprite.Add("shoot", "beamStart", 0.06f);
+                beamSprite.Play("shoot");
+                beamSprite.Visible = false;
+                P_Dissipate = new ParticleType
+                {
+                    Color = Calc.HexToColor("559F1E"),
+                    Size = 1f,
+                    FadeMode = ParticleType.FadeModes.Late,
+                    SpeedMin = 15f,
+                    SpeedMax = 30f,
+                    DirectionRange = (float)Math.PI / 3f,
+                    LifeMin = 0.3f,
+                    LifeMax = 0.6f
+                };
+                Depth = -1000000;
+            }
+
+            public GenesisBeam Init(Genesis boss, Player target)
+            {
+                this.boss = boss;
+                chargeTimer = 1.4f;
+                followTimer = 0.9f;
+                activeTimer = 0.12f;
+                beamSprite.Play("charge");
+                sideFadeAlpha = 0f;
+                beamAlpha = 0f;
+                int num = (target.Y <= boss.Y + 16f) ? 1 : (-1);
+                if (target.X >= boss.X)
+                {
+                    num *= -1;
+                }
+                angle = Calc.Angle(boss.BeamOrigin, target.Center);
+                Vector2 to = Calc.ClosestPointOnLine(boss.BeamOrigin, boss.BeamOrigin + Calc.AngleToVector(angle, 2000f), target.Center);
+                to += (target.Center - boss.BeamOrigin).Perpendicular().SafeNormalize(100f) * num;
+                angle = Calc.Angle(boss.BeamOrigin, to);
+                return this;
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                player = Scene.Tracker.GetEntity<Player>();
+                beamAlpha = Calc.Approach(beamAlpha, 1f, 2f * Engine.DeltaTime);
+                if (chargeTimer > 0f && player != null && !player.Dead)
+                {
+                    sideFadeAlpha = Calc.Approach(sideFadeAlpha, 1f, Engine.DeltaTime);
+                    if ((boss.Facing == Facings.Right && player.Center.X > boss.Center.X + 40f) || (boss.Facing == Facings.Left && player.Center.X < boss.Center.X - 40f))
+                    {
+                        followTimer -= Engine.DeltaTime;
+                        chargeTimer -= Engine.DeltaTime;
+                        if (followTimer > 0f && player.Center != boss.BeamOrigin)
+                        {
+                            Vector2 val = Calc.ClosestPointOnLine(boss.BeamOrigin, boss.BeamOrigin + Calc.AngleToVector(angle, 2000f), player.Center);
+                            Vector2 center = player.Center;
+                            val = Calc.Approach(val, center, 200f * Engine.DeltaTime);
+                            angle = Calc.Angle(boss.BeamOrigin, val);
+                        }
+                        else if (beamSprite.CurrentAnimationID == "charge")
+                        {
+                            beamSprite.Play("lock");
+                        }
+                        if (chargeTimer <= 0f)
+                        {
+                            SceneAs<Level>().DirectionalShake(Calc.AngleToVector(angle, 1f), 0.15f);
+                            Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                            DissipateParticles();
+                        }
+                    }
+                    else
+                    {
+                        followTimer = chargeTimer = 0f;
+                        SceneAs<Level>().DirectionalShake(Calc.AngleToVector(angle, 1f), 0.15f);
+                        Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                        DissipateParticles();
+                    }
+                }
+                else if (activeTimer > 0f)
+                {
+                    sideFadeAlpha = Calc.Approach(sideFadeAlpha, 0f, Engine.DeltaTime * 8f);
+                    if (beamSprite.CurrentAnimationID != "shoot")
+                    {
+                        beamSprite.Play("shoot");
+                        beamStartSprite.Play("shoot", restart: true);
+                    }
+                    activeTimer -= Engine.DeltaTime;
+                    if (activeTimer > 0f)
+                    {
+                        PlayerCollideCheck();
+                    }
+                }
+            }
+
+            private void DissipateParticles()
+            {
+                Level level = SceneAs<Level>();
+                Vector2 vector = level.Camera.Position + new Vector2(160f, 90f);
+                Vector2 vector2 = boss.BeamOrigin + Calc.AngleToVector(angle, 12f);
+                Vector2 vector3 = boss.BeamOrigin + Calc.AngleToVector(angle, 2000f);
+                Vector2 vector4 = (vector3 - vector2).Perpendicular().SafeNormalize();
+                Vector2 value = (vector3 - vector2).SafeNormalize();
+                Vector2 min = -vector4 * 1f;
+                Vector2 max = vector4 * 1f;
+                float direction = vector4.Angle();
+                float direction2 = (-vector4).Angle();
+                float num = Vector2.Distance(vector, vector2) - 12f;
+                vector = Calc.ClosestPointOnLine(vector2, vector3, vector);
+                for (int i = 0; i < 200; i += 12)
+                {
+                    for (int j = -1; j <= 1; j += 2)
+                    {
+                        level.ParticlesFG.Emit(P_Dissipate, vector + value * i + vector4 * 2f * j + Calc.Random.Range(min, max), direction);
+                        level.ParticlesFG.Emit(P_Dissipate, vector + value * i - vector4 * 2f * j + Calc.Random.Range(min, max), direction2);
+                        if (i != 0 && i < num)
+                        {
+                            level.ParticlesFG.Emit(P_Dissipate, vector - value * i + vector4 * 2f * j + Calc.Random.Range(min, max), direction);
+                            level.ParticlesFG.Emit(P_Dissipate, vector - value * i - vector4 * 2f * j + Calc.Random.Range(min, max), direction2);
+                        }
+                    }
+                }
+            }
+
+            private void PlayerCollideCheck()
+            {
+                Vector2 vector = boss.BeamOrigin + Calc.AngleToVector(angle, 12f);
+                Vector2 vector2 = boss.BeamOrigin + Calc.AngleToVector(angle, 2000f);
+                Vector2 value = (vector2 - vector).Perpendicular().SafeNormalize(2f);
+                Player player = Scene.CollideFirst<Player>(vector + value, vector2 + value);
+                if (player == null)
+                {
+                    player = Scene.CollideFirst<Player>(vector - value, vector2 - value);
+                }
+                if (player == null)
+                {
+                    player = Scene.CollideFirst<Player>(vector, vector2);
+                }
+                player?.Die((player.Center - boss.BeamOrigin).SafeNormalize());
+            }
+
+            public override void Render()
+            {
+                Vector2 beamOrigin = boss.BeamOrigin;
+                Vector2 vector = Calc.AngleToVector(angle, beamSprite.Width);
+                beamSprite.Rotation = angle;
+                beamSprite.Color = Color.White * beamAlpha;
+                beamStartSprite.Rotation = angle;
+                beamStartSprite.Color = Color.White * beamAlpha;
+                if (beamSprite.CurrentAnimationID == "shoot")
+                {
+                    beamOrigin += Calc.AngleToVector(angle, 8f);
+                    beamOrigin -= Vector2.UnitY * 6;
+                }
+                for (int i = 0; i < 15; i++)
+                {
+                    beamSprite.RenderPosition = beamOrigin;
+                    beamSprite.Render();
+                    beamOrigin += vector;
+                }
+                if (beamSprite.CurrentAnimationID == "shoot")
+                {
+                    beamStartSprite.RenderPosition = boss.BeamOrigin - Vector2.UnitY * 6;
+                    beamStartSprite.Render();
+                }
+                GameplayRenderer.End();
+                Vector2 vector2 = vector.SafeNormalize();
+                Vector2 vector3 = vector2.Perpendicular();
+                Color color = Color.Black * sideFadeAlpha * 0.35f;
+                Color transparent = Color.Transparent;
+                vector2 *= 4000f;
+                vector3 *= 120f;
+                int v = 0;
+                Quad(ref v, beamOrigin, -vector2 + vector3 * 2f, vector2 + vector3 * 2f, vector2 + vector3, -vector2 + vector3, color, color);
+                Quad(ref v, beamOrigin, -vector2 + vector3, vector2 + vector3, vector2, -vector2, color, transparent);
+                Quad(ref v, beamOrigin, -vector2, vector2, vector2 - vector3, -vector2 - vector3, transparent, color);
+                Quad(ref v, beamOrigin, -vector2 - vector3, vector2 - vector3, vector2 - vector3 * 2f, -vector2 - vector3 * 2f, color, color);
+                GFX.DrawVertices((Scene as Level).Camera.Matrix, fade, fade.Length);
+                GameplayRenderer.Begin();
+            }
+
+            private void Quad(ref int v, Vector2 offset, Vector2 a, Vector2 b, Vector2 c, Vector2 d, Color ab, Color cd)
+            {
+                fade[v].Position.X = offset.X + a.X;
+                fade[v].Position.Y = offset.Y + a.Y;
+                fade[v++].Color = ab;
+                fade[v].Position.X = offset.X + b.X;
+                fade[v].Position.Y = offset.Y + b.Y;
+                fade[v++].Color = ab;
+                fade[v].Position.X = offset.X + c.X;
+                fade[v].Position.Y = offset.Y + c.Y;
+                fade[v++].Color = cd;
+                fade[v].Position.X = offset.X + a.X;
+                fade[v].Position.Y = offset.Y + a.Y;
+                fade[v++].Color = ab;
+                fade[v].Position.X = offset.X + c.X;
+                fade[v].Position.Y = offset.Y + c.Y;
+                fade[v++].Color = cd;
+                fade[v].Position.X = offset.X + d.X;
+                fade[v].Position.Y = offset.Y + d.Y;
+                fade[v++].Color = cd;
+            }
+
+            public void Destroy()
+            {
+                RemoveSelf();
+            }
+        }
+
         private enum Facings
         {
             Left,
@@ -233,6 +492,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Coroutine Routine = new();
 
         private Sprite Sprite;
+
+        public Vector2 BeamOrigin;
 
         public int Health;
 
@@ -254,11 +515,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float CannotShootDelay;
 
+        private float CannotBeamDelay;
+
         private bool IsSlashingBomb;
 
         public bool IsStun;
 
         public bool playerHasMoved;
+
+        private SoundSource laserSfx;
 
         [Tracked(true)]
         public Genesis(EntityData data, Vector2 offset) : base(data.Position + offset)
@@ -273,13 +538,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("dash", "leap", 0.08f);
             Sprite.Add("slash", "slash", 0.12f , 1, 0, 1);
             Sprite.Add("roar", "roar", 0.08f);
-            Sprite.Add("roarEnd", "roar", 0.08f, 1, 0);
             Sprite.Play("idle");
             Facing = Facings.Right;
             Health = 15;
             onCollideV = OnCollideV;
             Add(pc = new PlayerCollider(OnPlayer, new Hitbox(25, 15)));
             Add(bc = new BombCollider(OnBomb, new Hitbox(10, 15)));
+            Add(laserSfx = new SoundSource());
         }
 
         public override void Added(Scene scene)
@@ -308,7 +573,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Routine.Cancel();
                     }
+                    foreach (GenesisBeam beam in SceneAs<Level>().Tracker.GetEntities<GenesisBeam>())
+                    {
+                        beam.Destroy();
+                    }
                     Speed = Vector2.Zero;
+                    if (laserSfx.EventName == "event:/char/badeline/boss_laser_charge" && laserSfx.Playing)
+                    {
+                        laserSfx.Stop();
+                    }
                     Add(Routine = new Coroutine(IddleRoutine()));
                     Add(new Coroutine(HitRoutine(player)));
                     IsStun = true;
@@ -410,6 +683,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             pc.Collider.Position = new Vector2(Facing == Facings.Right ? 19 : 4, !Sprite.FlipY ? 4 : 6);
             bc.Collider.Position = new Vector2(Facing == Facings.Right ? 34 : 4, !Sprite.FlipY ? 4 : 6);
             Collidable = !MidAir && Sprite.CurrentAnimationID != "turn"  && SceneAs<Level>().Session.GetFlag("Genesis_Start");
+            BeamOrigin = Center + Sprite.Position + new Vector2(Facing == Facings.Right ? 16 : -16, !Sprite.FlipY ? -4 : 9);
             MoveH(Speed.X * Engine.DeltaTime, null);
             MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
         }
@@ -436,13 +710,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (!Sprite.FlipY) // If Genesis is on ground
                         {
-                            if (Calc.Random.Next(1, 101) >= 60 && CannotLeapDelay <= 0f)
+                            if ((Calc.Random.Next(1, 101) >= 60 && CannotLeapDelay <= 0f) || Health < 4)
                             {
                                 Add(Routine = new Coroutine(LeapRoutine()));
                             }
                             else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotShootDelay <= 0f)
                             {
                                 Add(Routine = new Coroutine(ShootRoutine(player)));
+                            }
+                            else if (Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && Health <= 12)
+                            {
+                                Add(Routine = new Coroutine(BeamRoutine(player)));
                             }
                             else
                             {
@@ -451,13 +729,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else // If genesis is on the ceiling
                         {
-                            if (Math.Abs(player.Center.X - Center.X) >= 40 && Math.Abs(player.Center.X - Center.X) < 120 && CannotDashDelay <= 0f)
+                            if (Math.Abs(player.Center.X - Center.X) >= 40 && Math.Abs(player.Center.X - Center.X) < 120 && CannotDashDelay <= 0f && Health >= 4)
                             {
                                 Add(Routine = new Coroutine(DashRoutine(player)));
                             }
-                            else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotShootDelay <= 0f)
+                            else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotShootDelay <= 0f && Health >= 4)
                             {
                                 Add(Routine = new Coroutine(ShootRoutine(player, true)));
+                            }
+                            else if (Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && Health <= 12)
+                            {
+                                Add(Routine = new Coroutine(BeamRoutine(player)));
                             }
                             else
                             {
@@ -490,6 +772,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CannotShootDelay > 0)
                 {
                     CannotShootDelay -= Engine.DeltaTime;
+                }
+                if (CannotBeamDelay > 0)
+                {
+                    CannotBeamDelay -= Engine.DeltaTime;
                 }
                 yield return null;
             }
@@ -531,9 +817,34 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 yield return null;
             }
-            Sprite.Play("roarEnd");
+            Sprite.Play("idle");
+            Sprite.Position = Vector2.Zero;
             yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
-            CannotShootDelay = 5f;
+            CannotShootDelay = 3f;
+        }
+
+        private IEnumerator BeamRoutine(Player player, bool bellow = false)
+        {
+            Sprite.Position = new Vector2(0f, bellow ? 0 : -8f);
+            laserSfx.Play("event:/char/badeline/boss_laser_charge");
+            Speed.X = 0f;
+            Sprite.Play("roar", restart: true);
+            yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
+            GenesisBeam beam = null;
+            if (player != null)
+            {
+                SceneAs<Level>().Add(beam = Engine.Pooler.Create<GenesisBeam>().Init(this, player));
+            }
+            while (beam.chargeTimer > 0)
+            {
+                yield return null;
+            }
+            Sprite.Play("idle");
+            Sprite.Position = Vector2.Zero;
+            Audio.Play("event:/char/badeline/boss_laser_fire", Position);
+            yield return 0.5f;
+            laserSfx.Stop();
+            CannotBeamDelay = 5f;
         }
 
         public IEnumerator DashRoutine(Player player)
@@ -542,7 +853,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Play("dash");
             Sprite.FlipY = false;
             noFlip = true;
-            Speed = new Vector2(player.Center.X - Center.X + (Facing == Facings.Right ? 48 : -48), 275f);
+            Speed = new Vector2(player.Center.X - Center.X + (Facing == Facings.Right ? 96 : -96), 275f);
             MidAir = true;
             Audio.Play("event:/game/xaphan/genesis_growl", Position);
             while (MidAir)
