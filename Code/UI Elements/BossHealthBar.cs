@@ -106,6 +106,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             continue;
                         }
                     }
+                    else if (Boss.GetType() == typeof(Genesis))
+                    {
+                        Genesis boss = Boss as Genesis;
+                        if (boss.Health >= i)
+                        {
+                            Sections.Add(new Image(GFX.Gui["bossHealth/section"]));
+                            if (boss.Health == i)
+                            {
+                                Sections.Add(new Image(GFX.Gui["bossHealth/separatorLast"]));
+                            }
+                            else
+                            {
+                                Sections.Add(new Image(GFX.Gui["bossHealth/separator"]));
+                            }
+                            continue;
+                        }
+                    }
                     Sections.Add(new Image(GFX.Gui["bossHealth/sectionEmpty"]));
                     Sections.Add(new Image(GFX.Gui["bossHealth/separatorEmpty"]));
                 }
@@ -138,6 +155,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             else if (Boss.GetType() == typeof(Torizo))
             {
                 name = Dialog.Clean("LorebookEntry_Boss_1_1_Name");
+            }
+            else if (Boss.GetType() == typeof(Genesis))
+            {
+                name = Dialog.Clean("LorebookEntry_Boss_5_1_Name");
             }
             ActiveFont.DrawOutline(name.ToUpper(), Position + new Vector2((width + 4f) / 2f, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 0.3f, Color.Yellow * Opacity, 2f, Color.Black * Opacity);
             float nameLenght = ActiveFont.Measure(name.ToUpper()).X * 0.3f;

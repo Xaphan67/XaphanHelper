@@ -38,6 +38,9 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 case "Ch2 - Boss":
                     Scene.Add(new E02_Boss(player, level));
                     break;
+                case "Ch5 - Boss":
+                    Scene.Add(new E05_Boss(player, level));
+                    break;
                 case "Ch5 - Escape Start":
                     Scene.Add(new E05_EscapeStart(player, level));
                     break;

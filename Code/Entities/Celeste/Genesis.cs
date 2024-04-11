@@ -96,6 +96,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        [Tracked(true)]
         private class GenesisAcidSurface : Entity
         {
             private MTexture Texture;
@@ -259,8 +260,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool playerHasMoved;
 
+        [Tracked(true)]
         public Genesis(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
+            Visible = false;
             Collider = new Hitbox(44, 23, 2, 1);
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Genesis/"));
             Sprite.AddLoop("idle", "stand", 0.08f);
@@ -282,6 +285,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            foreach (GenesisAcid acid in SceneAs<Level>().Tracker.GetEntities<GenesisAcid>())
+            {
+                acid.RemoveSelf();
+            }
+            foreach (GenesisAcidSurface surface in SceneAs<Level>().Tracker.GetEntities<GenesisAcidSurface>())
+            {
+                surface.RemoveSelf();
+            }
             Add(new Coroutine(SequenceRoutine()));
             Add(new Coroutine(InvincibilityRoutine()));
             Add(new Coroutine(GravityRoutine()));
@@ -398,7 +409,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             pc.Collider.Position = new Vector2(Facing == Facings.Right ? 19 : 4, !Sprite.FlipY ? 4 : 6);
             bc.Collider.Position = new Vector2(Facing == Facings.Right ? 34 : 4, !Sprite.FlipY ? 4 : 6);
-            Collidable = !MidAir && Sprite.CurrentAnimationID != "turn";
+            Collidable = !MidAir && Sprite.CurrentAnimationID != "turn"  && SceneAs<Level>().Session.GetFlag("Genesis_Start");
             MoveH(Speed.X * Engine.DeltaTime, null);
             MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
         }
@@ -410,7 +421,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator SequenceRoutine()
         {
-            yield return IddleRoutine();
+            while (!SceneAs<Level>().Session.GetFlag("Genesis_Start") || !playerHasMoved)
+            {
+                yield return null;
+            }
+            Visible = Collidable = true;
             CannotLeapDelay = 2.5f;
             while (Health > 0)
             {
