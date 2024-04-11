@@ -288,20 +288,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void OnPlayer(Player player)
         {
-            if (player.StateMachine.State == Player.StDash)
+            if (!IsStun)
             {
+                if (player.StateMachine.State == Player.StDash)
+                {
+                    if (Routine.Active)
+                    {
+                        Routine.Cancel();
+                    }
+                    Speed = Vector2.Zero;
+                    Add(Routine = new Coroutine(IddleRoutine()));
+                    Add(new Coroutine(HitRoutine(player)));
+                    IsStun = true;
+                }
+                else
+                {
+                    player.Die((player.Position - Position).SafeNormalize());
+                }
+            }
+            else if (player.StateMachine.State != 7 && player.StateMachine.State != 22 && !IsSlashingBomb)
+            {
+                IsSlashingBomb = true;
                 if (Routine.Active)
                 {
                     Routine.Cancel();
                 }
-                Speed = Vector2.Zero;
-                Add(Routine = new Coroutine(IddleRoutine()));
-                Add(new Coroutine(HitRoutine(player)));
-                IsStun = true;
-            }
-            else if (!IsStun)
-            {
-                player.Die((player.Position - Position).SafeNormalize());
+                Add(Routine = new Coroutine(SlashRoutine(null, player)));
             }
         }
 
