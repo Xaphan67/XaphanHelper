@@ -15,6 +15,18 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         private Genesis boss;
 
+        private Genesis.GenesisBarrier ceiling1;
+
+        private Genesis.GenesisBarrier ceiling2;
+
+        private Genesis.GenesisBarrier ceiling3;
+
+        private DashBlock dashBlock;
+
+        private Spikes spikes;
+
+        private Liquid liquid;
+
         private CustomRefill refill1;
 
         private CustomRefill refill2;
@@ -62,6 +74,11 @@ namespace Celeste.Mod.XaphanHelper.Events
             this.player = player;
             boss = level.Entities.FindFirst<Genesis>();
             bounds = new Vector2(level.Bounds.Left, level.Bounds.Top);
+            ceiling1 = new Genesis.GenesisBarrier(bounds + new Vector2(160f, 24f), 64, 8);
+            ceiling2 = new Genesis.GenesisBarrier(bounds + new Vector2(288f, 24f), 64, 8);
+            ceiling3 = new Genesis.GenesisBarrier(bounds + new Vector2(416f, 24f), 64, 8);
+            dashBlock = new DashBlock(bounds + new Vector2(576f, 56f), 'Y', 64, 80, true, false, false, new EntityID());
+            spikes = new Spikes(bounds + new Vector2(576f, 80f), 40, Spikes.Directions.Left, "Xaphan/terminal");
             refill1 = new CustomRefill(bounds + new Vector2(256f, 44f), "Max Dashes", false, 2.5f);
             refill2 = new CustomRefill(bounds + new Vector2(320f, 96f), "Max Dashes", false, 2.5f);
             refill3 = new CustomRefill(bounds + new Vector2(384f, 44f), "Max Dashes", false, 2.5f);
@@ -79,6 +96,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             level.Session.SetFlag("In_bossfight", false);
             level.InCutscene = false;
             level.CancelCutscene();
+            liquid = level.Tracker.GetEntity<Liquid>();
             Add(new Coroutine(Cutscene(level)));
         }
 
@@ -111,6 +129,9 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 if (!level.Session.GetFlag("Genesis_Active"))
                 {
+                    level.Add(dashBlock);
+                    level.Add(spikes);
+                    level.Session.SetFlag("Genesis_Inactive", true);
                     while (player.Left <= bounds.X + 456f)
                     {
                         yield return null;
@@ -119,6 +140,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
+                    level.Session.SetFlag("Genesis_Inactive", false);
                 }
                 else
                 {
@@ -144,6 +166,16 @@ namespace Celeste.Mod.XaphanHelper.Events
                     boss.Visible = boss.Collidable = true;
                     level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_genesis");
                     level.Session.Audio.Apply();
+                    level.Remove(dashBlock);
+                    level.Remove(spikes);
+
+                    // Phase 1
+                    level.Add(ceiling1);
+                    level.Add(ceiling2);
+                    level.Add(ceiling3);
+
+                    level.Add(dashBlock);
+                    level.Add(spikes);
 
                     // Phase 2
                     if (!level.Session.GetFlag("boss_Challenge_Mode"))
@@ -195,12 +227,18 @@ namespace Celeste.Mod.XaphanHelper.Events
                     }
                     level.Remove(level.Tracker.GetEntity<BossHealthBar>());
                     level.Session.SetFlag("boss_Checkpoint", false);
+                    ceiling1.RemoveSelf();
+                    ceiling2.RemoveSelf();
+                    ceiling3.RemoveSelf();
+                    level.Add(ceiling2);
+                    level.Add(ceiling3);
                     level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
                     refill1.RemoveSelf();
                     level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
                     refill2.RemoveSelf();
                     level.Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
                     refill3.RemoveSelf();
+                    liquid.ReturnToOrigPosition();
                     string Prefix = level.Session.Area.LevelSet;
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_Boss_Defeated"))
                     {
@@ -243,15 +281,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") || level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
                 {
-                    /*if (boss.Activated)
-                    {
-                        boss.ForcedDestroy = true;
-                        yield return boss.KneelRoutine(true);
-                    }
-                    else
-                    {
-                        boss.Appear(false);
-                    }*/
                     SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_item");
                     SceneAs<Level>().Session.Audio.Apply();
                 }
@@ -259,6 +288,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 level.Session.SetFlag("boss_Challenge_Mode_Given_Up", false);
                 level.Session.SetFlag("Boss_Defeated", true);
                 level.Session.SetFlag("Genesis_Start", false);
+                level.Session.SetFlag("Genesis_rise", false);
             }
 
             // Do nothing anymore unless boss hits got reset

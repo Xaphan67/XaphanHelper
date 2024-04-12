@@ -89,6 +89,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool playerHasMoved;
 
+        private Vector2 StartPos;
+
         private Vector2 FinalPos;
 
         private bool riseSound;
@@ -139,6 +141,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             visualOnly = data.Bool("visualOnly", false);
             canSwim = data.Bool("canSwim", false);
             upsideDown = data.Bool("upsideDown", false);
+            StartPos = Position;
             FinalPos = Position - new Vector2(0, riseDistance);
             if (delay == 0)
             {
@@ -655,6 +658,54 @@ namespace Celeste.Mod.XaphanHelper.Entities
             };
             Add(tween);
             while (Position != FinalPos)
+            {
+                if (liquidType == "water" && Displacement != null)
+                {
+                    Displacement.RemoveSelf();
+                    grid = new bool[(int)(Collider.Width / 8f), (int)(Collider.Height / 8f)];
+                    CheckSolidsForDisplacement();
+                    Add(Displacement = new DisplacementRenderHook(RenderDisplacement));
+                }
+                if (SceneAs<Level>().Transitioning)
+                {
+                    tween.Stop();
+                    stopRiseSound = true;
+                    rising = false;
+                    riseEnd = true;
+                    break;
+                }
+                yield return null;
+            }
+            if (riseSoundSource != null)
+            {
+                riseSoundSource.stop(STOP_MODE.ALLOWFADEOUT);
+            }
+            rising = false;
+            riseEnd = true;
+        }
+
+        public void ReturnToOrigPosition()
+        {
+            Add(new Coroutine(ReverseRiseRoutine()));
+        }
+
+        public IEnumerator ReverseRiseRoutine()
+        {
+            rising = true;
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            Vector2 start = Position;
+            float coef = riseSpeed * 10 / 8;
+            float num = Vector2.Distance(start, StartPos) / 4f / coef;
+            Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.SineInOut, num, start: true);
+            tween.OnUpdate = delegate (Tween t)
+            {
+                if (player != null)
+                {
+                    Position = Vector2.Lerp(start, StartPos, t.Eased);
+                }
+            };
+            Add(tween);
+            while (Position != StartPos)
             {
                 if (liquidType == "water" && Displacement != null)
                 {
