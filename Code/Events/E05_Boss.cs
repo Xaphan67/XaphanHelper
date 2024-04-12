@@ -19,6 +19,8 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         private CustomRefill refill2;
 
+        private CustomRefill refill3;
+
         private Decal arrowUp1;
 
         private Decal arrowUp2;
@@ -60,11 +62,12 @@ namespace Celeste.Mod.XaphanHelper.Events
             this.player = player;
             boss = level.Entities.FindFirst<Genesis>();
             bounds = new Vector2(level.Bounds.Left, level.Bounds.Top);
-            refill1 = new CustomRefill(bounds + new Vector2(256f, 52f), "Max Dashes", false, 2.5f);
-            refill2 = new CustomRefill(bounds + new Vector2(384f, 52f), "Max Dashes", false, 2.5f);
-            arrowUp1 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(192f, 56f), new Vector2(1f, 1f), 1);
-            arrowUp2 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(320f, 56f), new Vector2(1f, 1f), 1);
-            arrowUp3 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(448f, 56f), new Vector2(1f, 1f), 1);
+            refill1 = new CustomRefill(bounds + new Vector2(256f, 44f), "Max Dashes", false, 2.5f);
+            refill2 = new CustomRefill(bounds + new Vector2(320f, 96f), "Max Dashes", false, 2.5f);
+            refill3 = new CustomRefill(bounds + new Vector2(384f, 44f), "Max Dashes", false, 2.5f);
+            arrowUp1 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(192f, 52f), new Vector2(1f, 1f), 1);
+            arrowUp2 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(320f, 52f), new Vector2(1f, 1f), 1);
+            arrowUp3 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(448f, 52f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(128f, 128f), new Vector2(1f, 1f), 1);
             warningSign2 = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(256f, 128f), new Vector2(1f, 1f), 1);
             warningSign3 = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(384f, 128f), new Vector2(1f, 1f), 1);
@@ -117,7 +120,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
-                    while (player.Left >= bounds.X + 136f)
+                    while (player.Left >= bounds.X + 256f)
                     {
                         yield return null;
                     }
@@ -169,6 +172,8 @@ namespace Celeste.Mod.XaphanHelper.Events
                     level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
                     level.Add(refill2);
                     level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                    level.Add(refill3);
+                    level.Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
                     level.Add(warningSign1);
                     level.Add(warningSign2);
                     level.Add(warningSign3);
@@ -199,6 +204,8 @@ namespace Celeste.Mod.XaphanHelper.Events
                     refill1.RemoveSelf();
                     level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
                     refill2.RemoveSelf();
+                    level.Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
+                    refill3.RemoveSelf();
                     string Prefix = level.Session.Area.LevelSet;
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_Boss_Defeated"))
                     {
