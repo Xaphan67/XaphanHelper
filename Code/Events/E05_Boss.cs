@@ -87,11 +87,6 @@ namespace Celeste.Mod.XaphanHelper.Events
             level.Session.SetFlag("Genesis_Start", false);
             if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
-                /*if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
-                {
-                    boss.Appear(true);
-                }
-                */
                 if (player.Dead)
                 {
                     yield break;
@@ -246,9 +241,9 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.SetFlag("boss_Challenge_Mode", false);
                     }
                 }
-                /*if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") || level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
+                if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") || level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
                 {
-                    if (boss.Activated)
+                    /*if (boss.Activated)
                     {
                         boss.ForcedDestroy = true;
                         yield return boss.KneelRoutine(true);
@@ -256,13 +251,12 @@ namespace Celeste.Mod.XaphanHelper.Events
                     else
                     {
                         boss.Appear(false);
-                    }
+                    }*/
                     SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_item");
                     SceneAs<Level>().Session.Audio.Apply();
-                }*/
+                }
                 level.Session.SetFlag("boss_Normal_Mode_Given_Up", false);
                 level.Session.SetFlag("boss_Challenge_Mode_Given_Up", false);
-                //level.Session.SetFlag("Torizo_Defeated", true);
                 level.Session.SetFlag("Boss_Defeated", true);
                 level.Session.SetFlag("Genesis_Start", false);
             }

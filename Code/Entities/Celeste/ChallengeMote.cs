@@ -268,6 +268,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
                     boss.playerHasMoved = false;
                     boss.SetHits(0);
+                } else if (ChapterIndex == 5 && level.Session.Level == "Y-10")
+                {
+                    Genesis boss = level.Tracker.GetEntity<Genesis>();
+                    boss.playerHasMoved = false;
+                    boss.Health = 15;
                 }
                 level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
                 level.Session.RespawnPoint = level.GetSpawnPoint(Position);
