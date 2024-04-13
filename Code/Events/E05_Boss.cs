@@ -37,8 +37,6 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         private Decal arrowUp2;
 
-        private Decal arrowUp3;
-
         private Decal warningSign1;
 
         private Decal warningSign2;
@@ -82,9 +80,8 @@ namespace Celeste.Mod.XaphanHelper.Events
             refill1 = new CustomRefill(bounds + new Vector2(256f, 44f), "Max Dashes", false, 2.5f);
             refill2 = new CustomRefill(bounds + new Vector2(320f, 96f), "Max Dashes", false, 2.5f);
             refill3 = new CustomRefill(bounds + new Vector2(384f, 44f), "Max Dashes", false, 2.5f);
-            arrowUp1 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(192f, 52f), new Vector2(1f, 1f), 1);
-            arrowUp2 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(320f, 52f), new Vector2(1f, 1f), 1);
-            arrowUp3 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(448f, 52f), new Vector2(1f, 1f), 1);
+            arrowUp1 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(256f, 68f), new Vector2(1f, 1f), 1);
+            arrowUp2 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(384f, 68f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(128f, 128f), new Vector2(1f, 1f), 1);
             warningSign2 = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(256f, 128f), new Vector2(1f, 1f), 1);
             warningSign3 = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(384f, 128f), new Vector2(1f, 1f), 1);
@@ -117,11 +114,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.SetFlag("Boss_Defeated", false);
                     }
                 }
-                
-                /*if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
-                {
-                    level.Session.SetFlag("D-07_Gate_1", true);
-                }*/
                 if (level.Session.GetFlag("boss_Checkpoint"))
                 {
                     boss.SetHealth(8);
@@ -166,14 +158,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                     boss.Visible = boss.Collidable = true;
                     level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_genesis");
                     level.Session.Audio.Apply();
-                    level.Remove(dashBlock);
-                    level.Remove(spikes);
 
                     // Phase 1
                     level.Add(ceiling1);
                     level.Add(ceiling2);
                     level.Add(ceiling3);
-
                     level.Add(dashBlock);
                     level.Add(spikes);
 
@@ -194,7 +183,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                     }
                     level.Add(arrowUp1);
                     level.Add(arrowUp2);
-                    level.Add(arrowUp3);
                     level.Add(refill1);
                     level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
                     level.Add(refill2);
@@ -214,7 +202,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                     yield return 1.5f;
                     arrowUp1.Visible = false;
                     arrowUp2.Visible = false;
-                    arrowUp3.Visible = false;
                     warningSign1.Visible = false;
                     warningSign2.Visible = false;
                     warningSign3.Visible = false;

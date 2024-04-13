@@ -7,8 +7,6 @@ using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using static Celeste.GaussianBlur;
-using static Celeste.Mod.XaphanHelper.Effects.Glow;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -151,13 +149,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private IEnumerator LifeTimeRoutine()
             {
-                float timer = 15f;
+                float timer = 15f + 0.5f;
                 while (timer > 0)
                 {
                     timer -= Engine.DeltaTime;
                     if (timer <= 1f)
                     {
                         alpha -= Engine.DeltaTime;
+                    }
+                    if (timer <= 0.5f)
+                    {
+                        Collidable = false;
                     }
                     yield return null;
                 }
@@ -537,6 +539,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private SoundSource laserSfx;
 
+        private int FleeDir;
+
         [Tracked(true)]
         public Genesis(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -579,47 +583,50 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void OnPlayer(Player player)
         {
-            if (!IsStun)
+            if (Health > 0)
             {
-                if (player.StateMachine.State == Player.StDash || player.DashAttacking)
+                if (!IsStun)
                 {
+                    if (player.StateMachine.State == Player.StDash || player.DashAttacking)
+                    {
+                        if (Routine.Active)
+                        {
+                            Routine.Cancel();
+                        }
+                        foreach (GenesisBeam beam in SceneAs<Level>().Tracker.GetEntities<GenesisBeam>())
+                        {
+                            beam.Destroy();
+                        }
+                        Speed = Vector2.Zero;
+                        if (laserSfx.EventName == "event:/char/badeline/boss_laser_charge" && laserSfx.Playing)
+                        {
+                            laserSfx.Stop();
+                        }
+                        if (Health > 4)
+                        { 
+                            Add(Routine = new Coroutine(IddleRoutine()));
+                        }
+                        else
+                        {
+                            Add(Routine = new Coroutine(FallRoutine(player)));
+                        }
+                        Add(new Coroutine(HitRoutine(player)));
+                        IsStun = true;
+                    }
+                    else
+                    {
+                        player.Die((player.Position - Position).SafeNormalize());
+                    }
+                }
+                else if (player.StateMachine.State != 7 && player.StateMachine.State != 22 && !IsSlashingBomb)
+                {
+                    IsSlashingBomb = true;
                     if (Routine.Active)
                     {
                         Routine.Cancel();
                     }
-                    foreach (GenesisBeam beam in SceneAs<Level>().Tracker.GetEntities<GenesisBeam>())
-                    {
-                        beam.Destroy();
-                    }
-                    Speed = Vector2.Zero;
-                    if (laserSfx.EventName == "event:/char/badeline/boss_laser_charge" && laserSfx.Playing)
-                    {
-                        laserSfx.Stop();
-                    }
-                    if (Health > 4)
-                    { 
-                        Add(Routine = new Coroutine(IddleRoutine()));
-                    }
-                    else
-                    {
-                        Add(Routine = new Coroutine(FallRoutine(player)));
-                    }
-                    Add(new Coroutine(HitRoutine(player)));
-                    IsStun = true;
+                    Add(Routine = new Coroutine(SlashRoutine(null, player)));
                 }
-                else
-                {
-                    player.Die((player.Position - Position).SafeNormalize());
-                }
-            }
-            else if (player.StateMachine.State != 7 && player.StateMachine.State != 22 && !IsSlashingBomb)
-            {
-                IsSlashingBomb = true;
-                if (Routine.Active)
-                {
-                    Routine.Cancel();
-                }
-                Add(Routine = new Coroutine(SlashRoutine(null, player)));
             }
         }
 
@@ -652,7 +659,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (player != null && !player.Dead)
             {
-                player.FinalBossPushLaunch(-(int)player.DashDir.X);
+                int playerFaceDir = player.Facing == (global::Celeste.Facings)1 ? 1 : -1;
+                player.FinalBossPushLaunch(-playerFaceDir);
                 player.Speed *= 0.95f;
                 player.Speed.Y *= 0.7f;
             }
@@ -663,7 +671,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnBomb(Bomb bomb)
         {
-            if (Collidable && !IsSlashingBomb && !IsStun)
+            if (Collidable && !IsSlashingBomb && !IsStun && Health > 0)
             {
                 if (bomb != null && !bomb.Hold.IsHeld && !bomb.explode)
                 {
@@ -886,8 +894,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (beam.Canceled)
             {
-                beam.RemoveSelf();
-                laserSfx.Stop();
+                beam.Destroy();
             }
             else
             {
@@ -935,11 +942,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Sprite.Position = Vector2.Zero;
             Sprite.Reverse("walk");
-            bool walkLeft = player.Center.X > Center.X;
-            float speed = Health >= 13 ? 100f : Health >= 5f ? 125f : 150f;
-            Sprite.Rate = Health >= 13 ? 1f : Health >= 5f ? 1.25f : 1.5f;
-            Speed.X = speed * (walkLeft ? -1 : 1);
-            while (walkLeft ? Center.X > SceneAs<Level>().Bounds.Left + 96f : Center.X < SceneAs<Level>().Bounds.Right - 96f)
+            if (FleeDir == 0)
+            {
+                FleeDir = player.Center.X > Center.X ? -1 : 1;
+            }
+            else
+            {
+                FleeDir = FleeDir == 1 ? -1 : 1;
+            }
+            Sprite.Rate = 1.5f;
+            Speed.X = FleeDir == -1 ? -150f : 150f;
+            if (Health <= 3)
+            {
+                while (FleeDir == -1 ? Center.X > player.Center.X - 80f : Center.X < player.Center.X + 80f)
+                {
+                    yield return null;
+                }
+                ShouldSwitchFacing = Facing == Facings.Right ? player.Center.X < Center.X : player.Center.X > Center.X;
+                yield return BeamRoutine(player);
+                Sprite.Position = Vector2.Zero;
+                Sprite.Reverse("walk");
+                Sprite.Rate = 1.5f;
+                Speed.X = FleeDir == -1 ? -150f : 150f;
+            }
+            while (FleeDir == -1 ? Center.X > SceneAs<Level>().Bounds.Left + 96f : Center.X < SceneAs<Level>().Bounds.Right - 96f)
             {
                 yield return null;
             }
