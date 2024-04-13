@@ -119,7 +119,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     boss.SetHealth(8);
                     level.Session.SetFlag("Genesis_rise", false);
                 }
-                if (!level.Session.GetFlag("Genesis_Active"))
+                if (!level.Session.GetFlag("Genesis_Active") && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Pre_Genesis_Event"))
                 {
                     level.Add(dashBlock);
                     level.Add(spikes);
@@ -133,6 +133,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                     level.Session.SetFlag("Genesis_Inactive", false);
+                    XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch5_Pre_Genesis_Event");
                 }
                 else
                 {
