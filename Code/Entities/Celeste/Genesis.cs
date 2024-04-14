@@ -149,7 +149,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private IEnumerator LifeTimeRoutine()
             {
-                float timer = 15f + 0.5f;
+                float timer = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 25f : 15f + 0.5f;
                 while (timer > 0)
                 {
                     timer -= Engine.DeltaTime;
@@ -757,7 +757,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 {
                                     Add(Routine = new Coroutine(ShootRoutine(player)));
                                 }
-                                else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && Health <= 12)
+                                else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? true : Health <= 12))
                                 {
                                     Add(Routine = new Coroutine(BeamRoutine(player)));
                                 }
@@ -781,7 +781,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Add(Routine = new Coroutine(ShootRoutine(player, true)));
                             }
-                            else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && Health <= 12)
+                            else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? true : Health <= 12))
                             {
                                 Add(Routine = new Coroutine(BeamRoutine(player, true)));
                             }
@@ -858,37 +858,55 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Speed.X = 0f;
             Sprite.Play("roar");
             yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
-            yield return 0.5f;
+            yield return SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.25f : 0.5f;
             float shootDuration = 1.2f;
             Audio.Play("event:/game/xaphan/genesis_spit", Position);
             while (shootDuration > 0)
             {
                 shootDuration -= Engine.DeltaTime;
-                if (SceneAs<Level>().OnInterval(0.06f))
+                if (SceneAs<Level>().OnInterval(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.04f : 0.06f))
                 {
-                    SceneAs<Level>().Add(new GenesisAcid(new Vector2(Position.X + (Facing == Facings.Right ? 40 : 8), Position.Y + (bellow ? 23 : 1)), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 60 : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 260 : 210), bellow ? 75f : -50f), Facing == Facings.Left, bellow));
+                    SceneAs<Level>().Add(new GenesisAcid(new Vector2(Position.X + (Facing == Facings.Right ? 40 : 8), Position.Y + (bellow ? 23 : 1)), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 140 :110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 240 : 210), bellow ? 75f : -50f), Facing == Facings.Left, bellow));
                 }
                 yield return null;
             }
             Sprite.Play("idle");
             Sprite.Position = Vector2.Zero;
             yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
-            CannotShootDelay = 3f;
+            CannotShootDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 4.5f : 3f;
         }
 
         private IEnumerator BeamRoutine(Player player, bool bellow = false)
         {
             Sprite.Position = new Vector2(0f, bellow ? 0 : -8f);
+            yield return GenerateBeam(player);
+            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") && Facing == Facings.Right ? player.Center.X > Center.X + 16f : player.Center.X < Center.X - 16f)
+            {
+                yield return GenerateBeam(player, false);
+                yield return 0.5f;
+            }
+            Sprite.Play("idle");
+            Sprite.Position = Vector2.Zero;
+            yield return 0.5f;
+            laserSfx.Stop();
+            CannotBeamDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? Calc.Random.Next(3, 6) : 5f;
+        }
+
+        private IEnumerator GenerateBeam(Player player, bool playSprite = true)
+        {
             laserSfx.Play("event:/char/badeline/boss_laser_charge");
             Speed.X = 0f;
-            Sprite.Play("roar", restart: true);
-            yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
+            if (playSprite)
+            {
+                Sprite.Play("roar", restart: true);
+                yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
+            }
             GenesisBeam beam = null;
             if (player != null)
             {
                 SceneAs<Level>().Add(beam = Engine.Pooler.Create<GenesisBeam>().Init(this, player));
             }
-            while (beam.chargeTimer > 0 && !beam.Canceled)
+            while ((SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? beam.chargeTimer > 0.5f : beam.chargeTimer > 0) && !beam.Canceled)
             {
                 yield return null;
             }
@@ -898,13 +916,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                Audio.Play("event:/char/badeline/boss_laser_fire", Position);
+                Add(new Coroutine(BeamFireSoud()));
             }
-            Sprite.Play("idle");
-            Sprite.Position = Vector2.Zero;
-            yield return 0.5f;
-            laserSfx.Stop();
-            CannotBeamDelay = 5f;
+        }
+
+        private IEnumerator BeamFireSoud()
+        {
+            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode")) {
+                yield return 0.5f;
+            }
+            Audio.Play("event:/char/badeline/boss_laser_fire", Position);
         }
 
         public IEnumerator DashRoutine(Player player)
@@ -929,8 +950,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Position = Vector2.Zero;
             Sprite.Play("walk");
             bool walkLeft = player.Center.X < Center.X;
-            float speed = Health >= 13 ? 100f : Health >= 5f ? 125f : 150f;
-            Sprite.Rate = Health >= 13 ? 1f : Health >= 5f ? 1.25f : 1.5f;
+            float speed = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 150f : Health >= 13 ? 100f : Health >= 5f ? 125f : 150f;
+            Sprite.Rate = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 1.5f : Health >= 13 ? 1f : Health >= 5f ? 1.25f : 1.5f;
             Speed.X = speed * (walkLeft ? -1 : 1);
             float walkDuration = Sprite.CurrentAnimationTotalFrames * 0.08f / Sprite.Rate;
             yield return walkDuration;
@@ -1035,7 +1056,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 float timer = 0f;
                 if (IsStun && Health > 0)
                 {
-                    timer = 2f;
+                    timer = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 1.75f : 2f;
                 }
                 else
                 {
