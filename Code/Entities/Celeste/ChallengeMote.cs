@@ -257,23 +257,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 level.Session.Audio.Apply();
                 level.Session.SetFlag("boss_Normal_Mode", true);
                 level.Session.SetFlag("Boss_Defeated", false);
-                if (ChapterIndex == 1 && level.Session.Level == "D-07")
-                {
-                    Torizo boss = level.Tracker.GetEntity<Torizo>();
-                    boss.playerHasMoved = false;
-                    boss.Health = 15;
-                    
-                } else if (ChapterIndex == 2 && level.Session.Level == (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? "I-21" : "D-03"))
-                {
-                    CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
-                    boss.playerHasMoved = false;
-                    boss.SetHits(0);
-                } else if (ChapterIndex == 5 && level.Session.Level == "Y-10")
-                {
-                    Genesis boss = level.Tracker.GetEntity<Genesis>();
-                    boss.playerHasMoved = false;
-                    boss.Health = 15;
-                }
+                ResetBoss();
                 level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
                 level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             }));
@@ -287,19 +271,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 level.Session.Audio.Apply();
                 level.Session.SetFlag("boss_Challenge_Mode", true);
                 level.Session.SetFlag("Boss_Defeated", false);
-                if (ChapterIndex == 1 && level.Session.Level == "D-07")
-                {
-                    Torizo boss = level.Tracker.GetEntity<Torizo>();
-                    boss.playerHasMoved = false;
-                    boss.Health = 15;
-
-                }
-                else if (ChapterIndex == 2 && level.Session.Level == (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? "I-21" : "D-03"))
-                {
-                    CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
-                    boss.playerHasMoved = false;
-                    boss.hits = 0;
-                }
+                ResetBoss();
                 level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
                 level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             }));
@@ -322,6 +294,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
             talk.Enabled = true;
             yield return 0.15f;
             player.StateMachine.State = 0;
+        }
+
+        private void ResetBoss()
+        {
+            if (ChapterIndex == 1 && level.Session.Level == "D-07")
+            {
+                Torizo boss = level.Tracker.GetEntity<Torizo>();
+                boss.playerHasMoved = false;
+                boss.SetHealth(15);
+
+            }
+            else if (ChapterIndex == 2 && level.Session.Level == (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? "I-21" : "D-03"))
+            {
+                CustomFinalBoss boss = level.Tracker.GetEntity<CustomFinalBoss>();
+                boss.playerHasMoved = false;
+                boss.SetHits(0);
+            }
+            else if (ChapterIndex == 5 && level.Session.Level == "Y-10")
+            {
+                Genesis boss = level.Tracker.GetEntity<Genesis>();
+                boss.playerHasMoved = false;
+                boss.SetHealth(15);
+            }
         }
 
         public override void Render()

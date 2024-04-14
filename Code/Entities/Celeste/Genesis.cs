@@ -326,7 +326,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (chargeTimer > 0f && player != null && !player.Dead)
                 {
                     sideFadeAlpha = Calc.Approach(sideFadeAlpha, 1f, Engine.DeltaTime);
-                    if (chargeTimer >= 1.2f ? true : (boss.Facing == Facings.Right && player.Center.X > boss.Center.X + 16f) || (boss.Facing == Facings.Left && player.Center.X < boss.Center.X - 16f))
+                    if ((boss.Facing == Facings.Right && player.Center.X > boss.Center.X + 16f) || (boss.Facing == Facings.Left && player.Center.X < boss.Center.X - 16f))
                     {
                         followTimer -= Engine.DeltaTime;
                         chargeTimer -= Engine.DeltaTime;
@@ -489,6 +489,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Right
         }
 
+        private Vector2 OrigPosition;
+
         private Facings Facing;
 
         private PlayerCollider pc;
@@ -544,6 +546,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         [Tracked(true)]
         public Genesis(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
+            OrigPosition = Position;
             Visible = false;
             Collider = new Hitbox(44, 23, 2, 1);
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Genesis/"));
@@ -831,6 +834,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (Health <= 0)
             {
                 yield return null;
+                Logger.Log(LogLevel.Info, "Xh", "Ici");
             }
             Visible = true;
             Add(new Coroutine(SequenceRoutine()));
@@ -880,7 +884,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Sprite.Position = new Vector2(0f, bellow ? 0 : -8f);
             yield return GenerateBeam(player);
-            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") && Facing == Facings.Right ? player.Center.X > Center.X + 16f : player.Center.X < Center.X - 16f)
+            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") && (Facing == Facings.Right ? player.Center.X > Center.X + 24f : player.Center.X < Center.X - 24f))
             {
                 yield return GenerateBeam(player, false);
                 yield return 0.5f;
@@ -1217,6 +1221,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return null;
             }
             Visible = false;
+            Speed = Vector2.Zero;
+            Position = OrigPosition;
+            ShouldDisengage = false;
+            CannotBeamDelay = CannotDashDelay = CannotLeapDelay = CannotShootDelay = 0f;
         }
     }
 }
