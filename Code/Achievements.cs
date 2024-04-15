@@ -894,6 +894,25 @@ namespace Celeste.Mod.XaphanHelper
                     medals: 15,
                     reqID: "upg7"
                 ));
+                list.Add(new AchievementData(
+                    achievementID: "boss5-1",
+                    categoryID: 5,
+                    icon: "achievements/Xaphan/Boss",
+                    flag: "XaphanHelper_StatFlag_BossCh5",
+                    currentValue: session.GetFlag("XaphanHelper_StatFlag_BossCh5") ? 1 : 0,
+                    maxValue: 1,
+                    medals: 25
+                ));
+                list.Add(new AchievementData(
+                achievementID: "boss5-1cm",
+                    categoryID: 5,
+                    icon: "achievements/Xaphan/BossCM",
+                    flag: "XaphanHelper_StatFlag_BossCMCh5",
+                    currentValue: session.GetFlag("XaphanHelper_StatFlag_BossCMCh5") ? 1 : 0,
+                    maxValue: 1,
+                    medals: 50,
+                    reqID: "boss5-1"
+                ));
             }
 
             return list;
