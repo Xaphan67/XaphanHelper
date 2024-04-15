@@ -73,12 +73,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
         {
-
-            if (self.Entity is Player player && player != null && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (self.Entity is Player && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
-                foreach (BigScreen screen in self.SceneAs<Level>().Tracker.GetEntities<BigScreen>())
+                foreach (BigScreen screen in level.Tracker.GetEntities<BigScreen>())
                 {
-                    if (screen.PlayerPose != "" && screen.Active)
+                    if (!string.IsNullOrEmpty(screen.PlayerPose) && screen.Active)
                     {
                         id = screen.PlayerPose;
                         break;

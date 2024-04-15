@@ -138,9 +138,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
         {
 
-            if (self.Entity is Player player && player != null && player.StateMachine.State != Player.StDash && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (self.Entity is Player player && self.Scene is Level level && player.StateMachine.State != Player.StDash && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
-                foreach (MagneticCeiling ceiling in self.SceneAs<Level>().Tracker.GetEntities<MagneticCeiling>())
+                foreach (MagneticCeiling ceiling in level.Tracker.GetEntities<MagneticCeiling>())
                 {
                     if (ceiling.PlayerPose != "" && ceiling.Active)
                     {

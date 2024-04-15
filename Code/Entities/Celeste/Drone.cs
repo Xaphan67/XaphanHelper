@@ -156,9 +156,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void onCameraOffsetTriggerOnEnter(On.Celeste.CameraOffsetTrigger.orig_OnEnter orig, CameraOffsetTrigger self, Player player)
         {
-            if (XaphanModule.ModSaveData.startAsDrone.ContainsKey(player.SceneAs<Level>().Session.Area.LevelSet))
+            if (player.Scene is Level level && XaphanModule.ModSaveData.startAsDrone.ContainsKey(level.Session.Area.LevelSet))
             {
-                if (!XaphanModule.ModSaveData.startAsDrone[player.SceneAs<Level>().Session.Area.LevelSet])
+                if (!XaphanModule.ModSaveData.startAsDrone[level.Session.Area.LevelSet])
                 {
                     orig(self, player);
                 }
