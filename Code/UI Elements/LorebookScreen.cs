@@ -370,7 +370,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 foreach (LorebookDisplay.EntryDisplay display in Displays)
                                 {
-                                    display.Position.Y -= display.height * (nextDisplay.isSubCategory ? (entrySelection == Displays.Count - 5 || entrySelection == Displays.Count - 4) ? 1 : 2 : 1);
+                                    display.Position.Y -= display.height;
                                 }
                             }
                             LorebookDisplay.EntryDisplay lastDisplay = Displays.Find(entry => entry.ID == Displays.Count - 1);
