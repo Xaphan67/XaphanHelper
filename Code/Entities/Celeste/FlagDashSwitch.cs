@@ -408,7 +408,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collidable = false;
                 Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-                if (canSwapFlag && !CollideCheck(player))
+                if (player != null && canSwapFlag && !CollideCheck(player))
                 {
                     if (side == Sides.Left)
                     {
