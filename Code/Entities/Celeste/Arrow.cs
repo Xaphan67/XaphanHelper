@@ -412,7 +412,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         arrow.Collidable = false;
                     }
                 }
-                if (!arrow.inWall)
+                if (!arrow.inWall && arrow.sourceTrap.active)
                 {
                     if ((arrow.side == "Right" && self.CollideRect(new Rectangle((int)arrow.Right - 7, (int)arrow.Top - 1, 7, 4))) || (arrow.side == "Left" && self.CollideRect(new Rectangle((int)arrow.Left, (int)arrow.Top - 1, 7, 4))))
                     {

@@ -257,6 +257,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Coroutine SequenceRoutine = new();
 
+        public Coroutine ReloadRoutine = new();
+
         public ArrowTrap(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, false)
         {
             active = true;
@@ -281,6 +283,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             staticMover.OnShake = onShake;
             staticMover.SolidChecker = IsRiding;
             staticMover.JumpThruChecker = IsRiding;
+            staticMover.OnDisable = OnDisable;
+            staticMover.OnEnable = OnEnable;
             if (side == "Right")
             {
                 Collider = new Hitbox(3f, 10f, 0f, 3f);
@@ -310,6 +314,43 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 sprite.FlipX = true;
             }
             Add(staticMover);
+        }
+
+        private void OnDisable()
+        {
+            Active = true;
+            Visible = Collidable = active = false;
+            if (nextArrow != null)
+            {
+                nextArrow.Visible = nextArrow.Collidable = false;
+            }
+            if (ReloadRoutine.Active)
+            {
+                ReloadRoutine.Cancel();
+            }
+        }
+
+        private void OnEnable()
+        {
+            Visible = Collidable = active = true;
+            if (side == "Right" || side == "Left")
+            {
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-11, 4), this, side)
+                {
+                    canShoot = true
+                });
+            }
+            else
+            {
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -11), this, side)
+                {
+                    canShoot = true
+                });
+            }
+            if (SequenceRoutine.Active)
+            {
+                SequenceRoutine.Cancel();
+            }
         }
 
         private bool IsRiding(Solid solid)
@@ -412,7 +453,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             nextArrow = null;
                             if (!onlyOnce)
                             {
-                                Add(new Coroutine(ReloadArrow()));
+                                Add(ReloadRoutine = new Coroutine(ReloadArrow()));
                             }
                             else
                             {
@@ -437,7 +478,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 nextArrow = null;
                 if (!onlyOnce)
                 {
-                    Add(new Coroutine(ReloadArrow()));
+                    Add(ReloadRoutine = new Coroutine(ReloadArrow()));
                     yield return cooldown;
                 }
                 else
