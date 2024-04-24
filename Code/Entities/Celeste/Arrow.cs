@@ -37,6 +37,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool collideHole;
 
+        private bool collideSwitch;
+
         private ArrowHole arrowHole;
 
         StaticMover staticMover;
@@ -443,8 +445,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 MoveArrow();
                 foreach (FlagDashSwitch flagDashSwitch in Scene.Tracker.GetEntities<FlagDashSwitch>())
                 {
-                    if (CollideCheck(flagDashSwitch))
+                    if (CollideCheck(flagDashSwitch) && !collideSwitch)
                     {
+                        collideSwitch = true;
                         if (side == "Right")
                         {
                             flagDashSwitch.OnDashCollide(null, Vector2.UnitX);
