@@ -196,13 +196,13 @@
 	ModOptions_XaphanModule_90= 90%
 	ModOptions_XaphanModule_100= 100%
 	ModOptions_XaphanModule_ShowHeatLevel= Afficher le niveau de chaleur
-	ModOptions_XaphanModule_ShowHeatLevel_Desc= Affiche le temps restant avant de mourrir dû à la chaleur dans les salles chauffées
+	ModOptions_XaphanModule_ShowHeatLevel_Desc= Affiche le temps restant avant de mourrir dans les salles chauffées
 	ModOptions_XaphanModule_SpaceJumpIndicator= Indicateur du Saut Spacial
 	ModOptions_XaphanModule_SpaceJumpIndicator_None= Aucun
 	ModOptions_XaphanModule_SpaceJumpIndicator_Small= Petit
 	ModOptions_XaphanModule_SpaceJumpIndicator_Large= Grand
-	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes= Afficher la zone de colision complète des pentes
-	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= Affiche la zone de colision des platformes invisibles utilisées par les pentes pour déplacer le joueur - Utile pour les TAS
+	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes= Afficher la collision complète des pentes
+	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= Affiche la zone de collision des platformes invisibles utilisées par les pentes{n}pour déplacer le joueur - Peux être utile pour les TAS
 
 #Bindings
 	ModOptions_XaphanModule_OpenMap= Ouvrir la carte / l'écran de status

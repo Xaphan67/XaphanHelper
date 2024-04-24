@@ -202,7 +202,7 @@
 	ModOptions_XaphanModule_SpaceJumpIndicator_Small= Small
 	ModOptions_XaphanModule_SpaceJumpIndicator_Large= Large
 	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes= Show Complete Slopes Hitboxes
-	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= Show hidden platforms hitboxes used by slopes to move the player - Usefull for TASes
+	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= Show hidden platforms hitboxes used by slopes{n}to move the player - Can be useful for TASes
 
 #Bindings
 	ModOptions_XaphanModule_OpenMap= Open Map / Status Screen
