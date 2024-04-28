@@ -229,7 +229,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void OnCollide(Player player)
         {
             PlayerPose = "";
-            if (player.Holding == null && !player.DashAttacking)
+            if (player.Holding == null && !player.DashAttacking && player.StateMachine.State != Player.StClimb)
             {
                 if (player.CollideCheck(this, player.Position - Vector2.UnitY) && (SpiderMagnet.Active(SceneAs<Level>()) || !XaphanModule.useUpgrades) && !XaphanModule.PlayerIsControllingRemoteDrone())
                 {
