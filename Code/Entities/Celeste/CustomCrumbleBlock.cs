@@ -182,19 +182,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Audio.Play("event:/game/general/platform_disintegrate", Center);
                 }
-                shaker.ShakeFor(onTop ? crumbleDelay + 0.2f : crumbleDelay + 0.6f, removeOnFinish: false);
-                StartShaking(onTop ? crumbleDelay + 0.2f : crumbleDelay + 0.6f);
+                shaker.ShakeFor(crumbleDelay + 0.2f, removeOnFinish: false);
+                StartShaking(crumbleDelay + 0.2f);
                 foreach (Image image in images)
                 {
                     SceneAs<Level>().Particles.Emit(CrumblePlatform.P_Crumble, 2, Position + image.Position + new Vector2(0f, 2f), Vector2.One * 3f);
                 }
-                for (int i = 0; i < (onTop ? 1 : 3); i++)
+                yield return 0.2f;
+                foreach (Image image in images)
                 {
-                    yield return 0.2f;
-                    foreach (Image image in images)
-                    {
-                        SceneAs<Level>().Particles.Emit(CrumblePlatform.P_Crumble, 2, Position + image.Position + new Vector2(0f, 2f), Vector2.One * 3f);
-                    }
+                    SceneAs<Level>().Particles.Emit(CrumblePlatform.P_Crumble, 2, Position + image.Position + new Vector2(0f, 2f), Vector2.One * 3f);
                 }
                 float timer = crumbleDelay;
                 if (onTop)
@@ -207,7 +204,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    while (timer > 0f)
+                    while (timer > 0f && getOneBlockWithPlayerClimbing() != null)
                     {
                         yield return null;
                         timer -= Engine.DeltaTime;
