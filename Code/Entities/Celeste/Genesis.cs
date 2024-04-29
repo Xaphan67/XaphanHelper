@@ -844,7 +844,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (Health <= 0)
             {
                 yield return null;
-                Logger.Log(LogLevel.Info, "Xh", "Ici");
             }
             Visible = true;
             Add(new Coroutine(SequenceRoutine()));
