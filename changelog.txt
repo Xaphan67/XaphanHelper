@@ -1,5 +1,6 @@
 Version 1.0.61 :
 - Fixed french translations for some settings being too long
+- Fixed a bug affecting Bubble Doors depth
 - Fixed a bug playing wrong animations when sliding on slopes and grabbing a magnetic ceiling when the player inventory is set to Farewell
 - Fixed a crash happening when a Flag Dash Switch with the "Can Swap Flag" attribute set to true was activated while the player was dead
 - Fixed a crash happening if the player was grabbing a wall while trying to attach to a Magnetic Ceiling
