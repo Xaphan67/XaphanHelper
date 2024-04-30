@@ -91,7 +91,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             doorStruct.Justify = new Vector2(1f, 0f);
             doorStruct.Play("struct", restart: true);
-            Depth = -90000;
         }
 
         public override void Added(Scene scene)
@@ -256,6 +255,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            Depth = (SceneAs<Level>().Transitioning && !CollideCheck<CustomFakeWall>()) ? -90000 : -9000;
         }
 
         public void StartOpened()
