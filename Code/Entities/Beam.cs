@@ -639,7 +639,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void ImpactParticles(Vector2 dir)
+        public void ImpactParticles(Vector2 dir)
         {
             float direction;
             Vector2 positionRange;

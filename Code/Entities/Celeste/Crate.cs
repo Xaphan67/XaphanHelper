@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -12,7 +14,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             public Vector2 Offset;
 
-            private Crate Crate;
+            public Crate Crate;
+
+            private WeaponCollider WeaponCollider;
 
             public LaserBlocker(Vector2 position, Vector2 offset, Crate crate) : base(position + offset)
             {
@@ -20,6 +24,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collider = new Hitbox(14f, 14f);
                 Offset = offset;
                 Crate = crate;
+                Add(WeaponCollider = new WeaponCollider
+                {
+                    OnCollideBeam = Crate.HitByBeam,
+                    OnCollideMissile = Crate.HitByMissile
+                });
             }
 
             public override void Update()
@@ -297,6 +306,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Audio.Play("event:/game/xaphan/crate_bounce", Position);
             Speed = new Vector2(170f * dir.X, 130f * dir.Y);
+        }
+
+        private void HitByBeam(Beam beam)
+        {
+            HitSound();
+            if (Type == "Wood")
+            {
+                Speed = new Vector2(130f * beam.Direction.X, 0f);
+            }
+            beam.CollideSolid(beam.Direction);
+        }
+
+        private void HitByMissile(Missile missile)
+        {
+            HitSound();
+            if (Type == "Wood")
+            {
+                Destroy();
+            }
+            else if (Type == "Metal" && missile.SuperMissile)
+            {
+                Destroy();
+            }
+            missile.CollideSolid(missile.Direction);
         }
 
         public override void Update()
