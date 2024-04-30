@@ -453,6 +453,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return null;
                 timer -= Engine.DeltaTime;
             }
+            if (Hold.IsHeld)
+            {
+                Hold.Holder.Throw();
+            }
             HoldableCannotHoldTimer.SetValue(Hold, 1f);
             AllowPushing = false;
             Collider = new Circle(12f, 0f, -4f);
@@ -503,9 +507,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 player.Speed.X = (180f * dirX) * (GravityJacket.determineIfInWater() && !XaphanModule.ModSettings.GravityJacket ? 0.8f : 1f);
             }*/
 
-            foreach (Entity entity in Scene.Tracker.GetEntities<BreakBlockIndicator>())
+            foreach (BreakBlockIndicator breakBlockIndicator in Scene.Tracker.GetEntities<BreakBlockIndicator>())
             {
-                BreakBlockIndicator breakBlockIndicator = (BreakBlockIndicator)entity;
                 if (breakBlockIndicator.mode == "Bomb")
                 {
                     if (CollideCheck(breakBlockIndicator))
@@ -529,6 +532,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CollideCheck(workRobot, Position + new Vector2(dir, 0)))
                 {
                     workRobot.Push(new Vector2(75, 0), new Vector2(dir, 0));
+                }
+            }
+
+            foreach (Crate crate in Scene.Tracker.GetEntities<Crate>())
+            {
+                if (CollideCheck(crate) && crate.Type == "Wood" && !crate.Destroyed)
+                {
+                    crate.Destroy();
                 }
             }
         }

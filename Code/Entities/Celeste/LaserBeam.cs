@@ -77,6 +77,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 LifeMax = 0.8f,
                 Acceleration = Vector2.UnitY * 35f
             };*/
+            Depth = 101;
         }
 
         public override void Added(Scene scene)
@@ -139,9 +140,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Position = Emitter.Position + Offset;
             if (Emitter.side == "Left")
             {
-                if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                if ((CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>()) && !CollideCheck<PlayerPlatform>())
                 {
-                    while (CollideCheck<Solid>())
+                    while (CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>())
                     {
                         Collider.Left += 1;
                         Collider.Width -= 1;
@@ -186,9 +187,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (Emitter.side == "Right")
             {
-                if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                if ((CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>()) && !CollideCheck<PlayerPlatform>())
                 {
-                    while (CollideCheck<Solid>())
+                    while (CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>())
                     {
                         Collider.Width -= 1;
                         colliderWidth = Collider.Width;
@@ -223,9 +224,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (Emitter.side == "Top")
             {
-                if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                if ((CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>()) && !CollideCheck<PlayerPlatform>())
                 {
-                    while (CollideCheck<Solid>())
+                    while (CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>())
                     {
                         Collider.Top += 1;
                         Collider.Height -= 1;
@@ -266,9 +267,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (Emitter.side == "Bottom")
             {
-                if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                if ((CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>()) && !CollideCheck<PlayerPlatform>())
                 {
-                    while (CollideCheck<Solid>())
+                    while (CollideCheck<Solid>() || CollideCheck<Crate.LaserBlocker>())
                     {
                         Collider.Height -= 1;
                         colliderHeight = Collider.Height;

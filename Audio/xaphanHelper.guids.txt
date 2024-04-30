@@ -507,6 +507,12 @@
 {5c759bb6-4f27-4552-a158-c9046fe4138a} event:/game/xaphan/elevator
 {9b2abc2b-6464-4b96-803d-5f10b644406c} event:/game/xaphan/enemy_hit_screw_attack
 {f3b2bb0d-8e7e-454c-b55a-3dbc7225e8ac} event:/game/xaphan/explosion
+{e7122a0d-01c7-4904-8bb3-ed60472ac365} event:/game/xaphan/genesis_death
+{87a72ffb-b80d-4288-a750-eef5cf7486b8} event:/game/xaphan/genesis_growl
+{55ae4680-b362-4842-81bb-c65d95812978} event:/game/xaphan/genesis_hit
+{037db42a-d179-48d4-966f-49447970a366} event:/game/xaphan/genesis_jump
+{91c49afc-9c14-4c8e-900c-e8c884674dd2} event:/game/xaphan/genesis_spit
+{b5ec0775-5340-4064-b47b-9ebef39e3872} event:/game/xaphan/genesis_swing
 {9e6cc8fe-f8e7-463a-8079-b32722a5064d} event:/game/xaphan/golden_feather_disapear
 {a4716cd7-0094-4bde-93d9-7a8b4ab43351} event:/game/xaphan/heat_damage
 {0a2f40a2-5fd2-425b-92b1-7b837ff86f0c} event:/game/xaphan/ice_beam_fire
@@ -554,12 +560,7 @@
 {9ff88ba6-9e26-4644-8ff4-f990704e2fae} event:/game/xaphan/wave_beam_fire
 {15ee171d-a571-4f88-ac1a-2210a9cc4940} event:/game/xaphan/zip_mover_end
 {ed2dc90f-5028-4598-9cf0-a30c99795626} event:/game/xaphan/zip_mover_start
-{91c49afc-9c14-4c8e-900c-e8c884674dd2} event:/game/xaphan/genesis_spit
-{e7122a0d-01c7-4904-8bb3-ed60472ac365} event:/game/xaphan/genesis_death
-{87a72ffb-b80d-4288-a750-eef5cf7486b8} event:/game/xaphan/genesis_growl
-{55ae4680-b362-4842-81bb-c65d95812978} event:/game/xaphan/genesis_hit
-{037db42a-d179-48d4-966f-49447970a366} event:/game/xaphan/genesis_jump
-{b5ec0775-5340-4064-b47b-9ebef39e3872} event:/game/xaphan/genesis_swing
+{be734fce-3b58-4267-ba78-79e00dc00474} event:/game/xaphan/crate_bounce
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
@@ -625,6 +626,7 @@
 {7043719b-ebbe-4ffe-bc0f-d6817713347e} event:/music/xaphan/menu/overworld
 {544c08f7-da29-4c3e-aeea-22dbdd5bbe41} event:/music/xaphan/remix/01_ancient_ruins
 {02ff5216-d343-4c13-9a27-698ae47493aa} event:/music/xaphan/lvl_0_escape
+{3fd56196-832f-489e-9aad-cf38b6ef1fae} event:/music/xaphan/lvl_0_genesis
 {e23d9adc-40e5-41ff-a700-6ffb5207b8c8} event:/music/xaphan/lvl_0_intro_loop
 {fc970f04-163c-42cf-b9ce-7324610cd6c5} event:/music/xaphan/lvl_0_intro_start
 {b7391046-0bb1-49ed-bbb2-b2db647e7f5d} event:/music/xaphan/lvl_0_item
@@ -640,6 +642,7 @@
 {dfb573c9-c5f5-4413-9524-e86b0c6bca51} event:/music/xaphan/lvl_1_ruins_deeper
 {5910f626-fbc5-442a-9764-bbb6b899903f} event:/music/xaphan/lvl_2_abyss
 {26df2989-e01e-4294-99cd-d986d89bfb2d} event:/music/xaphan/lvl_2_abyss_deeper
+{988e8c2a-58d3-4227-9bd5-b76d5d6baeff} event:/music/xaphan/lvl_5_geothermal
 {56a5f707-a550-4f71-877a-5f47f6309427} event:/music/xaphan/lvl_5_lab
 {134914b5-97bc-4515-bc9b-414760a3100a} event:/music/xaphan/lvl_5_lab_destroyed
 {2d171363-aedc-4dbe-a196-78765c7aaf07} event:/music/xaphan/lvl_5_lab_old

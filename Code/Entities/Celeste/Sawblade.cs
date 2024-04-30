@@ -355,6 +355,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
+                foreach (Crate crate in Scene.Tracker.GetEntities<Crate>())
+                {
+                    if (CollideCheck(crate))
+                    {
+                        if (crate.Type == "Wood" && !crate.Destroyed)
+                        {
+                            crate.Destroy();
+                        }
+                        else if (crate.Type == "Metal")
+                        {
+                            crate.Bounce(new Vector2(crate.Center.X >= Center.X ? 1 : -1, crate.Center.Y >= Center.Y ? 1 : -1));
+                        }
+                    }
+                }
             }
             Position = GetPercentPosition(percent);
             PositionTrackSfx();
