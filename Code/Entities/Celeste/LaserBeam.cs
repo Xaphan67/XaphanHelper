@@ -163,9 +163,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (!CollideCheck<Solid>(Position - Vector2.UnitX))
+                    if (!CollideCheck<Solid>(Position - Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position - Vector2.UnitX))
                     {
-                        while (!CollideCheck<Solid>(Position - Vector2.UnitX) && Collider.Width < (Right - SceneAs<Level>().Bounds.Left))
+                        while (!CollideCheck<Solid>(Position - Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position - Vector2.UnitX) && Collider.Width < (Right - SceneAs<Level>().Bounds.Left))
                         {
                             Collider.Left -= 1;
                             Collider.Width += 1;
@@ -204,9 +204,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (!CollideCheck<Solid>(Position + Vector2.UnitX))
+                    if (!CollideCheck<Solid>(Position + Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position + Vector2.UnitX))
                     {
-                        while (!CollideCheck<Solid>(Position + Vector2.UnitX) && Collider.Width < SceneAs<Level>().Bounds.Right - Left)
+                        while (!CollideCheck<Solid>(Position + Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position + Vector2.UnitX) && Collider.Width < SceneAs<Level>().Bounds.Right - Left)
                         {
                             Collider.Width += 1;
                             colliderWidth = Collider.Width;
@@ -243,9 +243,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (!CollideCheck<Solid>(Position - Vector2.UnitX))
+                    if (!CollideCheck<Solid>(Position - Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position - Vector2.UnitX))
                     {
-                        while (!CollideCheck<Solid>(Position - Vector2.UnitX) && Collider.Height < Bottom - SceneAs<Level>().Bounds.Top)
+                        while (!CollideCheck<Solid>(Position - Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position - Vector2.UnitX) && Collider.Height < Bottom - SceneAs<Level>().Bounds.Top)
                         {
                             Collider.Top -= 1;
                             Collider.Height += 1;
@@ -284,9 +284,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (!CollideCheck<Solid>(Position + Vector2.UnitX))
+                    if (!CollideCheck<Solid>(Position + Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position + Vector2.UnitX))
                     {
-                        while (!CollideCheck<Solid>(Position + Vector2.UnitX) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top)
+                        while (!CollideCheck<Solid>(Position + Vector2.UnitX) && !CollideCheck<Crate.LaserBlocker>(Position + Vector2.UnitX) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top)
                         {
                             Collider.Height += 1;
                             colliderHeight = Collider.Height;
@@ -314,22 +314,65 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (Type == "Kill")
                 {
-                    player.Die(new Vector2(0f, -1f));
+                    KillPlayer(player);
                 }
                 else if (Type == "Must Dash")
                 {
                     if (!player.DashAttacking)
                     {
-                        player.Die(new Vector2(0f, -1f));
+                        KillPlayer(player);
                     }
                 }
                 else if (Type == "No Dash")
                 {
                     if (player.StateMachine.State == Player.StDash || player.StateMachine.State == Player.StDreamDash)
                     {
+                        KillPlayer(player);
+                    }
+                }
+            }
+        }
+
+        private void KillPlayer(Player player)
+        {
+            if (CollideCheck<Crate.LaserBlocker>())
+            {
+                if (Emitter.side == "Left")
+                {
+                    Crate.LaserBlocker blocker = SceneAs<Level>().Tracker.GetNearestEntity<Crate.LaserBlocker>(Collider.CenterLeft);
+                    if (player.Right > blocker.Right)
+                    {
                         player.Die(new Vector2(0f, -1f));
                     }
                 }
+                else if (Emitter.side == "Right")
+                {
+                    Crate.LaserBlocker blocker = SceneAs<Level>().Tracker.GetNearestEntity<Crate.LaserBlocker>(Collider.CenterRight);
+                    if (player.Left < blocker.Left)
+                    {
+                        player.Die(new Vector2(0f, -1f));
+                    }
+                }
+                else if (Emitter.side == "Top")
+                {
+                    Crate.LaserBlocker blocker = SceneAs<Level>().Tracker.GetNearestEntity<Crate.LaserBlocker>(Collider.TopCenter);
+                    if (player.Bottom > blocker.Bottom)
+                    {
+                        player.Die(new Vector2(0f, -1f));
+                    }
+                }
+                else if (Emitter.side == "Bottom")
+                {
+                    Crate.LaserBlocker blocker = SceneAs<Level>().Tracker.GetNearestEntity<Crate.LaserBlocker>(Collider.BottomCenter);
+                    if (player.Top < blocker.Top)
+                    {
+                        player.Die(new Vector2(0f, -1f));
+                    }
+                }
+            }
+            else
+            {
+                player.Die(new Vector2(0f, -1f));
             }
         }
 
