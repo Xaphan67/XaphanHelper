@@ -6,6 +6,7 @@ Version 1.0.61 :
 - Fixed a crash happening if the player was grabbing a wall while trying to attach to a Magnetic Ceiling
 - Fixed a crash that could happen when dying inside some triggers
 - Fixed a crash that could happen when dying on certain maps
+- Fixed a crash that would happen when collecting a heart in a B or C side of a campaign using a Merge Chapter Controller. In this case, collecting a heart can no longer end the level (use a Teleport To Other Side instead)
 
 Version 1.0.60 :
 - Updated to support Everest core

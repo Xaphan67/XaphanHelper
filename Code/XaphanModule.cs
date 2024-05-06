@@ -657,7 +657,6 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Cassette.UnlockedBSide.EaseOut += modCassetteUnlockedBSideEaseOut;
             On.Celeste.Cassette.UnlockedBSide.Render += modCassetteUnlockedBSideRender;
             On.Celeste.GameplayStats.Render += onGameplayStatsRender;
-            On.Celeste.HeartGem.IsCompleteArea += modHeartGemIsCompleteArea;
             On.Celeste.LevelEnter.Routine += modLevelEnterRoutine;
             On.Celeste.LevelEnter.BeforeRender += modLevelEnterBeforeRender;
             On.Celeste.LevelEnter.Go += onLevelEnterGo;
@@ -733,6 +732,7 @@ namespace Celeste.Mod.XaphanHelper
             Arrow.Load();
             BigScreen.Load();
             BombSwitch.Load();
+            MergeChaptersBCSideHeartCompleteArea.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -756,7 +756,6 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Cassette.UnlockedBSide.EaseOut -= modCassetteUnlockedBSideEaseOut;
             On.Celeste.Cassette.UnlockedBSide.Render -= modCassetteUnlockedBSideRender;
             On.Celeste.GameplayStats.Render -= onGameplayStatsRender;
-            On.Celeste.HeartGem.IsCompleteArea -= modHeartGemIsCompleteArea;
             On.Celeste.LevelEnter.Routine -= modLevelEnterRoutine;
             On.Celeste.LevelEnter.BeforeRender -= modLevelEnterBeforeRender;
             On.Celeste.LevelEnter.Go -= onLevelEnterGo;
@@ -830,6 +829,7 @@ namespace Celeste.Mod.XaphanHelper
             Arrow.Unload();
             BigScreen.Unload();
             BombSwitch.Unload();
+            MergeChaptersBCSideHeartCompleteArea.Unload();
         }
 
         // Custom States
@@ -1214,15 +1214,6 @@ namespace Celeste.Mod.XaphanHelper
             {
                 return orig(self, intoLevel);
             }
-        }
-
-        private bool modHeartGemIsCompleteArea(On.Celeste.HeartGem.orig_IsCompleteArea orig, HeartGem self, bool value)
-        {
-            if ((SaveData.Instance.CurrentSession.Area.Mode == AreaMode.BSide || SaveData.Instance.CurrentSession.Area.Mode == AreaMode.CSide))
-            {
-                return true;
-            }
-            return orig(self, value);
         }
 
         public override void Initialize()
