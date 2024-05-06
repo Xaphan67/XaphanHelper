@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Colliders;
-using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -41,6 +40,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public bool sloted;
 
         private Vector2 previousPosition;
+
+        private bool WasThrown;
 
         public Bomb(Vector2 position, Player player) : base(position)
         {
@@ -297,9 +298,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     bombSprite.FlipX = false;
                 }
+                if (!XaphanModule.ModSettings.UseBagItemSlot.Check && !WasThrown)
+                {
+                    Hold.Holder.Throw();
+                }
             }
             else
             {
+                WasThrown = true;
                 foreach (Slope slope in SceneAs<Level>().Tracker.GetEntities<Slope>())
                 {
                     if (slope.UpsideDown && CollideCheck(slope))
