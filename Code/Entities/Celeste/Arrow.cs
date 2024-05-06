@@ -116,6 +116,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 staticMover.OnDisable = OnDisable;
                 Add(staticMover);
             }
+            AllowStaticMovers = false;
         }
 
         private void OnDisable()
