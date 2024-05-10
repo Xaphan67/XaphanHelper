@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -11,6 +12,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Conveyor")]
     class Conveyor : Solid
     {
+        private static FieldInfo PlayerWallBoosting = typeof(Player).GetField("wallBoosting", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static bool WallBoosting;
+
+        private bool MovedPlayer;
+
+        public float noGrabTimer;
+
         public int conveyorSpeed;
 
         public int direction;
@@ -93,6 +102,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public static void Load()
+        {
+            On.Celeste.Player.Update += OnPlayerUpdate;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Player.Update -= OnPlayerUpdate;
+        }
+
+        private static void OnPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self)
+        {
+            if (WallBoosting)
+            {
+                PlayerWallBoosting.SetValue(self, true);
+            }
+            orig(self);
+        }
+
         public override void Added(Scene scene)
         {
             base.Added(scene);
@@ -119,6 +147,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
                 sprite.Position = (vertical ? Vector2.UnitY : Vector2.UnitX) * i;
+                if (vertical)
+                {
+                    sprite.Position.X = 8;
+                }
                 list.Add(sprite);
                 Add(sprite);
             }
@@ -192,7 +224,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (vertical)
                     {
-                        sprite.Position.X = 8;
                         sprite.Position.Y += conveyorSpeed * Engine.DeltaTime * direction;
                         if (sprite.Position.Y > Length + 8)
                         {
@@ -222,12 +253,48 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator MovePlayerRoutine(Conveyor conveyor)
         {
+            WallBoosting = false;
+            MovedPlayer = false;
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (vertical)
             {
-                while(conveyor.HasPlayerClimbing())
+                while (conveyor.HasPlayerClimbing())
                 {
-                    conveyor.GetPlayerClimbing().LiftSpeed = Vector2.UnitY * conveyorSpeed * direction / 2;
-                    conveyor.GetPlayerClimbing().MoveV(conveyorSpeed * Engine.DeltaTime * direction);
+                    if (direction == -1)
+                    {
+                        if (player.Top >= Top - 4)
+                        {
+                            player.MoveV(conveyorSpeed * Engine.DeltaTime * direction);
+                            player.LiftSpeed = Vector2.UnitY * conveyorSpeed * direction / 2;
+                            MovedPlayer = true;
+                        }
+                        else if (!WallBoosting && !Input.Jump.Check && MovedPlayer)
+                        {
+                            WallBoosting = true;
+                            player.Stamina -= 1; // Slightly decreases stamina faster each time the player stale at the top of the conveyor
+                            player.Speed.Y = conveyorSpeed * 2.5f * direction;
+                        }
+                    }
+                    else if (direction == 1)
+                    {
+                        player.LiftSpeed = Vector2.UnitY * conveyorSpeed * direction / 2;
+                        player.MoveV(conveyorSpeed * Engine.DeltaTime * direction);
+                        if (player.Top >= Bottom -2)
+                        {
+                            noGrabTimer = 0.15f;
+                            while (noGrabTimer > 0f)
+                            {
+                                noGrabTimer -= Engine.DeltaTime;
+                                player.MoveV(conveyorSpeed * Engine.DeltaTime * direction);
+                                if (player.Top >= Bottom + 2f)
+                                {
+                                    noGrabTimer = 0f;
+                                }
+                                yield return null;
+                            }
+                            noGrabTimer = 0f;
+                        }
+                    }
                     yield return null;
                 }
             }

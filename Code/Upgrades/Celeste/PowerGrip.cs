@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
+using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {
@@ -70,6 +73,15 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Active(self.SceneAs<Level>()) && !self.SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 BagDisplay display = self.SceneAs<Level>().Tracker.GetEntity<BagDisplay>();
+                List<Entity> conveyors = self.SceneAs<Level>().Tracker.GetEntities<Conveyor>();
+                foreach (Entity entity in conveyors)
+                {
+                    Conveyor conveyor = entity as Conveyor;
+                    if (conveyor.noGrabTimer > 0)
+                    {
+                        return false;
+                    }
+                }
                 if (self.OnGround() && self.Speed == Vector2.Zero && (((Input.MenuUp.Check && Input.Grab.Check && display != null && XaphanModule.useUpgrades) || (XaphanModule.ModSettings.OpenMap.Pressed && XaphanModule.useIngameMap)) && self.StateMachine.State == 0))
                 {
                     return false;
