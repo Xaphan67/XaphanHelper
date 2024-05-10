@@ -2257,7 +2257,7 @@ namespace Celeste.Mod.XaphanHelper
             bool setMissilesModule = UpgradeController.Bool("onlyAllowMissilesModule") || UpgradeController.Bool("startWithMissilesModule");
             bool setSuperMissilesModule = UpgradeController.Bool("onlyAllowSuperMissilesModule") || UpgradeController.Bool("startWithSuperMissilesModule");
             bool hasStartingUpgrades = setPowerGrip || setClimbingKit || setSpiderMagnet || setDroneTeleport || setJumpBoost || setScrewAttack || setVariaJacket || setGravityJacket || setBombs || setMegaBombs || setRemoteDrone || setGoldenFeather || setBinoculars || setEtherealDash || setPortableStation || setPulseRadar || setDashBoots || setSpaceJump || setHoverJet || setLightningDash || setLongBeam || setIceBeam || setWaveBeam || setMissilesModule || setSuperMissilesModule;
-            bool forceStartingUpgrades = UpgradeController.Bool("onlyAllowStartingUpgrades", hasStartingUpgrades ? true : false);
+            forceStartingUpgrades = UpgradeController.Bool("onlyAllowStartingUpgrades", hasStartingUpgrades ? true : false);
 
             // Check specified upgrades for the golden berry
 

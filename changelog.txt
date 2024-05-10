@@ -1,3 +1,6 @@
+Version 1.0.62 :
+- Fixed a bug preventing upgrades to be removed in the B-Side of Secret of Celeste Mountain
+
 Version 1.0.61 :
 - Fixed french translations for some settings being too long
 - Fixed a bug affecting Bubble Doors depth
