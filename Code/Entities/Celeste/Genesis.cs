@@ -129,7 +129,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public override void Render()
             {
-                Sprite.DrawOutline();
+                if (Sprite.CurrentAnimationID == "acid")
+                {
+                    Sprite.DrawOutline();
+                }
                 base.Render();
             }
         }

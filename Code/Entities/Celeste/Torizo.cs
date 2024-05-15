@@ -86,6 +86,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     RemoveSelf();
                 }
             }
+
+            public override void Render()
+            {
+                if (Sprite.CurrentAnimationID == "fireball")
+                {
+                    Sprite.DrawOutline();
+                }
+                base.Render();
+            }
         }
 
         [Tracked(true)]
@@ -160,6 +169,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             private void onCollidePlayer(Player player)
             {
                 player.Die((player.Position - Position).SafeNormalize());
+            }
+
+            public override void Render()
+            {
+                Sprite.DrawOutline();
+                base.Render();
             }
         }
 
