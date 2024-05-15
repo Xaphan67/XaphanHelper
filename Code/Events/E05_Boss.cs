@@ -114,10 +114,10 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.SetFlag("Boss_Defeated", false);
                     }
                 }
+                level.Session.SetFlag("Genesis_rise", false);
                 if (level.Session.GetFlag("boss_Checkpoint"))
                 {
                     boss.SetHealth(8);
-                    level.Session.SetFlag("Genesis_rise", false);
                 }
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Pre_Genesis_Event"))
                 {

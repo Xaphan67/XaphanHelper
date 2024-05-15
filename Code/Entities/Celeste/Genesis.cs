@@ -39,6 +39,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private bool ToLeft;
 
+            private float cantKillTimer;
+
             public GenesisAcid(Vector2 offset, Vector2 speed, bool toLeft, bool upsideDown = false) : base(offset)
             {
                 Add(new PlayerCollider(onCollidePlayer));
@@ -54,12 +56,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 onCollideV = OnCollideV;
                 UpsideDown = upsideDown;
                 ToLeft = toLeft;
+                cantKillTimer = 0.05f;
                 Depth = 1;
             }
 
             public override void Update()
             {
                 base.Update();
+                if (cantKillTimer > 0f)
+                {
+                    cantKillTimer -= Engine.DeltaTime;
+                }
                 if (Sprite != null && Sprite.CurrentAnimationID != "explode")
                 {
                     Sprite.Rotation = (float)Math.Atan2(Center.Y + Speed.Y - Center.Y, Center.X + Speed.X - Center.X);
@@ -102,7 +109,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private void onCollidePlayer(Player player)
             {
-                player.Die((player.Position - Position).SafeNormalize());
+                if (cantKillTimer > 0)
+                {
+                    RemoveSelf();
+                }
+                else
+                {
+                    player.Die((player.Position - Position).SafeNormalize());
+                }
             }
 
             private void onLastFrame(string s)
@@ -111,6 +125,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     RemoveSelf();
                 }
+            }
+
+            public override void Render()
+            {
+                Sprite.DrawOutline();
+                base.Render();
             }
         }
 
@@ -239,12 +259,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             public static ParticleType P_Dissipate;
 
-            public const float ChargeTime = 1.4f;
-
-            public const float FollowTime = 0.9f;
-
-            public const float ActiveTime = 0.12f;
-
             private Genesis boss;
 
             private Player player;
@@ -304,8 +318,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public GenesisBeam Init(Genesis boss, Player target)
             {
                 this.boss = boss;
-                chargeTimer = 1.4f;
-                followTimer = 0.9f;
+                chargeTimer = 0.8f; // 1.4f
+                followTimer = 0.4f; // 0.9f
                 activeTimer = 0.12f;
                 beamSprite.Play("charge");
                 sideFadeAlpha = 0f;
@@ -336,7 +350,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Vector2 val = Calc.ClosestPointOnLine(boss.BeamOrigin, boss.BeamOrigin + Calc.AngleToVector(angle, 2000f), player.Center);
                         Vector2 center = player.Center;
-                        val = Calc.Approach(val, center, 200f * Engine.DeltaTime);
+                        val = Calc.Approach(val, center, 600f * Engine.DeltaTime);
                         angle = Calc.Angle(boss.BeamOrigin, val);
                     }
                     else if (beamSprite.CurrentAnimationID == "charge")
@@ -498,6 +512,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Coroutine Routine = new();
 
+        private Coroutine HitRoutine = new();
+
         private Sprite Sprite;
 
         public Vector2 BeamOrigin;
@@ -536,9 +552,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool ShouldDisengage;
 
+        private bool ShouldDash;
+
         private SoundSource laserSfx;
 
         private int FleeDir;
+
+        private bool KilledPlayer;
+
+        private Vector2 PlayerPos;
 
         [Tracked(true)]
         public Genesis(EntityData data, Vector2 offset) : base(data.Position + offset)
@@ -605,14 +627,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         if (Health > 4 && !Sprite.FlipY)
                         { 
-                            Add(Routine = new Coroutine(IddleRoutine()));
+                            Add(Routine = new Coroutine(IdleRoutine()));
                         }
                         else
                         {
+                            CannotLeapDelay = 2.5f;
                             Add(Routine = new Coroutine(FallRoutine(player)));
                         }
-                        Add(new Coroutine(HitRoutine(player)));
                         IsStun = true;
+                        if (!HitRoutine.Active)
+                        {
+                            Add(HitRoutine = new Coroutine(AttractRoutine(player)));
+                        }
                     }
                     else
                     {
@@ -631,7 +657,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private IEnumerator HitRoutine(Player player)
+        private IEnumerator AttractRoutine(Player player)
         {
             if (player != null && !player.Dead)
             {
@@ -660,8 +686,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (player != null && !player.Dead)
             {
-                int playerFaceDir = player.Facing == (global::Celeste.Facings)1 ? 1 : -1;
-                player.FinalBossPushLaunch(-playerFaceDir);
+                //int playerFaceDir = player.Facing == (global::Celeste.Facings)1 ? 1 : -1;
+                player.FinalBossPushLaunch(Facing == Facings.Right ? 1 : -1);
                 player.Speed.X *= 0.95f;
                 if (!Sprite.FlipY)
                 {
@@ -750,6 +776,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (Health > 0)
             {
                 Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                if (player == null && !KilledPlayer)
+                {
+                    Speed.X = 0;
+                    KilledPlayer = true;
+                    if (Routine.Active)
+                    {
+                        Routine.Cancel();
+                    }
+                    Add(Routine = new Coroutine(IdleRoutine()));
+                }
                 if (player != null && !Routine.Active && !MidAir && Health > 0)
                 {
                     if ((Facing == Facings.Right && player.Center.X > Center.X) || (Facing == Facings.Left && player.Center.X < Center.X)) // If player is in front of Genesis
@@ -758,7 +794,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             if (!ShouldDisengage)
                             {
-                                if (Calc.Random.Next(1, 101) >= 60 && CannotLeapDelay <= 0f)
+                                if (Calc.Random.Next(1, 101) >= 60 && CannotLeapDelay <= 0f && Health <= 12)
                                 {
                                     Add(Routine = new Coroutine(LeapRoutine()));
                                 }
@@ -766,7 +802,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 {
                                     Add(Routine = new Coroutine(ShootRoutine()));
                                 }
-                                else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? true : Health <= 12))
+                                else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? true : Health <= 8))
                                 {
                                     Add(Routine = new Coroutine(BeamRoutine(player)));
                                 }
@@ -782,8 +818,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else // If genesis is on the ceiling
                         {
-                            if (Math.Abs(player.Center.X - Center.X) >= 40 && Math.Abs(player.Center.X - Center.X) < 120 && CannotDashDelay <= 0f && Health > 4)
+                            if ((Math.Abs(player.Center.X - Center.X) >= 40 && Math.Abs(player.Center.X - Center.X) < 120 && CannotDashDelay <= 0f && Health > 4) || ShouldDash)
                             {
+                                ShouldDash = false;
                                 Add(Routine = new Coroutine(DashRoutine(player)));
                             }
                             else if (Math.Abs(player.Center.X - Center.X) >= 60 && Math.Abs(player.Center.X - Center.X) < 160 && CannotShootDelay <= 0f && Health > 4)
@@ -794,7 +831,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Add(Routine = new Coroutine(ShootRoutine(true, true)));
                             }
-                            else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? true : Health <= 12))
+                            else if (Math.Abs(player.Center.X - Center.X) >= 80 && Math.Abs(player.Center.X - Center.X) < 160 && CannotBeamDelay <= 0f && (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? true : Health <= 8))
                             {
                                 Add(Routine = new Coroutine(BeamRoutine(player, true)));
                             }
@@ -871,8 +908,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Speed.X = 0f;
             Sprite.Play("roar" + (vertical ? "Vertical" : ""));
             yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
-            yield return SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.25f : 0.5f;
-            float shootDuration = 1.2f;
+            yield return SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.15f : 0.3f;
+            float shootDuration = 0.5f;
             Audio.Play("event:/game/xaphan/genesis_spit", Position);
             while (shootDuration > 0)
             {
@@ -881,7 +918,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (!vertical)
                     {
-                        SceneAs<Level>().Add(new GenesisAcid(new Vector2(Position.X + (Facing == Facings.Right ? 40 : 8), Position.Y + (bellow ? 23 : 1)), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 140 :110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 240 : 210), bellow ? 75f : -50f), Facing == Facings.Left, bellow));
+                        SceneAs<Level>().Add(new GenesisAcid(new Vector2(Position.X + (Facing == Facings.Right ? 40 : 8), Position.Y + (bellow ? 23 : 1)), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 140 :110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 240 : 210), bellow ? 75f : -25f), Facing == Facings.Left, bellow));
                     }
                     else
                     {
@@ -894,6 +931,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Position = Vector2.Zero;
             yield return Sprite.CurrentAnimationTotalFrames * 0.08f;
             CannotShootDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 4.5f : 3f;
+            if (bellow)
+            {
+                ShouldDash = true;
+            }
         }
 
         private IEnumerator BeamRoutine(Player player, bool bellow = false)
@@ -910,6 +951,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return 0.5f;
             laserSfx.Stop();
             CannotBeamDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? Calc.Random.Next(3, 6) : 5f;
+            if (bellow)
+            {
+                ShouldDash = true;
+            }
         }
 
         private IEnumerator GenerateBeam(Player player, bool playSprite = true)
@@ -967,7 +1012,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return null;
             }
             Speed.X = 0f;
-            yield return IddleRoutine();
+            yield return IdleRoutine();
         }
 
         public IEnumerator WalkRoutine(Player player)
@@ -988,13 +1033,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Sprite.Position = Vector2.Zero;
             Sprite.Reverse("walk");
-            if (FleeDir == 0)
+            if (Health >= 12)
             {
                 FleeDir = player.Center.X > Center.X ? -1 : 1;
             }
             else
             {
-                FleeDir = FleeDir == 1 ? -1 : 1;
+                if (FleeDir == 0)
+                {
+                    FleeDir = player.Center.X > Center.X ? -1 : 1;
+                }
+                else
+                {
+                    FleeDir = -FleeDir;
+                }
             }
             Sprite.Rate = 2f;
             Speed.X = 150f * FleeDir;
@@ -1011,26 +1063,46 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Sprite.Rate = 2f;
                 Speed.X = 150f * FleeDir;
             }
-            while (
-                Health <= 3 ?
-                    (FleeDir == -1 ? 
-                        Center.X > SceneAs<Level>().Bounds.Left + 96f 
-                    : 
+            if (Health >= 13 && ((Center.X <= SceneAs<Level>().Bounds.Left + 104f) || (Center.X >= SceneAs<Level>().Bounds.Right - 104f)))
+            {
+                yield return WalkRoutine(player);
+            }
+            else
+            {
+                while (
+                Health <= 4 ?
+                    (FleeDir == -1 ?
+                        Center.X > SceneAs<Level>().Bounds.Left + 96f
+                    :
                         Center.X < SceneAs<Level>().Bounds.Right - 96f
                     )
                 :
-                    (FleeDir == -1 ?
-                        ((Center.X > player.Center.X - 160f) && (Center.X > SceneAs<Level>().Bounds.Left + 96f))
+                    (Health >= 13 ?
+                        (FleeDir == -1 ?
+                            ((Center.X > PlayerPos.X - 120f) && (Center.X > SceneAs<Level>().Bounds.Left + 96f))
+                        :
+                            ((Center.X < PlayerPos.X + 120f) && (Center.X < SceneAs<Level>().Bounds.Right - 96f))
+                        )
                     :
-                        ((Center.X < player.Center.X + 160f) && (Center.X < SceneAs<Level>().Bounds.Right - 96f))
+                        (FleeDir == -1 ?
+                            ((Center.X > player.Center.X - 160f) && (Center.X > SceneAs<Level>().Bounds.Left + 96f))
+                        :
+                            ((Center.X < player.Center.X + 160f) && (Center.X < SceneAs<Level>().Bounds.Right - 96f))
+                        )
                     )
                 )
-            {
-                yield return null;
+                {
+                    yield return null;
+                }
+                PlayerPos = Vector2.Zero;
             }
             Speed.X = 0f;
             Sprite.Rate = 1f;
             ShouldDisengage = false;
+            if (Health == 12)
+            {
+                FleeDir = 0;
+            }
             if (Health <= 3)
             {
                 yield return LeapRoutine();
@@ -1042,7 +1114,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     yield return TurnRoutine();
                 }
                 int chance = Calc.Random.Next(1, 101);
-                if (chance <= (Health <= (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 15 : 12) ? 40 : 80))
+                if (Health >= 5 && Health <= (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 15 : 12) && chance <= 30)
                 {
                     yield return ShootRoutine();
                 }
@@ -1050,9 +1122,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     yield return BeamRoutine(player);
                 }
-                else
+                else if (Health <= 12)
                 {
                     yield return LeapRoutine();
+                }
+                else
+                {
+                    yield return IdleRoutine();
                 }
             }
         }
@@ -1064,7 +1140,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Play("turn");
             float turnDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
             yield return turnDuration;
-            yield return IddleRoutine(true);
+            yield return IdleRoutine(true);
         }
 
         public IEnumerator SlashRoutine(Bomb bomb, Player player)
@@ -1086,21 +1162,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             yield return Sprite.CurrentAnimationTotalFrames * 0.12f + 0.1f;
             IsSlashingBomb = false;
-            if (bomb != null)
+            if (Health <= 12)
             {
-                int num = Calc.Random.Next(1, 101);
-                if (num <= 50 || player == null)
+                if (bomb != null)
                 {
-                    yield return LeapRoutine();
-                }
-                else
-                {
-                    yield return ShootRoutine();
+                    int num = Calc.Random.Next(1, 101);
+                    if (num <= 50 || player == null)
+                    {
+                        yield return LeapRoutine();
+                    }
+                    else
+                    {
+                        yield return ShootRoutine();
+                    }
                 }
             }
+            yield return IdleRoutine();
         }
 
-        public IEnumerator IddleRoutine(bool flip = false, bool playIddleAnim = true)
+        public IEnumerator IdleRoutine(bool flip = false, bool playIddleAnim = true)
         {
             Sprite.Position = Vector2.Zero;
             ShouldSwitchFacing = flip;
@@ -1121,14 +1201,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    timer = Health >= 13 ? 0.5f : Health >= 5f ? 0.3f : Health >= 1f ? 0.15f : 1f;
+                    timer = Health >= 13 ? 0.3f : Health >= 5f ? 0.2f : Health >= 1f ? 0.1f : 1f;
                 }
                 while (timer > 0f && (InvincibilityDelay <= 0 || InvincibilityDelay > 0.25f))
                 {
                     timer -= Engine.DeltaTime;
                     yield return null;
                 }
-                if (InvincibilityDelay > 0 && !ShouldDisengage)
+                if (InvincibilityDelay > 0 && !ShouldDisengage && Health <= 8)
                 {
                     yield return LeapRoutine();
                 }
@@ -1185,7 +1265,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Audio.Play("event:/game/xaphan/genesis_death", Position);
                 }
-                if (Health <= 4)
+                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                if (player != null)
+                {
+                    PlayerPos = player.Center;
+                }
+                if (Health >= 9 || Health <= 4)
                 {
                     ShouldDisengage = true;
                 }
@@ -1250,7 +1335,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Falling = false;
                     if (Health > 0)
                     {
-                        Add(Routine = new Coroutine(IddleRoutine()));
+                        Add(Routine = new Coroutine(IdleRoutine()));
                     }
                 }
             }
@@ -1265,7 +1350,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Audio.SetMusicParam("fade", 1f - musicFadeStart);
                 yield return null;
             }
-            yield return IddleRoutine();
+            yield return IdleRoutine();
             Audio.SetMusicParam("fade", 1f);
             SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_5_geothermal");
             SceneAs<Level>().Session.Audio.Apply();
@@ -1290,6 +1375,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Position = OrigPosition;
             ShouldDisengage = false;
             CannotBeamDelay = CannotDashDelay = CannotLeapDelay = CannotShootDelay = 0f;
+        }
+
+        public override void Render()
+        {
+            Sprite.DrawOutline();
+            base.Render();
         }
     }
 }
