@@ -271,6 +271,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public void Destroy()
         {
             Destroyed = true;
+            AllowPushing = false;
             if (Type == "Metal")
             {
                 Audio.Play("event:/game/general/wall_break_ice", Position);
