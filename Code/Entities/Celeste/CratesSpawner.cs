@@ -5,6 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/CratesSpawner")]
     public class CratesSpawner : Solid
     {

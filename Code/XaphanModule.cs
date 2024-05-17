@@ -734,6 +734,7 @@ namespace Celeste.Mod.XaphanHelper
             BombSwitch.Load();
             MergeChaptersBCSideHeartCompleteArea.Load();
             Conveyor.Load();
+            Crate.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -832,6 +833,7 @@ namespace Celeste.Mod.XaphanHelper
             BombSwitch.Unload();
             MergeChaptersBCSideHeartCompleteArea.Unload();
             Conveyor.Unload();
+            Crate.Unload();
         }
 
         // Custom States

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -95,6 +94,60 @@ namespace Celeste.Mod.XaphanHelper.Entities
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
             Depth = 100;
+        }
+
+        public static void Load()
+        {
+            On.Celeste.Spikes.Added += OnSpikesAdded;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Spikes.Added -= OnSpikesAdded;
+        }
+
+        private static void OnSpikesAdded(On.Celeste.Spikes.orig_Added orig, Spikes self, Scene scene)
+        {
+            orig(self, scene);
+            if (scene.Tracker.GetEntities<Crate>().Count > 0 || scene.Tracker.GetEntities<CratesSpawner>().Count > 0)
+            {
+                self.Add(new CrateCollider(OnCrate, self.Direction));
+            }
+        }
+
+        private static void OnCrate(Crate crate, Spikes.Directions direction)
+        {
+            if (crate.Type == "Wood")
+            {
+                Vector2 speed = new Vector2(crate.Hold.IsHeld ? crate.Hold.Holder.Speed.X : crate.Speed.X, crate.Hold.IsHeld ? crate.Hold.Holder.Speed.Y : crate.Speed.Y);
+                switch (direction.ToString())
+                {
+                    case "Up":
+                        if (crate.Hold.IsHeld ? speed.Y > 0f : speed.Y >= 0f)
+                        {
+                            crate.Destroy();
+                        }
+                        break;
+                    case "Down":
+                        if (crate.Hold.IsHeld ? speed.Y < 0f : speed.Y <= 0f)
+                        {
+                            crate.Destroy();
+                        }
+                        break;
+                    case "Left":
+                        if (crate.Hold.IsHeld ? speed.X > 0f : speed.X >= 0f)
+                        {
+                            crate.Destroy();
+                        }
+                        break;
+                    case "Right":
+                        if (crate.Hold.IsHeld ? speed.X < 0f : speed.X <= 0f)
+                        {
+                            crate.Destroy();
+                        }
+                        break;
+                }
+            }
         }
 
         public override void Added(Scene scene)
@@ -420,9 +473,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 Hold.CheckAgainstColliders();
             }
-            if (Type == "Wood" && CollideCheck<Spikes>())
+            foreach (CrateCollider crateCollider in Scene.Tracker.GetComponents<CrateCollider>())
             {
-                Destroy();
+                crateCollider.Check(this);
             }
             SourceSpawner.Collidable = true;
             Slope.SetCollisionAfterUpdate(this);
