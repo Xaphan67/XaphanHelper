@@ -14,9 +14,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private static FieldInfo PlayerWallBoosting = typeof(Player).GetField("wallBoosting", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private static bool WallBoosting;
+        private static FieldInfo PlayerVarJumpSpeed = typeof(Player).GetField("varJumpSpeed", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private bool MovedPlayer;
+        private static bool WallBoosting;
 
         public float noGrabTimer;
 
@@ -105,11 +105,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void Load()
         {
             On.Celeste.Player.Update += OnPlayerUpdate;
+            On.Celeste.Player.WallJump += OnPlayerWallJump;
         }
 
         public static void Unload()
         {
             On.Celeste.Player.Update -= OnPlayerUpdate;
+            On.Celeste.Player.WallJump -= OnPlayerWallJump;
         }
 
         private static void OnPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self)
@@ -119,6 +121,53 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 PlayerWallBoosting.SetValue(self, true);
             }
             orig(self);
+        }
+
+        private static void OnPlayerWallJump(On.Celeste.Player.orig_WallJump orig, Player self, int dir)
+        {
+            foreach (Conveyor conveyor in self.SceneAs<Level>().Tracker.GetEntities<Conveyor>())
+            {
+                if (conveyor.vertical && conveyor.direction == -1 && (!string.IsNullOrEmpty(conveyor.forceInactiveFlag) ? !self.SceneAs<Level>().Session.GetFlag(conveyor.forceInactiveFlag) : true) && (self.CollideCheck(conveyor, self.Position + Vector2.UnitX * 3) || self.CollideCheck(conveyor, self.Position - Vector2.UnitX * 3)))
+                {
+                    if (conveyor.flipX)
+                    {
+                        if (self.Facing == Facings.Right && self.CollideCheck(conveyor, self.Position + Vector2.UnitX * 3))
+                        {
+                            self.LiftSpeed = Vector2.UnitY * conveyor.conveyorSpeed * conveyor.direction / 1.65f;
+                        }
+                    }
+                    else
+                    {
+                        if (self.Facing == Facings.Left && self.CollideCheck(conveyor, self.Position - Vector2.UnitX * 3))
+                        {
+                            self.LiftSpeed = Vector2.UnitY * conveyor.conveyorSpeed * conveyor.direction / 1.65f;
+                        }
+                    }
+                    break;
+                }
+            }
+            orig(self, dir);
+            foreach (Conveyor conveyor in self.SceneAs<Level>().Tracker.GetEntities<Conveyor>())
+            {
+                if (conveyor.vertical && conveyor.direction == 1 && (!string.IsNullOrEmpty(conveyor.forceInactiveFlag) ? !self.SceneAs<Level>().Session.GetFlag(conveyor.forceInactiveFlag) : true) && (self.CollideCheck(conveyor, self.Position + Vector2.UnitX * 3) || self.CollideCheck(conveyor, self.Position - Vector2.UnitX * 3)))
+                {
+                    if (conveyor.flipX)
+                    {
+                        if (self.Facing == Facings.Right && self.CollideCheck(conveyor, self.Position + Vector2.UnitX * 3))
+                        {
+                            PlayerVarJumpSpeed.SetValue(self, self.Speed.Y + conveyor.conveyorSpeed / 2f);
+                        }
+                    }
+                    else
+                    {
+                        if (self.Facing == Facings.Left && self.CollideCheck(conveyor, self.Position - Vector2.UnitX * 3))
+                        {
+                            PlayerVarJumpSpeed.SetValue(self, self.Speed.Y + conveyor.conveyorSpeed / 2f);
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
         public override void Added(Scene scene)
@@ -180,14 +229,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             if (player != null && player.Right <= Left && !moveRoutine.Active)
                             {
-                                Add(moveRoutine = new Coroutine(MovePlayerRoutine(this)));
+                                Add(moveRoutine = new Coroutine(MovePlayerRoutine()));
                             }
                         }
                         else
                         {
                             if (player != null && player.Left >= Right && !moveRoutine.Active)
                             {
-                                Add(moveRoutine = new Coroutine(MovePlayerRoutine(this)));
+                                Add(moveRoutine = new Coroutine(MovePlayerRoutine()));
                             }
                         }
                     }
@@ -199,7 +248,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Player player = GetPlayerOnTop();
                         if (player != null && !moveRoutine.Active)
                         {
-                            Add(moveRoutine = new Coroutine(MovePlayerRoutine(this)));
+                            Add(moveRoutine = new Coroutine(MovePlayerRoutine()));
                         }
                     }
                 }
@@ -251,41 +300,36 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private IEnumerator MovePlayerRoutine(Conveyor conveyor)
+        private IEnumerator MovePlayerRoutine()
         {
             WallBoosting = false;
-            MovedPlayer = false;
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (vertical)
             {
-                while (conveyor.HasPlayerClimbing())
+                while (HasPlayerClimbing())
                 {
-                    if (direction == -1)
+                    if (direction == -1 && player.Bottom >= Top + 7f) // Up
                     {
-                        if (player.Top >= Top - 4)
+                        WallBoosting = true;
+                        player.LiftSpeed = Vector2.UnitY * -conveyorSpeed / 1.65f;
+                        player.MoveV(-conveyorSpeed * Engine.DeltaTime);
+                        if (player.Top <= Top && !Input.Jump.Check && !player.CollideCheck<Solid>(player.Facing == Facings.Left ? player.TopLeft : player.TopRight))
                         {
-                            player.MoveV(conveyorSpeed * Engine.DeltaTime * direction);
-                            player.LiftSpeed = Vector2.UnitY * conveyorSpeed * direction / 2;
-                            MovedPlayer = true;
-                        }
-                        else if (!WallBoosting && !Input.Jump.Check && MovedPlayer)
-                        {
-                            WallBoosting = true;
                             player.Stamina -= 1; // Slightly decreases stamina faster each time the player stale at the top of the conveyor
-                            player.Speed.Y = conveyorSpeed * 2.5f * direction;
+                            player.Speed.Y = -100f - conveyorSpeed;
                         }
                     }
-                    else if (direction == 1)
+                    else if (direction == 1) // Down
                     {
-                        player.LiftSpeed = Vector2.UnitY * conveyorSpeed * direction / 2;
-                        player.MoveV(conveyorSpeed * Engine.DeltaTime * direction);
-                        if (player.Top >= Bottom -2)
+                        player.Speed.Y = conveyorSpeed / 2;
+                        player.MoveV(conveyorSpeed * Engine.DeltaTime);
+                        if (player.Top >= Bottom - 2)
                         {
                             noGrabTimer = 0.15f;
                             while (noGrabTimer > 0f)
                             {
                                 noGrabTimer -= Engine.DeltaTime;
-                                player.MoveV(conveyorSpeed * Engine.DeltaTime * direction);
+                                player.MoveV(conveyorSpeed * Engine.DeltaTime);
                                 if (player.Top >= Bottom + 2f)
                                 {
                                     noGrabTimer = 0f;
@@ -300,10 +344,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                while (conveyor.HasPlayerRider())
+                while (HasPlayerRider())
                 {
-                    conveyor.GetPlayerRider().LiftSpeed = Vector2.UnitX * conveyorSpeed * direction;
-                    conveyor.GetPlayerRider().MoveH(conveyorSpeed * Engine.DeltaTime * direction);
+                    GetPlayerRider().LiftSpeed = Vector2.UnitX * conveyorSpeed * direction;
+                    GetPlayerRider().MoveH(conveyorSpeed * Engine.DeltaTime * direction);
                     yield return null;
                 }
             }
