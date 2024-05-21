@@ -129,7 +129,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             node.Play("node");
             Add(trackSfx = new SoundSource());
             Collidable = false;
-            Depth = 9999;
+            Depth = 10001;
         }
 
         public CustomMovingPlatform(EntityData data, Vector2 offset, EntityID eid) : this(eid.ID, data.Position, data.NodesWithPosition(offset), data.Attr("mode", "Restart"), data.Attr("directory", "objects/XaphanHelper/CustomMovingPlatform"), data.Int("length", 3), data.Attr("lineColorA", "2A251F"), data.Attr("lineColorB", "C97F35"), data.Attr("particlesColorA", "696A6A"), data.Attr("particlesColorB", "700808"), data.Attr("orientation", "Horizontal"), data.Int("amount", 1), data.Float("speed", 60f), data.Float("startOffset"), data.Float("spacingOffset"), data.Attr("attachedEntityPlatformsIndexes"), data.Attr("stopFlag"), data.Attr("swapFlag"), data.Attr("moveFlag"), data.Attr("forceInactiveFlag"), data.Bool("drawTrack", true), data.Bool("particles", true), 1, fromFirstLoad: true)

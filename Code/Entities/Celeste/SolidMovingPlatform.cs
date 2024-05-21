@@ -321,6 +321,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         if (platform.AttachedSpike != null)
                         {
                             AttachedSpike = new Spikes(platform.Position - platform.attachedEntityOffset, length * 8, platform.AttachedSpike.Direction, (string)SpikesSpikeType.GetValue(platform.AttachedSpike));
+                            AttachedSpike.Depth = Depth + 1;
                         }
                         else if (platform.AttachedMagneticCeiling != null)
                         {

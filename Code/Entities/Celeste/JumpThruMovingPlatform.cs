@@ -49,8 +49,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool swapped;
 
-        private bool fromFirstLoad;
-
         private string mode;
 
         private int id;
@@ -122,7 +120,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.particles = particles;
             this.direction = direction;
             this.swapped = swapped;
-            this.fromFirstLoad = fromFirstLoad;
             if (string.IsNullOrEmpty(this.directory))
             {
                 this.directory = "objects/XaphanHelper/JumpThruMovingPlatform";
@@ -244,15 +241,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 foreach (JumpThruMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<JumpThruMovingPlatform>())
                 {
-                    Logger.Log(LogLevel.Info, "XH", "Check platform id " + platform.id + " with index " + platform.index);
                     if (platform.id == id && platform.index == 1 && platform.AttachedSpike != null)
                     {
                         AttachedSpike = new Spikes(platform.Position - platform.attachedEntityOffset, length * 8, platform.AttachedSpike.Direction, (string)SpikesSpikeType.GetValue(platform.AttachedSpike));
+                        AttachedSpike.Depth = Depth + 1;
                         attachedEntityOffset = platform.attachedEntityOffset;
                     }
                     if (platform.id == id && (!string.IsNullOrEmpty(AttachedEntityPlatformsIndexes) ? AttachedEntityPlatformsIndexes.Split(',').ToList().Contains(index.ToString()) : true) && AttachedSpike != null)
                     {
-                        Logger.Log(LogLevel.Info, "XH", "Attached spike to platform index " + platform.index);
                         SceneAs<Level>().Add(AttachedSpike);
                     }
                 }
