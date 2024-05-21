@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
@@ -11,9 +12,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [Tracked(true)]
     public class Bomb : Actor
     {
+        private class BombSpriteDisplay : Entity
+        {
+            private Bomb Bomb;
+
+            public BombSpriteDisplay(Vector2 position, Bomb bomb) : base(position)
+            {
+                Bomb = bomb;
+                Add(bomb.bombSprite);
+                Depth = 0;
+            }
+
+            public override void Update()
+            {
+                Position = Bomb.Position;
+                Visible = Bomb.Visible;
+            }
+        }
         private FieldInfo HoldableCannotHoldTimer = typeof(Holdable).GetField("cannotHoldTimer", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private Sprite bombSprite;
+
+        private BombSpriteDisplay bombSpriteDisplay;
 
         public Vector2 Speed;
 
@@ -69,7 +89,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Hold.SpeedGetter = (() => Speed);
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
-            Depth = 0;
+            Depth = 1;
         }
 
         private void OnPickup()
@@ -280,12 +300,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
+                Scene.Add(bombSpriteDisplay = new BombSpriteDisplay(Position, this));
                 Add(new Coroutine(Explode()));
             }
         }
 
         public override void Update()
         {
+            List<Entity> platforms = Scene.Tracker.GetEntities<SolidMovingPlatform>().ToList();
+            foreach (SolidMovingPlatform platform in platforms)
+            {
+                if ((platform.Orientation == "Left" && Right <= platform.Left) || (platform.Orientation == "Right" && Left >= platform.Right) || (platform.Orientation == "Bottom" && Top >= platform.Bottom))
+                {
+                    platform.Collidable = true;
+                }
+                else
+                {
+                    platform.Collidable = false;
+                }
+            }
             Slope.SetCollisionBeforeUpdate(this);
             base.Update();
             if (Hold.IsHeld)
@@ -444,10 +477,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             Slope.SetCollisionAfterUpdate(this);
+            platforms.ForEach(entity => entity.Collidable = false);
         }
 
         public IEnumerator Explode()
         {
+            yield return 0.01f;
             while (Hold.IsHeld)
             {
                 yield return null;
@@ -554,6 +589,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Visible = false;
             RemoveSelf();
+        }
+
+        public override void Removed(Scene scene)
+        {
+            base.Removed(scene);
+            if (bombSpriteDisplay != null)
+            {
+                bombSpriteDisplay.RemoveSelf();
+            }
         }
     }
 }
