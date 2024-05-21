@@ -85,6 +85,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Spikes AttachedSpike;
 
+        public MagneticCeiling AttachedMagneticCeiling;
+
         public Vector2 attachedEntityOffset;
 
         private string AttachedEntityPlatformsIndexes;
@@ -273,6 +275,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 else if (Orientation == "Bottom")
                 {
                     AttachedSpike = CollideFirst<Spikes>(Position + Vector2.UnitY * 2);
+                    AttachedMagneticCeiling = CollideFirst<MagneticCeiling>(Position + Vector2.UnitY * 2);
                 }
                 if (AttachedSpike != null)
                 {
@@ -282,6 +285,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         if (spike == AttachedSpike)
                         {
                             spike.RemoveSelf();
+                        }
+                    }
+                }
+                if (AttachedMagneticCeiling != null)
+                {
+                    attachedEntityOffset = Position - AttachedMagneticCeiling.Position;
+                    foreach (MagneticCeiling ceiling in SceneAs<Level>().Tracker.GetEntities<MagneticCeiling>())
+                    {
+                        if (ceiling == AttachedMagneticCeiling)
+                        {
+                            ceiling.RemoveSelf();
                         }
                     }
                 }
@@ -302,16 +316,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
                 {
-                    Logger.Log(LogLevel.Info, "XH", "Check platform id " + platform.id + " with index " + platform.index);
-                    if (platform.id == id && platform.index == 1 && platform.AttachedSpike != null)
+                    if (platform.id == id && platform.index == 1)
                     {
-                        AttachedSpike = new Spikes(platform.Position - platform.attachedEntityOffset, length * 8, platform.AttachedSpike.Direction, (string)SpikesSpikeType.GetValue(platform.AttachedSpike));
+                        if (platform.AttachedSpike != null)
+                        {
+                            AttachedSpike = new Spikes(platform.Position - platform.attachedEntityOffset, length * 8, platform.AttachedSpike.Direction, (string)SpikesSpikeType.GetValue(platform.AttachedSpike));
+                        }
+                        else if (platform.AttachedMagneticCeiling != null)
+                        {
+                            AttachedMagneticCeiling = new MagneticCeiling(platform.Position - platform.attachedEntityOffset, Vector2.Zero, platform.AttachedMagneticCeiling.ID, platform.AttachedMagneticCeiling.Width, platform.AttachedMagneticCeiling.Directory, platform.AttachedMagneticCeiling.AnimationSpeed, platform.AttachedMagneticCeiling.CanJump, platform.AttachedMagneticCeiling.NoStaminaDrain);
+                        }
                         attachedEntityOffset = platform.attachedEntityOffset;
                     }
-                    if (platform.id == id && (!string.IsNullOrEmpty(AttachedEntityPlatformsIndexes) ? AttachedEntityPlatformsIndexes.Split(',').ToList().Contains(index.ToString()) : true) && AttachedSpike != null)
+                    if (platform.id == id && (!string.IsNullOrEmpty(AttachedEntityPlatformsIndexes) ? AttachedEntityPlatformsIndexes.Split(',').ToList().Contains(index.ToString()) : true))
                     {
-                        Logger.Log(LogLevel.Info, "XH", "Attached spike to platform index " + platform.index);
-                        SceneAs<Level>().Add(AttachedSpike);
+                        if (AttachedSpike != null)
+                        {
+                            SceneAs<Level>().Add(AttachedSpike);
+                        }
+                        else if (AttachedMagneticCeiling != null)
+                        {
+                            SceneAs<Level>().Add(AttachedMagneticCeiling);
+                        }
                     }
                 }
                 AttachedEntity = true;
@@ -459,11 +485,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (index >= 1 && AttachedSpike != null)
+            if (index >= 1)
             {
-                AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                if (AttachedSpike != null)
+                {
+                    AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
+                else if (AttachedMagneticCeiling != null)
+                {
+                    AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
             }
             MoveTo(GetPercentPosition(percent));
+            if (AttachedMagneticCeiling != null)
+            {
+                AttachedMagneticCeiling.Top = Bottom;
+            }
             PositionTrackSfx();
             if (Scene.OnInterval(0.05f) && index != 0 && particles)
             {
@@ -562,7 +599,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (AttachedSpike != null)
             {
                 AttachedSpike.RemoveSelf();
-             }
+            }
+            if (AttachedMagneticCeiling != null)
+            {
+                AttachedMagneticCeiling.RemoveSelf();
+            }
         }
     }
 }

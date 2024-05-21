@@ -19,21 +19,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool CanJump;
 
-        private string Directory;
+        public string Directory;
 
-        private float AnimationSpeed;
+        public float AnimationSpeed;
 
         private bool playSfx;
 
         private PlayerCollider pc;
 
-        private EntityID ID;
+        public EntityID ID;
 
         private StaticMover staticMover;
 
         private Vector2 imageOffset;
 
-        private bool NoStaminaDrain;
+        public bool NoStaminaDrain;
 
         public bool JumpGracePeriod;
 
@@ -53,19 +53,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool VisibleWhenDisabled;
 
-        public MagneticCeiling(EntityData data, Vector2 offset, EntityID eid) : base(data.Position + offset)
+        public MagneticCeiling(Vector2 position, Vector2 offset, EntityID eid, float width, string directory, float animationSpeed, bool canJump, bool noStaminaDrain) : base(position + offset)
         {
             Tag = Tags.TransitionUpdate;
             ID = eid;
-            Collider = new Hitbox(data.Width, 4f);
-            Directory = data.Attr("directory");
+            Collider = new Hitbox(width, 4f);
+            Directory = directory;
             if (string.IsNullOrEmpty(Directory))
             {
                 Directory = "objects/XaphanHelper/MagneticCeiling";
             }
-            AnimationSpeed = data.Float("animationSpeed");
-            CanJump = data.Bool("canJump");
-            NoStaminaDrain = data.Bool("noStaminaDrain");
+            AnimationSpeed = animationSpeed;
+            CanJump = canJump;
+            NoStaminaDrain = noStaminaDrain;
             Add(spriteA = new Sprite(GFX.Game, Directory + "/"));
             spriteA.Position = Vector2.Zero;
             spriteA.AddLoop("idle", "idle_a", AnimationSpeed);
@@ -74,7 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             spriteB.Position = new Vector2(8f, 0f);
             spriteB.AddLoop("idle", "idle_b", AnimationSpeed);
             spriteB.Play("idle");
-            Add(pc = new PlayerCollider(OnCollide, new Hitbox(data.Width, 5f)));
+            Add(pc = new PlayerCollider(OnCollide, new Hitbox(width, 5f)));
             Add(staticMover = new StaticMover
             {
                 OnShake = OnShake,
@@ -86,6 +86,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             });
             Depth = -9999;
             playSfx = true;
+        }
+
+        public MagneticCeiling(EntityData data, Vector2 offset, EntityID eid) : this(data.Position, offset, eid, data.Width, data.Attr("directory"), data.Float("animationSpeed"), data.Bool("canJump"), data.Bool("noStaminaDrain"))
+        {
+
         }
 
         public static void Load()
