@@ -313,7 +313,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         WallBoosting = true;
                         player.LiftSpeed = Vector2.UnitY * -conveyorSpeed / 1.65f;
                         player.MoveV(-conveyorSpeed * Engine.DeltaTime);
-                        if (player.Top <= Top && !Input.Jump.Check && !player.CollideCheck<Solid>(player.Facing == Facings.Left ? player.TopLeft : player.TopRight))
+                        if (player.Top <= Top && !player.CollideCheck<Solid>(player.Facing == Facings.Left ? player.TopLeft : player.TopRight))
                         {
                             player.Stamina -= 1; // Slightly decreases stamina faster each time the player stale at the top of the conveyor
                             player.Speed.Y = -100f - conveyorSpeed;
