@@ -91,6 +91,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string AttachedEntityPlatformsIndexes;
 
+        private Vector2 OrigPosition;
+
         public SolidMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, string orientation, int amount, int index, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool swapped = false) : base(position, 8, 8, false)
         {
             Tag = Tags.TransitionUpdate;
@@ -153,6 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 percent = startPercent;
             }
             percent %= 1f;
+            OrigPosition = GetPercentPosition(0);
             Position = GetPercentPosition(percent);
             sprites = BuildSprite();
             if (index == 0)
@@ -266,20 +269,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (Orientation == "Left")
                 {
-                    AttachedSpike = CollideFirst<Spikes>(Position - Vector2.UnitX * 2);
+                    AttachedSpike = CollideFirst<Spikes>(OrigPosition - Vector2.UnitX * 2);
                 }
                 else if (Orientation == "Right")
                 {
-                    AttachedSpike = CollideFirst<Spikes>(Position + Vector2.UnitX * 2);
+                    AttachedSpike = CollideFirst<Spikes>(OrigPosition + Vector2.UnitX * 2);
                 }
                 else if (Orientation == "Bottom")
                 {
-                    AttachedSpike = CollideFirst<Spikes>(Position + Vector2.UnitY * 2);
-                    AttachedMagneticCeiling = CollideFirst<MagneticCeiling>(Position + Vector2.UnitY * 2);
+                    AttachedSpike = CollideFirst<Spikes>(OrigPosition + Vector2.UnitY * 2);
+                    AttachedMagneticCeiling = CollideFirst<MagneticCeiling>(OrigPosition + Vector2.UnitY * 2);
                 }
                 if (AttachedSpike != null)
                 {
-                    attachedEntityOffset = Position - AttachedSpike.Position;
+                    attachedEntityOffset = OrigPosition - AttachedSpike.Position;
                     foreach (Spikes spike in SceneAs<Level>().Tracker.GetEntities<Spikes>())
                     {
                         if (spike == AttachedSpike)
@@ -290,7 +293,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (AttachedMagneticCeiling != null)
                 {
-                    attachedEntityOffset = Position - AttachedMagneticCeiling.Position;
+                    attachedEntityOffset = OrigPosition - AttachedMagneticCeiling.Position;
                     foreach (MagneticCeiling ceiling in SceneAs<Level>().Tracker.GetEntities<MagneticCeiling>())
                     {
                         if (ceiling == AttachedMagneticCeiling)
@@ -311,7 +314,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 return;
             }
             base.Update();
-
             if (index >= 1 && !AttachedEntity)
             {
                 foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
