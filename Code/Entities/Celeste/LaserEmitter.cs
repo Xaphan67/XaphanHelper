@@ -3,6 +3,7 @@ using System.Data.SqlTypes;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using static Celeste.Mod.XaphanHelper.Entities.Crate;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -208,38 +209,46 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (!noBeam)
             {
-                if (!string.IsNullOrEmpty(flag))
+                if (side == "Bottom" && CollideCheck<LaserBlocker>(Position - Vector2.UnitY * 6))
                 {
-                    if (!inverted)
+                    SceneAs<Level>().Remove(Beam);
+                    Beam = null;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(flag))
                     {
-                        if (SceneAs<Level>().Session.GetFlag(flag) && Beam == null)
+                        if (!inverted)
                         {
-                            SceneAs<Level>().Add(Beam = new LaserBeam(this, type));
+                            if (SceneAs<Level>().Session.GetFlag(flag) && Beam == null)
+                            {
+                                SceneAs<Level>().Add(Beam = new LaserBeam(this, type));
+                            }
+                            else if (!SceneAs<Level>().Session.GetFlag(flag) && Beam != null)
+                            {
+                                SceneAs<Level>().Remove(Beam);
+                                Beam = null;
+                            }
                         }
-                        else if (!SceneAs<Level>().Session.GetFlag(flag) && Beam != null)
+                        else
                         {
-                            SceneAs<Level>().Remove(Beam);
-                            Beam = null;
+                            if (SceneAs<Level>().Session.GetFlag(flag) && Beam != null)
+                            {
+                                SceneAs<Level>().Remove(Beam);
+                                Beam = null;
+                            }
+                            else if (!SceneAs<Level>().Session.GetFlag(flag) && Beam == null)
+                            {
+                                SceneAs<Level>().Add(Beam = new LaserBeam(this, type));
+                            }
                         }
                     }
                     else
                     {
-                        if (SceneAs<Level>().Session.GetFlag(flag) && Beam != null)
-                        {
-                            SceneAs<Level>().Remove(Beam);
-                            Beam = null;
-                        }
-                        else if (!SceneAs<Level>().Session.GetFlag(flag) && Beam == null)
+                        if (Beam == null)
                         {
                             SceneAs<Level>().Add(Beam = new LaserBeam(this, type));
                         }
-                    }
-                }
-                else
-                {
-                    if (Beam == null)
-                    {
-                        SceneAs<Level>().Add(Beam = new LaserBeam(this, type));
                     }
                 }
             }
