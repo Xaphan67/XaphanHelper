@@ -30,7 +30,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (CollideCheck<Actor>() || CollideCheck<WorkRobot>())
+            bool CollideActor = false;
+            foreach (Actor actor in SceneAs<Level>().Tracker.GetEntities<Actor>())
+            {
+                if (actor.GetType() != typeof(Debris))
+                {
+                    if (actor.GetType() == typeof(Bomb))
+                    {
+                        Bomb bomb = actor as Bomb;
+                        if (!bomb.explode && CollideCheck(bomb))
+                        {
+                            CollideActor = true;
+                        }
+                    }
+                    else if (CollideCheck(actor))
+                    {
+                        CollideActor = true;
+                    }
+                }
+            }
+            if (CollideActor || CollideCheck<WorkRobot>())
             {
                 sprite.Position = Vector2.UnitY;
                 if (!string.IsNullOrEmpty(flag))
@@ -46,6 +65,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     SceneAs<Level>().Session.SetFlag(flag, false);
                 }
             }
+        }
+
+        public override void Render()
+        {
+            base.Render();
+            sprite.DrawOutline();
+            sprite.Render();
         }
     }
 }
