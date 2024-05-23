@@ -20,7 +20,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Bomb = bomb;
                 Add(bomb.bombSprite);
-                Depth = 0;
+                Depth = -9999;
             }
 
             public override void Update()
@@ -581,6 +581,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CollideCheck(crate) && crate.Type == "Wood" && !crate.Destroyed)
                 {
                     crate.Destroy();
+                }
+            }
+
+            foreach (Crate.LaserBlocker blocker in Scene.Tracker.GetEntities<Crate.LaserBlocker>())
+            {
+                if (CollideCheck(blocker) && blocker.Crate.Type == "Wood" && !blocker.Crate.Destroyed)
+                {
+                    blocker.Crate.Destroy();
                 }
             }
         }
