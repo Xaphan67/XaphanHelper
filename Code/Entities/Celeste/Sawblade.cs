@@ -117,18 +117,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             speed = speedMult / lengths[lengths.Length - 1];
             if (startPercent == -1f && index != 0)
             {
-                if (((float)index - 1) * spacingOffset < 1f)
-                {
-                    percent = ((float)index - 1) * spacingOffset;
-                }
-                else
-                {
-                    RemoveSelf();
-                }
+                percent = (index - 1) * spacingOffset;
                 percent += startOffset;
-                if (percent > 1)
+                if (Math.Truncate(percent) % 2 != 0)
                 {
-                    RemoveSelf();
+                    float substract = Math.Abs(1 - percent);
+                    percent = 1 - substract;
+                    this.direction = -direction;
                 }
             }
             else
@@ -199,7 +194,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            alpha += Engine.DeltaTime * 4f;
+            if (!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
+            {
+                alpha = 0f;
+            }
+            else
+            {
+                alpha += Engine.DeltaTime * 4f;
+            }
             if ((Scene as Level).Transitioning)
             {
                 PositionTrackSfx();
@@ -345,13 +347,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (SceneAs<Level>().Session.GetFlag(swapFlag) && !swapped)
                         {
-                            Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, index, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, true, false));
-                            RemoveSelf();
+                            swapped = true;
+                            direction = -direction;
                         }
                         else if (!SceneAs<Level>().Session.GetFlag(swapFlag) && swapped)
                         {
-                            Scene.Add(new Sawblade(id, nodes, mode, directory, radius, lineColorA, lineColorB, particlesColorA, particlesColorB, amount, index, speedMult, startOffset, spacingOffset, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, false, false));
-                            RemoveSelf();
+                            swapped = false;
+                            direction = -direction;
                         }
                     }
                 }

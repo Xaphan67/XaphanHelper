@@ -134,18 +134,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             speed = speedMult / lengths[lengths.Length - 1];
             if (startPercent == -1f && index != 0)
             {
-                if (((float)index - 1) * spacingOffset < 1f)
-                {
-                    percent = ((float)index - 1) * spacingOffset;
-                }
-                else
-                {
-                    RemoveSelf();
-                }
+                percent = (index - 1) * spacingOffset;
                 percent += startOffset;
-                if (percent > 1)
+                if (Math.Truncate(percent) % 2 != 0)
                 {
-                    RemoveSelf();
+                    float substract = Math.Abs(1 - percent);
+                    percent = 1 - substract;
+                    this.direction = -direction;
                 }
             }
             else
@@ -388,13 +383,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (SceneAs<Level>().Session.GetFlag(swapFlag) && !swapped)
                         {
-                            Scene.Add(new JumpThruMovingPlatform(id, Position, nodes, mode, directory, length, lineColorA, lineColorB, particlesColorA, particlesColorB, Orientation, amount, index, speedMult, startOffset, spacingOffset, AttachedEntityPlatformsIndexes, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, true));
-                            RemoveSelf();
+                            swapped = true;
+                            direction = -direction;
                         }
                         else if (!SceneAs<Level>().Session.GetFlag(swapFlag) && swapped)
                         {
-                            Scene.Add(new JumpThruMovingPlatform(id, Position, nodes, mode, directory, length, lineColorA, lineColorB, particlesColorA, particlesColorB, Orientation, amount, index, speedMult, startOffset, spacingOffset, AttachedEntityPlatformsIndexes, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction == 1 ? -1 : 1, percent, false));
-                            RemoveSelf();
+                            swapped = false;
+                            direction = -direction;
                         }
                     }
                 }
