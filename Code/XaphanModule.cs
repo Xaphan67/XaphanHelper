@@ -735,6 +735,7 @@ namespace Celeste.Mod.XaphanHelper
             MergeChaptersBCSideHeartCompleteArea.Load();
             Conveyor.Load();
             SolidMovingPlatform.Load();
+            AuxiliaryGenerator.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -834,6 +835,7 @@ namespace Celeste.Mod.XaphanHelper
             MergeChaptersBCSideHeartCompleteArea.Unload();
             Conveyor.Unload();
             SolidMovingPlatform.Unload();
+            AuxiliaryGenerator.Unload();
         }
 
         // Custom States
