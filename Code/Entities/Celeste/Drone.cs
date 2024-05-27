@@ -348,50 +348,50 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static PlayerDeadBody OnCelestePlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
-            if (drone != null)
+            if (XaphanModule.PlayerIsControllingRemoteDrone()) 
             {
-                if (Hold.IsHeld)
+                Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
+                if (drone != null)
                 {
-                    drone.RemoveSelf();
-                    return orig(self, direction, evenIfInvincible, registerDeathInStats);
-                }
-                else if (!drone.enabled)
-                {
-                    if (self != drone.FakePlayer)
+                    if (Hold.IsHeld)
                     {
-                        if (!drone.dead)
-                        {
-                            drone.ForceDestroy();
-                        }
-                    }
-                    else
-                    {
-                        if (!drone.dead)
-                        {
-                            drone.ForceDestroy(true, true);
-                        }
+                        drone.RemoveSelf();
                         return orig(self, direction, evenIfInvincible, registerDeathInStats);
                     }
-                }
-                else if (!drone.dead)
-                {
-                    if (self == drone.FakePlayer)
+                    else if (!drone.enabled)
                     {
-                        if (!drone.dead)
+                        if (self != drone.FakePlayer)
                         {
-                            drone.ForceDestroy(true, true);
+                            if (!drone.dead)
+                            {
+                                drone.ForceDestroy();
+                            }
                         }
-                        return orig(self, direction, evenIfInvincible, registerDeathInStats);
+                        else
+                        {
+                            if (!drone.dead)
+                            {
+                                drone.ForceDestroy(true, true);
+                            }
+                            return orig(self, direction, evenIfInvincible, registerDeathInStats);
+                        }
                     }
-                    drone.ForceDestroy();
+                    else if (!drone.dead)
+                    {
+                        if (self == drone.FakePlayer)
+                        {
+                            if (!drone.dead)
+                            {
+                                drone.ForceDestroy(true, true);
+                            }
+                            return orig(self, direction, evenIfInvincible, registerDeathInStats);
+                        }
+                        drone.ForceDestroy();
+                    }
+                    return null;
                 }
-                return null;
             }
-            else
-            {
-                return orig(self, direction, evenIfInvincible, registerDeathInStats);
-            }
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         private static void OnPlayerjump(On.Celeste.Player.orig_Jump orig, Player self, bool particles, bool playSfx)
