@@ -291,6 +291,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void Load()
         {
             On.Celeste.Actor.MoveH += onActorMoveH;
+            On.Celeste.Actor.TrySquishWiggle_CollisionData_int_int += onActorTrySquishWiggle;
             On.Celeste.TheoCrystal.Update += TheoCrystalOnUpdate;
             On.Celeste.TheoCrystal.OnCollideH += TheoCrystalOnOnCollideH;
             On.Celeste.Glider.Update += GliderOnUpdate;
@@ -303,9 +304,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
             IL.Celeste.Player.NormalUpdate += ilPlayerNormalUpdate;
         }
 
+        private static bool onActorTrySquishWiggle(On.Celeste.Actor.orig_TrySquishWiggle_CollisionData_int_int orig, Actor self, CollisionData data, int wiggleX, int wiggleY)
+        {
+            if (data.Pusher.GetType() == typeof(PlayerPlatform))
+            {
+                PlayerPlatform platform = (PlayerPlatform)data.Pusher;
+                if (platform.UpsideDown)
+                {
+                    self.Top = platform.Bottom;
+                    return true;
+                }
+            }
+            return orig(self, data, wiggleX, wiggleY);
+        }
+
         public static void Unload()
         {
             On.Celeste.Actor.MoveH -= onActorMoveH;
+            On.Celeste.Actor.TrySquishWiggle_CollisionData_int_int -= onActorTrySquishWiggle;
             On.Celeste.TheoCrystal.Update -= TheoCrystalOnUpdate;
             On.Celeste.TheoCrystal.OnCollideH -= TheoCrystalOnOnCollideH;
             On.Celeste.Glider.Update -= GliderOnUpdate;
@@ -567,7 +583,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (slope.CollideCheck(actor))
                 {
-                    slope.Collidable = false;
+                    slope.Collidable = true;
                 }
                 else
                 {
@@ -628,7 +644,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (slope.CollideCheck(solid))
                 {
-                    slope.Collidable = false;
+                    slope.Collidable = true;
                 }
                 else
                 {

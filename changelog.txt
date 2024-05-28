@@ -1,4 +1,5 @@
 Version 1.0.62 :
+- Improved collision of Actors entities with upside down Slopes
 - Fixed a bug preventing upgrades to be removed in the B-Side of Secret of Celeste Mountain
 - Fixed a crash that could happen when dying while using the drivable car from Pandora Box
 
