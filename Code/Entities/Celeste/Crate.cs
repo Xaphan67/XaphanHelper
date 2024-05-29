@@ -1,12 +1,13 @@
 ﻿using System;
+using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
-using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
     [Tracked(true)]
+    [CustomEntity("XaphanHelper/Crate")]
     public class Crate : Actor
     {
         [Tracked(true)]
@@ -95,6 +96,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
             Depth = 100;
+        }
+
+        public Crate(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type"), null)
+        {
+
         }
 
         public override void Added(Scene scene)
@@ -360,7 +366,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             Slope.SetCollisionBeforeUpdate(this);
-            if (CollideCheck(SourceSpawner))
+            if (SourceSpawner != null && CollideCheck(SourceSpawner))
             {
                 SourceSpawner.Collidable = false;
             }
@@ -479,7 +485,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            SourceSpawner.Collidable = true;
+            if (SourceSpawner != null)
+            {
+                SourceSpawner.Collidable = true;
+            }
             Slope.SetCollisionAfterUpdate(this);
         }
 
