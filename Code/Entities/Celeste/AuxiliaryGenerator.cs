@@ -168,6 +168,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return null;
             }
+            SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_5_geothermal_active");
+            SceneAs<Level>().Session.Audio.Apply(forceSixteenthNoteHack: false);
             Sprite.Play("on");
             message.Close();
             PlayerPose = "XaphanHelper_turnAround_reverse";
@@ -176,10 +178,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 XaphanModule.ModSaveData.GlobalFlags.Remove("Xaphan/0_Ch4_Main_Power_Off");
             }
+            XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch5_Auxiliary_Power");
             if (SceneAs<Level>().Session.GetFlag("Ch4_Main_Power_Off"))
             {
                 SceneAs<Level>().Session.SetFlag("Ch4_Main_Power_Off", false);
             }
+            SceneAs<Level>().Session.SetFlag("Ch5_Auxiliary_Power", true);
             player.Sprite.OnLastFrame = resumeSprite;
         }
 
