@@ -344,7 +344,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             HitSound();
             if (Type == "Wood")
             {
-                Speed = new Vector2(130f * beam.Direction.X, 0f);
+                Speed += new Vector2(150f * beam.Direction.X, 150f * beam.Direction.Y);
             }
             beam.CollideSolid(beam.Direction);
         }
@@ -356,9 +356,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Destroy();
             }
-            else if (Type == "Metal" && missile.SuperMissile)
+            else if (Type == "Metal")
             {
-                Destroy();
+                if (!missile.SuperMissile)
+                {
+                    Speed += new Vector2(200f * missile.Direction.X, 200f * missile.Direction.Y);
+                }
+                else
+                {
+                    Destroy();
+                }
             }
             missile.CollideSolid(missile.Direction);
         }
