@@ -244,7 +244,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 ImpactParticles(data.Direction);
             }
-            if (Speed.Y > 140f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch))
+            if (Speed.Y > 140f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch) && !(data.Hit is FlagDashSwitch) && !(data.Hit is TimedDashSwitch) && !(data.Hit is WorkRobot))
             {
                 Speed.Y *= -0.4f;
             }
