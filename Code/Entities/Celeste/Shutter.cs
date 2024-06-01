@@ -101,6 +101,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string sound;
 
+        private bool startOpen;
+
         public Shutter(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
             direction = data.Attr("direction", "Bottom");
@@ -118,6 +120,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 sound = "event:/game/xaphan/shutter";
             }
             speed = data.Int("speed", 30);
+            startOpen = data.Bool("startOpen", false);
             Add(gate = new Sprite(GFX.Game, directory + "/"));
             gate.Add("gate", "gate", 0);
             gate.CenterOrigin();
@@ -164,7 +167,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 SceneAs<Level>().Add(new ShutterLightWall(this, Vector2.UnitX * length));
             }
-            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+            if (startOpen ||(!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)))
             {
                 openOffset = MaxLength;
                 open = true;
@@ -196,20 +199,35 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (!GateRoutine.Active)
             {
-                if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && (closed || closing))
+                if (startOpen)
                 {
-                    Add(GateRoutine = new Coroutine(Open()));
+                    if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && (open || opening))
+                    {
+                        Add(GateRoutine = new Coroutine(Close(player)));
+                    }
+                    else if (!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag) && (closed || closing))
+                    {
+                        Add(GateRoutine = new Coroutine(Open()));
+                    }
                 }
-                else if (!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag) && (open || opening))
+                else
                 {
-                    Add(GateRoutine = new Coroutine(Close(player)));
+                    if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && (closed || closing))
+                    {
+                        Add(GateRoutine = new Coroutine(Open()));
+                    }
+                    else if (!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag) && (open || opening))
+                    {
+                        Add(GateRoutine = new Coroutine(Close(player)));
+                    }
                 }
             }
         }
 
         private IEnumerator Open()
         {
-            while (!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag))
+            bool flagCheck = startOpen ? !SceneAs<Level>().Session.GetFlag(flag) : SceneAs<Level>().Session.GetFlag(flag);
+            while (!string.IsNullOrEmpty(flag) && !flagCheck)
             {
                 yield return null;
             }
@@ -222,7 +240,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             opening = true;
             if (direction == "Bottom")
             {
-                while (Collider.Height > 0f && !string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Height > 0f && !string.IsNullOrEmpty(flag) && flagCheck)
                 {
                     Collider.Position.Y += Engine.DeltaTime * speed;
                     Collider.Height -= Engine.DeltaTime * speed;
@@ -233,7 +251,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (direction == "Top")
             {
-                while (Collider.Height > 0f && !string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Height > 0f && !string.IsNullOrEmpty(flag) && flagCheck)
                 {
                     Collider.Height -= Engine.DeltaTime * speed;
                     openOffset += Engine.DeltaTime * speed;
@@ -243,7 +261,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (direction == "Left")
             {
-                while (Collider.Width > 0f && !string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Width > 0f && !string.IsNullOrEmpty(flag) && flagCheck)
                 {
                     Collider.Width -= Engine.DeltaTime * speed;
                     openOffset += Engine.DeltaTime * speed;
@@ -253,7 +271,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (direction == "Right")
             {
-                while (Collider.Width > 0f && !string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Width > 0f && !string.IsNullOrEmpty(flag) && flagCheck)
                 {
                     Collider.Position.X += Engine.DeltaTime * speed;
                     Collider.Width -= Engine.DeltaTime * speed;
@@ -272,7 +290,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Close(Player player)
         {
-            while (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+            bool flagCheck = startOpen ? !SceneAs<Level>().Session.GetFlag(flag) : SceneAs<Level>().Session.GetFlag(flag);
+            while (!string.IsNullOrEmpty(flag) && flagCheck)
             {
                 yield return null;
             }
@@ -285,7 +304,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             closing = true;
             if (direction == "Bottom")
             {
-                while (Collider.Height < MaxLength && !string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Height < MaxLength && !string.IsNullOrEmpty(flag) && !flagCheck)
                 {
                     Collider.Position.Y -= Engine.DeltaTime * speed;
                     Collider.Height += Engine.DeltaTime * speed;
@@ -296,7 +315,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (direction == "Top")
             {
-                while (Collider.Height < MaxLength && !string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Height < MaxLength && !string.IsNullOrEmpty(flag) && !flagCheck)
                 {
                     Collider.Height += Engine.DeltaTime * speed;
                     openOffset -= Engine.DeltaTime * speed;
@@ -306,7 +325,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (direction == "Left")
             {
-                while (Collider.Width < MaxLength && !string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Width < MaxLength && !string.IsNullOrEmpty(flag) && !flagCheck)
                 {
                     Collider.Width += Engine.DeltaTime * speed;
                     openOffset -= Engine.DeltaTime * speed;
@@ -316,7 +335,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (direction == "Right")
             {
-                while (Collider.Width < MaxLength && !string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag))
+                while (Collider.Width < MaxLength && !string.IsNullOrEmpty(flag) && !flagCheck)
                 {
                     Collider.Position.X -= Engine.DeltaTime * speed;
                     Collider.Width += Engine.DeltaTime * speed;
