@@ -400,10 +400,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (OnGround())
                 {
+                    bool onRobot = false;
                     float target = (!OnGround(Position + Vector2.UnitX * 3f)) ? 20f : (OnGround(Position - Vector2.UnitX * 3f) ? 0f : (-20f));
                     Speed.X = Calc.Approach(Speed.X, target, 800f * Engine.DeltaTime);
                     Vector2 liftSpeed = LiftSpeed;
-                    if (liftSpeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero)
+                    foreach (WorkRobot robot in SceneAs<Level>().Tracker.GetEntities<WorkRobot>())
+                    {
+                        if (Scene.CollideCheck(new Rectangle((int)X, (int)Y + 1, (int)Width, (int)Height), robot))
+                        {
+                            onRobot = true;
+                            break;
+                        }
+                    }
+                    if (liftSpeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero && !onRobot)
                     {
                         Speed = prevLiftSpeed;
                         prevLiftSpeed = Vector2.Zero;
@@ -420,7 +429,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     else
                     {
                         prevLiftSpeed = liftSpeed;
-                        if (liftSpeed.Y < 0f && Speed.Y < 0f)
+                        if ((liftSpeed.Y < 0f && Speed.Y < 0f) || onRobot)
                         {
                             Speed.Y = 0f;
                         }
