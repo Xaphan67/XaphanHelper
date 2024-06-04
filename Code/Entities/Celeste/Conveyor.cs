@@ -106,12 +106,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             On.Celeste.Player.Update += OnPlayerUpdate;
             On.Celeste.Player.WallJump += OnPlayerWallJump;
+            On.Celeste.Player.ClimbHopBlockedCheck += OnPlayerClimbHopBlockedCheck;
+            On.Celeste.Player.ClimbHop += OnPlayerClimbHop;
         }
 
         public static void Unload()
         {
             On.Celeste.Player.Update -= OnPlayerUpdate;
             On.Celeste.Player.WallJump -= OnPlayerWallJump;
+            On.Celeste.Player.ClimbHopBlockedCheck -= OnPlayerClimbHopBlockedCheck;
+            On.Celeste.Player.ClimbHop -= OnPlayerClimbHop;
         }
 
         private static void OnPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self)
@@ -167,6 +171,37 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     break;
                 }
+            }
+        }
+
+        private static bool OnPlayerClimbHopBlockedCheck(On.Celeste.Player.orig_ClimbHopBlockedCheck orig, Player self)
+        {
+            Vector2 vector = self.Position + Vector2.UnitX * (self.Facing == Facings.Left ? -4 : 4);
+            if (self.CollideCheck<Conveyor>(vector))
+            {
+                Conveyor conveyor = self.CollideFirst<Conveyor>(vector);
+                if (conveyor.vertical)
+                {
+                    return false;
+                }
+            }
+            return orig(self);
+        }
+
+        private static void OnPlayerClimbHop(On.Celeste.Player.orig_ClimbHop orig, Player self)
+        {
+            Vector2 vector = self.Position + Vector2.UnitX * (self.Facing == Facings.Left ? -4 : 4);
+            if (self.CollideCheck<Conveyor>(vector))
+            {
+                Conveyor conveyor = self.CollideFirst<Conveyor>(vector);
+                if (!conveyor.vertical)
+                {
+                    orig(self);
+                }
+            }
+            else
+            {
+                orig(self);
             }
         }
 
