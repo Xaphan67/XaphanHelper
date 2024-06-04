@@ -5,6 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/Detonator")]
     class Detonator : Solid
     {
@@ -56,7 +57,47 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, 4, -6)));
                     break;
             }
-            
+            Depth = 100;
+        }
+
+        public static void Load()
+        {
+            On.Celeste.Solid.MoveVExact += OnSolidMoveVExact;
+            On.Celeste.Solid.MoveHExact += OnSolidMoveHExact;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Solid.MoveVExact -= OnSolidMoveVExact;
+            On.Celeste.Solid.MoveHExact -= OnSolidMoveHExact;
+        }
+
+        private static void OnSolidMoveVExact(On.Celeste.Solid.orig_MoveVExact orig, Solid self, int move)
+        {
+            orig(self, move);
+            if (self.Scene.CollideCheck<Detonator>(new Rectangle((int)self.X + 1, move >= 1 ? (int)self.Y + (int)self.Height + 5 : (int)self.Y - 5, (int)self.Width - 2, 1)))
+            {
+                Detonator detonator = self.CollideFirst<Detonator>(self.Position + Vector2.UnitY * (move >= 1 ? 5 : -5));
+                if (detonator != null && (move >= 1 ? detonator.side == "Up" : detonator.side == "Down") && !detonator.pressed)
+                {
+                    detonator.pressed = true;
+                    detonator.sprite.Play("pressed");
+                }
+            }
+        }
+
+        private static void OnSolidMoveHExact(On.Celeste.Solid.orig_MoveHExact orig, Solid self, int move)
+        {
+            orig(self, move);
+            if (self.Scene.CollideCheck<Detonator>(new Rectangle(move >= 1 ? (int)self.X + (int)self.Width + 5 : (int)self.X - 5, (int)self.Y + 1, 1, (int)self.Height - 2)))
+            {
+                Detonator detonator = self.CollideFirst<Detonator>(self.Position + Vector2.UnitX * (move >= 1 ? 5 : -5));
+                if (detonator != null && (move >= 1 ? detonator.side == "Left" : detonator.side == "Right") && !detonator.pressed)
+                {
+                    detonator.pressed = true;
+                    detonator.sprite.Play("pressed");
+                }
+            }
         }
 
         public override void Update()
