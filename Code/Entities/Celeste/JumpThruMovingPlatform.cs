@@ -170,6 +170,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 SpeedMax = 8f,
                 SpeedMultiplier = 0.8f
             };
+            Depth = -100;
         }
 
         private List<Sprite> BuildSprite()
