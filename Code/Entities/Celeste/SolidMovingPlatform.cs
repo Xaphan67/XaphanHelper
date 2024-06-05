@@ -210,7 +210,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             List<Entity> platforms = self.Scene.Tracker.GetEntities<SolidMovingPlatform>().ToList();
             foreach (SolidMovingPlatform platform in platforms)
             {
-                if ((platform.Orientation == "Left" && self.Right <= platform.Left) || (platform.Orientation == "Right" && self.Left >= platform.Right) || (platform.Orientation == "Bottom" && self.Top >= platform.Bottom))
+                if (((platform.Orientation == "Left" && self.Right <= platform.Left) || (platform.Orientation == "Right" && self.Left >= platform.Right) && self.Bottom >= platform.Top + 1 && self.Top <= platform.Bottom) || (platform.Orientation == "Bottom" && self.Top >= platform.Bottom))
                 {
                     platform.Collidable = true;
                 }
@@ -222,7 +222,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             orig(self);
             foreach (SolidMovingPlatform platform in platforms)
             {
-                if ((platform.Orientation == "Left" && self.Right <= platform.Left) || (platform.Orientation == "Right" && self.Left >= platform.Right) || (platform.Orientation == "Bottom" && self.Top >= platform.Bottom))
+                if (((platform.Orientation == "Left" && self.Right <= platform.Left) || (platform.Orientation == "Right" && self.Left >= platform.Right) && self.Bottom >= platform.Top + 1 && self.Top <= platform.Bottom) || (platform.Orientation == "Bottom" && self.Top >= platform.Bottom))
                 {
                     platform.Collidable = true;
                 }

@@ -395,7 +395,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if ((self.Right <= arrow.Left || self.Left >= arrow.Right) && !arrow.destroyed && arrow.inWall && Input.Grab.Check && self.Holding == null && arrow.noCollideDelay <= 0f)
+                    if (((self.Right <= arrow.Left || self.Left >= arrow.Right) && self.Bottom >= arrow.Top + 1 && self.Top <= arrow.Bottom) && !arrow.destroyed && arrow.inWall && Input.Grab.Check && self.Holding == null && arrow.noCollideDelay <= 0f)
                     {
                         if (Input.Jump.Pressed)
                         {
