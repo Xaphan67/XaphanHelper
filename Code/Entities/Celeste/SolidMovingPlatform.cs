@@ -31,10 +31,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string directory;
 
-        private string lineColorA;
-
-        private string lineColorB;
-
         private string particlesColorA;
 
         private string particlesColorB;
@@ -65,8 +61,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string forceInactiveFlag;
 
-        private bool drawTrack;
-
         private bool particles;
 
         private bool AtStartOfTrack;
@@ -93,7 +87,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Vector2 OrigPosition;
 
-        public SolidMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, string orientation, int amount, int index, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool swapped = false) : base(position, 8, 8, false)
+        public SolidMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string particlesColorA, string particlesColorB, string orientation, int amount, int index, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool particles, int direction, float startPercent = -1f, bool swapped = false) : base(position, 8, 8, false)
         {
             Tag = Tags.TransitionUpdate;
             noCollideDelay = 0.01f;
@@ -105,8 +99,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.mode = mode;
             this.directory = directory;
             this.length = length;
-            this.lineColorA = lineColorA;
-            this.lineColorB = lineColorB;
             this.particlesColorA = particlesColorA;
             this.particlesColorB = particlesColorB;
             Orientation = orientation;
@@ -120,7 +112,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.swapFlag = swapFlag;
             this.moveFlag = moveFlag;
             this.forceInactiveFlag = forceInactiveFlag;
-            this.drawTrack = drawTrack;
             this.particles = particles;
             this.direction = direction;
             this.swapped = swapped;
@@ -416,7 +407,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             }
                             else if (mode.Contains("Back And Forth"))
                             {
-                                if (mode.Contains("All Sawblades"))
+                                if (mode.Contains("All Platforms"))
                                 {
                                     foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
                                     {
@@ -449,7 +440,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             }
                             else if (mode.Contains("Back And Forth"))
                             {
-                                if (mode.Contains("All Sawblades"))
+                                if (mode.Contains("All Platforms"))
                                 {
                                     foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
                                     {

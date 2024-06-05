@@ -20,10 +20,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float[] lengths;
 
-        private float speed;
-
-        private float percent;
-
         private string directory;
 
         private string lineColorA;
@@ -38,13 +34,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private SoundSource trackSfx;
 
-        public Sprite platform;
-
         private Sprite node;
 
         private int direction;
-
-        private bool swapped;
 
         private bool fromFirstLoad;
 
@@ -76,7 +68,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string AttachedEntityPlatformsIndexes;
 
-        public CustomMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, string orientation, int amount, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool swapped = false, bool fromFirstLoad = false) : base(position, 8, 8, false)
+        public CustomMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, string orientation, int amount, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool fromFirstLoad = false) : base(position, 8, 8, false)
         {
             Tag = Tags.TransitionUpdate;
             noCollideDelay = 0.01f;
@@ -104,7 +96,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.drawTrack = drawTrack;
             this.particles = particles;
             this.direction = direction;
-            this.swapped = swapped;
             this.fromFirstLoad = fromFirstLoad;
             Orientation = orientation;
             if (string.IsNullOrEmpty(this.directory))
@@ -116,13 +107,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 lengths[i] = lengths[i - 1] + Vector2.Distance(nodes[i - 1], nodes[i]);
             }
-            speed = speedMult / lengths[lengths.Length - 1];
-            percent = startPercent;
-            percent %= 1f;
-            Add(platform = new Sprite(GFX.Game, this.directory + "/"));
-            platform.Add("idle", "platform", 0.01f);
-            platform.CenterOrigin();
-            platform.Play("idle");
             Add(node = new Sprite(GFX.Game, this.directory + "/"));
             node.AddLoop("node", "node", 0.15f);
             node.CenterOrigin();
@@ -154,11 +138,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (Orientation == "Top")
                     {
-                        Scene.Add(new JumpThruMovingPlatform(id, Position, nodes, mode, directory, length, lineColorA, lineColorB, particlesColorA, particlesColorB, Orientation, amount, i + 1, speedMult, startOffset, spacingOffset, AttachedEntityPlatformsIndexes, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction));
+                        Scene.Add(new JumpThruMovingPlatform(id, Position, nodes, mode, directory, length, particlesColorA, particlesColorB, Orientation, amount, i + 1, speedMult, startOffset, spacingOffset, AttachedEntityPlatformsIndexes, stopFlag, swapFlag, moveFlag, forceInactiveFlag, particles, direction));
                     }
                     else
                     {
-                        Scene.Add(new SolidMovingPlatform(id, Position, nodes, mode, directory, length, lineColorA, lineColorB, particlesColorA, particlesColorB, Orientation, amount, i + 1, speedMult, startOffset, spacingOffset, AttachedEntityPlatformsIndexes, stopFlag, swapFlag, moveFlag, forceInactiveFlag, drawTrack, particles, direction));
+                        Scene.Add(new SolidMovingPlatform(id, Position, nodes, mode, directory, length, particlesColorA, particlesColorB, Orientation, amount, i + 1, speedMult, startOffset, spacingOffset, AttachedEntityPlatformsIndexes, stopFlag, swapFlag, moveFlag, forceInactiveFlag, particles, direction));
                     }
                 }
             }
