@@ -20,6 +20,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool PlayerOnTop;
 
+        private StaticMover staticMover;
+
         public Lever(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Add(Sprite = new Sprite(GFX.Game, data.Attr("directory") + "/"));
@@ -30,28 +32,42 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Flag = data.Attr("flag");
             CanSwapFlag = data.Bool("canSwapFlag", false);
             Side = data.Attr("side", "Up");
+            staticMover = new StaticMover();
             switch (Side) {
                 case "Up":
                     Collider = new Hitbox(12, 8, 2, 0);
+                    staticMover.SolidChecker = ((Solid s) => CollideCheckOutside(s, Position + Vector2.UnitY * 4f));
                     Sprite.Position = new Vector2(-4f, -8f);
                     break;
                 case "Down":
                     Collider = new Hitbox(12, 8, 2, -8);
+                    staticMover.SolidChecker = ((Solid s) => CollideCheckOutside(s, Position - Vector2.UnitY * 4f));
                     Sprite.Position = new Vector2(-4f, -8f);
                     Sprite.FlipY = true;
                     break;
                 case "Left":
                     Collider = new Hitbox(8, 12, 8, -6);
+                    staticMover.SolidChecker = ((Solid s) => CollideCheckOutside(s, Position + Vector2.UnitX * 2f));
                     Sprite.Position = new Vector2(0f, 12f);
                     Sprite.Rotation = -(float)Math.PI / 2;
                     Sprite.FlipX = true;
                     break;
                 case "Right":
                     Collider = new Hitbox(8, 12, 0, -6);
+                    staticMover.SolidChecker = ((Solid s) => CollideCheckOutside(s, Position - Vector2.UnitX * 2f));
                     Sprite.Position = new Vector2(16f, -12f);
                     Sprite.Rotation = (float)Math.PI / 2;
                     break;
             }
+            staticMover.OnAttach = delegate (Platform p)
+            {
+                Depth = p.Depth + 1;
+            };
+            staticMover.OnEnable = onEnable;
+            staticMover.OnDisable = onDisable;
+            staticMover.OnShake = onShake;
+            staticMover.OnMove = onMove;
+            Add(staticMover);
             Add(new PlayerCollider(onPlayer, Collider));
         }
 
@@ -174,6 +190,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 PlayerOnTop = false;
             }
+        }
+
+        private void onEnable()
+        {
+            Visible = true;
+            Collidable = true;
+        }
+
+        private void onDisable()
+        {
+            Collidable = false;
+            Visible = false;
+        }
+
+        private void onShake(Vector2 amount)
+        {
+            Sprite.Position += amount;
+        }
+
+        private void onMove(Vector2 amount)
+        {
+            Position += amount;
         }
 
         public override void Render()
