@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -12,26 +13,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private Sprite Sprite;
 
-        private string Side;
+        public string Directory;
 
-        private string Flag;
+        public string Side;
 
-        private bool CanSwapFlag;
+        public string Flag;
+
+        public bool CanSwapFlag;
 
         private bool PlayerOnTop;
 
         private StaticMover staticMover;
 
-        public Lever(EntityData data, Vector2 offset) : base(data.Position + offset)
+        public Lever(Vector2 position, string directory, string flag, bool canSwapFlag, string side) : base(position)
         {
-            Add(Sprite = new Sprite(GFX.Game, data.Attr("directory") + "/"));
+            Directory = directory;
+            Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Sprite.Add("start", "lever", 0);
             Sprite.Add("toEnd", "lever", 0.08f, 1, 2);
             Sprite.Add("end", "lever", 0, 2);
             Sprite.Add("toStart", "lever", 0.08f, 1, 0);
-            Flag = data.Attr("flag");
-            CanSwapFlag = data.Bool("canSwapFlag", false);
-            Side = data.Attr("side", "Up");
+            Flag = flag;
+            CanSwapFlag = canSwapFlag;
+            Side = side;
             staticMover = new StaticMover();
             switch (Side) {
                 case "Up":
@@ -69,6 +73,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             staticMover.OnMove = onMove;
             Add(staticMover);
             Add(new PlayerCollider(onPlayer, Collider));
+        }
+
+        public Lever(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("directory"), data.Attr("flag"), data.Bool("canSwapFlag", false), data.Attr("side", "Up"))
+        {
+
         }
 
         public override void Added(Scene scene)

@@ -79,6 +79,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Spikes AttachedSpike;
 
+        public Lever AttachedLever;
+
         public Vector2 attachedEntityOffset;
 
         private string AttachedEntityPlatformsIndexes;
@@ -213,6 +215,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
+
+                AttachedLever = CollideFirst<Lever>(OrigPosition - Vector2.UnitY * 2);
+                if (AttachedLever != null)
+                {
+                    attachedEntityOffset = OrigPosition - AttachedLever.Position;
+                    foreach (Lever lever in SceneAs<Level>().Tracker.GetEntities<Lever>())
+                    {
+                        if (lever == AttachedLever)
+                        {
+                            lever.RemoveSelf();
+                        }
+                    }
+                }
             }
         }
 
@@ -230,15 +245,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 foreach (JumpThruMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<JumpThruMovingPlatform>())
                 {
-                    if (platform.id == id && platform.index == 1 && platform.AttachedSpike != null)
+                    if (platform.id == id && platform.index == 1)
                     {
-                        AttachedSpike = new Spikes(platform.Position - platform.attachedEntityOffset, length * 8, platform.AttachedSpike.Direction, (string)SpikesSpikeType.GetValue(platform.AttachedSpike));
-                        AttachedSpike.Depth = Depth + 1;
+                        if (platform.AttachedSpike != null)
+                        {
+                            AttachedSpike = new Spikes(platform.Position - platform.attachedEntityOffset, length * 8, platform.AttachedSpike.Direction, (string)SpikesSpikeType.GetValue(platform.AttachedSpike));
+                            AttachedSpike.Depth = Depth + 1;
+                        }
+                        else if (platform.AttachedLever != null)
+                        {
+                            AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, AttachedLever.Directory, AttachedLever.Flag, AttachedLever.CanSwapFlag, AttachedLever.Side);
+                            AttachedLever.Depth = 1;
+                        }
                         attachedEntityOffset = platform.attachedEntityOffset;
                     }
-                    if (platform.id == id && (!string.IsNullOrEmpty(AttachedEntityPlatformsIndexes) ? AttachedEntityPlatformsIndexes.Split(',').ToList().Contains(index.ToString()) : true) && AttachedSpike != null)
+                    if (platform.id == id && (!string.IsNullOrEmpty(AttachedEntityPlatformsIndexes) ? AttachedEntityPlatformsIndexes.Split(',').ToList().Contains(index.ToString()) : true))
                     {
-                        SceneAs<Level>().Add(AttachedSpike);
+                        if (AttachedSpike != null)
+                        {
+                            SceneAs<Level>().Add(AttachedSpike);
+                        }
+                        else if (AttachedLever != null)
+                        {
+                            SceneAs<Level>().Add(AttachedLever);
+                        }
                     }
                 }
                 AttachedEntity = true;
@@ -386,10 +416,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (index >= 1 && AttachedSpike != null)
+            if (index >= 1)
             {
-                AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                if(AttachedSpike != null)
+                {
+                    AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
+                else if (AttachedLever != null)
+                {
+                    AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
             }
+
             MoveTo(GetPercentPosition(percent));
             PositionTrackSfx();
             if (Scene.OnInterval(0.05f) && index != 0 && particles)
@@ -489,6 +527,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (AttachedSpike != null)
             {
                 AttachedSpike.RemoveSelf();
+            }
+            if (AttachedLever != null)
+            {
+                AttachedLever.RemoveSelf();
             }
         }
     }

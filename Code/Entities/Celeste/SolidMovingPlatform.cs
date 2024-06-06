@@ -81,6 +81,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public MagneticCeiling AttachedMagneticCeiling;
 
+        public Lever AttachedLever;
+
         public Vector2 attachedEntityOffset;
 
         private string AttachedEntityPlatformsIndexes;
@@ -256,14 +258,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Orientation == "Left")
                 {
                     AttachedSpike = CollideFirst<Spikes>(OrigPosition - Vector2.UnitX * 2);
+                    AttachedLever = CollideFirst<Lever>(OrigPosition - Vector2.UnitX * 2);
                 }
                 else if (Orientation == "Right")
                 {
                     AttachedSpike = CollideFirst<Spikes>(OrigPosition + Vector2.UnitX * 2);
+                    AttachedLever = CollideFirst<Lever>(OrigPosition + Vector2.UnitX * 2);
                 }
                 else if (Orientation == "Bottom")
                 {
                     AttachedSpike = CollideFirst<Spikes>(OrigPosition + Vector2.UnitY * 2);
+                    AttachedLever = CollideFirst<Lever>(OrigPosition + Vector2.UnitY * 2);
                     AttachedMagneticCeiling = CollideFirst<MagneticCeiling>(OrigPosition + Vector2.UnitY * 2);
                 }
                 if (AttachedSpike != null)
@@ -285,6 +290,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         if (ceiling == AttachedMagneticCeiling)
                         {
                             ceiling.RemoveSelf();
+                        }
+                    }
+                }
+                if (AttachedLever != null)
+                {
+                    attachedEntityOffset = OrigPosition - AttachedLever.Position;
+                    foreach (Lever lever in SceneAs<Level>().Tracker.GetEntities<Lever>())
+                    {
+                        if (lever == AttachedLever)
+                        {
+                            lever.RemoveSelf();
                         }
                     }
                 }
@@ -315,6 +331,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             AttachedMagneticCeiling = new MagneticCeiling(platform.Position - platform.attachedEntityOffset, Vector2.Zero, platform.AttachedMagneticCeiling.ID, platform.AttachedMagneticCeiling.Width, platform.AttachedMagneticCeiling.Directory, platform.AttachedMagneticCeiling.AnimationSpeed, platform.AttachedMagneticCeiling.CanJump, platform.AttachedMagneticCeiling.NoStaminaDrain);
                         }
+                        else if (platform.AttachedLever != null)
+                        {
+                            AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, AttachedLever.Directory, AttachedLever.Flag, AttachedLever.CanSwapFlag, AttachedLever.Side);
+                            AttachedLever.Depth = 1;
+                        }
                         attachedEntityOffset = platform.attachedEntityOffset;
                     }
                     if (platform.id == id && (!string.IsNullOrEmpty(AttachedEntityPlatformsIndexes) ? AttachedEntityPlatformsIndexes.Split(',').ToList().Contains(index.ToString()) : true))
@@ -326,6 +347,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         else if (AttachedMagneticCeiling != null)
                         {
                             SceneAs<Level>().Add(AttachedMagneticCeiling);
+                        }
+                        else if (AttachedLever != null)
+                        {
+                            SceneAs<Level>().Add(AttachedLever);
                         }
                     }
                 }
@@ -484,6 +509,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
                 }
+                else if (AttachedLever != null)
+                {
+                    AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
             }
             MoveTo(GetPercentPosition(percent));
             if (AttachedMagneticCeiling != null)
@@ -592,6 +621,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (AttachedMagneticCeiling != null)
             {
                 AttachedMagneticCeiling.RemoveSelf();
+            }
+            if (AttachedLever != null)
+            {
+                AttachedLever.RemoveSelf();
             }
         }
     }
