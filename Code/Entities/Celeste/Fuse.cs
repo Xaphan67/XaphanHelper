@@ -24,13 +24,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private Vector2 tilesSpritePos;
 
-            public string speed;
+            public float speed;
 
-            private bool triggered;
+            public bool triggered;
 
             public bool shouldTrigger;
 
-            private FuseExplosionSoundManager manager;
+            public FuseExplosionSoundManager manager;
 
             public FuseSection(EntityData data, Vector2 position) : base(position)
             {
@@ -46,7 +46,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(ExplosionSprite = new Sprite(GFX.Game, directory + "/"));
                 ExplosionSprite.Add("explode", "explode", 0.05f);
                 ExplosionSprite.Position -= Vector2.One * 2;
+                ExplosionSprite.OnLastFrame += onLastFrame;
                 Depth = -19999;
+            }
+
+            private void onLastFrame(string obj)
+            {
+                RemoveSelf();
             }
 
             public override void Awake(Scene scene)
@@ -95,12 +101,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private IEnumerator ExplodeRoutine()
             {
-                Input.Rumble(RumbleStrength.Light, RumbleLength.Short);
-                SceneAs<Level>().Shake(0.1f);
-                manager.PlaySound(this);
+                if (manager.explosionSoundCooldown <= 0)
+                {
+                    Audio.Play("event:/game/xaphan/explosion", Position);
+                    manager.explosionSoundCooldown = speed > 0.1f ? speed : 0.1f;
+                }
                 ExplosionSprite.Play("explode");
-                Add(new Coroutine (DestroyEntitiesRoutine()));
-                yield return speed == "Normal" ? 0.1f : speed == "Fast" ? 0.02f : 0.2f;
+                Add(new Coroutine(DestroyEntitiesRoutine()));
+                yield return speed;
                 if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position - Vector2.UnitY);
@@ -137,13 +145,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         nextSection.shouldTrigger = true;
                     }
                 }
-                while (ExplosionSprite.CurrentAnimationFrame != ExplosionSprite.CurrentAnimationTotalFrames - 1)
-                {
-                    yield return null;
-                }
-                yield return 0.05f;
-                ExplosionSprite.Color = Color.White * 0f;
-                RemoveSelf();
             }
 
             private IEnumerator DestroyEntitiesRoutine()

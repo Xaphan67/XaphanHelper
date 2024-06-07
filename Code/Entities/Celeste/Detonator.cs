@@ -15,7 +15,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string side;
 
-        private string speed;
+        private float speed;
 
         private PlayerCollider pc;
 
@@ -27,7 +27,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             directory = data.Attr("directory");
             side = data.Attr("side", "Up");
-            speed = data.Attr("speed", "Default");
+            speed = data.Float("speed", 0.1f);
             Add(sprite = new Sprite(GFX.Game, directory + "/"));
             sprite.Add("idle", "idle", 0);
             sprite.Add("pressed", "pressed", 0);
@@ -106,53 +106,39 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (pressed && !wasPressed)
             {
                 wasPressed = true;
+                Fuse.FuseSection fuse = null;
                 switch (side)
                 {
                     case "Up":
                         if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
                         {
-                            Fuse.FuseSection fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitY);
-                            if (fuse != null)
-                            {
-                                fuse.speed = speed;
-                                fuse.shouldTrigger = true;
-                            }
+                            fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitY);
                         }
                         break;
                     case "Down":
                         if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X, (int)Y - 16, 1, 1)))
                         {
-                            Fuse.FuseSection fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitY);
-                            if (fuse != null)
-                            {
-                                fuse.speed = speed;
-                                fuse.shouldTrigger = true;
-                            }
+                            fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitY);
                         }
                         break;
                     case "Left":
                         if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
                         {
-                            Fuse.FuseSection fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitX);
-                            if (fuse != null)
-                            {
-                                fuse.speed = speed;
-                                fuse.shouldTrigger = true;
-                            }
+                            fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitX);
                         }
                         break;
                     case "Right":
                         if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X - 16, (int)Y, 1, 1)))
                         {
-                            Fuse.FuseSection fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitX);
-                            if (fuse != null)
-                            {
-                                fuse.speed = speed;
-                                fuse.shouldTrigger = true;
-                            }
+                            fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitX);
                         }
                         break;
                 };
+                if (fuse != null)
+                {
+                    fuse.speed = speed;
+                    fuse.shouldTrigger = true;
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Monocle;
 using Celeste.Mod.XaphanHelper.Entities;
+using System;
 
 namespace Celeste.Mod.XaphanHelper.Managers
 {
@@ -33,15 +34,6 @@ namespace Celeste.Mod.XaphanHelper.Managers
         {
             base.Added(scene);
             Add(new Coroutine(ExplosionSoundCooldownRoutine()));
-        }
-
-        public void PlaySound(Fuse.FuseSection section)
-        {
-            if (explosionSoundCooldown <= 0)
-            {
-                Audio.Play("event:/game/xaphan/explosion", section.Position);
-                explosionSoundCooldown = 0.1f;
-            }
         }
 
         private IEnumerator ExplosionSoundCooldownRoutine()
