@@ -664,6 +664,16 @@ namespace Celeste.Mod.XaphanHelper
                 medals: 15
             ));
             list.Add(new AchievementData(
+                achievementID: "tank2",
+                categoryID: 2,
+                icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
+                flag: "XaphanHelper_StatFlag_EnergyTanksCh2",
+                currentValue: StatsFlags.CurrentEnergyTanks[2],
+                maxValue: StatsFlags.TotalEnergyTanks[2],
+                medals: 15,
+                reqID: "upg2"
+            ));
+            list.Add(new AchievementData(
                 achievementID: "cass2",
                 categoryID: 2,
                 icon: "achievements/Xaphan/CassetteSilver",
@@ -720,6 +730,35 @@ namespace Celeste.Mod.XaphanHelper
 
                 // Area 4
                 list.Add(new AchievementData(
+                    achievementID: "map4-0s",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/MapBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh4-0-Visited",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[4][0] > 0 ? 1 : 0,
+                    maxValue: 1,
+                    medals: 5
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "map4-0",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/MapCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh4-0",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[4][0],
+                    maxValue: StatsFlags.TotalSubAreaTiles[4][0],
+                    medals: 10,
+                    reqID: "map4-0s"
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "strwb4-0",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_StrawberriesCh4-0",
+                    currentValue: StatsFlags.CurrentSubAreaStrawberries[4][0],
+                    maxValue: StatsFlags.TotalSubAreaStrawberries[4][0],
+                    medals: 10,
+                    reqID: "map4-0s"
+                ));
+                list.Add(new AchievementData(
                     achievementID: "map4",
                     categoryID: 4,
                     icon: "achievements/Xaphan/MapCheckmarkSilver",
@@ -727,6 +766,25 @@ namespace Celeste.Mod.XaphanHelper
                     currentValue: StatsFlags.CurrentTiles[4],
                     maxValue: StatsFlags.TotalTiles[4],
                     medals: 15
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "strwb4",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/StrawberryCheckmarkSilver",
+                    flag: "XaphanHelper_StatFlag_StrawberriesCh4",
+                    currentValue: StatsFlags.CurrentStrawberries[4] - (session.GetFlag("XaphanHelper_StatFlag_GoldenCh4-1") ? 1 : 0),
+                    maxValue: StatsFlags.TotalStrawberries[4],
+                    medals: 15
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "tank4",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
+                    flag: "XaphanHelper_StatFlag_EnergyTanksCh4",
+                    currentValue: StatsFlags.CurrentEnergyTanks[4],
+                    maxValue: StatsFlags.TotalEnergyTanks[4],
+                    medals: 15,
+                    reqID: "upg2"
                 ));
 
                 // Area 5
