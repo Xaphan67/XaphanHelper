@@ -81,11 +81,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Lever AttachedLever;
 
+        public Spring AttachedSpring;
+
         public Vector2 attachedEntityOffset;
 
         private string AttachedEntityPlatformsIndexes;
 
         private Vector2 OrigPosition;
+
+        private List<Spring> Springs = new();
 
         public JumpThruMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string particlesColorA, string particlesColorB, string orientation, int amount, int index, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool particles, int direction, float startPercent = -1f, bool swapped = false) : base(position, 8, false)
         {
@@ -195,6 +199,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            foreach (Entity entity in scene.Entities)
+            {
+                if (entity.GetType() == typeof(Spring))
+                {
+                    Springs.Add(entity as Spring);
+                }
+            }
             if (trackSfx != null)
             {
                 PositionTrackSfx();
@@ -228,6 +239,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
+
+                foreach (Spring spring in Springs)
+                {
+                    if (CollideCheck(spring, OrigPosition - Vector2.UnitX * 2))
+                    {
+                        AttachedSpring = spring;
+                        break;
+                    }
+                }
+                if (AttachedSpring != null)
+                {
+                    attachedEntityOffset = OrigPosition - AttachedSpring.Position;
+                    foreach (Spring spring in Springs)
+                    {
+                        if (spring == AttachedSpring)
+                        {
+                            spring.RemoveSelf();
+                        }
+                    }
+                }
             }
         }
 
@@ -254,8 +285,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else if (platform.AttachedLever != null)
                         {
-                            AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, AttachedLever.Directory, AttachedLever.Flag, AttachedLever.CanSwapFlag, AttachedLever.Side);
+                            AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, platform.AttachedLever.Directory, platform.AttachedLever.Flag, platform.AttachedLever.CanSwapFlag, platform.AttachedLever.Side);
                             AttachedLever.Depth = 1;
+                        }
+                        else if (platform.AttachedSpring != null)
+                        {
+                            AttachedSpring = new Spring(platform.Position - platform.attachedEntityOffset, platform.AttachedSpring.Orientation, true);
+                            AttachedSpring.Depth = Depth + 1;
                         }
                         attachedEntityOffset = platform.attachedEntityOffset;
                     }
@@ -268,6 +304,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         else if (AttachedLever != null)
                         {
                             SceneAs<Level>().Add(AttachedLever);
+                        }
+                        else if (AttachedSpring != null)
+                        {
+                            SceneAs<Level>().Add(AttachedSpring);
                         }
                     }
                 }
@@ -426,6 +466,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
                 }
+                else if (AttachedSpring != null)
+                {
+                    AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
             }
 
             MoveTo(GetPercentPosition(percent));
@@ -531,6 +575,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (AttachedLever != null)
             {
                 AttachedLever.RemoveSelf();
+            }
+            if (AttachedSpring != null)
+            {
+                AttachedSpring.RemoveSelf();
             }
         }
     }
