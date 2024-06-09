@@ -146,7 +146,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             percent %= 1f;
             OrigPosition = GetPercentPosition(0);
-            Position = GetPercentPosition(percent);
+            Vector2 rawPosition = GetPercentPosition(percent);
+            Position = new Vector2((float)Math.Round(rawPosition.X), (float)Math.Round(rawPosition.Y));
             sprites = BuildSprite();
             if (index == 0)
             {
