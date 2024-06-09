@@ -207,6 +207,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 }
                             }
                         }
+                        foreach (Lever lever in SceneAs<Level>().Tracker.GetEntities<Lever>())
+                        {
+                            if (!string.IsNullOrEmpty(lever.Flag))
+                            {
+                                lever.startSpawnPoint = respawn;
+                                lever.flagState = SceneAs<Level>().Session.GetFlag(lever.Flag);
+                                int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + lever.Flag + "_true", false);
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + lever.Flag + "_false", false);
+                                if (lever.wasSwitched && lever.registerInSaveData && lever.saveDataOnlyAfterCheckpoint)
+                                {
+                                    string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag))
+                                    {
+                                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag);
+                                    }
+                                    if (XaphanModule.PlayerHasGolden)
+                                    {
+                                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry"))
+                                        {
+                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry");
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if (XaphanModule.PlayerIsControllingRemoteDrone())
                         {
                             Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();

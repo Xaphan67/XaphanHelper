@@ -738,6 +738,7 @@ namespace Celeste.Mod.XaphanHelper
             AuxiliaryGenerator.Load();
             FuseExplosionSoundManager.Load();
             Detonator.Load();
+            Lever.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -840,6 +841,7 @@ namespace Celeste.Mod.XaphanHelper
             AuxiliaryGenerator.Unload();
             FuseExplosionSoundManager.Unload();
             Detonator.Unload();
+            Lever.Unload();
         }
 
         // Custom States

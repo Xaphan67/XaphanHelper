@@ -23,10 +23,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool PlayerOnTop;
 
+        public Vector2? startSpawnPoint;
+
+        public bool flagState;
+
+        public bool registerInSaveData;
+
+        public bool saveDataOnlyAfterCheckpoint;
+
+        public bool wasSwitched;
+
+        private bool canSwitch;
+
         private StaticMover staticMover;
 
-        public Lever(Vector2 position, string directory, string flag, bool canSwapFlag, string side) : base(position)
+        public bool FlagRegiseredInSaveData()
         {
+            Session session = SceneAs<Level>().Session;
+            string Prefix = session.Area.LevelSet;
+            int chapterIndex = session.Area.ChapterIndex;
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
+        public Lever(Vector2 position, string directory, string flag, bool canSwapFlag, string side, bool registerInSaveData, bool saveDataOnlyAfterCheckpoint) : base(position)
+        {
+            Tag = Tags.TransitionUpdate;
             Directory = directory;
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Sprite.Add("start", "lever", 0);
@@ -36,6 +57,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Flag = flag;
             CanSwapFlag = canSwapFlag;
             Side = side;
+            this.registerInSaveData = registerInSaveData;
+            this.saveDataOnlyAfterCheckpoint = saveDataOnlyAfterCheckpoint;
             staticMover = new StaticMover();
             switch (Side) {
                 case "Up":
@@ -75,14 +98,100 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new PlayerCollider(onPlayer, Collider));
         }
 
-        public Lever(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("directory"), data.Attr("flag"), data.Bool("canSwapFlag", false), data.Attr("side", "Up"))
+        public Lever(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("directory"), data.Attr("flag"), data.Bool("canSwapFlag", false), data.Attr("side", "Up"), data.Bool("registerInSaveData", false), data.Bool("saveDataOnlyAfterCheckpoint", false))
         {
 
+        }
+
+        public static void Load()
+        {
+            On.Celeste.ChangeRespawnTrigger.OnEnter += onChangeRespawnTriggerOnEnter;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.ChangeRespawnTrigger.OnEnter -= onChangeRespawnTriggerOnEnter;
+        }
+
+        private static void onChangeRespawnTriggerOnEnter(On.Celeste.ChangeRespawnTrigger.orig_OnEnter orig, ChangeRespawnTrigger self, Player player)
+        {
+            orig(self, player);
+            bool onSolid = true;
+            Vector2 point = self.Target + Vector2.UnitY * -4f;
+            Session session = self.SceneAs<Level>().Session;
+            if (self.Scene.CollideCheck<Solid>(point))
+            {
+                onSolid = self.Scene.CollideCheck<FloatySpaceBlock>(point);
+            }
+            if (onSolid && (!session.RespawnPoint.HasValue || session.RespawnPoint.Value != self.Target))
+            {
+                foreach (Lever lever in self.SceneAs<Level>().Tracker.GetEntities<Lever>())
+                {
+                    if (!string.IsNullOrEmpty(lever.Flag))
+                    {
+                        lever.startSpawnPoint = session.RespawnPoint;
+                        lever.flagState = session.GetFlag(lever.Flag);
+                        int chapterIndex = self.SceneAs<Level>().Session.Area.ChapterIndex;
+                        self.SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + lever.Flag + "_true", false);
+                        self.SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + lever.Flag + "_false", false);
+                        if (lever.wasSwitched && lever.registerInSaveData && lever.saveDataOnlyAfterCheckpoint)
+                        {
+                            string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
+                            if (self.SceneAs<Level>().Session.GetFlag(lever.Flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag))
+                            {
+                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag);
+                            }
+                            else if (self.SceneAs<Level>().Session.GetFlag(lever.Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag))
+                            {
+                                XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag);
+                            }
+                            if (XaphanModule.PlayerHasGolden)
+                            {
+                                if (self.SceneAs<Level>().Session.GetFlag(lever.Flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry"))
+                                {
+                                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry");
+                                }
+                                else if (self.SceneAs<Level>().Session.GetFlag(lever.Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry"))
+                                {
+                                    XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            canSwitch = true;
+            int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+            if (FlagRegiseredInSaveData())
+            {
+                flagState = true;
+                SceneAs<Level>().Session.SetFlag(Flag, true);
+            }
+            else
+            {
+                if (SceneAs<Level>().Session.GetFlag("Ch" + chapterIndex + "_" + Flag + "_true"))
+                {
+                    flagState = true;
+                    SceneAs<Level>().Session.SetFlag(Flag, true);
+                }
+                else if (SceneAs<Level>().Session.GetFlag("Ch" + chapterIndex + "_" + Flag + "_false"))
+                {
+                    flagState = false;
+                    SceneAs<Level>().Session.SetFlag(Flag, false);
+                }
+                else
+                {
+                    flagState = SceneAs<Level>().Session.GetFlag(Flag);
+                    SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + Flag + "_true", false);
+                    SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + Flag + "_false", false);
+                    SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + Flag + "_" + (flagState ? "true" : "false"), true);
+                }
+            }
             if (SceneAs<Level>().Session.GetFlag(Flag))
             {
                 Sprite.Play("end");
@@ -95,7 +204,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onPlayer(Player player)
         {
-            if (!PlayerOnTop)
+            if (!PlayerOnTop && (CanSwapFlag || canSwitch))
             {
                 Add(new Coroutine(AnimateRoutine(true)));
             }
@@ -113,58 +222,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (switchFlag)
                 {
-                    if ((!CanSwapFlag && !SceneAs<Level>().Session.GetFlag(Flag)) || CanSwapFlag)
+                    foreach (Lever lever in SceneAs<Level>().Tracker.GetEntities<Lever>())
                     {
-                        foreach (Lever lever in SceneAs<Level>().Tracker.GetEntities<Lever>())
+                        if (lever != this && lever.Flag == Flag)
                         {
-                            if (lever != this && lever.Flag == Flag)
-                            {
-                                lever.UpdateSprite();
-                            }
+                            lever.UpdateSprite();
+                            lever.canSwitch = true;
                         }
                     }
                 }
-                if (!CanSwapFlag)
+                if (SceneAs<Level>().Session.GetFlag(Flag))
                 {
-                    if (switchFlag)
-                    {
-                        if (!SceneAs<Level>().Session.GetFlag(Flag))
-                        {
-                            Sprite.Play("toEnd");
-                            yield return 0.16f;
-                            Sprite.Play("end");
-                        }
-                    }
-                    else
-                    {
-                        if (SceneAs<Level>().Session.GetFlag(Flag))
-                        {
-                            Sprite.Play("toStart");
-                            yield return 0.16f;
-                            Sprite.Play("start");
-                        }
-                        else
-                        {
-                            Sprite.Play("toEnd");
-                            yield return 0.16f;
-                            Sprite.Play("end");
-                        }
-                    }
+                    Sprite.Play("toStart");
+                    yield return 0.16f;
+                    Sprite.Play("start");
                 }
                 else
                 {
-                    if (SceneAs<Level>().Session.GetFlag(Flag))
-                    {
-                        Sprite.Play("toStart");
-                        yield return 0.16f;
-                        Sprite.Play("start");
-                    }
-                    else
-                    {
-                        Sprite.Play("toEnd");
-                        yield return 0.16f;
-                        Sprite.Play("end");
-                    }
+                    Sprite.Play("toEnd");
+                    yield return 0.16f;
+                    Sprite.Play("end");
                 }
                 if (switchFlag)
                 {
@@ -177,23 +254,49 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!string.IsNullOrEmpty(Flag))
             {
+                wasSwitched = true;
                 if (!CanSwapFlag)
                 {
-                    if (!SceneAs<Level>().Session.GetFlag(Flag))
-                    {
-                        SceneAs<Level>().Session.SetFlag(Flag, true);
-                    }
+                    canSwitch = false;
                 }
-                else
-                {
-                    SceneAs<Level>().Session.SetFlag(Flag, !SceneAs<Level>().Session.GetFlag(Flag));
-                }
+                startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
+                SceneAs<Level>().Session.SetFlag(Flag, !SceneAs<Level>().Session.GetFlag(Flag));
             }
         }
 
         public override void Update()
         {
             base.Update();
+            if (SceneAs<Level>().Transitioning && wasSwitched)
+            {
+                flagState = SceneAs<Level>().Session.GetFlag(Flag);
+                string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + Flag + "_true", false);
+                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + Flag + "_false", false);
+                if (registerInSaveData && saveDataOnlyAfterCheckpoint)
+                {
+                    if (SceneAs<Level>().Session.GetFlag(Flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + Flag);
+                    }
+                    else if (!SceneAs<Level>().Session.GetFlag(Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + Flag);
+                    }
+                    if (XaphanModule.PlayerHasGolden)
+                    {
+                        if (SceneAs<Level>().Session.GetFlag(Flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry"))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry");
+                        }
+                        else if (!SceneAs<Level>().Session.GetFlag(Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry"))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry");
+                        }
+                    }
+                }
+            }
             Player player = CollideFirst<Player>();
             if (player == null && PlayerOnTop)
             {
