@@ -652,8 +652,9 @@ entities.XaphanHelper/WarpStation.attributes.description.sprite=The directory fr
 entities.XaphanHelper/WarpStation.attributes.description.wipeDuration=Duration of the wipe effect (in seconds).
 entities.XaphanHelper/WarpStation.attributes.description.wipeType=Wipe effect to use during the teleportation.
 entities.XaphanHelper/WarpStation.attributes.description.noBeam=If true, the beam will not appear when the warp is activated.
+entities.XaphanHelper/WarpStation.attributes.description.onlyCurrentChapter=If true, this warp will only allow the player to others Warp Stations unlocked in the same chapter as this one.
 
-# -- Triggers -- 
+# -- Triggers --
 
 # FlagOnInteractTrigger
 triggers.XaphanHelper/FlagOnInteractTrigger.placements.name.FlagOnInteractTrigger=Flag On Interact

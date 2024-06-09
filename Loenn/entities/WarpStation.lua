@@ -2,7 +2,7 @@ local WarpStation = {}
 
 WarpStation.name = "XaphanHelper/WarpStation"
 WarpStation.depth = -9000
-WarpStation.fieldOrder = {"x", "y", "sprite", "index", "beamColor", "confirmSfx", "flag", "noInteractFlag", "forceInactiveFlag", "wipeType", "wipeDuration", "noBeam"}
+WarpStation.fieldOrder = {"x", "y", "sprite", "index", "beamColor", "confirmSfx", "flag", "noInteractFlag", "forceInactiveFlag", "wipeType", "wipeDuration", "noBeam", "onlyCurrentChapter"}
 WarpStation.ignoredFields = {
     "_name", "_id", "width", "height"
 }
@@ -33,7 +33,8 @@ WarpStation.placements = {
         wipeType = "Fade",
         wipeDuration = 0.75,
         noInteractFlag = "",
-        forceInactiveFlag = ""
+        forceInactiveFlag = "",
+        onlyCurrentChapter = false
     }
 }
 

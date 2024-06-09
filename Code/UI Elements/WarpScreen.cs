@@ -33,15 +33,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private string title;
 
         private int currentMenu;
+        private bool onlyCurrentChapter;
         private WarpMenu warpMenu;
         private readonly List<List<WarpInfo>> warpsPerArea = new();
 
-        public WarpScreen(string currentWarp = "", string confirmSfx = "event:/game/xaphan/warp", string wipeType = "Fade", float wipeDuration = 0.75f)
+        public WarpScreen(string currentWarp = "", string confirmSfx = "event:/game/xaphan/warp", string wipeType = "Fade", float wipeDuration = 0.75f, bool onlyCurrentChapter = false)
         {
             this.currentWarp = currentWarp;
             this.confirmSfx = confirmSfx;
             this.wipeType = wipeType;
             this.wipeDuration = wipeDuration;
+            this.onlyCurrentChapter = onlyCurrentChapter;
 
             Tag = Tags.HUD;
             Depth = -10002;
@@ -112,13 +114,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (!string.IsNullOrEmpty(title) && XaphanModule.ShowUI)
             {
                 ActiveFont.DrawEdgeOutline(title, new Vector2(Celeste.TargetWidth / 2f, 80f), new Vector2(0.5f, 0.5f), Vector2.One * 2f, Color.Gray * colorAlpha, 4f, Color.DarkSlateBlue * colorAlpha, 2f, Color.Black * colorAlpha);
-                if (currentMenu > 0)
+                if (!onlyCurrentChapter)
                 {
-                    arrowTex.DrawCentered(new Vector2(960f - ActiveFont.Measure(title).X - 100f, 80f), Color.White * colorAlpha);
-                }
-                if (currentMenu < warpsPerArea.Count - 1)
-                {
-                    arrowTex.DrawCentered(new Vector2(960f + ActiveFont.Measure(title).X + 100f, 80f), Color.White * colorAlpha, 1f, (float)Math.PI);
+                    if (currentMenu > 0)
+                    {
+                        arrowTex.DrawCentered(new Vector2(960f - ActiveFont.Measure(title).X - 100f, 80f), Color.White * colorAlpha);
+                    }
+                    if (currentMenu < warpsPerArea.Count - 1)
+                    {
+                        arrowTex.DrawCentered(new Vector2(960f + ActiveFont.Measure(title).X + 100f, 80f), Color.White * colorAlpha, 1f, (float)Math.PI);
+                    }
                 }
             }
 
@@ -338,13 +343,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 return;
             }
 
-            if (Input.MenuLeft.Pressed && currentMenu > 0)
+            
+           if (Input.MenuLeft.Pressed && currentMenu > 0 && !onlyCurrentChapter)
             {
                 Audio.Play("event:/ui/main/rollover_down");
                 currentMenu--;
                 InitializeScreen();
             }
-            else if (Input.MenuRight.Pressed && currentMenu < warpsPerArea.Count - 1)
+            else if (Input.MenuRight.Pressed && currentMenu < warpsPerArea.Count - 1 && !onlyCurrentChapter)
             {
                 Audio.Play("event:/ui/main/rollover_up");
                 currentMenu++;

@@ -44,6 +44,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string warpId;
 
+        private bool onlyCurrentChapter;
+
         private Level level => (Level)Scene;
 
         public WarpStation(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: true)
@@ -59,6 +61,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             flag = data.Attr("flag");
             noInteractFlag = data.Attr("noInteractFlag");
             forceInactiveFlag = data.Attr("forceInactiveFlag");
+            onlyCurrentChapter = data.Bool("onlyCurrentChapter");
             Collider.Width = 32f;
             Collider.Height = 16f;
             SurfaceSoundIndex = 8;
@@ -265,7 +268,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 player.Facing = Facings.Right;
 
                 WarpScreen warpScreen;
-                level.Add(warpScreen = new WarpScreen(warpId, confirmSfx, wipeType, wipeDuration));
+                level.Add(warpScreen = new WarpScreen(warpId, confirmSfx, wipeType, wipeDuration, onlyCurrentChapter));
 
                 while (warpScreen.Visible)
                 {
