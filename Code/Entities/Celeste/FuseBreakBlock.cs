@@ -66,7 +66,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     string SolidFarLeft = "0";
                     string SolidFarRight = "0";
                     string SolidFarBottom = "0";
-                    if (CollideCheck<Solid>(Position + new Vector2(-8f, -8f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(-8f, -8f)) || CollideCheck< FuseBreakBlockTile>(Position + new Vector2(-8f, -8f)))
                     {
                         SolidTopLeft = "1";
                     }
@@ -74,7 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidTopLeft = "0";
                     }
-                    if (CollideCheck<Solid>(Position + new Vector2(0f, -8f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(0f, -8f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(0f, -8f)))
                     {
                         SolidTop = "1";
                     }
@@ -82,7 +82,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidTop = "0";
                     }
-                    if (CollideCheck<Solid>(Position + new Vector2(8f, -8f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(8f, -8f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(8f, -8f)))
                     {
                         SolidTopRight = "1";
                     }
@@ -90,7 +90,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidTopRight = "0";
                     }
-                    if (CollideCheck<Solid>(Position + new Vector2(-8f, 0f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(-8f, 0f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(-8f, 0f)))
                     {
                         SolidLeft = "1";
                     }
@@ -98,7 +98,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidLeft = "0";
                     }
-                    if (CollideCheck<Solid>(Position + new Vector2(8f, 0f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(8f, 0f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(8f, 0f)))
                     {
                         SolidRight = "1";
                     }
@@ -106,7 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidRight = "0";
                     }
-                    if (CollideCheck<Solid>(Position + new Vector2(-8f, 8f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(-8f, 8f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(-8f, 8f)))
                     {
                         SolidBottomLeft = "1";
                     }
@@ -114,7 +114,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidBottomLeft = "0";
                     }
-                    if (CollideCheck<Solid>(Position + new Vector2(0f, 8f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(0f, 8f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(0f, 8f)))
                     {
                         SolidBottom = "1";
                     }
@@ -122,7 +122,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidBottom = "0";
                     }
-                    if (CollideCheck<Solid>(Position + new Vector2(8f, 8f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(8f, 8f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(8f, 8f)))
                     {
                         SolidBottomRight = "1";
                     }
@@ -130,7 +130,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidBottomRight = "0";
                     }
-                    if (Scene.CollideCheck<Solid>(new Rectangle((int)X, (int)Y - 16, 1, 1)))
+                    if (Scene.CollideCheck<SolidTiles>(new Rectangle((int)X, (int)Y - 16, 1, 1)) || Scene.CollideCheck<FuseBreakBlockTile>(new Rectangle((int)X, (int)Y - 16, 1, 1)))
                     {
                         SolidFarTop = "1";
                     }
@@ -138,7 +138,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidFarTop = "0";
                     }
-                    if (Scene.CollideCheck<Solid>(new Rectangle((int)X - 16, (int)Y, 1, 1)))
+                    if (Scene.CollideCheck<SolidTiles>(new Rectangle((int)X - 16, (int)Y, 1, 1)) || Scene.CollideCheck<FuseBreakBlockTile>(new Rectangle((int)X - 16, (int)Y, 1, 1)))
                     {
                         SolidFarLeft = "1";
                     }
@@ -146,7 +146,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         SolidFarLeft = "0";
                     }
-                    if (Scene.CollideCheck<Solid>(new Rectangle((int)X + 16, (int)Y, 1, 1)))
+                    if (Scene.CollideCheck<SolidTiles>(new Rectangle((int)X + 16, (int)Y, 1, 1)) || Scene.CollideCheck<FuseBreakBlockTile>(new Rectangle((int)X + 16, (int)Y, 1, 1)))
                     {
                         SolidFarRight = "1";
                     }
@@ -155,7 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                         SolidFarRight = "0";
                     }
-                    if (Scene.CollideCheck<Solid>(new Rectangle((int)X, (int)Y + 16, 1, 1)))
+                    if (Scene.CollideCheck<SolidTiles>(new Rectangle((int)X, (int)Y + 16, 1, 1)) || Scene.CollideCheck<FuseBreakBlockTile>(new Rectangle((int)X, (int)Y + 16, 1, 1)))
                     {
                         SolidFarBottom = "1";
                     }
