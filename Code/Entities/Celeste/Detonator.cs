@@ -38,23 +38,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 case "Up":
                     Collider = new Hitbox(14, 4, -7, 4);
                     Add(pc = new PlayerCollider(onPlayer, new Hitbox(12, 1, -6, -1)));
+                    Add(new ClimbBlocker(edge: true));
                     break;
                 case "Down":
                     sprite.Rotation = (float)-Math.PI;
                     sprite.FlipX = true;
                     Collider = new Hitbox(14, 4, -7, -8);
                     Add(pc = new PlayerCollider(onPlayer, new Hitbox(12, 1, -6, 0)));
+                    Add(new ClimbBlocker(edge: true));
                     break;
                 case "Left":
                     sprite.Rotation = (float)-Math.PI / 2;
                     sprite.FlipX = true;
                     Collider = new Hitbox(4, 14, 4, -7);
                     Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, -1, -6)));
+                    Add(new LedgeBlocker());
                     break;
                 case "Right":
                     sprite.Rotation = (float)Math.PI /2;
                     Collider = new Hitbox(4, 14, -8, -7);
                     Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, 0, -6)));
+                    Add(new LedgeBlocker());
                     break;
             }
             Depth = 100;
