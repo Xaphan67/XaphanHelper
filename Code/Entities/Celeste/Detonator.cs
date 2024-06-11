@@ -36,25 +36,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
             switch (side)
             {
                 case "Up":
-                    Collider = new Hitbox(14, 8, -7, 0);
-                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(12, 1, -6, -5)));
+                    Collider = new Hitbox(14, 4, -7, 4);
+                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(12, 1, -6, -1)));
                     break;
                 case "Down":
                     sprite.Rotation = (float)-Math.PI;
                     sprite.FlipX = true;
-                    Collider = new Hitbox(14, 8, -7, -8);
-                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(12, 1, -6, 4)));
+                    Collider = new Hitbox(14, 4, -7, -8);
+                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(12, 1, -6, 0)));
                     break;
                 case "Left":
                     sprite.Rotation = (float)-Math.PI / 2;
                     sprite.FlipX = true;
-                    Collider = new Hitbox(8, 14, 0, -7);
-                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, -5, -6)));
+                    Collider = new Hitbox(4, 14, 4, -7);
+                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, -1, -6)));
                     break;
                 case "Right":
                     sprite.Rotation = (float)Math.PI /2;
-                    Collider = new Hitbox(8, 14, -8, -7);
-                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, 4, -6)));
+                    Collider = new Hitbox(4, 14, -8, -7);
+                    Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, 0, -6)));
                     break;
             }
             Depth = 100;
@@ -103,6 +103,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            if (side == "Left" || side == "Right")
+            {
+                DisplacePlayerOnTop();
+            }
             if (pressed && !wasPressed)
             {
                 wasPressed = true;
@@ -138,6 +142,35 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     fuse.speed = speed;
                     fuse.shouldTrigger = true;
+                }
+            }
+        }
+
+        private void DisplacePlayerOnTop()
+        {
+            if (!HasPlayerOnTop())
+            {
+                return;
+            }
+            Player player = GetPlayerOnTop();
+            if (player == null)
+            {
+                return;
+            }
+            else if (player.Bottom == Top && player.Speed.Y >= 0)
+            {
+                if (side == "Left")
+                {
+                    if (player.Left >= Left)
+                    {
+                        player.Left = Right;
+                        player.Y += 1f;
+                    }
+                }
+                else if (player.Right <= Right)
+                {
+                    player.Right = Left;
+                    player.Y += 1f;
                 }
             }
         }
