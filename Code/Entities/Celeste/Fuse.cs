@@ -24,11 +24,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private Vector2 tilesSpritePos;
 
-            public float speed;
-
             public bool triggered;
-
-            public bool shouldTrigger;
 
             public FuseExplosionSoundManager manager;
 
@@ -44,7 +40,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Sprite.AddLoop("frame", "frame", 0.08f);
                 Sprite.Play("frame");
                 Add(ExplosionSprite = new Sprite(GFX.Game, directory + "/"));
-                ExplosionSprite.Add("explode", "explode", 0.05f);
+                ExplosionSprite.Add("explode", "explode", 0.04f);
                 ExplosionSprite.Position -= Vector2.One * 2;
                 ExplosionSprite.OnLastFrame += onLastFrame;
                 Depth = -19999;
@@ -62,7 +58,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 bool S = false;
                 bool E = false;
                 bool W = false;
-                bool None = false;
                 if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
                 {
                     N = true;
@@ -79,7 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     W = true;
                 }
-                None = !N && !S && !E && !W;
+                bool None = !N && !S && !E && !W;
                 tile = None ? "None" : (N ? "N" : "") + (S ? "S" : "") + (E ? "E" : "") + (W ? "W" : "");
                 GetSpritePos();
             }
@@ -91,58 +86,55 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     manager = SceneAs<Level>().Tracker.GetEntity<FuseExplosionSoundManager>();
                 }
-                if (!triggered && shouldTrigger)
-                {
-                    triggered = true;
-                    shouldTrigger = false;
-                    Add(new Coroutine(ExplodeRoutine()));
-                }
             }
 
-            private IEnumerator ExplodeRoutine()
+            public IEnumerator ExplodeRoutine(float speed)
             {
+                triggered = true;
                 if (manager.explosionSoundCooldown <= 0)
                 {
                     Audio.Play("event:/game/xaphan/fuse_explosion", Position);
                     manager.explosionSoundCooldown = speed > 0.1f ? speed : 0.1f;
                 }
                 ExplosionSprite.Play("explode");
+                ExplosionSprite.Rate *= speed <= 0.05f ? 4f : speed <= 0.1f ? 3f : speed <= 0.15f ? 2f : 1f;
                 Add(new Coroutine(DestroyEntitiesRoutine()));
-                yield return speed;
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
+                float waitTimer = speed;
+                while (waitTimer > 0)
+                {
+                    waitTimer -= Engine.DeltaTime * 2;
+                    yield return null;
+                }
+                if (CollideCheck<FuseSection>(Position - Vector2.UnitY))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position - Vector2.UnitY);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.speed = speed;
-                        nextSection.shouldTrigger = true;
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
                     }
                 }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
+                if (CollideCheck<FuseSection>(Position + Vector2.UnitY))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position + Vector2.UnitY);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.speed = speed;
-                        nextSection.shouldTrigger = true;
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
                     }
                 }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
+                if (CollideCheck<FuseSection>(Position + Vector2.UnitX))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position + Vector2.UnitX);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.speed = speed;
-                        nextSection.shouldTrigger = true;
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
                     }
                 }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
+                if (CollideCheck<FuseSection>(Position - Vector2.UnitX))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position - Vector2.UnitX);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.speed = speed;
-                        nextSection.shouldTrigger = true;
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
                     }
                 }
             }

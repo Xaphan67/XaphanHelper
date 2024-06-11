@@ -144,8 +144,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 };
                 if (fuse != null)
                 {
-                    fuse.speed = speed;
-                    fuse.shouldTrigger = true;
+                    fuse.Add(new Coroutine(fuse.ExplodeRoutine(speed)));
                 }
             }
         }
