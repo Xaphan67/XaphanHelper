@@ -84,6 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
 
             Tag = Tags.TransitionUpdate;
+            AllowStaticMovers = false;
             Collidable = false;
             Gentle = gentle;
             Side = side;
