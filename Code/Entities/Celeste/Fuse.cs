@@ -103,7 +103,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (manager.explosionSoundCooldown <= 0)
                 {
-                    Audio.Play("event:/game/xaphan/explosion", Position);
+                    Audio.Play("event:/game/xaphan/fuse_explosion", Position);
                     manager.explosionSoundCooldown = speed > 0.1f ? speed : 0.1f;
                 }
                 ExplosionSprite.Play("explode");

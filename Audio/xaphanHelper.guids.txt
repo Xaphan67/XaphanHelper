@@ -499,6 +499,7 @@
 {7b421af8-9080-4d1d-bbfb-57fc28207953} event:/game/xaphan/cell_unlock
 {938d4683-6c76-46a1-9c1b-4d91edd29e21} event:/game/xaphan/countdown
 {fffe1231-ef42-41f4-bd78-4ee0b1f9ca44} event:/game/xaphan/countdown_fast
+{be734fce-3b58-4267-ba78-79e00dc00474} event:/game/xaphan/crate_bounce
 {7d259be7-3425-484a-ac62-581b91892062} event:/game/xaphan/drone_destroy
 {ffd50dcd-00d6-4da1-a9c2-6f65d5700a3f} event:/game/xaphan/drone_fire
 {da72cb50-77dc-496a-86b9-1e15b6aae13f} event:/game/xaphan/drone_ice_fire
@@ -560,7 +561,7 @@
 {9ff88ba6-9e26-4644-8ff4-f990704e2fae} event:/game/xaphan/wave_beam_fire
 {15ee171d-a571-4f88-ac1a-2210a9cc4940} event:/game/xaphan/zip_mover_end
 {ed2dc90f-5028-4598-9cf0-a30c99795626} event:/game/xaphan/zip_mover_start
-{be734fce-3b58-4267-ba78-79e00dc00474} event:/game/xaphan/crate_bounce
+{dfcc35a9-dac4-48f3-8e46-368e951c738b} event:/game/xaphan/fuse_explosion
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
@@ -643,6 +644,7 @@
 {5910f626-fbc5-442a-9764-bbb6b899903f} event:/music/xaphan/lvl_2_abyss
 {26df2989-e01e-4294-99cd-d986d89bfb2d} event:/music/xaphan/lvl_2_abyss_deeper
 {988e8c2a-58d3-4227-9bd5-b76d5d6baeff} event:/music/xaphan/lvl_5_geothermal
+{f623520a-99fc-4fa4-b9c0-3cf970a0d89a} event:/music/xaphan/lvl_5_geothermal_active
 {56a5f707-a550-4f71-877a-5f47f6309427} event:/music/xaphan/lvl_5_lab
 {134914b5-97bc-4515-bc9b-414760a3100a} event:/music/xaphan/lvl_5_lab_destroyed
 {2d171363-aedc-4dbe-a196-78765c7aaf07} event:/music/xaphan/lvl_5_lab_old
