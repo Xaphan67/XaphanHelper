@@ -19,7 +19,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collider = new Hitbox(width, height);
                 Add(new LightOcclude());
-                Depth = -10000;
+                Depth = -10003;
             }
 
             public override void DebugRender(Camera camera)
@@ -278,7 +278,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 FlagDirectory = "objects/XaphanHelper/Slope";
             }
-            Depth = -10000;
+            Depth = -10003;
         }
 
         public Slope(EntityData data, Vector2 offset) : this(data.Position, offset, data.Bool("gentle"), data.Attr("side"), data.Int("soundIndex"), data.Int("slopeHeight", 1), data.Attr("tilesTop"), data.Attr("tilesBottom"),
