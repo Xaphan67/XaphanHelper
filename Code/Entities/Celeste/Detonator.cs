@@ -164,15 +164,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (side == "Left")
                 {
-                    if (player.Left >= Left)
+                    if (player.Right >= Left)
                     {
-                        player.Left = Right;
+                        player.Right = Left;
                         player.Y += 1f;
                     }
                 }
-                else if (player.Right <= Right)
+                else if (player.Left <= Right)
                 {
-                    player.Right = Left;
+                    player.Left = Right;
                     player.Y += 1f;
                 }
             }
