@@ -58,19 +58,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 bool S = false;
                 bool E = false;
                 bool W = false;
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
+                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
                 {
                     N = true;
                 }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
+                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
                 {
                     S = true;
                 }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
+                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
                 {
                     E = true;
                 }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
+                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X - 8, (int)Y, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
                 {
                     W = true;
                 }
