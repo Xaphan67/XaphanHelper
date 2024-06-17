@@ -426,6 +426,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
             {
+                if (AttachedSpike != null)
+                {
+                    AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
+                else if (AttachedMagneticCeiling != null)
+                {
+                    AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
+                else if (AttachedLever != null)
+                {
+                    AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
+                else if (AttachedSpring != null)
+                {
+                    AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                }
                 return;
             }
             if (index != 0)
