@@ -508,6 +508,7 @@
 {5c759bb6-4f27-4552-a158-c9046fe4138a} event:/game/xaphan/elevator
 {9b2abc2b-6464-4b96-803d-5f10b644406c} event:/game/xaphan/enemy_hit_screw_attack
 {f3b2bb0d-8e7e-454c-b55a-3dbc7225e8ac} event:/game/xaphan/explosion
+{dfcc35a9-dac4-48f3-8e46-368e951c738b} event:/game/xaphan/fuse_explosion
 {e7122a0d-01c7-4904-8bb3-ed60472ac365} event:/game/xaphan/genesis_death
 {87a72ffb-b80d-4288-a750-eef5cf7486b8} event:/game/xaphan/genesis_growl
 {55ae4680-b362-4842-81bb-c65d95812978} event:/game/xaphan/genesis_hit
@@ -561,7 +562,14 @@
 {9ff88ba6-9e26-4644-8ff4-f990704e2fae} event:/game/xaphan/wave_beam_fire
 {15ee171d-a571-4f88-ac1a-2210a9cc4940} event:/game/xaphan/zip_mover_end
 {ed2dc90f-5028-4598-9cf0-a30c99795626} event:/game/xaphan/zip_mover_start
-{dfcc35a9-dac4-48f3-8e46-368e951c738b} event:/game/xaphan/fuse_explosion
+{8e6078b8-e334-43d5-81d3-00bbd8a2dfde} event:/game/xaphan/guardian_eyes_1
+{b26a242c-2f8d-47f0-9160-55c32c15d316} event:/game/xaphan/guardian_eyes_2
+{37f0333f-368e-48d2-93e3-fe80a229413f} event:/game/xaphan/guardian_eyes_3
+{5d5eb3c3-b309-4e1f-8870-7596164abaa2} event:/game/xaphan/guardian_eyes_4
+{a8cda7b7-7107-43ce-a0eb-646b959015f7} event:/game/xaphan/guardian_fireball
+{e00f862b-b0d5-4864-9114-bb2f37131a27} event:/game/xaphan/guardian_laser
+{613ae8b1-f741-445c-accb-eccbbc8670fc} event:/game/xaphan/guardian_hit
+{48a2ef18-5c10-4354-835c-5a05f09285e2} event:/game/xaphan/guardian_death
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
@@ -643,6 +651,7 @@
 {dfb573c9-c5f5-4413-9524-e86b0c6bca51} event:/music/xaphan/lvl_1_ruins_deeper
 {5910f626-fbc5-442a-9764-bbb6b899903f} event:/music/xaphan/lvl_2_abyss
 {26df2989-e01e-4294-99cd-d986d89bfb2d} event:/music/xaphan/lvl_2_abyss_deeper
+{ef50ea3d-7e80-4dde-b2f2-44fc4be8c5cf} event:/music/xaphan/lvl_4_mines
 {988e8c2a-58d3-4227-9bd5-b76d5d6baeff} event:/music/xaphan/lvl_5_geothermal
 {f623520a-99fc-4fa4-b9c0-3cf970a0d89a} event:/music/xaphan/lvl_5_geothermal_active
 {56a5f707-a550-4f71-877a-5f47f6309427} event:/music/xaphan/lvl_5_lab

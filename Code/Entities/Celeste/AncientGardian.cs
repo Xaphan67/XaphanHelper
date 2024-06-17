@@ -520,9 +520,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float EyesAlpha;
 
+        private Vector2 Speed;
+
+        private int TrackPosition;
+
+        private bool CanMove;
+
         public AncientGuardian(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
-            Collider = new Hitbox(30f, 33f, 21f, 23f);
+            Collider = new Hitbox(30f, 23f, 21f, 33f);
             Add(pc = new PlayerCollider(OnPlayer, new Circle(15f, 36f, 28f)));
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
             Sprite.Add("idle", "idle", 0f);
@@ -586,11 +592,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Health -= 1;
                 if (Health > 0)
                 {
-                    Audio.Play("event:/game/xaphan/genesis_hit", Position);
+                    Audio.Play("event:/game/xaphan/guardian_hit", Position);
                 }
                 else
                 {
-                    Audio.Play("event:/game/xaphan/genesis_death", Position);
+                    Audio.Play("event:/game/xaphan/guardian_death", Position);
                 }
                 InvincibilityDelay = 0.75f;
             }
@@ -599,6 +605,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            if (Health == 5 && !CanMove)
+            {
+                CanMove = true;
+            }
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (!playerHasMoved && player != null && player.Speed != Vector2.Zero)
             {
@@ -616,6 +626,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (CannotHitPlayer && !CollideCheck(player))
             {
                 CannotHitPlayer = false;
+            }
+            MoveH(Speed.X * Engine.DeltaTime);
+            if (CollideCheck<CustomSpinner>())
+            {
+                CustomSpinner spinner = CollideFirst<CustomSpinner>();
+                if (spinner != null)
+                {
+                    spinner.Destroy();
+                }
             }
         }
 
@@ -638,20 +657,78 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Add(Routine = new Coroutine(AttackPattern1(1f)));
                     }
-                    else if (Health >= 5)
+                    else
                     {
-                        int rand = Calc.Random.Next(1, 101);
-                        if (rand <= 33)
+                        if (Health < 5)
                         {
-                            Add(Routine = new Coroutine(AttackPattern2(1f)));
+                            if (TrackPosition == 0)
+                            {
+                                int moveRand = Calc.Random.Next(0, 2);
+                                yield return MoveRoutine(moveRand == 0 ? -1 : 1);
+                            }
+                            else if (TrackPosition == -1)
+                            {
+                                yield return MoveRoutine(1);
+                            }
+                            else if (TrackPosition == 1)
+                            {
+                                yield return MoveRoutine(-1);
+                            }
                         }
-                        else if (rand <= 67)
+                        if (Health >= 5)
                         {
-                            Add(Routine = new Coroutine(AttackPattern3(1f)));
+                            int pattern = Calc.Random.Next(1, 101);
+                            if (pattern <= 33)
+                            {
+                                Add(Routine = new Coroutine(AttackPattern2(1f)));
+                            }
+                            else if (pattern <= 67)
+                            {
+                                Add(Routine = new Coroutine(AttackPattern3(1f)));
+                            }
+                            else
+                            {
+                                Add(Routine = new Coroutine(AttackPattern4(1f)));
+                            }
                         }
                         else
                         {
-                            Add(Routine = new Coroutine(AttackPattern4(1f)));
+                            if (TrackPosition != 0)
+                            {
+                                int attack = Calc.Random.Next(1, 101);
+                                if (attack <= 40)
+                                {
+                                    Add(Routine = new Coroutine(LaserRoutine()));
+                                }
+                                else if (attack <= 80)
+                                {
+                                    Add(Routine = new Coroutine(SprayFireBallsRoutine()));
+                                }
+                                else
+                                {
+                                    Add(Routine = new Coroutine(SideFireballsRoutine()));
+                                }
+                            }
+                            else
+                            {
+                                int attack = Calc.Random.Next(1, 101);
+                                if (attack <= 25)
+                                {
+                                    Add(Routine = new Coroutine(LaserRoutine()));
+                                }
+                                else if (attack <= 50)
+                                {
+                                    Add(Routine = new Coroutine(SprayFireBallsRoutine()));
+                                }
+                                else if (attack <= 75)
+                                {
+                                    Add(Routine = new Coroutine(FireballRoutine()));
+                                }
+                                else
+                                {
+                                    Add(Routine = new Coroutine(SideFireballsRoutine()));
+                                }
+                            }
                         }
                     }
                 }
@@ -676,50 +753,184 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator AttackPattern2(float delay)
         {
             yield return SideFireballsRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return LaserRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return SprayFireBallsRoutine();
-            yield return delay;
-            yield return SprayFireBallsRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return FireballRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
+            yield return SprayFireBallsRoutine();
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
         }
 
         public IEnumerator AttackPattern3(float delay)
         {
             yield return FireballRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return SideFireballsRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return SprayFireBallsRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return FireballRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return LaserRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
         }
 
         public IEnumerator AttackPattern4(float delay)
         {
             yield return SprayFireBallsRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return FireballRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return SprayFireBallsRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return LaserRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
             yield return SideFireballsRoutine();
-            yield return delay;
+            if (CanMove)
+            {
+                yield break;
+            }
+            else
+            {
+                yield return delay;
+            }
+        }
+
+        public IEnumerator MoveRoutine(int dir)
+        {
+            float StartPosX = Position.X;
+            if (dir > 0 && TrackPosition <= 0)
+            {
+                Speed.X = 100f;
+                while (Position.X < StartPosX + 52f)
+                {
+                    yield return null;
+                }
+                Speed.X = 0f;
+                Position.X = StartPosX + 52f;
+                TrackPosition++;
+            }
+            else if (dir < 0 && TrackPosition >= 0)
+            {
+                Speed.X = -100f;
+                while (Position.X > StartPosX - 52f)
+                {
+                    yield return null;
+                }
+                Speed.X = 0f;
+                Position.X = StartPosX - 52f;
+                TrackPosition--;
+            }
         }
 
         public IEnumerator LaserRoutine()
         {
             EyesSprite.Play("laser");
+            Audio.Play("event:/game/xaphan/guardian_eyes_1", Position);
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
+            Audio.Play("event:/game/xaphan/guardian_laser", Position);
             SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(28f, 33f)));
             SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(37f, 33f), true));
             yield return 0.5f;
@@ -730,8 +941,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator SprayFireBallsRoutine()
         {
             EyesSprite.Play("sprayFireball");
+            Audio.Play("event:/game/xaphan/guardian_eyes_2", Position);
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
+            Audio.Play("event:/game/xaphan/guardian_fireball", Position);
             SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(36f, 43f), new Vector2(71f, 60f)));
             SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(36f, 43f), new Vector2(126f, 60f)));
             SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(36f, 43f), new Vector2(-71f, 60f)));
@@ -744,8 +957,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator FireballRoutine()
         {
             EyesSprite.Play("fireball");
+            Audio.Play("event:/game/xaphan/guardian_eyes_3", Position);
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
+            Audio.Play("event:/game/xaphan/guardian_fireball", Position);
             SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(36f, 43f), Vector2.UnitY * 60f, true));
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
@@ -755,8 +970,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator SideFireballsRoutine()
         {
             EyesSprite.Play("sideFireball");
+            Audio.Play("event:/game/xaphan/guardian_eyes_4", Position);
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
+            Audio.Play("event:/game/xaphan/guardian_fireball", Position);
             SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(36f, 43f), new Vector2(125f, 100f)));
             SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(36f, 43f), new Vector2(125f, 200f)));
             SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(36f, 43f), new Vector2(-125f, 100f)));

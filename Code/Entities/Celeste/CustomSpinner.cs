@@ -6,6 +6,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/CustomSpinner")]
     class CustomSpinner : Entity
     {
@@ -309,7 +310,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Audio.Play("event:/game/06_reflection/fall_spike_smash", Position);
                 Color color = Color.White;
-                color = Calc.HexToColor("FFFFFF");
+                if (type == "mines")
+                {
+                    color = Calc.HexToColor("5B3311");
+                }
                 CrystalDebris.Burst(Position, color, boss, 8);
             }
             RemoveSelf();
