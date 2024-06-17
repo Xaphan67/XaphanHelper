@@ -508,6 +508,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Sprite EyesSprite;
 
+        private Sprite LeftWheelSprite;
+
+        private Sprite RightWheelSprite;
+
         public int Health;
 
         private float InvincibilityDelay;
@@ -539,6 +543,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             EyesSprite.Add("fireball", "eyes", 0, 2);
             EyesSprite.Add("sideFireball", "eyes", 0, 3);
             EyesSprite.Position += new Vector2(24f, 30f);
+            Add(LeftWheelSprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
+            LeftWheelSprite.AddLoop("wheel", "wheel", 0.04f);
+            LeftWheelSprite.Position += new Vector2(3f, 25f);
+            Add(RightWheelSprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
+            RightWheelSprite.AddLoop("wheel", "wheel", 0.04f);
+            RightWheelSprite.Position += new Vector2(54f, 25f);
             Health = 15;
             Depth = -15000;
         }
@@ -900,6 +910,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator MoveRoutine(int dir)
         {
             float StartPosX = Position.X;
+            LeftWheelSprite.Play("wheel");
+            RightWheelSprite.Play("wheel");
+            LeftWheelSprite.Rate = RightWheelSprite.Rate = dir > 0  ? - 1 : 1;
             if (dir > 0 && TrackPosition <= 0)
             {
                 Speed.X = 100f;
@@ -922,6 +935,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Position.X = StartPosX - 52f;
                 TrackPosition--;
             }
+            LeftWheelSprite.Rate = RightWheelSprite.Rate = 0;
         }
 
         public IEnumerator LaserRoutine()
