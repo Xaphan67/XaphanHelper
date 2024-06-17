@@ -72,7 +72,24 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 for (int i = 1; i <= TotalSections; i++)
                 {
-                    if (Boss.GetType() == typeof(CustomFinalBoss))
+                    if (Boss.GetType() == typeof(Torizo))
+                    {
+                        Torizo boss = Boss as Torizo;
+                        if (boss.Health >= i)
+                        {
+                            Sections.Add(new Image(GFX.Gui["bossHealth/section"]));
+                            if (boss.Health == i)
+                            {
+                                Sections.Add(new Image(GFX.Gui["bossHealth/separatorLast"]));
+                            }
+                            else
+                            {
+                                Sections.Add(new Image(GFX.Gui["bossHealth/separator"]));
+                            }
+                            continue;
+                        }
+                    }
+                    else if (Boss.GetType() == typeof(CustomFinalBoss))
                     {
                         CustomFinalBoss boss = Boss as CustomFinalBoss;
                         if (boss.hits <= TotalSections - i)
@@ -89,9 +106,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             continue;
                         }
                     }
-                    else if (Boss.GetType() == typeof(Torizo))
+                    else if (Boss.GetType() == typeof(AncientGuardian))
                     {
-                        Torizo boss = Boss as Torizo;
+                        AncientGuardian boss = Boss as AncientGuardian;
                         if (boss.Health >= i)
                         {
                             Sections.Add(new Image(GFX.Gui["bossHealth/section"]));
@@ -148,13 +165,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Render();
             Draw.Rect(Position + new Vector2(2), width, 46f, Color.Black * 0.85f * Opacity);
             string name = "";
-            if (Boss.GetType() == typeof(CustomFinalBoss))
+            if (Boss.GetType() == typeof(Torizo))
+            {
+                name = Dialog.Clean("LorebookEntry_Boss_1_1_Name");
+            }
+            else if (Boss.GetType() == typeof(CustomFinalBoss))
             {
                 name = Dialog.Clean("LorebookEntry_Boss_2_1_Name");
             }
-            else if (Boss.GetType() == typeof(Torizo))
+            else if (Boss.GetType() == typeof(AncientGuardian))
             {
-                name = Dialog.Clean("LorebookEntry_Boss_1_1_Name");
+                name = Dialog.Clean("LorebookEntry_Boss_4_1_Name");
             }
             else if (Boss.GetType() == typeof(Genesis))
             {
