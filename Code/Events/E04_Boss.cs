@@ -17,6 +17,14 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         private AncientGuardian boss;
 
+        private GuardianGate LeftGate;
+
+        private GuardianGate RightGate;
+
+        private Spikes LeftSpikes;
+
+        private Spikes RightSpikes;
+
         private JumpThru jumpThru1;
 
         private JumpThru jumpThru2;
@@ -73,14 +81,13 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru3 = new JumpthruPlatform(bounds + new Vector2(148f, 156f), 24, "Xaphan/gorge_a", 5);
             jumpThru4 = new JumpthruPlatform(bounds + new Vector2(200f, 148f), 24, "Xaphan/gorge_a", 5);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(228f, 124f), 24, "Xaphan/gorge_a", 5);
-            refill1 = new CustomRefill(bounds + new Vector2(84f, 64f), "Max Jumps", true, 2.5f);
-            refill2 = new CustomRefill(bounds + new Vector2(236f, 64f), "Max Jumps", true, 2.5f);
+            refill1 = new CustomRefill(bounds + new Vector2(92f, 64f), "Max Jumps", true, 2.5f);
+            refill2 = new CustomRefill(bounds + new Vector2(228f, 64f), "Max Jumps", true, 2.5f);
             refill3 = new CustomRefill(bounds + new Vector2(160f, 92f), "Max Dashes", false, 2.5f);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign2 = new Decal("Xaphan/Common/warning00.png", jumpThru5.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign3 = new Decal("Xaphan/Common/warning00.png", jumpThru2.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign4 = new Decal("Xaphan/Common/warning00.png", jumpThru4.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
-
         }
 
         public override void OnBegin(Level level)
@@ -93,6 +100,13 @@ namespace Celeste.Mod.XaphanHelper.Events
             level.Add(jumpThru3);
             level.Add(jumpThru4);
             level.Add(jumpThru5);
+            if (!level.Session.GetFlag("Boss_Defeated"))
+            {
+                level.Add(LeftGate = new GuardianGate(bounds + new Vector2(-48f, 112f), 40f, 40f, 'q', 'Q', "Ch4_?"));
+                level.Add(RightGate = new GuardianGate(bounds + new Vector2(328f, 112f), 40f, 40f, 'q', 'Q', "Ch4_?"));
+                level.Add(LeftSpikes = new Spikes(bounds + new Vector2(-8f, 112f), 40, Spikes.Directions.Right, "Xaphan/gorge"));
+                level.Add(RightSpikes = new Spikes(bounds + new Vector2(328f, 112f), 40, Spikes.Directions.Left, "Xaphan/gorge"));
+            }
             foreach (JumpThru platform in SceneAs<Level>().Tracker.GetEntities<JumpThru>())
             {
                 if (platform.Top <= 892)
@@ -110,8 +124,19 @@ namespace Celeste.Mod.XaphanHelper.Events
                 if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                 {
                     boss.Appear(true);
+                    level.Add(LeftGate = new GuardianGate(bounds + new Vector2(-48f, 112f), 40f, 40f, 'q', 'Q', "Ch4_?"));
+                    level.Add(RightGate = new GuardianGate(bounds + new Vector2(328f, 112f), 40f, 40f, 'q', 'Q', "Ch4_?"));
+                    level.Add(LeftSpikes = new Spikes(bounds + new Vector2(-8f, 112f), 40, Spikes.Directions.Right, "Xaphan/gorge"));
+                    level.Add(RightSpikes = new Spikes(bounds + new Vector2(328f, 112f), 40, Spikes.Directions.Left, "Xaphan/gorge"));
+                    yield return null;
+                    if (!level.Session.GetFlag("AncientGuardian_Gates"))
+                    {
+                        LeftGate.Move();
+                        RightGate.Move();
+                    }
+                    level.Session.SetFlag("AncientGuardian_Gates", true);
                 }
-                while (player.Center.X >= jumpThru3.Right - 4f)
+                while (player.Center.X >= jumpThru3.Right + 8f)
                 {
                     yield return null;
                 }
@@ -131,18 +156,18 @@ namespace Celeste.Mod.XaphanHelper.Events
                 level.Session.SetFlag("AncientGuardian_Platforms", true);
                 if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_BossStart"))
                 {
-                    Scene.Add(new CS04_BossStart(player));
+                    yield return null;
+                    LeftGate.Move();
+                    RightGate.Move();
+                    Scene.Add(new CS04_BossStart(player, boss));
                     while (!level.Session.GetFlag("AncientGuardian_Start"))
                     {
                         yield return null;
                     }
+                    level.Session.SetFlag("AncientGuardian_Gates", true);
                 }
                 else
                 {
-                    if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
-                    {
-                        //level.Session.SetFlag("D-07_Gate_1", true); // Flag for the gates
-                    }
                     foreach (CustomSpinner spinner in level.Tracker.GetEntities<CustomSpinner>())
                     {
                         if (spinner.Hidden)
@@ -204,10 +229,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                             jumpThru1.RemoveSelf();
                             level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
                             jumpThru5.RemoveSelf();
-                            level.Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
-                            level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                            level.Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
-                            level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
                             while (boss.Health >= 9)
                             {
                                 yield return null;
@@ -325,7 +346,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 level.Session.SetFlag("boss_Normal_Mode_Given_Up", false);
                 level.Session.SetFlag("boss_Challenge_Mode_Given_Up", false);
-                //level.Session.SetFlag("D-07_Gate_1", false);
                 level.Session.SetFlag("AncientGuardian_Defeated", true);
                 level.Session.SetFlag("Boss_Defeated", true);
                 level.Session.SetFlag("AncientGuardian_Start", false);
@@ -345,6 +365,14 @@ namespace Celeste.Mod.XaphanHelper.Events
             {
                 yield return null;
             }
+            if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count <= 0)
+            {
+                SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
+                SceneAs<Level>().Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
+                SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
+                SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+            }
+            yield return null;
             while (boss.Health >= 5)
             {
                 if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count <= 0)

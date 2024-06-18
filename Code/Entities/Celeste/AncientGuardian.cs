@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Cutscenes;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -667,6 +668,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             EyesSprite.Add("sprayFireball", "eyes", 0, 1);
             EyesSprite.Add("fireball", "eyes", 0, 2);
             EyesSprite.Add("sideFireball", "eyes", 0, 3);
+            EyesSprite.Add("off", "eyes", 0, 4);
             EyesSprite.Position += new Vector2(24f, 30f);
             Add(LeftWheelSprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
             LeftWheelSprite.AddLoop("wheel", "wheel", 0.04f);
@@ -685,6 +687,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch4_Boss_Defeated"))
             {
                 Visible = false;
+            }
+            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_BossStart"))
+            {
+                EyesAlpha = 1f;
+                EyesSprite.Play("off");
             }
             foreach (GuardianLaser laser in SceneAs<Level>().Tracker.GetEntities<GuardianLaser>())
             {
@@ -767,6 +774,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            Collidable = Visible;
             if (Health == 4 && !CanMove)
             {
                 CanMove = StopPattern = true;
@@ -1199,14 +1207,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_item");
             SceneAs<Level>().Session.Audio.Apply();
             Visible = false;
+            foreach (GuardianGate gate in SceneAs<Level>().Tracker.GetEntities<GuardianGate>())
+            {
+                gate.Break();
+            }
             while (SceneAs<Level>().Session.GetFlag("In_bossfight"))
             {
                 yield return null;
             }
             Position = OrigPosition;
+            SceneAs<Level>().Session.SetFlag("AncientGuardian_Gates", false);
         }
 
-        private IEnumerator EyesAlphaRoutine(bool fadeOut = false)
+        public IEnumerator EyesAlphaRoutine(bool fadeOut = false)
         {
             float timer = 0.5f;
             if (fadeOut)
