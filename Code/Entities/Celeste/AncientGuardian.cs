@@ -1211,6 +1211,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 gate.Break();
             }
+            foreach (CustomRefill refill in SceneAs<Level>().Tracker.GetEntities<CustomRefill>())
+            {
+                SceneAs<Level>().Displacement.AddBurst(refill.Center, 0.5f, 8f, 32f, 0.5f);
+                refill.RemoveSelf();
+            }
             while (SceneAs<Level>().Session.GetFlag("In_bossfight"))
             {
                 yield return null;
