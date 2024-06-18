@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.Entities;
-using FMOD;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -31,7 +30,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool HasStartedFalling { get; private set; }
 
-        public CustomFallingBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false) 
+        public CustomFallingBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false)
         {
             climbFall = data.Bool("climbFall", true);
             fallIfNoSolidOnTop = data.Bool("fallIfNoSolidOnTop", false);

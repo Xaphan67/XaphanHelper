@@ -290,7 +290,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         RemoveSelf();
                     }
                 }
-                sprite.Color = Color.White  * alpha;
+                sprite.Color = Color.White * alpha;
             }
         }
 
@@ -354,7 +354,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Add("standUpEnd", "standUp", 0f, 11);
             Sprite.Add("idle", "walk", 0f, 0);
             Sprite.Add("walk", "walk", 0.08f, 0, 1, 2, 3, 4, 5, 6, 7);
-            Sprite.Add("walk2", "walk", 0.08f, 8, 9, 10 ,11, 12, 13, 14);
+            Sprite.Add("walk2", "walk", 0.08f, 8, 9, 10, 11, 12, 13, 14);
             Sprite.Add("jumpStart", "jump", 0.08f, 0, 1, 2, 3, 4, 5);
             Sprite.Add("jumpEnd", "jump", 0.08f, 6, 7, 8, 9, 10, 11, 12, 13);
             Sprite.Add("swipe", "swipe", 0.08f);
@@ -528,7 +528,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         shield.Position.X = Position.X + 33;
                     }
-                        
+
                 }
                 else
                 {
@@ -551,7 +551,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         shield.Position.X = Position.X + 49;
                     }
-                        
+
                 }
                 shield.Position.Y = Position.Y + 19;
             }
@@ -651,7 +651,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Routine.Cancel();
             }
             if (!ForcedDestroy)
-            { 
+            {
                 Add(Routine = new Coroutine(KneelRoutine()));
             }
             ForcedDestroy = false;
@@ -676,7 +676,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 SolidBehind = true;
             }
-            Speed.X = 260f * (Facing == Facings.Right ? -1 : 1) * (SolidBehind ? -1 : 1) ;
+            Speed.X = 260f * (Facing == Facings.Right ? -1 : 1) * (SolidBehind ? -1 : 1);
             MidAir = true;
             while (MidAir)
             {
@@ -729,7 +729,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 shootDuration -= Engine.DeltaTime;
                 if (SceneAs<Level>().OnInterval(0.06f))
                 {
-                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode")? (close ? 10 : 60) : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 110 : 260) : 210), 0f), Facing == Facings.Left));
+                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 10 : 60) : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 110 : 260) : 210), 0f), Facing == Facings.Left));
                 }
                 yield return null;
             }

@@ -216,7 +216,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void DebugRender(Camera camera)
         {
-            
+
         }
     }
 }

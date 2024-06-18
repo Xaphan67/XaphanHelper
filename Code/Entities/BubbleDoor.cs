@@ -216,7 +216,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             bool shouldBeActive = !OnlyNeedOneFlag ? allFlagsTrue : oneFlagTrue;
 
-            if (shouldBeActive && 
+            if (shouldBeActive &&
                 ((!string.IsNullOrEmpty(forceLockedFlag) && !SceneAs<Level>().Session.GetFlag(forceLockedFlag)) || string.IsNullOrEmpty(forceLockedFlag)) &&
                 ((!string.IsNullOrEmpty(forceInactiveFlag) && !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || string.IsNullOrEmpty(forceInactiveFlag))
                 )

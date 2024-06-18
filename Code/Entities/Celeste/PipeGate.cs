@@ -475,7 +475,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Player player = Scene.Tracker.GetEntity<Player>();
                 return player != null && player.Right > Left && player.Left < Right && player.Bottom > Top && player.Top < Bottom && Scene.Tracker.GetEntity<Drone>() == null;
-            } else
+            }
+            else
             {
                 return false;
             }

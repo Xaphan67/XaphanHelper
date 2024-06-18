@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
-using Celeste.Mod.XaphanHelper.Cutscenes;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -56,7 +55,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 List<Sprite> list = new();
                 for (int i = 1; i < Collider.Height / 4 - 2; i++)
                 {
-                    Sprite sprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/");
+                    Sprite sprite = new(GFX.Game, "characters/Xaphan/Guardian/");
                     sprite.Add("laser", "laserMid", 0.06f);
                     sprite.FlipX = FlipX;
                     sprite.Play("laser");
@@ -365,7 +364,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Sprite.Play("flame");
                     for (int i = 0; i < 5; i++)
                     {
-                        Sprite sprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/");
+                        Sprite sprite = new(GFX.Game, "characters/Xaphan/Guardian/");
                         sprite.AddLoop("flame", "flame", 0.08f, 3, 4, 5, 4);
                         sprite.CenterOrigin();
                         sprite.Play("flame");
@@ -775,6 +774,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             Collidable = Visible;
+            EyesSprite.Color = Color.White * EyesAlpha;
+            if (Flashing)
+            {
+                Sprite.Color = Color.Red;
+            }
+            else
+            {
+                Sprite.Color = Color.White;
+            }
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (player == null && Routine.Active)
             {
@@ -788,15 +796,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (!playerHasMoved && player != null && player.Speed != Vector2.Zero)
             {
                 playerHasMoved = true;
-            }
-            EyesSprite.Color = Color.White * EyesAlpha;
-            if (Flashing)
-            {
-                Sprite.Color = Color.Red;
-            }
-            else
-            {
-                Sprite.Color = Color.White;
             }
             if (CannotHitPlayer && !CollideCheck(player))
             {
@@ -1094,7 +1093,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             float StartPosX = Position.X;
             LeftWheelSprite.Play("wheel");
             RightWheelSprite.Play("wheel");
-            LeftWheelSprite.Rate = RightWheelSprite.Rate = dir > 0  ? - 1 : 1;
+            LeftWheelSprite.Rate = RightWheelSprite.Rate = dir > 0 ? -1 : 1;
             if (dir > 0 && TrackPosition <= 0)
             {
                 Speed.X = 100f;
@@ -1148,7 +1147,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else
                         {
-                            
+
                             Audio.Play("event:/game/xaphan/guardian_laser", Position);
                             SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
                             SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(34f, 23f), true));
@@ -1156,7 +1155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             moves = 0;
                             yield return 0.5f;
                         }
-                        if (moves == 2) 
+                        if (moves == 2)
                         {
                             Audio.Play("event:/game/xaphan/guardian_laser", Position);
                             SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
@@ -1179,7 +1178,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Audio.Play("event:/game/xaphan/guardian_laser", Position);
                 SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
                 SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(34f, 23f), true));
-            }    
+            }
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;

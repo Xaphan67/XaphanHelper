@@ -348,7 +348,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static PlayerDeadBody OnCelestePlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            if (XaphanModule.PlayerIsControllingRemoteDrone()) 
+            if (XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
                 if (drone != null)

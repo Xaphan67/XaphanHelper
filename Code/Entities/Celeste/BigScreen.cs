@@ -208,7 +208,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Tile(int x, int y, MTexture tile)
         {
-            Image image = new Image(tile);
+            Image image = new(tile);
             image.Position = new Vector2(x, y) * 8f;
             Add(image);
         }
@@ -221,7 +221,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            BackgroundColor = isOn && noiseAlpha  < 0.8f ? Calc.HexToColor("#291809") * 0.6f : Color.Black;
+            BackgroundColor = isOn && noiseAlpha < 0.8f ? Calc.HexToColor("#291809") * 0.6f : Color.Black;
             if (Scene.OnInterval(0.1f))
             {
                 Seed++;
@@ -255,7 +255,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             bool justTurnedOn = false;
             bool vasJustTurnedOn = false;
-            while(true)
+            while (true)
             {
                 if (isOn)
                 {
@@ -273,7 +273,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     else
                     {
                         yield return Calc.Random.Next(1, 5);
-                        while(noiseAlpha <= 0.2f)
+                        while (noiseAlpha <= 0.2f)
                         {
                             noiseAlpha += Engine.DeltaTime;
                             yield return null;
@@ -294,7 +294,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void DrawNoise(Rectangle bounds, ref uint seed, Color color)
         {
             MTexture mTexture = GFX.Game["objects/XaphanHelper/BigScreen/noise"];
-            Vector2 vector = new Vector2(PseudoRandRange(ref seed, 0f, mTexture.Width / 2), PseudoRandRange(ref seed, 0f, mTexture.Height / 2));
+            Vector2 vector = new(PseudoRandRange(ref seed, 0f, mTexture.Width / 2), PseudoRandRange(ref seed, 0f, mTexture.Height / 2));
             Vector2 vector2 = new Vector2(mTexture.Width, mTexture.Height) / 2f;
             for (float num = 0f; num < bounds.Width; num += vector2.X)
             {
@@ -304,7 +304,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     float num4 = Math.Min(bounds.Height - num3, vector2.Y);
                     int x = (int)(mTexture.ClipRect.X + vector.X);
                     int y = (int)(mTexture.ClipRect.Y + vector.Y);
-                    Rectangle value = new Rectangle(x, y, (int)num2, (int)num4);
+                    Rectangle value = new(x, y, (int)num2, (int)num4);
                     Draw.SpriteBatch.Draw(mTexture.Texture.Texture_Safe, new Vector2(bounds.X + num, bounds.Y + num3), value, color);
                 }
             }

@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.XaphanHelper.Controllers;
-using Celeste.Mod.XaphanHelper.Upgrades;
-using IL.MonoMod;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -156,7 +152,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (self.Entity is Player player && self.Scene is Level level && player.StateMachine.State != Player.StDash && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
-                foreach (PlayerPlatform platform in level.Tracker.GetEntities<PlayerPlatform>()) 
+                foreach (PlayerPlatform platform in level.Tracker.GetEntities<PlayerPlatform>())
                 {
                     if (platform.PlayerPose != "" && platform.Active)
                     {

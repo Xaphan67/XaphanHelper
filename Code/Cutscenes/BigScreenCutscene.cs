@@ -1,7 +1,7 @@
 ﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Celeste.Mod.XaphanHelper.Entities;
 
 namespace Celeste.Mod.XaphanHelper.Cutscenes
 {
@@ -101,7 +101,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return 1.2f;
             }
             screen.showPortrait = true;
-            Textbox textBox = new Textbox(dialogID);
+            Textbox textBox = new(dialogID);
             textBox.RenderOffset.X += 125f;
             textBox.RenderOffset.Y += 650f;
             Engine.Scene.Add(textBox);

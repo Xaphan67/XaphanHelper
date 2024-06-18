@@ -302,7 +302,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             categorySelection = previousCategorySelection - 1;
                             previousCategorySelection = -1;
-                        } else
+                        }
+                        else
                         {
                             categorySelection--;
                         }
@@ -359,7 +360,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     }
                                 }
                             }
-                            
+
                             Audio.Play("event:/ui/main/rollover_up");
                         }
                         if (Input.MenuDown.Pressed && entrySelection < Displays.Count - 1)

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
@@ -237,6 +236,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     scene.Add(new FuseSection(data, Position + new Vector2(x * 8, y * 8)));
                 }
             }
-        }        
+        }
     }
 }

@@ -3,7 +3,6 @@ using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
-using static Celeste.Tentacles;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -140,7 +139,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_false", false);
                     SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_" + (flagState ? "true" : "false"), true);
                 }
-            }           
+            }
         }
 
         public override void Update()

@@ -23,7 +23,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool wasPressed;
 
-        public Detonator (EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, true)
+        public Detonator(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, true)
         {
             directory = data.Attr("directory");
             side = data.Attr("side", "Up");
@@ -55,7 +55,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Add(new LedgeBlocker());
                     break;
                 case "Right":
-                    sprite.Rotation = (float)Math.PI /2;
+                    sprite.Rotation = (float)Math.PI / 2;
                     Collider = new Hitbox(4, 14, -8, -7);
                     Add(pc = new PlayerCollider(onPlayer, new Hitbox(1, 12, 0, -6)));
                     Add(new LedgeBlocker());

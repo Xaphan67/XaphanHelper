@@ -226,7 +226,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             }
         }
-        
+
         public string side;
 
         Sprite sprite;
@@ -504,7 +504,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (side == "Right")
             {
-                Scene.Add(nextArrow = new Arrow( Position + new Vector2(-23, 4), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-23, 4), this, side));
             }
             else if (side == "Left")
             {

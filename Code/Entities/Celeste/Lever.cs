@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -60,7 +59,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.registerInSaveData = registerInSaveData;
             this.saveDataOnlyAfterCheckpoint = saveDataOnlyAfterCheckpoint;
             staticMover = new StaticMover();
-            switch (Side) {
+            switch (Side)
+            {
                 case "Up":
                     Collider = new Hitbox(12, 8, 2, 0);
                     staticMover.SolidChecker = ((Solid s) => CollideCheckOutside(s, Position + Vector2.UnitY * 4f));

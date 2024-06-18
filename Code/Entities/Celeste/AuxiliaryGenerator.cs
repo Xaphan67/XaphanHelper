@@ -67,7 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
         }
-        
+
         Sprite Sprite;
 
         private GeneratorMessage message;
@@ -78,7 +78,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public string PlayerPose = "";
 
-        public AuxiliaryGenerator (EntityData data, Vector2 position) : base(data.Position + position)
+        public AuxiliaryGenerator(EntityData data, Vector2 position) : base(data.Position + position)
         {
             Add(Sprite = new Sprite(GFX.Game, "objects/XaphanHelper/AuxiliaryGenerator/"));
             Sprite.Add("off", "off", 0);
@@ -210,7 +210,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void resetSprite(string s)
         {
-            
+
         }
     }
 }

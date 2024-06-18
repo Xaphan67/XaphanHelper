@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlTypes;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;

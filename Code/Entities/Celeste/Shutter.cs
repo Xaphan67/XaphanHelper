@@ -167,7 +167,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 SceneAs<Level>().Add(new ShutterLightWall(this, Vector2.UnitX * length));
             }
-            if (startOpen ||(!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)))
+            if (startOpen || (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)))
             {
                 openOffset = MaxLength;
                 open = true;

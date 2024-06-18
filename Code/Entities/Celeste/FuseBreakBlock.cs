@@ -66,7 +66,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     string SolidFarLeft = "0";
                     string SolidFarRight = "0";
                     string SolidFarBottom = "0";
-                    if (CollideCheck<SolidTiles>(Position + new Vector2(-8f, -8f)) || CollideCheck< FuseBreakBlockTile>(Position + new Vector2(-8f, -8f)))
+                    if (CollideCheck<SolidTiles>(Position + new Vector2(-8f, -8f)) || CollideCheck<FuseBreakBlockTile>(Position + new Vector2(-8f, -8f)))
                     {
                         SolidTopLeft = "1";
                     }
@@ -351,7 +351,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            for(int x = 0; x < data.Width / 8; x++)
+            for (int x = 0; x < data.Width / 8; x++)
             {
                 for (int y = 0; y < data.Height / 8; y++)
                 {

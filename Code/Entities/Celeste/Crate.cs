@@ -36,7 +36,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 base.Update();
                 if (Crate != null)
-                { 
+                {
                     Position = Crate.Position + Offset;
                 }
                 else
@@ -471,7 +471,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Spikes collidedWith = CollideFirst<Spikes>();
                 if (Type == "Wood")
                 {
-                    Vector2 speed = new Vector2(Hold.IsHeld ? Hold.Holder.Speed.X : Speed.X, Hold.IsHeld ? Hold.Holder.Speed.Y : Speed.Y);
+                    Vector2 speed = new(Hold.IsHeld ? Hold.Holder.Speed.X : Speed.X, Hold.IsHeld ? Hold.Holder.Speed.Y : Speed.Y);
                     switch (collidedWith.Direction.ToString())
                     {
                         case "Up":

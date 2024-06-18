@@ -58,7 +58,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void StartAtEndPosition()
         {
-            MoveTo(Position +Vector2.UnitX * (Center.X < SceneAs<Level>().Bounds.Center.X ? 32f : -32f));
+            MoveTo(Position + Vector2.UnitX * (Center.X < SceneAs<Level>().Bounds.Center.X ? 32f : -32f));
         }
 
         public void Break()

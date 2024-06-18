@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
 using Celeste.Mod.Entities;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -408,7 +405,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (rightSide.ToLower().Contains("active"))
             {
-                pushSides.Add(new PushingSide(this, "Right", (rightSide  == "Start Active" || rightSide == "Active Only Once") ? true : false, rightSide == "Active Only Once" ? true : false));
+                pushSides.Add(new PushingSide(this, "Right", (rightSide == "Start Active" || rightSide == "Active Only Once") ? true : false, rightSide == "Active Only Once" ? true : false));
             }
             if (topSide.ToLower().Contains("active"))
             {
@@ -494,7 +491,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Audio.Play("event:/game/05_mirror_temple/swapblock_move_end", Center);
                     }
-                    
+
                 }
                 foreach (PushingSide side in pushSides)
                 {

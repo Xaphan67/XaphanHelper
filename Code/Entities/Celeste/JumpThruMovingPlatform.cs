@@ -471,7 +471,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (index >= 1)
             {
-                if(AttachedSpike != null)
+                if (AttachedSpike != null)
                 {
                     AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
                 }

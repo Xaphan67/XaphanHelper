@@ -343,8 +343,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 return;
             }
 
-            
-           if (Input.MenuLeft.Pressed && currentMenu > 0 && !onlyCurrentChapter)
+
+            if (Input.MenuLeft.Pressed && currentMenu > 0 && !onlyCurrentChapter)
             {
                 Audio.Play("event:/ui/main/rollover_down");
                 currentMenu--;

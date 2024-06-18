@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using Monocle;
-using Celeste.Mod.XaphanHelper.Entities;
-using System;
 
 namespace Celeste.Mod.XaphanHelper.Managers
 {

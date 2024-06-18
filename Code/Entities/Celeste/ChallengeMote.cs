@@ -145,7 +145,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         level.Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
                         sprite.Play("completed");
                         sprite.OnLastFrame = onLastFrame;
-                    } else if (strawberry == null)
+                    }
+                    else if (strawberry == null)
                     {
                         sprite.Play("completedEnd");
                     }

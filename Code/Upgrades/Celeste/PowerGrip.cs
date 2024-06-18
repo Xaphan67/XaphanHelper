@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {

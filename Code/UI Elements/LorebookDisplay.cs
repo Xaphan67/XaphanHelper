@@ -1,10 +1,9 @@
-﻿using Celeste.Mod.XaphanHelper.Data;
-using Microsoft.Xna.Framework;
-using Monocle;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Celeste.Mod.XaphanHelper.Data;
+using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
@@ -124,7 +123,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if ((ShowArrow || Selected) && !Locked)
                 {
-                    mTexture.DrawCentered(Position + new Vector2(width /2, height - 40f), AllLogs ? Color.Gold : Color.White, 0.8f, (float)-Math.PI / 2);
+                    mTexture.DrawCentered(Position + new Vector2(width / 2, height - 40f), AllLogs ? Color.Gold : Color.White, 0.8f, (float)-Math.PI / 2);
                 }
             }
         }
@@ -416,7 +415,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 categoryName = entry.Name;
                             }
-                        } else
+                        }
+                        else
                         {
                             categoryName = ConvertNameToHiddenName(entry.Name);
                         }

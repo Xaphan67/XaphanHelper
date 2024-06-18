@@ -167,7 +167,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 DynData<Solid> solidData = new(attachedSolid);
                 List<StaticMover> staticMovers = solidData.Get<List<StaticMover>>("staticMovers");
-                if (!staticMovers.Contains(staticMover)) {
+                if (!staticMovers.Contains(staticMover))
+                {
                     staticMover.OnMove = OnMove;
                     staticMovers.Add(staticMover);
                 }
