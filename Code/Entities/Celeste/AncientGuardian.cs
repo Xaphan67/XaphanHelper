@@ -775,11 +775,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             Collidable = Visible;
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (player == null && Routine.Active)
+            {
+                Routine.Cancel();
+                return;
+            }
             if (Health == 4 && !CanMove)
             {
                 CanMove = StopPattern = true;
             }
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (!playerHasMoved && player != null && player.Speed != Vector2.Zero)
             {
                 playerHasMoved = true;
@@ -818,12 +823,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             while (Health > 0)
             {
+                float delay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.7f : 1f;
                 Collidable = true;
                 if (!Routine.Active)
                 {
                     if (Health >= 13)
                     {
-                        Add(Routine = new Coroutine(AttackPattern1(1f)));
+                        Add(Routine = new Coroutine(AttackPattern1(delay)));
                     }
                     else
                     {
@@ -852,20 +858,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             int pattern = Calc.Random.Next(1, 101);
                             if (pattern <= 33)
                             {
-                                Add(Routine = new Coroutine(AttackPattern2(1f)));
+                                Add(Routine = new Coroutine(AttackPattern2(delay)));
                             }
                             else if (pattern <= 67)
                             {
-                                Add(Routine = new Coroutine(AttackPattern3(1f)));
+                                Add(Routine = new Coroutine(AttackPattern3(delay)));
                             }
                             else
                             {
-                                Add(Routine = new Coroutine(AttackPattern4(1f)));
+                                Add(Routine = new Coroutine(AttackPattern4(delay)));
                             }
                         }
                         else
                         {
-                            if (TrackPosition != 0)
+                            if (TrackPosition != 0 || SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
                             {
                                 int attack = Calc.Random.Next(1, 101);
                                 if (attack <= 40)
@@ -919,7 +925,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return null;
             }
-            Logger.Log(LogLevel.Info, "XH", "Restart Routine");
             Visible = true;
             Add(new Coroutine(SequenceRoutine()));
             Add(new Coroutine(InvincibilityRoutine()));
@@ -1120,10 +1125,61 @@ namespace Celeste.Mod.XaphanHelper.Entities
             EyesSprite.Play("laser");
             Audio.Play("event:/game/xaphan/guardian_eyes_1", Position);
             Add(new Coroutine(EyesAlphaRoutine()));
-            yield return 1f;
-            Audio.Play("event:/game/xaphan/guardian_laser", Position);
-            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
-            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(34f, 23f), true));
+            yield return 0.5f;
+            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+            {
+                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                if (player != null)
+                {
+                    int shoots = 0;
+                    int moves = 0;
+                    yield return 0.5f;
+                    while (shoots < 3)
+                    {
+                        if (player.Center.X < Left && TrackPosition != -1)
+                        {
+                            yield return MoveRoutine(-1);
+                            moves++;
+                        }
+                        else if (player.Center.X > Right && TrackPosition != 1)
+                        {
+                            yield return MoveRoutine(1);
+                            moves++;
+                        }
+                        else
+                        {
+                            
+                            Audio.Play("event:/game/xaphan/guardian_laser", Position);
+                            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
+                            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(34f, 23f), true));
+                            shoots++;
+                            moves = 0;
+                            yield return 0.5f;
+                        }
+                        if (moves == 2) 
+                        {
+                            Audio.Play("event:/game/xaphan/guardian_laser", Position);
+                            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
+                            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(34f, 23f), true));
+                            shoots++;
+                            moves = 0;
+                            yield return 0.5f;
+                        }
+                        yield return null;
+                    }
+                }
+                if (TrackPosition != 0)
+                {
+                    yield return MoveRoutine(-TrackPosition);
+                }
+            }
+            else
+            {
+                yield return 0.5f;
+                Audio.Play("event:/game/xaphan/guardian_laser", Position);
+                SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
+                SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(34f, 23f), true));
+            }    
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
@@ -1140,6 +1196,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(126f, 60f)));
             SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(-71f, 60f)));
             SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(-126f, 60f)));
+            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+            {
+                yield return 0.5f;
+                Audio.Play("event:/game/xaphan/guardian_fireball", Position);
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), Vector2.UnitY * 60f));
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(71f, 60f)));
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(-71f, 60f)));
+                yield return 0.5f;
+                Audio.Play("event:/game/xaphan/guardian_fireball", Position);
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), Vector2.UnitY * 60f));
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(71f, 60f)));
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(126f, 60f)));
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(-71f, 60f)));
+                SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(-126f, 60f)));
+            }
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
@@ -1152,7 +1223,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
             Audio.Play("event:/game/xaphan/guardian_fireball", Position);
-            SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(33f), Vector2.UnitY * 60f, true));
+            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+            {
+                SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(33f), Vector2.UnitY * 60f, false));
+                SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(33f), new Vector2(71f, 60f), false));
+                SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(33f), new Vector2(-71f, 60f), false));
+            }
+            else
+            {
+                SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(33f), Vector2.UnitY * 60f, true));
+            }
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
@@ -1165,10 +1245,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
             Audio.Play("event:/game/xaphan/guardian_fireball", Position);
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(125f, 100f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(125f, 200f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-125f, 100f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-125f, 200f)));
+            float verticalSpeed = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 100f : 125f;
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 100f)));
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 200f)));
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 100f)));
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 200f)));
+            if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+            {
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 150f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 250f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 150f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 250f)));
+            }
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;

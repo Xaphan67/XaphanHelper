@@ -2871,8 +2871,14 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     menu.RemoveSelf();
                     CMote.ManageUpgrades(level, true);
-                    level.Session.SetFlag("boss_Normal_Mode_Given_Up", true);
-                    level.Session.SetFlag("boss_Challenge_Mode_Given_Up", true);
+                    if (level.Session.GetFlag("boss_Normal_Mode"))
+                    {
+                        level.Session.SetFlag("boss_Normal_Mode_Given_Up", true);
+                    }
+                    else
+                    {
+                        level.Session.SetFlag("boss_Challenge_Mode_Given_Up", true);
+                    }
                     level.Session.SetFlag("Boss_Defeated", true);
                     level.Session.SetFlag("boss_Normal_Mode", false);
                     level.Session.SetFlag("boss_Challenge_Mode", false);
