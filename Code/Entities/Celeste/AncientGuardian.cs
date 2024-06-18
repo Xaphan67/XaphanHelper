@@ -562,7 +562,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collidable = true;
                 Position = position;
                 speed = ((position - center).SafeNormalize(60f + Calc.Random.NextFloat(60f)) + Vector2.UnitY * -150f) * new Vector2(2f, 1f);
-                directory = "characters/Xaphan/Torizo/debris";
+                directory = "characters/Xaphan/guardian/debris";
                 Add(sprite = new Image(Calc.Random.Choose(GFX.Game.GetAtlasSubtextures(directory))));
                 sprite.CenterOrigin();
                 sprite.FlipX = Calc.Random.Chance(0.5f);
