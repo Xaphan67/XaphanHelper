@@ -311,6 +311,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 boss.playerHasMoved = false;
                 boss.SetHits(0);
             }
+            else if (ChapterIndex == 4 && level.Session.Level == "Q-21")
+            {
+                AncientGuardian boss = level.Tracker.GetEntity<AncientGuardian>();
+                boss.playerHasMoved = false;
+                boss.SetHealth(15);
+            }
             else if (ChapterIndex == 5 && level.Session.Level == "Y-10")
             {
                 Genesis boss = level.Tracker.GetEntity<Genesis>();

@@ -27,7 +27,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float speed;
 
-        private float percent;
+        public float percent;
 
         private string directory;
 
@@ -92,6 +92,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Vector2 OrigPosition;
 
         private List<Spring> Springs = new();
+
+        public bool Restarted;
 
         public SolidMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string particlesColorA, string particlesColorB, string orientation, int amount, int index, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool particles, int direction, float startPercent = -1f, bool swapped = false) : base(position, 8, 8, false)
         {
@@ -355,6 +357,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 return;
             }
             base.Update();
+            Restarted = false;
             if (index >= 1 && !AttachedEntity)
             {
                 foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
@@ -493,6 +496,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             if (mode == "Restart")
                             {
                                 percent = percent + 1f;
+                                Restarted = true;
                             }
                             else if (mode.Contains("Back And Forth"))
                             {
@@ -526,6 +530,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             if (mode == "Restart")
                             {
                                 percent = percent - 1f;
+                                Restarted = true;
                             }
                             else if (mode.Contains("Back And Forth"))
                             {

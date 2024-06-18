@@ -27,9 +27,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private SineWave sine;
 
-        private string type;
+        public string type;
 
-        private bool oneUse;
+        public bool oneUse;
 
         private ParticleType p_shatter;
 
@@ -39,7 +39,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float respawnTimer;
 
-        private float respawnTime;
+        public float respawnTime;
 
         public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime) : base(position)
         {

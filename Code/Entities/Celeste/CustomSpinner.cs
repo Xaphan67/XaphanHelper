@@ -80,11 +80,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public int ID;
 
+        public bool Hidden;
+
+        private bool AlwaysCollidable;
+
         public CustomSpinner(EntityData data, Vector2 position) : base(data.Position + position)
         {
             ID = data.ID;
             offset = Calc.Random.NextFloat();
             type = data.Attr("type");
+            AlwaysCollidable = data.Bool("alwaysCollidable");
             bgDirectory = "danger/crystal/Xaphan/" + type + "/bg";
             fgDirectory = "danger/crystal/Xaphan/" + type + "/fg";
             List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgDirectory);
@@ -113,7 +118,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            if (InView())
+            if (InView() && !Hidden)
             {
                 CreateSprites();
             }
@@ -127,10 +132,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            if (!Visible)
+            if (!Visible || Hidden)
             {
                 Collidable = false;
-                if (InView())
+                if (InView() && !Hidden)
                 {
                     Visible = true;
                     if (!expanded)
@@ -157,13 +162,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Player entity = Scene.Tracker.GetEntity<Player>();
                         if (entity != null)
                         {
-                            Collidable = (Math.Abs(entity.X - X) < 128f && Math.Abs(entity.Y - Y) < 128f);
+                            Collidable = AlwaysCollidable || (Math.Abs(entity.X - X) < 128f && Math.Abs(entity.Y - Y) < 128f);
                         }
                     }
                 }
             }
             if (filler != null)
             {
+                filler.Visible = !Hidden;
                 filler.Position = Position;
             }
         }
@@ -317,6 +323,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 CrystalDebris.Burst(Position, color, boss, 8);
             }
             RemoveSelf();
+        }
+
+        public void Hide(bool boss = false)
+        {
+            if (InView() && !Hidden)
+            {
+                Hidden = true;
+                Audio.Play("event:/game/06_reflection/fall_spike_smash", Position);
+                Color color = Color.White;
+                if (type == "mines")
+                {
+                    color = Calc.HexToColor("5B3311");
+                }
+                CrystalDebris.Burst(Position, color, boss, 8);
+            }
+            Visible = Collidable = false;
+        }
+
+        public void Show()
+        {
+            Hidden = false;
+            SceneAs<Level>().Displacement.AddBurst(Center, 0.5f, 8f, 32f, 0.5f);
+            Visible = Collidable = true;
         }
     }
 }

@@ -31,9 +31,15 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         private CustomRefill refill2;
 
+        private CustomRefill refill3;
+
         private Decal warningSign1;
 
         private Decal warningSign2;
+
+        private Decal warningSign3;
+
+        private Decal warningSign4;
 
         public bool BossDefeated()
         {
@@ -67,10 +73,14 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru3 = new JumpthruPlatform(bounds + new Vector2(148f, 156f), 24, "Xaphan/gorge_a", 5);
             jumpThru4 = new JumpthruPlatform(bounds + new Vector2(200f, 148f), 24, "Xaphan/gorge_a", 5);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(228f, 124f), 24, "Xaphan/gorge_a", 5);
-            refill1 = new CustomRefill(bounds + new Vector2(84f, 64f), "Max Jumps", false, 2.5f);
-            refill2 = new CustomRefill(bounds + new Vector2(236f, 64f), "Max Jumps", false, 2.5f);
+            refill1 = new CustomRefill(bounds + new Vector2(84f, 64f), "Max Jumps", true, 2.5f);
+            refill2 = new CustomRefill(bounds + new Vector2(236f, 64f), "Max Jumps", true, 2.5f);
+            refill3 = new CustomRefill(bounds + new Vector2(160f, 92f), "Max Dashes", false, 2.5f);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign2 = new Decal("Xaphan/Common/warning00.png", jumpThru5.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
+            warningSign3 = new Decal("Xaphan/Common/warning00.png", jumpThru2.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
+            warningSign4 = new Decal("Xaphan/Common/warning00.png", jumpThru4.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
+
         }
 
         public override void OnBegin(Level level)
@@ -97,10 +107,10 @@ namespace Celeste.Mod.XaphanHelper.Events
         {
             if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
-                /*if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
+                if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                 {
                     boss.Appear(true);
-                }*/
+                }
                 while (player.Center.X >= jumpThru3.Right - 4f)
                 {
                     yield return null;
@@ -133,10 +143,19 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         //level.Session.SetFlag("D-07_Gate_1", true); // Flag for the gates
                     }
+                    foreach (CustomSpinner spinner in level.Tracker.GetEntities<CustomSpinner>())
+                    {
+                        if (spinner.Hidden)
+                        {
+                            spinner.Show();
+                        }
+                    }
                     if (level.Session.GetFlag("boss_Checkpoint"))
                     {
                         jumpThru1.RemoveSelf();
                         jumpThru5.RemoveSelf();
+                        level.Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
+                        level.Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
                         boss.SetHealth(8);
                     }
                     while (!boss.playerHasMoved && !level.Session.GetFlag("boss_Normal_Mode_Given_Up") && !level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
@@ -161,6 +180,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_mini_boss");
                     level.Session.Audio.Apply();
                     level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(160f, 156f));
+                    Add(new Coroutine(RefillsRoutine()));
 
                     if (!level.Session.GetFlag("boss_Checkpoint"))
                     {
@@ -184,40 +204,47 @@ namespace Celeste.Mod.XaphanHelper.Events
                             jumpThru1.RemoveSelf();
                             level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
                             jumpThru5.RemoveSelf();
-                            level.Add(refill1);
+                            level.Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
                             level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                            level.Add(refill2);
+                            level.Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
                             level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                            while (boss.Health >= 9)
+                            {
+                                yield return null;
+                            }
+                            level.Session.SetFlag("boss_Checkpoint");
                         }
                     }
 
                     // Phase 2
                     level.Session.SetFlag("AncientGuardian_Platforms", false);
-
-                    /*else
+                    while (boss.Health >= 5)
                     {
-                        level.Add(arrowDown1);
-                        level.Add(arrowDown2);
-                        level.Add(jumpThru3);
-                        level.Displacement.AddBurst(jumpThru3.Center, 0.5f, 8f, 32f, 0.5f);
-                        level.Add(jumpThru4);
-                        level.Displacement.AddBurst(jumpThru4.Center, 0.5f, 8f, 32f, 0.5f);
-                        level.Add(warningSign2);
-                        level.Add(warningSign5);
-                        warningSign2.Visible = true;
-                        warningSign5.Visible = true;
-                        Add(new Coroutine(WarningSound()));
-                        yield return 1.5f;
-                        arrowDown1.Visible = false;
-                        arrowDown2.Visible = false;
-                        warningSign2.Visible = false;
-                        warningSign5.Visible = false;
-                        level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
-                        jumpThru2.RemoveSelf();
-                        level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
-                        jumpThru5.RemoveSelf();
+                        yield return null;
                     }
-                    */
+
+                    // Phase 3
+                    level.Add(warningSign3);
+                    level.Add(warningSign4);
+                    warningSign3.Visible = true;
+                    warningSign4.Visible = true;
+                    Add(new Coroutine(WarningSound()));
+                    yield return 1.5f;
+                    warningSign3.Visible = false;
+                    warningSign4.Visible = false;
+                    level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
+                    jumpThru2.RemoveSelf();
+                    level.Displacement.AddBurst(jumpThru4.Center, 0.5f, 8f, 32f, 0.5f);
+                    jumpThru4.RemoveSelf();
+                    foreach (CustomRefill refill in level.Tracker.GetEntities<CustomRefill>())
+                    {
+                        refill.RemoveSelf();
+                    }
+                    level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
+                    level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                    level.Add(refill3);
+                    level.Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
+
                     // End
                     while (boss.Health > 0)
                     {
@@ -229,19 +256,30 @@ namespace Celeste.Mod.XaphanHelper.Events
                     level.Displacement.AddBurst(jumpThru1.Center, 0.5f, 8f, 32f, 0.5f);
                     level.Add(jumpThru2);
                     level.Displacement.AddBurst(jumpThru2.Center, 0.5f, 8f, 32f, 0.5f);
+                    level.Add(jumpThru4);
+                    level.Displacement.AddBurst(jumpThru4.Center, 0.5f, 8f, 32f, 0.5f);
                     level.Add(jumpThru5);
                     level.Displacement.AddBurst(jumpThru5.Center, 0.5f, 8f, 32f, 0.5f);
-                    level.Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                    refill1.RemoveSelf();
-                    if (level.Session.GetFlag("boss_Challenge_Mode"))
+                    level.Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
+                    refill3.RemoveSelf();
+                    bool stopPlatforms = false;
+                    while (!stopPlatforms)
                     {
-                        level.Add(jumpThru3);
-                        level.Displacement.AddBurst(jumpThru3.Center, 0.5f, 8f, 32f, 0.5f);
-                        level.Add(jumpThru4);
-                        level.Displacement.AddBurst(jumpThru4.Center, 0.5f, 8f, 32f, 0.5f);
-                        level.Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
-                        refill2.RemoveSelf();
+                        foreach (SolidMovingPlatform platform in level.Tracker.GetEntities<SolidMovingPlatform>())
+                        {
+                            if (platform.Restarted)
+                            {
+                                stopPlatforms = true;
+                                break;
+                            }
+                        }
+                        yield return null;
                     }
+                    level.Session.SetFlag("AncientGuardian_Platforms", true);
+                    /*if (level.Session.GetFlag("boss_Challenge_Mode"))
+                    {
+                        
+                    }*/
                     string Prefix = level.Session.Area.LevelSet;
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch4_Boss_Defeated"))
                     {
@@ -269,10 +307,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                             }
                         }
                     }
-                    /*while (boss.Visible)
-                    {
-                        yield return null;
-                    }*/
                     level.Session.SetFlag("In_bossfight", false);
                     if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                     {
@@ -282,20 +316,13 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.SetFlag("boss_Challenge_Mode", false);
                     }
                 }
-                /*if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") || level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
+                if (level.Session.GetFlag("boss_Normal_Mode_Given_Up") || level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
                 {
-                    if (boss.Activated)
-                    {
-                        boss.ForcedDestroy = true;
-                        yield return boss.KneelRoutine(true);
-                    }
-                    else
-                    {
-                        boss.Appear(false);
-                    }
+                    boss.ForcedDestroy = true;
+                    yield return boss.DeathRoutine(true);
                     SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_item");
                     SceneAs<Level>().Session.Audio.Apply();
-                }*/
+                }
                 level.Session.SetFlag("boss_Normal_Mode_Given_Up", false);
                 level.Session.SetFlag("boss_Challenge_Mode_Given_Up", false);
                 //level.Session.SetFlag("D-07_Gate_1", false);
@@ -310,6 +337,30 @@ namespace Celeste.Mod.XaphanHelper.Events
                 yield return null;
             }
             Add(new Coroutine(Cutscene(level)));
+        }
+
+        public IEnumerator RefillsRoutine()
+        {
+            while (boss.Health >= 13)
+            {
+                yield return null;
+            }
+            while (boss.Health >= 5)
+            {
+                if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count <= 0)
+                {
+                    yield return 3f;
+                    if (boss.Health >= 5)
+                    {
+                        SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
+                        SceneAs<Level>().Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
+                        SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
+                        SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                    }
+                }
+                yield return null;
+
+            }
         }
 
         public IEnumerator WarningSound()

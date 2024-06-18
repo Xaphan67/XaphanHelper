@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
@@ -10,6 +11,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/AncientGuardian")]
     public class AncientGuardian : Actor
     {
+        [Tracked(true)]
         private class GuardianLaser : Entity
         {
             private Sprite TopSprite;
@@ -500,6 +502,124 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        [Pooled]
+        private class GuardianDebris : Actor
+        {
+            private Image sprite;
+
+            private Vector2 speed;
+
+            private bool shaking;
+
+            private bool firstHit;
+
+            private float alpha;
+
+            private Collision onCollideH;
+
+            private Collision onCollideV;
+
+            private float spin;
+
+            private float lifeTimer;
+
+            private string directory;
+
+            public GuardianDebris() : base(Vector2.Zero)
+            {
+                Tag = Tags.TransitionUpdate;
+                Collider = new Hitbox(4f, 4f, -2f, -2f);
+
+                onCollideH = delegate
+                {
+                    speed.X = (0f - speed.X) * 0.5f;
+                };
+                onCollideV = delegate
+                {
+                    if (firstHit || speed.Y > 50f)
+                    {
+                        Audio.Play("event:/game/06_reflection/fall_spike_smash", Position, "debris_velocity", Calc.ClampedMap(speed.Y, 0f, 600f));
+                    }
+                    if (speed.Y > 0f && speed.Y < 40f)
+                    {
+                        speed.Y = 0f;
+                    }
+                    else
+                    {
+                        speed.Y = (0f - speed.Y) * 0.25f;
+                    }
+                    firstHit = false;
+                };
+            }
+
+            protected override void OnSquish(CollisionData data)
+            {
+            }
+
+            public GuardianDebris Init(Vector2 position, Vector2 center)
+            {
+                Collidable = true;
+                Position = position;
+                speed = ((position - center).SafeNormalize(60f + Calc.Random.NextFloat(60f)) + Vector2.UnitY * -150f) * new Vector2(2f, 1f);
+                directory = "characters/Xaphan/Torizo/debris";
+                Add(sprite = new Image(Calc.Random.Choose(GFX.Game.GetAtlasSubtextures(directory))));
+                sprite.CenterOrigin();
+                sprite.FlipX = Calc.Random.Chance(0.5f);
+                sprite.Position = Vector2.Zero;
+                sprite.Rotation = Calc.Random.NextAngle();
+                shaking = false;
+                sprite.Scale.X = 1f;
+                sprite.Scale.Y = 1f;
+                sprite.Color = Color.White;
+                alpha = 1f;
+                firstHit = false;
+                spin = Calc.Random.Range(3.49065852f, 10.4719753f) * Calc.Random.Choose(1, -1);
+                lifeTimer = Calc.Random.Range(0.6f, 2.6f);
+                return this;
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                if (Collidable)
+                {
+                    speed.X = Calc.Approach(speed.X, 0f, Engine.DeltaTime * 100f);
+                    if (!OnGround())
+                    {
+                        speed.Y += 400f * Engine.DeltaTime;
+                    }
+                    MoveH(speed.X * Engine.DeltaTime, onCollideH);
+                    MoveV(speed.Y * Engine.DeltaTime, onCollideV);
+                }
+                if (shaking && Scene.OnInterval(0.05f))
+                {
+                    sprite.X = -1 + Calc.Random.Next(3);
+                    sprite.Y = -1 + Calc.Random.Next(3);
+                }
+                if ((Scene as Level).Transitioning)
+                {
+                    alpha = Calc.Approach(alpha, 0f, Engine.DeltaTime * 4f);
+                    sprite.Color = Color.White * alpha;
+                }
+                sprite.Rotation += spin * Calc.ClampedMap(Math.Abs(speed.Y), 50f, 150f) * Engine.DeltaTime;
+                if (lifeTimer > 0f)
+                {
+                    lifeTimer -= Engine.DeltaTime;
+                }
+                else if (alpha > 0f)
+                {
+                    alpha -= 4f * Engine.DeltaTime;
+                    if (alpha <= 0f)
+                    {
+                        RemoveSelf();
+                    }
+                }
+                sprite.Color = Color.White * alpha;
+            }
+        }
+
+        private Vector2 OrigPosition;
+
         private PlayerCollider pc;
 
         private Coroutine Routine = new();
@@ -530,8 +650,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool CanMove;
 
+        private bool StopPattern;
+
+        public bool ForcedDestroy;
+
         public AncientGuardian(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
+            OrigPosition = Position;
             Collider = new Hitbox(30f, 23f, 21f, 33f);
             Add(pc = new PlayerCollider(OnPlayer, new Circle(15f, 36f, 28f)));
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
@@ -556,6 +681,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch4_Boss_Defeated"))
+            {
+                Visible = false;
+            }
+            foreach (GuardianLaser laser in SceneAs<Level>().Tracker.GetEntities<GuardianLaser>())
+            {
+                laser.RemoveSelf();
+            }
+            foreach (GuardianSprayFireBall fireball in SceneAs<Level>().Tracker.GetEntities<GuardianSprayFireBall>())
+            {
+                fireball.RemoveSelf();
+            }
+            foreach (GuardianFireBall fireball in SceneAs<Level>().Tracker.GetEntities<GuardianFireBall>())
+            {
+                fireball.RemoveSelf();
+            }
+            foreach (GuardianSideFireBall fireball in SceneAs<Level>().Tracker.GetEntities<GuardianSideFireBall>())
+            {
+                fireball.RemoveSelf();
+            }
             Add(new Coroutine(SequenceRoutine()));
             Add(new Coroutine(InvincibilityRoutine()));
         }
@@ -595,6 +741,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public void Appear(bool visible)
+        {
+            SceneAs<Level>().Displacement.AddBurst(Center, 0.5f, 16f, 64f, 0.5f);
+            Visible = visible;
+        }
+
         public void GetHit()
         {
             if (Health > 0 && InvincibilityDelay <= 0)
@@ -615,9 +767,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (Health == 5 && !CanMove)
+            if (Health == 4 && !CanMove)
             {
-                CanMove = true;
+                CanMove = StopPattern = true;
             }
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (!playerHasMoved && player != null && player.Speed != Vector2.Zero)
@@ -638,13 +790,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 CannotHitPlayer = false;
             }
             MoveH(Speed.X * Engine.DeltaTime);
-            if (CollideCheck<CustomSpinner>())
+            CustomSpinner spinner = CollideFirst<CustomSpinner>();
+            if (spinner != null)
             {
-                CustomSpinner spinner = CollideFirst<CustomSpinner>();
-                if (spinner != null)
-                {
-                    spinner.Destroy();
-                }
+                spinner.Hide();
             }
         }
 
@@ -661,6 +810,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             while (Health > 0)
             {
+                Collidable = true;
                 if (!Routine.Active)
                 {
                     if (Health >= 13)
@@ -669,8 +819,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
-                        if (Health < 5)
+                        if (CanMove)
                         {
+                            if (StopPattern)
+                            {
+                                StopPattern = false;
+                            }
                             if (TrackPosition == 0)
                             {
                                 int moveRand = Calc.Random.Next(0, 2);
@@ -744,6 +898,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 yield return null;
             }
+            if (Routine.Active)
+            {
+                Routine.Cancel();
+            }
+            if (!ForcedDestroy)
+            {
+                Add(Routine = new Coroutine(DeathRoutine()));
+            }
+            ForcedDestroy = false;
+            while (Health <= 0)
+            {
+                yield return null;
+            }
+            Logger.Log(LogLevel.Info, "XH", "Restart Routine");
+            Visible = true;
             Add(new Coroutine(SequenceRoutine()));
             Add(new Coroutine(InvincibilityRoutine()));
         }
@@ -763,7 +932,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator AttackPattern2(float delay)
         {
             yield return SideFireballsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -772,7 +941,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return LaserRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -781,7 +950,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return SprayFireBallsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -790,7 +959,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return FireballRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -799,7 +968,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return SprayFireBallsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -812,7 +981,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator AttackPattern3(float delay)
         {
             yield return FireballRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -821,7 +990,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return SideFireballsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -830,7 +999,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return SprayFireBallsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -839,7 +1008,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return FireballRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -848,7 +1017,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return LaserRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -861,7 +1030,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public IEnumerator AttackPattern4(float delay)
         {
             yield return SprayFireBallsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -870,7 +1039,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return FireballRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -879,7 +1048,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return SprayFireBallsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -888,7 +1057,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return LaserRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -897,7 +1066,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return delay;
             }
             yield return SideFireballsRoutine();
-            if (CanMove)
+            if (StopPattern)
             {
                 yield break;
             }
@@ -995,6 +1164,46 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
+        }
+
+        public IEnumerator DeathRoutine(bool skipAnim = false)
+        {
+            Health = 0;
+            InvincibilityDelay = 0f;
+            Speed = Vector2.Zero;
+            Collidable = false;
+            if (!skipAnim)
+            {
+                Audio.Play("event:/game/xaphan/guardian_death", Position);
+                float musicFadeStart = 0f;
+                while (musicFadeStart < 1)
+                {
+                    musicFadeStart += Engine.DeltaTime;
+                    Audio.SetMusicParam("fade", 1f - musicFadeStart);
+                    yield return null;
+                }
+                yield return 0.75f;
+            }
+            SceneAs<Level>().Displacement.AddBurst(Center, 0.5f, 16f, 64f, 0.5f);
+            for (int i = 0; i < 28; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Vector2 vector2 = new(i * 2 + 4f, j * 4 + 4f);
+                    GuardianDebris debris = Engine.Pooler.Create<GuardianDebris>().Init(Position + Collider.Position - Vector2.UnitX * 16 + vector2, Position + Collider.Center);
+                    Scene.Add(debris);
+                }
+            }
+            Audio.Play("event:/game/xaphan/drone_destroy", Position);
+            Audio.SetMusicParam("fade", 1f);
+            SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_item");
+            SceneAs<Level>().Session.Audio.Apply();
+            Visible = false;
+            while (SceneAs<Level>().Session.GetFlag("In_bossfight"))
+            {
+                yield return null;
+            }
+            Position = OrigPosition;
         }
 
         private IEnumerator EyesAlphaRoutine(bool fadeOut = false)
