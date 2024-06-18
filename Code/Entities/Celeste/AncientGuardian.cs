@@ -658,8 +658,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public AncientGuardian(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             OrigPosition = Position;
-            Collider = new Hitbox(30f, 23f, 21f, 33f);
-            Add(pc = new PlayerCollider(OnPlayer, new Circle(15f, 36f, 28f)));
+            Collider = new Hitbox(30f, 23f, 18f, 23f);
+            Add(pc = new PlayerCollider(OnPlayer, new Circle(15f, 33f, 18f)));
             Add(Sprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
             Sprite.Add("idle", "idle", 0f);
             Sprite.Play("idle");
@@ -669,13 +669,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             EyesSprite.Add("fireball", "eyes", 0, 2);
             EyesSprite.Add("sideFireball", "eyes", 0, 3);
             EyesSprite.Add("off", "eyes", 0, 4);
-            EyesSprite.Position += new Vector2(24f, 30f);
+            EyesSprite.Position += new Vector2(21f, 20f);
             Add(LeftWheelSprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
             LeftWheelSprite.AddLoop("wheel", "wheel", 0.04f);
-            LeftWheelSprite.Position += new Vector2(3f, 25f);
+            LeftWheelSprite.Position += new Vector2(0f, 15f);
             Add(RightWheelSprite = new Sprite(GFX.Game, "characters/Xaphan/Guardian/"));
             RightWheelSprite.AddLoop("wheel", "wheel", 0.04f);
-            RightWheelSprite.Position += new Vector2(54f, 25f);
+            RightWheelSprite.Position += new Vector2(51f, 15f);
             Health = 15;
             Depth = -15000;
         }
@@ -1122,8 +1122,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
             Audio.Play("event:/game/xaphan/guardian_laser", Position);
-            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(28f, 33f)));
-            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(37f, 33f), true));
+            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(25f, 23f)));
+            SceneAs<Level>().Add(new GuardianLaser(Position + new Vector2(34f, 23f), true));
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
@@ -1136,10 +1136,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
             Audio.Play("event:/game/xaphan/guardian_fireball", Position);
-            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(36f, 43f), new Vector2(71f, 60f)));
-            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(36f, 43f), new Vector2(126f, 60f)));
-            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(36f, 43f), new Vector2(-71f, 60f)));
-            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(36f, 43f), new Vector2(-126f, 60f)));
+            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(71f, 60f)));
+            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(126f, 60f)));
+            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(-71f, 60f)));
+            SceneAs<Level>().Add(new GuardianSprayFireBall(Position + new Vector2(33f), new Vector2(-126f, 60f)));
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
@@ -1152,7 +1152,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
             Audio.Play("event:/game/xaphan/guardian_fireball", Position);
-            SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(36f, 43f), Vector2.UnitY * 60f, true));
+            SceneAs<Level>().Add(new GuardianFireBall(Position + new Vector2(33f), Vector2.UnitY * 60f, true));
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
@@ -1165,10 +1165,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
             Audio.Play("event:/game/xaphan/guardian_fireball", Position);
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(36f, 43f), new Vector2(125f, 100f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(36f, 43f), new Vector2(125f, 200f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(36f, 43f), new Vector2(-125f, 100f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(36f, 43f), new Vector2(-125f, 200f)));
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(125f, 100f)));
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(125f, 200f)));
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-125f, 100f)));
+            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-125f, 200f)));
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));
             yield return 0.5f;
