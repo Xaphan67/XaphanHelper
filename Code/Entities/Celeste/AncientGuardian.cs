@@ -709,7 +709,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 fireball.RemoveSelf();
             }
             Add(new Coroutine(SequenceRoutine()));
-            Add(new Coroutine(InvincibilityRoutine()));
         }
 
         public void OnPlayer(Player player)
@@ -820,6 +819,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return null;
             }
+            Add(new Coroutine(InvincibilityRoutine()));
             while (Health > 0)
             {
                 float delay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.7f : 1f;
@@ -903,7 +903,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Visible = true;
             Add(new Coroutine(SequenceRoutine()));
-            Add(new Coroutine(InvincibilityRoutine()));
         }
 
         public IEnumerator AttackPattern1(float delay)
@@ -1325,6 +1324,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     InvincibilityDelay -= Engine.DeltaTime;
                     yield return null;
                 }
+                InvincibilityDelay = 0;
                 Flashing = false;
                 yield return null;
             }
