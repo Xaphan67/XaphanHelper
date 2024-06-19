@@ -870,41 +870,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else
                         {
-                            if (TrackPosition != 0 || SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+                            int attack = Calc.Random.Next(1, 101);
+                            if (attack <= 40)
                             {
-                                int attack = Calc.Random.Next(1, 101);
-                                if (attack <= 40)
-                                {
-                                    Add(Routine = new Coroutine(LaserRoutine()));
-                                }
-                                else if (attack <= 80)
-                                {
-                                    Add(Routine = new Coroutine(SprayFireBallsRoutine()));
-                                }
-                                else
-                                {
-                                    Add(Routine = new Coroutine(SideFireballsRoutine()));
-                                }
+                                Add(Routine = new Coroutine(LaserRoutine()));
+                            }
+                            else if (attack <= 80)
+                            {
+                                Add(Routine = new Coroutine(SprayFireBallsRoutine()));
                             }
                             else
                             {
-                                int attack = Calc.Random.Next(1, 101);
-                                if (attack <= 25)
-                                {
-                                    Add(Routine = new Coroutine(LaserRoutine()));
-                                }
-                                else if (attack <= 50)
-                                {
-                                    Add(Routine = new Coroutine(SprayFireBallsRoutine()));
-                                }
-                                else if (attack <= 75)
-                                {
-                                    Add(Routine = new Coroutine(FireballRoutine()));
-                                }
-                                else
-                                {
-                                    Add(Routine = new Coroutine(SideFireballsRoutine()));
-                                }
+                                Add(Routine = new Coroutine(SideFireballsRoutine()));
                             }
                         }
                     }

@@ -430,7 +430,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             {
                 yield return null;
             }
-            if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count > 0)
+            if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count > 0 && !SceneAs<Level>().Session.GetFlag("boss_Checkpoint"))
             {
                 foreach (CustomRefill refill in SceneAs<Level>().Tracker.GetEntities<CustomRefill>())
                 {
