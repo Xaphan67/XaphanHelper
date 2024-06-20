@@ -879,7 +879,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Add(Routine = new Coroutine(SprayFireBallsRoutine()));
                             }
-                            else
+                            else if (TrackPosition == 0)
                             {
                                 Add(Routine = new Coroutine(SideFireballsRoutine()));
                             }
@@ -946,14 +946,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return delay;
             }
-            yield return FireballRoutine();
-            if (StopPattern)
+            if (Health != 5)
             {
-                yield break;
-            }
-            else
-            {
-                yield return delay;
+                yield return FireballRoutine();
+                if (StopPattern)
+                {
+                    yield break;
+                }
+                else
+                {
+                    yield return delay;
+                }
             }
             yield return SprayFireBallsRoutine();
             if (StopPattern)
@@ -968,14 +971,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator AttackPattern3(float delay)
         {
-            yield return FireballRoutine();
-            if (StopPattern)
+            if (Health != 5)
             {
-                yield break;
-            }
-            else
-            {
-                yield return delay;
+                yield return FireballRoutine();
+                if (StopPattern)
+                {
+                    yield break;
+                }
+                else
+                {
+                    yield return delay;
+                }
             }
             yield return SideFireballsRoutine();
             if (StopPattern)
@@ -995,14 +1001,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return delay;
             }
-            yield return FireballRoutine();
-            if (StopPattern)
+            if (Health != 5)
             {
-                yield break;
-            }
-            else
-            {
-                yield return delay;
+                yield return FireballRoutine();
+                if (StopPattern)
+                {
+                    yield break;
+                }
+                else
+                {
+                    yield return delay;
+                }
             }
             yield return LaserRoutine();
             if (StopPattern)
@@ -1026,14 +1035,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return delay;
             }
-            yield return FireballRoutine();
-            if (StopPattern)
+            if (Health != 5)
             {
-                yield break;
-            }
-            else
-            {
-                yield return delay;
+                yield return FireballRoutine();
+                if (StopPattern)
+                {
+                    yield break;
+                }
+                else
+                {
+                    yield return delay;
+                }
             }
             yield return SprayFireBallsRoutine();
             if (StopPattern)
@@ -1220,17 +1232,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new Coroutine(EyesAlphaRoutine()));
             yield return 1f;
             Audio.Play("event:/game/xaphan/guardian_fireball", Position);
-            float verticalSpeed = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 100f : 125f;
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 100f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 200f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 100f)));
-            SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 200f)));
+            float horizontalSpeed = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 100f : 125f;
             if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
             {
-                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 150f)));
-                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(verticalSpeed, 250f)));
-                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 150f)));
-                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-verticalSpeed, 250f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(horizontalSpeed, 75f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(horizontalSpeed, 150f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(horizontalSpeed, 225f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-horizontalSpeed, 75f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-horizontalSpeed, 150f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-horizontalSpeed, 225f)));
+            }
+            else
+            {
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(horizontalSpeed, 100f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(horizontalSpeed, 200f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-horizontalSpeed, 100f)));
+                SceneAs<Level>().Add(new GuardianSideFireBall(Position + new Vector2(33f), new Vector2(-horizontalSpeed, 200f)));
             }
             yield return 0.5f;
             Add(new Coroutine(EyesAlphaRoutine(true)));

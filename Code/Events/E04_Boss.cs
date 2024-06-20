@@ -428,6 +428,22 @@ namespace Celeste.Mod.XaphanHelper.Events
         {
             while (boss.Health >= 13)
             {
+                if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
+                {
+                    if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count <= 0)
+                    {
+                        yield return 3f;
+                        if (boss.Health >= 13)
+                        {
+                            SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill3.type, refill1.oneUse, refill1.respawnTime));
+                            SceneAs<Level>().Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
+                            SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill3.type, refill2.oneUse, refill2.respawnTime));
+                            SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
+                            SceneAs<Level>().Add(new CustomRefill(refill3.Position, refill3.type, true, refill3.respawnTime));
+                            SceneAs<Level>().Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
+                        }
+                    }
+                }
                 yield return null;
             }
             if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count > 0 && !SceneAs<Level>().Session.GetFlag("boss_Checkpoint"))
@@ -464,7 +480,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode"))
             {
                 int countedOneUseRefills = 0;
-                int currentOneUseRefills = 0;
+                int currentOneUseRefills;
                 while (boss.Health >= 0)
                 {
                     foreach (CustomRefill refill in SceneAs<Level>().Tracker.GetEntities<CustomRefill>())
