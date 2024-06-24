@@ -287,7 +287,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         else if (platform.AttachedLever != null)
                         {
                             AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, platform.AttachedLever.Directory, platform.AttachedLever.Flag, platform.AttachedLever.CanSwapFlag, platform.AttachedLever.Side, platform.AttachedLever.registerInSaveData, platform.AttachedLever.saveDataOnlyAfterCheckpoint);
-                            AttachedLever.Depth = 1;
+                            AttachedLever.Depth = Depth + 1;
                         }
                         else if (platform.AttachedSpring != null)
                         {

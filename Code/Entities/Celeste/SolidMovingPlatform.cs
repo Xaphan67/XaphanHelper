@@ -372,11 +372,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         else if (platform.AttachedMagneticCeiling != null)
                         {
                             AttachedMagneticCeiling = new MagneticCeiling(platform.Position - platform.attachedEntityOffset, Vector2.Zero, platform.AttachedMagneticCeiling.ID, platform.AttachedMagneticCeiling.Width, platform.AttachedMagneticCeiling.Directory, platform.AttachedMagneticCeiling.AnimationSpeed, platform.AttachedMagneticCeiling.CanJump, platform.AttachedMagneticCeiling.NoStaminaDrain);
+                            AttachedMagneticCeiling.Depth = Depth + 1;
                         }
                         else if (platform.AttachedLever != null)
                         {
                             AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, platform.AttachedLever.Directory, platform.AttachedLever.Flag, platform.AttachedLever.CanSwapFlag, platform.AttachedLever.Side, platform.AttachedLever.registerInSaveData, platform.AttachedLever.saveDataOnlyAfterCheckpoint);
-                            AttachedLever.Depth = 1;
+                            AttachedLever.Depth = Depth + 1;
                         }
                         else if (platform.AttachedSpring != null)
                         {

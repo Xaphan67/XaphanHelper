@@ -51,6 +51,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
+            foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
+            {
+                platform.Collidable = false;
+            }
             base.Update();
             if (fallIfNoSolidOnTop)
             {
@@ -58,6 +62,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Triggered = true;
                 }
+            }
+            foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
+            {
+                platform.Collidable = true;
             }
         }
 
