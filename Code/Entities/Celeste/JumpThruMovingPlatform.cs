@@ -136,8 +136,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Math.Truncate(percent) % 2 != 0)
                 {
                     float substract = Math.Abs(1 - percent);
-                    percent = 1 - substract;
-                    this.direction = -direction;
+                    if (mode == "Restart")
+                    {
+                        percent = substract;
+                    }
+                    else
+                    {
+                        percent = 1 - substract;
+                        this.direction = -direction;
+                    }
                 }
             }
             else
@@ -243,7 +250,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 foreach (Spring spring in Springs)
                 {
-                    if (CollideCheck(spring, OrigPosition - Vector2.UnitX * 2))
+                    if (CollideCheck(spring, OrigPosition - Vector2.UnitY * 2))
                     {
                         AttachedSpring = spring;
                         break;

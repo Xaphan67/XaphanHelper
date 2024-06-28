@@ -140,8 +140,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Math.Truncate(percent) % 2 != 0)
                 {
                     float substract = Math.Abs(1 - percent);
-                    percent = 1 - substract;
-                    this.direction = -direction;
+                    if (mode == "Restart")
+                    {
+                        percent = substract;
+                    }
+                    else
+                    {
+                        percent = 1 - substract;
+                        this.direction = -direction;
+                    }
                 }
             }
             else
