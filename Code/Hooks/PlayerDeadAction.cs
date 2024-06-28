@@ -17,7 +17,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void onPlayerDeaDBodyEnd(On.Celeste.PlayerDeadBody.orig_End orig, PlayerDeadBody self)
         {
-            if ((self.SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<DroneSwitch>().Count > 0) && !self.SceneAs<Level>().Session.GrabbedGolden)
+            if ((self.SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<DroneSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<Detonator>().Count > 0) && !self.SceneAs<Level>().Session.GrabbedGolden)
             {
                 self.DeathAction = DeathAction;
             }
@@ -45,6 +45,13 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         {
                             level.Session.SetFlag(flagSwitch.flag, false);
                         }
+                    }
+                }
+                foreach (Detonator detonator in level.Tracker.GetEntities<Detonator>())
+                {
+                    if (!detonator.FlagRegiseredInSaveData())
+                    {
+                        level.Session.SetFlag(detonator.flag, false);
                     }
                 }
                 level.Reload();

@@ -27,8 +27,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public FuseExplosionSoundManager manager;
 
-            public FuseSection(EntityData data, Vector2 position) : base(position)
+            public int ID;
+
+            public FuseSection(EntityData data, Vector2 position, int id) : base(position)
             {
+                Tag = Tags.TransitionUpdate;
+                ID = id;
                 Collider = new Hitbox(8f, 8f);
                 directory = data.Attr("directory");
                 if (string.IsNullOrEmpty(directory))
@@ -87,7 +91,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
-            public IEnumerator ExplodeRoutine(float speed)
+            public IEnumerator ExplodeRoutine(float speed, string flag = null, bool registerInSaveData = false)
             {
                 triggered = true;
                 if (manager.explosionSoundCooldown <= 0)
@@ -104,12 +108,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     waitTimer -= Engine.DeltaTime * 2;
                     yield return null;
                 }
+                bool isEnd = true;
                 if (CollideCheck<FuseSection>(Position - Vector2.UnitY))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position - Vector2.UnitY);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed, flag, registerInSaveData)));
+                        isEnd = false;
                     }
                 }
                 if (CollideCheck<FuseSection>(Position + Vector2.UnitY))
@@ -117,7 +123,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     FuseSection nextSection = CollideFirst<FuseSection>(Position + Vector2.UnitY);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed, flag, registerInSaveData)));
+                        isEnd = false;
+
                     }
                 }
                 if (CollideCheck<FuseSection>(Position + Vector2.UnitX))
@@ -125,7 +133,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     FuseSection nextSection = CollideFirst<FuseSection>(Position + Vector2.UnitX);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed, flag, registerInSaveData)));
+                        isEnd = false;
+
                     }
                 }
                 if (CollideCheck<FuseSection>(Position - Vector2.UnitX))
@@ -133,7 +143,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     FuseSection nextSection = CollideFirst<FuseSection>(Position - Vector2.UnitX);
                     if (nextSection != null && !nextSection.triggered)
                     {
-                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed)));
+                        nextSection.Add(new Coroutine(nextSection.ExplodeRoutine(speed, flag, registerInSaveData)));
+                        isEnd = false;
+
+                    }
+                }
+                if (isEnd && flag != null)
+                {
+                    SceneAs<Level>().Session.SetFlag(flag);
+                    if (registerInSaveData)
+                    {
+                        string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                        int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
+                        }
+                        if (XaphanModule.PlayerHasGolden)
+                        {
+                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
+                            {
+                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
+                            }
+                        }
                     }
                 }
             }
@@ -218,11 +250,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        EntityData data;
+        private EntityData data;
+
+        private int ID;
 
         public Fuse(EntityData data, Vector2 position, EntityID ID) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
+            Collider = new Hitbox(data.Width, data.Height);
+            this.ID = ID.ID;
             this.data = data;
         }
 
@@ -233,9 +269,53 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 for (int y = 0; y < data.Height / 8; y++)
                 {
-                    scene.Add(new FuseSection(data, Position + new Vector2(x * 8, y * 8)));
+                    scene.Add(new FuseSection(data, Position + new Vector2(x * 8, y * 8), ID));
                 }
             }
+        }
+
+        public override void Removed(Scene scene)
+        {
+            foreach (FuseSection section in SceneAs<Level>().Tracker.GetEntities<FuseSection>())
+            {
+                if (section.ID == ID)
+                {
+                    section.RemoveSelf();
+                }
+            }
+            if (CollideCheck<Fuse>(Position - Vector2.UnitY))
+            {
+                Fuse nextFuse = CollideFirst<Fuse>(Position - Vector2.UnitY);
+                if (nextFuse != null)
+                {
+                    nextFuse.RemoveSelf();
+                }
+            }
+            if (CollideCheck<Fuse>(Position + Vector2.UnitY))
+            {
+                Fuse nextFuse = CollideFirst<Fuse>(Position + Vector2.UnitY);
+                if (nextFuse != null)
+                {
+                    nextFuse.RemoveSelf();
+                }
+            }
+            if (CollideCheck<Fuse>(Position + Vector2.UnitX))
+            {
+                Fuse nextFuse = CollideFirst<Fuse>(Position + Vector2.UnitX);
+                if (nextFuse != null)
+                {
+                    nextFuse.RemoveSelf();
+                }
+            }
+            if (CollideCheck<Fuse>(Position - Vector2.UnitX))
+            {
+                Fuse nextFuse = CollideFirst<Fuse>(Position - Vector2.UnitX);
+                if (nextFuse != null)
+                {
+                    nextFuse.RemoveSelf();
+                }
+            }
+            base.Removed(scene);
         }
     }
 }

@@ -17,17 +17,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float speed;
 
+        public string flag;
+
+        public bool registerInSaveData;
+
         private PlayerCollider pc;
 
         private bool pressed;
 
         private bool wasPressed;
 
+        public bool FlagRegiseredInSaveData()
+        {
+            Session session = SceneAs<Level>().Session;
+            string Prefix = session.Area.LevelSet;
+            int chapterIndex = session.Area.ChapterIndex;
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
         public Detonator(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, true)
         {
+            Tag = Tags.TransitionUpdate;
             directory = data.Attr("directory");
             side = data.Attr("side", "Up");
             speed = data.Float("speed", 0.1f);
+            flag = data.Attr("flag", "");
+            registerInSaveData = data.Bool("registerInSaveData");
             Add(sprite = new Sprite(GFX.Game, directory + "/"));
             sprite.Add("idle", "idle", 0);
             sprite.Add("pressed", "pressed", 0);
@@ -111,42 +126,93 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 DisplacePlayerOnTop();
             }
-            if (pressed && !wasPressed)
+            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && !pressed)
             {
+                sprite.Play("pressed");
+                pressed = true;
                 wasPressed = true;
-                Fuse.FuseSection fuse = null;
-                switch (side)
-                {
-                    case "Up":
-                        if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
-                        {
-                            fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitY);
-                        }
-                        break;
-                    case "Down":
-                        if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X, (int)Y - 16, 1, 1)))
-                        {
-                            fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitY);
-                        }
-                        break;
-                    case "Left":
-                        if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
-                        {
-                            fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitX);
-                        }
-                        break;
-                    case "Right":
-                        if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X - 16, (int)Y, 1, 1)))
-                        {
-                            fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitX);
-                        }
-                        break;
-                };
+                pc.Collider = null;
+                Fuse fuse = GetFuse();
                 if (fuse != null)
                 {
-                    fuse.Add(new Coroutine(fuse.ExplodeRoutine(speed)));
+                    fuse.RemoveSelf();
                 }
             }
+            else if (pressed && !wasPressed)
+            {
+                wasPressed = true;
+                Fuse.FuseSection section = GetFuseSection();
+                if (section != null)
+                {
+                    section.Add(new Coroutine(section.ExplodeRoutine(speed, !string.IsNullOrEmpty(flag) ? flag : null, !string.IsNullOrEmpty(flag) ? registerInSaveData : false)));
+                }
+            }
+        }
+
+        private Fuse GetFuse()
+        {
+            Fuse fuse = null;
+            switch (side)
+            {
+                case "Up":
+                    if (Scene.CollideCheck<Fuse>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse>(Position + Vector2.UnitY);
+                    }
+                    break;
+                case "Down":
+                    if (Scene.CollideCheck<Fuse>(new Rectangle((int)X, (int)Y - 16, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse>(Position - Vector2.UnitY);
+                    }
+                    break;
+                case "Left":
+                    if (Scene.CollideCheck<Fuse>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse>(Position + Vector2.UnitX);
+                    }
+                    break;
+                case "Right":
+                    if (Scene.CollideCheck<Fuse>(new Rectangle((int)X - 16, (int)Y, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse>(Position - Vector2.UnitX);
+                    }
+                    break;
+            };
+            return fuse;
+        }
+
+        private Fuse.FuseSection GetFuseSection()
+        {
+            Fuse.FuseSection fuse = null;
+            switch (side)
+            {
+                case "Up":
+                    if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitY);
+                    }
+                    break;
+                case "Down":
+                    if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X, (int)Y - 16, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitY);
+                    }
+                    break;
+                case "Left":
+                    if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse.FuseSection>(Position + Vector2.UnitX);
+                    }
+                    break;
+                case "Right":
+                    if (Scene.CollideCheck<Fuse.FuseSection>(new Rectangle((int)X - 16, (int)Y, 1, 1)))
+                    {
+                        fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitX);
+                    }
+                    break;
+            };
+            return fuse;
         }
 
         private void DisplacePlayerOnTop()
