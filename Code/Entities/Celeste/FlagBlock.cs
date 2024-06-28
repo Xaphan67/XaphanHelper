@@ -252,5 +252,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             base.Render();
         }
+
+        public override void Removed(Scene scene)
+        {
+            base.Removed(scene);
+            DestroyStaticMovers();
+        }
     }
 }
