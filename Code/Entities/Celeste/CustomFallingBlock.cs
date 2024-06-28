@@ -28,12 +28,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool fallIfNoSolidOnTop;
 
+        private bool magneticCeilingsNoTrigger;
+
         public bool HasStartedFalling { get; private set; }
 
         public CustomFallingBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false)
         {
             climbFall = data.Bool("climbFall", true);
             fallIfNoSolidOnTop = data.Bool("fallIfNoSolidOnTop", false);
+            magneticCeilingsNoTrigger = data.Bool("magnetingCeilingsDoNotTrigger", false);
             int newSeed = Calc.Random.Next();
             Calc.PushRandom(newSeed);
             Add(tiles = GFX.FGAutotiler.GenerateBox(data.Char("tiletype", '3'), data.Width / 8, data.Height / 8).TileGrid);
@@ -79,7 +82,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (climbFall)
             {
+                if (SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && magneticCeilingsNoTrigger)
+                {
+                    return HasPlayerRider() && !HasPlayerOnTop();
+                }
                 return HasPlayerRider();
+            }
+            if (SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && magneticCeilingsNoTrigger)
+            {
+                return false;
             }
             return HasPlayerOnTop();
         }
