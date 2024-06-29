@@ -22,6 +22,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool PlayerOnTop;
 
+        private bool PlayerLeft;
+
         public Vector2? startSpawnPoint;
 
         public bool flagState;
@@ -35,6 +37,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool canSwitch;
 
         private StaticMover staticMover;
+
+        private Coroutine DelayRoutine = new();
 
         public bool FlagRegiseredInSaveData()
         {
@@ -209,6 +213,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(new Coroutine(AnimateRoutine(true)));
             }
             PlayerOnTop = true;
+            if (!DelayRoutine.Active)
+            {
+                Add(DelayRoutine = new Coroutine(SwitchDelayRoutine()));
+            }
         }
 
         public void UpdateSprite()
@@ -297,8 +305,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            Player player = CollideFirst<Player>();
-            if (player == null && PlayerOnTop)
+            if (CollideFirst<Player>() == null && PlayerOnTop)
+            {
+                PlayerLeft = true;
+            }
+        }
+
+        private IEnumerator SwitchDelayRoutine()
+        {
+            while (!PlayerLeft)
+            {
+                yield return null;
+            }
+            float timer = 1f;
+            while (timer > 0)
+            {
+                timer -= Engine.DeltaTime;
+                yield return null;
+            }
+            if (CollideFirst<Player>() == null)
             {
                 PlayerOnTop = false;
             }
