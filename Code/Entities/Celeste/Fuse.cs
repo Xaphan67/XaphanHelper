@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
@@ -87,6 +88,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 base.Update();
                 if (manager == null)
                 {
+                    if (SceneAs<Level>().Tracker.GetEntities<FuseExplosionSoundManager>().Count() == 0)
+                    {
+                        SceneAs<Level>().Add(new FuseExplosionSoundManager());
+                    }
                     manager = SceneAs<Level>().Tracker.GetEntity<FuseExplosionSoundManager>();
                 }
             }
@@ -97,7 +102,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (manager.explosionSoundCooldown <= 0)
                 {
                     Audio.Play("event:/game/xaphan/fuse_explosion", Position);
-                    manager.explosionSoundCooldown = speed > 0.1f ? speed : 0.1f;
+                    manager.SetCooldown(speed > 0.1f ? speed : 0.1f);
+                    yield return null;
                 }
                 ExplosionSprite.Play("explode");
                 ExplosionSprite.Rate *= speed <= 0.05f ? 4f : speed <= 0.1f ? 3f : speed <= 0.15f ? 2f : 1f;

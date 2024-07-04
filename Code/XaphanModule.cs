@@ -736,7 +736,6 @@ namespace Celeste.Mod.XaphanHelper
             Conveyor.Load();
             SolidMovingPlatform.Load();
             AuxiliaryGenerator.Load();
-            FuseExplosionSoundManager.Load();
             Detonator.Load();
             Lever.Load();
         }
@@ -839,7 +838,6 @@ namespace Celeste.Mod.XaphanHelper
             Conveyor.Unload();
             SolidMovingPlatform.Unload();
             AuxiliaryGenerator.Unload();
-            FuseExplosionSoundManager.Unload();
             Detonator.Unload();
             Lever.Unload();
         }
