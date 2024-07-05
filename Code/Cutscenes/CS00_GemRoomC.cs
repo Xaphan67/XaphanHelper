@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Monocle;
 
@@ -51,7 +52,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return player.DummyWalkToExact((int)gemController.X);
             yield return gemController.ActivateGems();
             int missingGems = 0;
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? 5 : 4); i++)
             {
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
                 {
