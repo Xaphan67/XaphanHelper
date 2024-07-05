@@ -489,6 +489,10 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             self.Session.SetFlag("XaphanHelper_StatFlag_GemCh" + i);
                         }
+                        if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Gem2_Collected"))
+                        {
+                            self.Session.SetFlag("XaphanHelper_StatFlag_GemCh1-2");
+                        }
                         if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + i + "_Boss_Defeated"))
                         {
                             self.Session.SetFlag("XaphanHelper_StatFlag_BossCh" + i);

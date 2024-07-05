@@ -295,6 +295,21 @@ namespace Celeste.Mod.XaphanHelper
                 medals: 5,
                 hidden: true
             ));
+
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            {
+                list.Add(new AchievementData(
+                   achievementID: "gem1-2",
+                   categoryID: 1,
+                   icon: "achievements/Xaphan/Gem1-2",
+                   flag: "XaphanHelper_StatFlag_GemCh1-2",
+                   currentValue: session.GetFlag("XaphanHelper_StatFlag_GemCh1-2") ? 1 : 0,
+                   maxValue: 1,
+                   medals: 5,
+                   hidden: true
+               ));
+            }
+
             list.Add(new AchievementData(
                 achievementID: "map1-0s",
                 categoryID: 1,
@@ -729,6 +744,16 @@ namespace Celeste.Mod.XaphanHelper
                 // Area 3
 
                 // Area 4
+                list.Add(new AchievementData(
+                    achievementID: "gem4-1",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/Gem4",
+                    flag: "XaphanHelper_StatFlag_GemCh4",
+                    currentValue: session.GetFlag("XaphanHelper_StatFlag_GemCh4") ? 1 : 0,
+                    maxValue: 1,
+                    medals: 5,
+                    hidden: true
+                ));
                 list.Add(new AchievementData(
                     achievementID: "map4-0s",
                     categoryID: 4,
