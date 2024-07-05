@@ -14,6 +14,11 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
+        public bool Ch1Gem2Collected()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
         public bool Ch2GemCollected()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
@@ -27,6 +32,11 @@ namespace Celeste.Mod.XaphanHelper.Controllers
         public bool Ch4GemCollected()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+        }
+
+        public bool Ch5GemCollected()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
         public bool EndAreaOpened;
@@ -50,7 +60,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             {
                 SceneAs<Level>().Session.SetFlag("Open_End_Area", true);
             }
-            else if (Ch1GemCollected() && Ch2GemCollected() && Ch3GemCollected() && Ch4GemCollected())
+            else if (Ch1GemCollected() && Ch1Gem2Collected() && Ch2GemCollected() && Ch3GemCollected() && Ch4GemCollected() && Ch5GemCollected())
             {
                 if (!EndAreaOpened)
                 {
@@ -64,7 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
         {
             foreach (GemSlot gem in Scene.Entities.FindAll<GemSlot>())
             {
-                if (!gem.Activated && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + gem.Chapter + "_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                if (!gem.Activated && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + gem.Chapter + "_Gem" + ((gem.Index != 1 ? gem.Index : "")) + "_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
                 {
                     yield return 0.5f;
                     gem.Activated = true;

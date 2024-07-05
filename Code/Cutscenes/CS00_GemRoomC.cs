@@ -51,46 +51,21 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return player.DummyWalkToExact((int)gemController.X);
             yield return gemController.ActivateGems();
             int missingGems = 0;
-            for (int i = 1; i <= 4; i++)
+            for (int i = 1; i <= 5; i++)
             {
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
                 {
                     missingGems++;
                 }
             }
+            if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            {
+                missingGems++;
+            }
+            Logger.Log(LogLevel.Info, "Xh", "missingGems :" + missingGems);
             if (missingGems > 0)
             {
                 yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_b_" + missingGems);
-            }
-            if (missingGems == 3)
-            {
-                XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch1_Gem_Sloted");
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch1_Gem_Sloted_GoldenStrawberry");
-                }
-            }
-            else if (missingGems == 2)
-            {
-                XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch1_Gem_Sloted");
-                XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch2_Gem_Sloted");
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch1_Gem_Sloted_GoldenStrawberry");
-                    XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch2_Gem_Sloted_GoldenStrawberry");
-                }
-            }
-            else if (missingGems == 3)
-            {
-                XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch1_Gem_Sloted");
-                XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch2_Gem_Sloted");
-                XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch3_Gem_Sloted");
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch1_Gem_Sloted_GoldenStrawberry");
-                    XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch2_Gem_Sloted_GoldenStrawberry");
-                    XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch0_Ch3_Gem_Sloted_GoldenStrawberry");
-                }
             }
             EndCutscene(Level);
         }

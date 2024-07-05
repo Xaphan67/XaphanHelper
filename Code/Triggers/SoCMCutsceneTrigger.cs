@@ -15,6 +15,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public bool playerHasCollectedOneGem()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
                 XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
                 XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
                 XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
@@ -77,13 +78,17 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                         if (playerHasCollectedOneGem())
                         {
                             bool PlayerHasNotSlotedGems = false;
-                            for (int i = 1; i <= 4; i++)
+                            for (int i = 1; i <= 5; i++)
                             {
                                 if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
                                 {
                                     PlayerHasNotSlotedGems = true;
                                     break;
                                 }
+                            }
+                            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                            {
+                                PlayerHasNotSlotedGems = true;
                             }
                             if (PlayerHasNotSlotedGems)
                             {
