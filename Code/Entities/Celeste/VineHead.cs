@@ -1,0 +1,319 @@
+﻿using System;
+using System.Collections;
+using Celeste.Mod.Entities;
+using Microsoft.Xna.Framework;
+using Monocle;
+
+namespace Celeste.Mod.XaphanHelper.Entities
+{
+    [Tracked(true)]
+    [CustomEntity("XaphanHelper/VineHead")]
+    class VineHead : Actor
+    {
+        private Vector2[] nodes;
+
+        private Vector2 PreviousDirection;
+
+        private string directory;
+
+        private Sprite Sprite;
+
+        private Coroutine SequenceRoutine = new();
+
+        private string flag;
+
+        private bool SwapDirection;
+
+        private bool JustSwapped;
+
+        public int ID;
+
+        public VineHead(EntityData data, Vector2 offset) : base(data.Position + offset)
+        {
+            Tag = Tags.TransitionUpdate;
+            ID = data.ID;
+            Collider = new Hitbox(8f, 8f);
+            Add(new PlayerCollider(onPlayer, new Circle(8, 4, 4)));
+            flag = "testVine";
+            nodes = data.NodesWithPosition(offset);
+            directory = data.Attr("directory");
+            if (string.IsNullOrEmpty(directory))
+            {
+                directory = "objects/XaphanHelper/Vine";
+            }
+            Add(Sprite = new Sprite(GFX.Game, directory + "/"));
+            Sprite.AddLoop("head", "head", 0.08f);
+            Sprite.CenterOrigin();
+            Sprite.Position += new Vector2(4);
+            Sprite.Play("head");
+        }
+
+        private void onPlayer(Player player)
+        {
+            player.Die((player.Position - Position).SafeNormalize());
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            if (SceneAs<Level>().Session.GetFlag(flag))
+            {
+                SwapDirection = true;
+                Position = nodes[1];
+            }
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
+            {
+                Sprite.Rotation = Position == nodes[0] ? -(float)Math.PI : (float)Math.PI;
+            }
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
+            {
+                Sprite.Rotation = Position == nodes[0] ? (float)Math.PI / 2 : -(float)Math.PI / 2;
+            }
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
+            {
+                Sprite.Rotation = Position == nodes[0] ? -(float)Math.PI / 2 : (float)Math.PI / 2;
+            }
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
+            {
+                Sprite.Rotation = Position == nodes[0] ? 0 : (float)Math.PI;
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (SceneAs<Level>().Session.GetFlag(flag) && Position == nodes[1])
+            {
+                foreach (VinePath.VinePathSection section in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
+                {
+                    if (section.ID == ID)
+                    {
+                        section.SetGrownSprite(true);
+                    }
+                }
+            }
+
+            if ((SceneAs<Level>().Session.GetFlag("testVine") && !SwapDirection) || (!SceneAs<Level>().Session.GetFlag("testVine") && SwapDirection))
+            {
+                SwapDirection = !SwapDirection;
+                if (SequenceRoutine.Active)
+                {
+                    SequenceRoutine.Cancel();
+                }
+                JustSwapped = true;
+            }
+
+            // At start and flag not set -> Wait
+            if (Position == nodes[0] && !SceneAs<Level>().Session.GetFlag(flag))
+            {
+                if (SequenceRoutine.Active)
+                {
+                    SequenceRoutine.Cancel();
+                }
+            }
+
+            else
+            // Not at end and flag set -> Expand
+            if (Position != nodes[1] && SceneAs<Level>().Session.GetFlag(flag))
+            {
+                if (!SequenceRoutine.Active)
+                {
+                    if (JustSwapped)
+                    {
+                        JustSwapped = false;
+                        PreviousDirection = -PreviousDirection;
+                    }
+                    StartSequence();
+                }
+                foreach(VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
+                {
+                    if (Left == pathSection.Left && Right == pathSection.Right && Top == pathSection.Top && Bottom == pathSection.Bottom)
+                    {
+                        pathSection.SetGrownSprite(true);
+                    }
+                }
+            }
+
+            else
+            // Not at start and flag not set -> Retract
+            if (Position != nodes[0] && !SceneAs<Level>().Session.GetFlag(flag))
+            {
+                if (!SequenceRoutine.Active)
+                {
+                    if (JustSwapped)
+                    {
+                        JustSwapped = false;
+                        Add(SequenceRoutine = new Coroutine(GrowRoutine(PreviousDirection, true)));
+                    }
+                    else
+                    {
+                        StartSequence(true);
+                    }
+                }
+                foreach (VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
+                {
+                    if (Left == pathSection.Left && Right == pathSection.Right && Top == pathSection.Top && Bottom == pathSection.Bottom)
+                    {
+                        pathSection.SetGrownSprite(false);
+                    }
+                }
+            }
+
+            else
+            // At end and flag set -> Wait
+            if (Position == nodes[1] && SceneAs<Level>().Session.GetFlag(flag))
+            {
+                if (SequenceRoutine.Active)
+                {
+                    SequenceRoutine.Cancel();
+                }
+            }
+        }
+
+        private void StartSequence(bool reverseSprite = false)
+        {
+            if (!SequenceRoutine.Active)
+            {
+                if (!MoveHCheck(1) && PreviousDirection != Vector2.UnitX)
+                {
+                    Add(SequenceRoutine = new Coroutine(GrowRoutine(Vector2.UnitX, reverseSprite)));
+                }
+                else if (!MoveVCheck(1) && PreviousDirection != Vector2.UnitY)
+                {
+                    Add(SequenceRoutine = new Coroutine(GrowRoutine(Vector2.UnitY, reverseSprite)));
+                }
+                else if (!MoveHCheck(-1) && PreviousDirection != -Vector2.UnitX)
+                {
+                    Add(SequenceRoutine = new Coroutine(GrowRoutine(-Vector2.UnitX, reverseSprite)));
+                }
+                else if (!MoveVCheck(-1) && PreviousDirection != -Vector2.UnitY)
+                {
+                    Add(SequenceRoutine = new Coroutine(GrowRoutine(-Vector2.UnitY, reverseSprite)));
+                }
+            }
+        }
+
+        private IEnumerator GrowRoutine(Vector2 direction, bool reverseSprite = false)
+        {
+            if (direction == Vector2.Zero)
+            {
+                yield break;
+            }
+            else
+            {
+                if (direction.X > 0)
+                {
+                    Sprite.Rotation = reverseSprite ? -(float)Math.PI / 2 : (float)Math.PI / 2;
+                }
+                else if (direction.X < 0)
+                {
+                    Sprite.Rotation = reverseSprite ? (float)Math.PI / 2 : - (float)Math.PI / 2;
+                }
+                else if (direction.Y > 0)
+                {
+                    Sprite.Rotation = reverseSprite ? 0 : (float)Math.PI;
+                }
+                else if (direction.Y < 0)
+                {
+                    Sprite.Rotation = reverseSprite ? (float)Math.PI : 0;
+                }
+            }
+            float speed = 50f;
+            PreviousDirection = -direction;
+            while (true)
+            {
+                bool flag = (direction.X == 0f) ? MoveVCheck(direction.Y) : MoveHCheck(direction.X);
+                if (flag)
+                {
+                    break;
+                }
+                if (direction.X != 0)
+                {
+                    MoveH(direction.X * speed * Engine.DeltaTime);
+                    yield return null;
+                }
+                if (direction.Y != 0f)
+                {
+                    MoveV(direction.Y * speed * Engine.DeltaTime);
+                    yield return null;
+                }
+            }
+            if (direction.X != 0f)
+            {
+                CorrectionH(direction.X);
+            }
+            if (direction.Y != 0f)
+            {
+                CorrectionV(direction.Y);
+            }
+        }
+
+        private bool MoveHCheck(float direction)
+        {
+            if (CollideCheck<VinePath>())
+            {
+                if ((!Scene.CollideCheck<VinePath>(new Rectangle((int)(X - 1f), (int)Y, 1, 1)) || !Scene.CollideCheck<VinePath>(new Rectangle((int)(X - 1f), (int)(Y + Height - 1), 1, 1)) || CollideCheck<Solid>(Position - Vector2.UnitX)) && direction == -1)
+                {
+                    return true;
+                }
+                if ((!Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1f + 1f), (int)Y, 1, 1)) || !Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1f + 1f), (int)(Y + Height - 1), 1, 1)) || CollideCheck<Solid>(Position + Vector2.UnitX)) && direction == 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private bool MoveVCheck(float direction)
+        {
+            if (CollideCheck<VinePath>())
+            {
+                if ((!Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)(Y - 1f), 1, 1)) || !Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1), (int)(Y - 1f), 1, 1)) || CollideCheck<Solid>(Position - Vector2.UnitY)) && direction == -1)
+                {
+                    return true;
+                }
+                if ((!Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)(Y + Height - 1f + 1f), 1, 1)) || !Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1), (int)(Y + Height - 1f + 1f), 1, 1)) || CollideCheck<Solid>(Position + Vector2.UnitY)) && direction == 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private void CorrectionH(float direction)
+        {
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)(X - 1f), (int)Y, 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X - 1f), (int)(Y + Height - 1), 1, 1)) && !CollideCheck<Solid>(Position - Vector2.UnitX) && direction == -1)
+            {
+                MoveHExact(-1);
+                CorrectionH(direction);
+            }
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width), (int)Y, 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width), (int)(Y + Height - 1), 1, 1)) && !CollideCheck<Solid>(Position + Vector2.UnitX) && direction == 1)
+            {
+                MoveHExact(1);
+                CorrectionH(direction);
+            }
+        }
+
+        private void CorrectionV(float direction)
+        {
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)(Y - 1f), 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1), (int)(Y - 1f), 1, 1)) && !CollideCheck<Solid>(Position - Vector2.UnitY) && direction == -1)
+            {
+                MoveVExact(-1);
+                CorrectionV(direction);
+            }
+            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)(Y + Height), 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1f), (int)(Y + Height), 1, 1)) && !CollideCheck<Solid>(Position + Vector2.UnitY) && direction == 1)
+            {
+                MoveVExact(1);
+                CorrectionV(direction);
+            }
+        }
+
+        public override void Render()
+        {
+            base.Render();
+        }
+    }
+}
