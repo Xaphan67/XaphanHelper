@@ -199,7 +199,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
 
-                if ((SceneAs<Level>().Session.GetFlag("testVine") && !SwapDirection) || (!SceneAs<Level>().Session.GetFlag("testVine") && SwapDirection))
+                if ((SceneAs<Level>().Session.GetFlag(flag) && !SwapDirection) || (!SceneAs<Level>().Session.GetFlag(flag) && SwapDirection))
                 {
                     SwapDirection = !SwapDirection;
                     if (SequenceRoutine.Active)
