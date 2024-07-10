@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.Entities;
+using FMOD;
 using Microsoft.Xna.Framework;
 using Monocle;
+using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -44,6 +46,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public int ID;
 
+        private Vector2 Scale;
+
         public VineHead(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;
@@ -59,15 +63,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 directory = "objects/XaphanHelper/Vine";
             }
             Add(Sprite = new Sprite(GFX.Game, directory + "/"));
-            Sprite.AddLoop("head", "head", 0.08f);
+            Sprite.Add("idle", "head", 0.08f, 0);
+            Sprite.Add("open", "head", 0.08f, 1, 2, 3);
+            Sprite.Add("close", "head", 0.08f, 3, 2, 1, 0);
             Sprite.CenterOrigin();
             Sprite.Position += new Vector2(4);
-            Sprite.Play("head");
+            Sprite.Play("idle");
+            Scale = Vector2.One;
         }
 
         private void onPlayer(Player player)
         {
-            if ((Facing == Facings.Up && player.Bottom > Top + 4f) || (Facing == Facings.Down && player.Top < Bottom - 4f) || (Facing == Facings.Left && player.Right > Left + 4f) || (Facing == Facings.Right && player.Left < Right - 4f) || !CanBounce)
+            if (((Facing == Facings.Up && player.Bottom > Top + 4f) || (Facing == Facings.Down && player.Top < Bottom - 4f) || (Facing == Facings.Left && player.Right > Left + 4f) || (Facing == Facings.Right && player.Left < Right - 4f) || !CanBounce) && !BouncePlayer)
             {
                 player.Die((player.Position - Position).SafeNormalize());
             }
@@ -86,12 +93,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 player.StateMachine.State = 0;
                 player.Speed = Vector2.Zero;
                 Vector2 speed = new Vector2();
+                Scale = new Vector2(1.3f, 0.7f);
                 if (Facing == Facings.Up)
                 {
                     speed = Vector2.UnitY * (wasDashing ? -350f : -225f);
                 }
                 else if (Facing == Facings.Down)
                 {
+
+                    player.MoveTowardsY(BottomCenter.Y + 16f, 50);
                     speed = Vector2.UnitY * (wasDashing ? 300f : 175f);
                 }
                 else if (Facing == Facings.Left)
@@ -113,15 +123,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Audio.Play("event:/game/general/thing_booped", Position);
                 Add(new Coroutine(BounceCooldownRoutine()));
             }
+            else if (Facing == Facings.Down)
+            {
+                bool wasDashing = false;
+                if (player.StateMachine.State == Player.StDash || player.DashAttacking)
+                {
+                    wasDashing = true;
+                }
+                player.Speed = Vector2.UnitY * (wasDashing ? 300f : 175f);
+            }
         }
 
         private IEnumerator BounceCooldownRoutine()
         {
             StopMoving = true;
-            yield return 0.2f;
-            BouncePlayer = false;
+            yield return 0.1f;
+            Sprite.Play("open");
             CanBounce = false;
-            yield return 3f;
+            yield return 0.3f;
+            BouncePlayer = false;
+            yield return 2.38f;
+            Sprite.Play("close");
+            yield return 0.32f;
             StopMoving = false;
             CanBounce = true;
         }
@@ -155,7 +178,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-
+            Scale.X = Calc.Approach(Scale.X, 1f, 1f * Engine.DeltaTime);
+            Scale.Y = Calc.Approach(Scale.Y, 1f, 1f * Engine.DeltaTime);
             if (!StopMoving)
             {
                 if (SceneAs<Level>().Session.GetFlag(flag) && Position == nodes[1])
@@ -413,6 +437,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Render()
         {
+            Sprite.Scale = Scale;
             base.Render();
         }
     }
