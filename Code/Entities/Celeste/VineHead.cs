@@ -48,14 +48,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Vector2 Scale;
 
+        private float GrowSpeed;
+
+        private float PauseTime;
+
         public VineHead(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;
             ID = data.ID;
+            GrowSpeed = data.Float("growSpeed", 50f);
+            PauseTime = data.Float("pauseTime", 3f);
+            flag = data.Attr("flag");
             Collider = new Hitbox(8f, 8f);
             Add(new PlayerCollider(onPlayer, new Circle(8, 4, 4)));
             Add(new PlayerCollider(onBounce, new Circle(6, 4, 4)));
-            flag = "testVine";
             nodes = data.NodesWithPosition(offset);
             directory = data.Attr("directory");
             if (string.IsNullOrEmpty(directory))
@@ -142,7 +148,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             CanBounce = false;
             yield return 0.3f;
             BouncePlayer = false;
-            yield return 2.38f;
+            yield return PauseTime - 0.3f - 0.32f;
             Sprite.Play("close");
             yield return 0.32f;
             StopMoving = false;
@@ -152,7 +158,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            if (SceneAs<Level>().Session.GetFlag(flag))
+            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
             {
                 SwapDirection = true;
                 Position = nodes[1];
@@ -180,7 +186,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             Scale.X = Calc.Approach(Scale.X, 1f, 1f * Engine.DeltaTime);
             Scale.Y = Calc.Approach(Scale.Y, 1f, 1f * Engine.DeltaTime);
-            if (!StopMoving)
+            if (!StopMoving && !string.IsNullOrEmpty(flag))
             {
                 if (SceneAs<Level>().Session.GetFlag(flag) && Position == nodes[1])
                 {
@@ -343,7 +349,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Sprite.Rotation = reverseSprite ? (float)Math.PI : 0;
                 }
             }
-            float speed = 50f;
             PreviousDirection = -direction;
             while (true)
             {
@@ -354,12 +359,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (direction.X != 0)
                 {
-                    MoveH(direction.X * speed * Engine.DeltaTime);
+                    MoveH(direction.X * GrowSpeed * Engine.DeltaTime);
                     yield return null;
                 }
                 if (direction.Y != 0f)
                 {
-                    MoveV(direction.Y * speed * Engine.DeltaTime);
+                    MoveV(direction.Y * GrowSpeed * Engine.DeltaTime);
                     yield return null;
                 }
             }
