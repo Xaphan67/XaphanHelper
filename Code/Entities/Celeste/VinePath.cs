@@ -46,7 +46,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private void onPlayer(Player player)
             {
-                player.Die((player.Position - Position).SafeNormalize());
+                if (CollideFirst<VineHead>() == null)
+                {
+                    player.Die((player.Position - Position).SafeNormalize());
+                }
             }
 
             public override void Awake(Scene scene)
