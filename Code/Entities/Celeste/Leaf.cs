@@ -2,6 +2,7 @@
 using System;
 using Celeste.Mod.Entities;
 using Monocle;
+using System.IO;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -9,6 +10,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
     class Leaf : JumpThru
     {
         private Sprite sprite;
+
+        private Sprite outline;
 
         private Wiggler wiggler;
 
@@ -39,6 +42,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private string flag;
 
         private float respawnTime;
+
+        private bool ShouldSwitchSprite;
 
         public Leaf(EntityData data, Vector2 offset) : base(data.Position + offset, 22, safe: false)
         {
@@ -81,6 +86,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new LightOcclude(0.2f));
             scale = Vector2.One;
             Add(sfx = new SoundSource());
+            Add(outline = new Sprite(GFX.Game, "objects/XaphanHelper/Leaf/"));
+            outline.AddLoop("idle", "outline", respawnTime / 48f);
+            outline.AddLoop("idle-dead", "outline-dead", respawnTime / 48f);
+            outline.Visible = false;
+            outline.Origin = new Vector2(outline.Width / 2f, 6f);
+            Depth = -100;
         }
 
         public override void Added(Scene scene)
@@ -88,8 +99,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/Leaf/"));
             sprite.AddLoop("idle", "leaf", 0);
+            sprite.AddLoop("idle-dead", "leaf-dead", 0);
             sprite.Add("spawn", "leaf", 0.03f, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+            sprite.Add("spawn-dead", "leaf-dead", 0.03f, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
             sprite.Add("fade", "leaf", 0.02f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            sprite.Add("fade-dead", "leaf-dead", 0.02f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
             sprite.Origin = new Vector2(sprite.Width / 2f, 6f);
             sprite.OnFrameChange = delegate (string s)
             {
@@ -98,14 +112,54 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     wiggler.Start();
                 }
             };
-            sprite.Play("idle");
+            sprite.Play((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) ? "idle" : "idle-dead");
+        }
+
+        public void SwitchSprite()
+        {
+            string animation = "";
+            string outline = "";
+            int frame = -1;
+            int outlineframe = -1;
+            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && sprite.LastAnimationID.Contains("-dead") && !triggered)
+            {
+                animation = sprite.LastAnimationID.Substring(0, sprite.LastAnimationID.Length - 5);
+                frame = sprite.CurrentAnimationFrame;
+                outline = "idle";
+                outlineframe = this.outline.CurrentAnimationFrame;
+                ShouldSwitchSprite = true;
+            }
+            if (string.IsNullOrEmpty(flag) || !SceneAs<Level>().Session.GetFlag(flag) && !sprite.LastAnimationID.Contains("-dead"))
+            {
+                animation = sprite.LastAnimationID + "-dead";
+                frame = sprite.CurrentAnimationFrame;
+                outline = "idle-dead";
+                outlineframe = this.outline.CurrentAnimationFrame;
+                ShouldSwitchSprite = true;
+            }
+            if (!string.IsNullOrEmpty(animation) && ShouldSwitchSprite)
+            {
+                sprite.Play(animation);
+                this.outline.Play(outline);
+                if (frame != -1)
+                {
+                    sprite.SetAnimationFrame(frame);
+                }
+                if (outlineframe != -1)
+                {
+                    this.outline.SetAnimationFrame(outlineframe);
+                }
+                ShouldSwitchSprite = false;
+            }
         }
 
         public override void Update()
         {
             base.Update();
-            appearParticles.Color = (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) ? Calc.HexToColor("47550D") : Calc.HexToColor("3B0D01");
-            if (sprite.CurrentAnimationID == "fade")
+            SwitchSprite();
+            Depth = outline.Visible ? 8999 : -100;
+            appearParticles.Color = (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) ? Calc.HexToColor("47550D") : Calc.HexToColor("55310D");
+            if (sprite.CurrentAnimationID.Contains("fade"))
             {
                 scale.X = Calc.Approach(scale.X, 1.2f, 1f * Engine.DeltaTime);
                 scale.Y = Calc.Approach(scale.Y, 1.4f, 1f * Engine.DeltaTime);
@@ -115,10 +169,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 scale.X = Calc.Approach(scale.X, 1f, 1f * Engine.DeltaTime);
                 scale.Y = Calc.Approach(scale.Y, 1f, 1f * Engine.DeltaTime);
             }
-            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && !triggered)
             {
-                sprite.Color = Color.White;
-                triggered = false;
                 timer += Engine.DeltaTime;
                 if (GetPlayerRider() != null)
                 {
@@ -133,6 +185,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     respawnTimer -= Engine.DeltaTime;
                     if (respawnTimer <= 0f)
                     {
+                        outline.Visible = false;
+                        outline.Stop();
                         waiting = true;
                         Y = startPos.Y;
                         speed = 0f;
@@ -211,6 +265,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Collidable = false;
                         sprite.Play("fade");
                         respawnTimer = respawnTime;
+                        outline.Visible = true;
+                        outline.Play("idle");
+                        outline.SetAnimationFrame(0);
                     }
                 }
                 float num = speed;
@@ -222,7 +279,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                sprite.Color = Color.OrangeRed;
                 Player playerRider = GetPlayerRider();
                 if (playerRider != null || triggered)
                 {
@@ -241,15 +297,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (respawnTimer > 0f)
                 {
                     respawnTimer -= Engine.DeltaTime;
-                    if (respawnTimer <= 0f)
+                    if (respawnTimer < respawnTime - 0.2f)
                     {
                         triggered = false;
+                    }
+                    if (respawnTimer <= 0f)
+                    {
+                        outline.Visible = false;
+                        outline.Stop();
                         waiting = true;
                         Y = startPos.Y;
                         speed = 0f;
                         scale = Vector2.One;
                         Collidable = true;
-                        sprite.Play("spawn");
+                        sprite.Play("spawn-dead");
                         for (int i = 0; i < 360; i += 30)
                         {
                             SceneAs<Level>().ParticlesBG.Emit(appearParticles, 1, Center, Vector2.One * 2f, i * ((float)Math.PI / 180f));
@@ -261,8 +322,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Y >= startPos.Y + 8)
                 {
                     Collidable = false;
-                    sprite.Play("fade");
+                    sprite.Play("fade-dead");
                     respawnTimer = respawnTime;
+                    outline.Visible = true;
+                    outline.Play("idle-dead");
+                    outline.SetAnimationFrame(0);
                 }
             }
         }
@@ -272,6 +336,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Vector2 vector = scale;
             vector *= 1f + 0.1f * wiggler.Value;
             sprite.Scale = vector;
+            outline.RenderPosition = startPos;
             base.Render();
         }
     }
