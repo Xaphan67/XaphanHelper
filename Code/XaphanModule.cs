@@ -738,6 +738,7 @@ namespace Celeste.Mod.XaphanHelper
             AuxiliaryGenerator.Load();
             Detonator.Load();
             Lever.Load();
+            LightManager.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -840,6 +841,7 @@ namespace Celeste.Mod.XaphanHelper
             AuxiliaryGenerator.Unload();
             Detonator.Unload();
             Lever.Unload();
+            LightManager.Unload();
         }
 
         // Custom States
