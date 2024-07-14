@@ -124,6 +124,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public ThornBarrier(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
+            Tag = Tags.TransitionUpdate;
             Collider = new Circle(10f);
             flag = data.Attr("flag");
             Add(Sprite = new Sprite(GFX.Game, "danger/XaphanHelper/ThornBarrier/"));
