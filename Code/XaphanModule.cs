@@ -739,6 +739,7 @@ namespace Celeste.Mod.XaphanHelper
             Detonator.Load();
             Lever.Load();
             LightManager.Load();
+            ClimbableVine.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -842,6 +843,7 @@ namespace Celeste.Mod.XaphanHelper
             Detonator.Unload();
             Lever.Unload();
             LightManager.Unload();
+            ClimbableVine.Unload();
         }
 
         // Custom States
