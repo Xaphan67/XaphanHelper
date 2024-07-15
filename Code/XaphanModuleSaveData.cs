@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
+using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
 namespace Celeste.Mod.XaphanHelper
 {
@@ -240,6 +242,10 @@ namespace Celeste.Mod.XaphanHelper
         public Dictionary<string, Facings> fakePlayerFacing = new();
 
         public Dictionary<string, Vector2> fakePlayerPosition = new();
+
+        // Light Mode
+
+        public LightModes LightMode = LightModes.None;
 
         // Others
 

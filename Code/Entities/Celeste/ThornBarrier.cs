@@ -136,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onPlayer(Player player)
         {
-            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
             {
                 player.Die((player.Position - Position).SafeNormalize());
             }
@@ -156,13 +156,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
             {
-                Sprite.Play("light");
-            }
-            else
-            {
-                Sprite.Play("dark");
+                if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
+                {
+                    Sprite.Play("light");
+                }
+                else
+                {
+                    Sprite.Play("dark");
+                }
             }
         }
 

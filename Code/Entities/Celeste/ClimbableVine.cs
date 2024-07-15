@@ -69,7 +69,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             List<Entity> vines = self.Scene.Tracker.GetEntities<ClimbableVine>().ToList();
             foreach (ClimbableVine vine in vines)
             {
-                if (!self.SceneAs<Level>().Session.GetFlag(vine.flag))
+                if ((!string.IsNullOrEmpty(vine.flag) && !self.SceneAs<Level>().Session.GetFlag(vine.flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)
                 {
                     vine.Collidable = true;
                 }
@@ -96,7 +96,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onPlayer(Player player)
         {
-            if (!SceneAs<Level>().Session.GetFlag(flag))
+            if ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)
             {
                 player.Die((player.Position - Position).SafeNormalize());
             }
@@ -105,17 +105,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag))
+            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
             {
-                spriteA.Play("light");
-                spriteB.Play("light");
-                edgeSprite.Play("light");
-            }
-            else
-            {
-                spriteA.Play("dark");
-                spriteB.Play("dark");
-                edgeSprite.Play("dark");
+                if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
+                {
+                    spriteA.Play("light");
+                    spriteB.Play("light");
+                    edgeSprite.Play("light");
+                }
+                else
+                {
+                    spriteA.Play("dark");
+                    spriteB.Play("dark");
+                    edgeSprite.Play("dark");
+                }
             }
         }
 
@@ -162,7 +165,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             edgeSprite.RenderPosition = Position + new Vector2(0f, Height - 5f);
             edgeSprite.Render();
-
         }
     }
 }

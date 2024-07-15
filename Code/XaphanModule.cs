@@ -20,6 +20,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using MonoMod.Utils;
+using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
 namespace Celeste.Mod.XaphanHelper
 {
@@ -2771,6 +2772,16 @@ namespace Celeste.Mod.XaphanHelper
             }
             NoDroneSpawnSound = false;
             SaveSettings();
+
+            // Store Current Light Mode in SaveData if using a Merge Chapters Controller
+
+            if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms")
+            {
+                if (ModSession.LightMode != LightModes.None)
+                {
+                    ModSaveData.LightMode = ModSession.LightMode;
+                }
+            }
 
             onSlope = false;
             isInLevel = false;

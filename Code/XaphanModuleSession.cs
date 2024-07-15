@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static Celeste.Session;
 
 namespace Celeste.Mod.XaphanHelper
 {
@@ -15,5 +16,16 @@ namespace Celeste.Mod.XaphanHelper
         // Entities respawn
 
         public HashSet<EntityID> NoRespawnIds = new();
+
+        // Light Mode
+
+        public enum LightModes
+        {
+            Light,
+            Dark,
+            None
+        }
+
+        public LightModes LightMode = LightModes.None;
     }
 }

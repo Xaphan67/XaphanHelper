@@ -237,10 +237,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         foreach (LightManager manager in SceneAs<Level>().Tracker.GetEntities<LightManager>())
                         {
                             manager.startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
-                            manager.flagState = SceneAs<Level>().Session.GetFlag("XaphanHelper_LightMode");
-                            int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
-                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_XaphanHelper_LightMode_true", false);
-                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_XaphanHelper_LightMode_false", false);
+                            manager.RespawnMode = XaphanModule.ModSession.LightMode;
                         }
                         if (XaphanModule.PlayerIsControllingRemoteDrone())
                         {

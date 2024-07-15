@@ -112,7 +112,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     wiggler.Start();
                 }
             };
-            sprite.Play((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) ? "idle" : "idle-dead");
+            sprite.Play(((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) ? "idle" : "idle-dead");
         }
 
         public void SwitchSprite()
@@ -121,7 +121,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             string outline = "";
             int frame = -1;
             int outlineframe = -1;
-            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && sprite.LastAnimationID.Contains("-dead") && !triggered)
+            if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && sprite.LastAnimationID.Contains("-dead") && !triggered)
             {
                 animation = sprite.LastAnimationID.Substring(0, sprite.LastAnimationID.Length - 5);
                 frame = sprite.CurrentAnimationFrame;
@@ -129,7 +129,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 outlineframe = this.outline.CurrentAnimationFrame;
                 ShouldSwitchSprite = true;
             }
-            if (string.IsNullOrEmpty(flag) || !SceneAs<Level>().Session.GetFlag(flag) && !sprite.LastAnimationID.Contains("-dead"))
+            if (((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light) && !sprite.LastAnimationID.Contains("-dead"))
             {
                 animation = sprite.LastAnimationID + "-dead";
                 frame = sprite.CurrentAnimationFrame;
@@ -156,177 +156,180 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            SwitchSprite();
-            Depth = outline.Visible ? 8999 : -100;
-            appearParticles.Color = (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) ? Calc.HexToColor("47550D") : Calc.HexToColor("55310D");
-            if (sprite.CurrentAnimationID.Contains("fade"))
+            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
             {
-                scale.X = Calc.Approach(scale.X, 1.2f, 1f * Engine.DeltaTime);
-                scale.Y = Calc.Approach(scale.Y, 1.4f, 1f * Engine.DeltaTime);
-            }
-            else
-            {
-                scale.X = Calc.Approach(scale.X, 1f, 1f * Engine.DeltaTime);
-                scale.Y = Calc.Approach(scale.Y, 1f, 1f * Engine.DeltaTime);
-            }
-            if (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag) && !triggered)
-            {
-                timer += Engine.DeltaTime;
-                if (GetPlayerRider() != null)
+                SwitchSprite();
+                Depth = outline.Visible ? 8999 : -100;
+                appearParticles.Color = ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) ? Calc.HexToColor("47550D") : Calc.HexToColor("55310D");
+                if (sprite.CurrentAnimationID.Contains("fade"))
                 {
-                    sprite.Position = Vector2.Zero;
+                    scale.X = Calc.Approach(scale.X, 1.2f, 1f * Engine.DeltaTime);
+                    scale.Y = Calc.Approach(scale.Y, 1.4f, 1f * Engine.DeltaTime);
                 }
                 else
                 {
-                    sprite.Position = Calc.Approach(sprite.Position, new Vector2(0f, (float)Math.Sin(timer * 2f)), Engine.DeltaTime * 4f);
+                    scale.X = Calc.Approach(scale.X, 1f, 1f * Engine.DeltaTime);
+                    scale.Y = Calc.Approach(scale.Y, 1f, 1f * Engine.DeltaTime);
                 }
-                if (respawnTimer > 0f)
+                if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && !triggered)
                 {
-                    respawnTimer -= Engine.DeltaTime;
-                    if (respawnTimer <= 0f)
+                    timer += Engine.DeltaTime;
+                    if (GetPlayerRider() != null)
                     {
-                        outline.Visible = false;
-                        outline.Stop();
-                        waiting = true;
-                        Y = startPos.Y;
-                        speed = 0f;
-                        scale = Vector2.One;
-                        Collidable = true;
-                        sprite.Play("spawn");
-                        for (int i = 0; i < 360; i += 30)
+                        sprite.Position = Vector2.Zero;
+                    }
+                    else
+                    {
+                        sprite.Position = Calc.Approach(sprite.Position, new Vector2(0f, (float)Math.Sin(timer * 2f)), Engine.DeltaTime * 4f);
+                    }
+                    if (respawnTimer > 0f)
+                    {
+                        respawnTimer -= Engine.DeltaTime;
+                        if (respawnTimer <= 0f)
                         {
-                            SceneAs<Level>().ParticlesBG.Emit(appearParticles, 1, Center, Vector2.One * 2f, i * ((float)Math.PI / 180f));
+                            outline.Visible = false;
+                            outline.Stop();
+                            waiting = true;
+                            Y = startPos.Y;
+                            speed = 0f;
+                            scale = Vector2.One;
+                            Collidable = true;
+                            sprite.Play("spawn");
+                            for (int i = 0; i < 360; i += 30)
+                            {
+                                SceneAs<Level>().ParticlesBG.Emit(appearParticles, 1, Center, Vector2.One * 2f, i * ((float)Math.PI / 180f));
+                            }
+                            sfx.Play("event:/game/04_cliffside/cloud_pink_reappear");
                         }
-                        sfx.Play("event:/game/04_cliffside/cloud_pink_reappear");
+                        return;
                     }
-                    return;
-                }
-                if (waiting)
-                {
-                    Player playerRider = GetPlayerRider();
-                    if (playerRider != null && playerRider.Speed.Y >= 0f)
-                    {
-                        canRumble = true;
-                        speed = 180f;
-                        scale = new Vector2(1.3f, 0.7f);
-                        waiting = false;
-                        Audio.Play("event:/game/04_cliffside/cloud_pink_boost", Position);
-
-                    }
-                    return;
-                }
-                if (returning)
-                {
-                    speed = Calc.Approach(speed, 180f, 600f * Engine.DeltaTime);
-                    MoveTowardsY(startPos.Y, speed * Engine.DeltaTime);
-                    if (ExactPosition.Y == startPos.Y)
-                    {
-                        returning = false;
-                        waiting = true;
-                        speed = 0f;
-                    }
-                    return;
-                }
-                if (Collidable && !HasPlayerRider())
-                {
-                    Collidable = false;
-                    sprite.Play("fade");
-                }
-                if (speed < 0f && canRumble)
-                {
-                    canRumble = false;
-                    if (HasPlayerRider())
-                    {
-                        Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-                    }
-                }
-                if (speed < 0f && Scene.OnInterval(0.02f))
-                {
-                    (Scene as Level).ParticlesBG.Emit(useParticles, 1, Position + new Vector2(0f, 2f), new Vector2(base.Collider.Width / 2f, 1f), (float)Math.PI / 2f);
-                }
-                if (speed < 0f)
-                {
-                    sprite.Scale.Y = Calc.Approach(sprite.Scale.Y, 0f, Engine.DeltaTime * 4f);
-                }
-                if (Y >= startPos.Y)
-                {
-                    speed -= 1200f * Engine.DeltaTime;
-                }
-                else
-                {
-                    speed += 1200f * Engine.DeltaTime;
-                    if (speed >= -100f)
+                    if (waiting)
                     {
                         Player playerRider = GetPlayerRider();
                         if (playerRider != null && playerRider.Speed.Y >= 0f)
                         {
-                            playerRider.Speed.Y = -200f;
+                            canRumble = true;
+                            speed = 180f;
+                            scale = new Vector2(1.3f, 0.7f);
+                            waiting = false;
+                            Audio.Play("event:/game/04_cliffside/cloud_pink_boost", Position);
+
                         }
+                        return;
+                    }
+                    if (returning)
+                    {
+                        speed = Calc.Approach(speed, 180f, 600f * Engine.DeltaTime);
+                        MoveTowardsY(startPos.Y, speed * Engine.DeltaTime);
+                        if (ExactPosition.Y == startPos.Y)
+                        {
+                            returning = false;
+                            waiting = true;
+                            speed = 0f;
+                        }
+                        return;
+                    }
+                    if (Collidable && !HasPlayerRider())
+                    {
                         Collidable = false;
                         sprite.Play("fade");
+                    }
+                    if (speed < 0f && canRumble)
+                    {
+                        canRumble = false;
+                        if (HasPlayerRider())
+                        {
+                            Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                        }
+                    }
+                    if (speed < 0f && Scene.OnInterval(0.02f))
+                    {
+                        (Scene as Level).ParticlesBG.Emit(useParticles, 1, Position + new Vector2(0f, 2f), new Vector2(base.Collider.Width / 2f, 1f), (float)Math.PI / 2f);
+                    }
+                    if (speed < 0f)
+                    {
+                        sprite.Scale.Y = Calc.Approach(sprite.Scale.Y, 0f, Engine.DeltaTime * 4f);
+                    }
+                    if (Y >= startPos.Y)
+                    {
+                        speed -= 1200f * Engine.DeltaTime;
+                    }
+                    else
+                    {
+                        speed += 1200f * Engine.DeltaTime;
+                        if (speed >= -100f)
+                        {
+                            Player playerRider = GetPlayerRider();
+                            if (playerRider != null && playerRider.Speed.Y >= 0f)
+                            {
+                                playerRider.Speed.Y = -200f;
+                            }
+                            Collidable = false;
+                            sprite.Play("fade");
+                            respawnTimer = respawnTime;
+                            outline.Visible = true;
+                            outline.Play("idle");
+                            outline.SetAnimationFrame(0);
+                        }
+                    }
+                    float num = speed;
+                    if (num < 0f)
+                    {
+                        num = -220f;
+                    }
+                    MoveV(speed * Engine.DeltaTime, num);
+                }
+                else
+                {
+                    Player playerRider = GetPlayerRider();
+                    if (playerRider != null || triggered)
+                    {
+                        if (!triggered)
+                        {
+                            Audio.Play("event:/game/xaphan/leaf", Position);
+                        }
+                        triggered = true;
+                        speed = Calc.Approach(speed, 35f, 600f * Engine.DeltaTime);
+                        Vector2 vector = startPos - -Vector2.UnitY * 16f;
+                        Vector2 vector2 = Calc.Approach(ExactPosition, vector, speed * 0.333f * Engine.DeltaTime);
+                        Vector2 liftSpeed = (vector2 - ExactPosition).SafeNormalize(speed * 0.333f);
+                        liftSpeed.X *= 0.75f;
+                        MoveTo(vector2, liftSpeed);
+                    }
+                    if (respawnTimer > 0f)
+                    {
+                        respawnTimer -= Engine.DeltaTime;
+                        if (respawnTimer < respawnTime - 0.2f)
+                        {
+                            triggered = false;
+                        }
+                        if (respawnTimer <= 0f)
+                        {
+                            outline.Visible = false;
+                            outline.Stop();
+                            waiting = true;
+                            Y = startPos.Y;
+                            speed = 0f;
+                            scale = Vector2.One;
+                            Collidable = true;
+                            sprite.Play("spawn-dead");
+                            for (int i = 0; i < 360; i += 30)
+                            {
+                                SceneAs<Level>().ParticlesBG.Emit(appearParticles, 1, Center, Vector2.One * 2f, i * ((float)Math.PI / 180f));
+                            }
+                            sfx.Play("event:/game/04_cliffside/cloud_pink_reappear");
+                        }
+                        return;
+                    }
+                    if (Y >= startPos.Y + 8)
+                    {
+                        Collidable = false;
+                        sprite.Play("fade-dead");
                         respawnTimer = respawnTime;
                         outline.Visible = true;
-                        outline.Play("idle");
+                        outline.Play("idle-dead");
                         outline.SetAnimationFrame(0);
                     }
-                }
-                float num = speed;
-                if (num < 0f)
-                {
-                    num = -220f;
-                }
-                MoveV(speed * Engine.DeltaTime, num);
-            }
-            else
-            {
-                Player playerRider = GetPlayerRider();
-                if (playerRider != null || triggered)
-                {
-                    if (!triggered)
-                    {
-                        Audio.Play("event:/game/xaphan/leaf", Position);
-                    }
-                    triggered = true;
-                    speed = Calc.Approach(speed, 35f, 600f * Engine.DeltaTime);
-                    Vector2 vector = startPos - -Vector2.UnitY * 16f;
-                    Vector2 vector2 = Calc.Approach(ExactPosition, vector, speed * 0.333f * Engine.DeltaTime);
-                    Vector2 liftSpeed = (vector2 - ExactPosition).SafeNormalize(speed * 0.333f);
-                    liftSpeed.X *= 0.75f;
-                    MoveTo(vector2, liftSpeed);
-                }
-                if (respawnTimer > 0f)
-                {
-                    respawnTimer -= Engine.DeltaTime;
-                    if (respawnTimer < respawnTime - 0.2f)
-                    {
-                        triggered = false;
-                    }
-                    if (respawnTimer <= 0f)
-                    {
-                        outline.Visible = false;
-                        outline.Stop();
-                        waiting = true;
-                        Y = startPos.Y;
-                        speed = 0f;
-                        scale = Vector2.One;
-                        Collidable = true;
-                        sprite.Play("spawn-dead");
-                        for (int i = 0; i < 360; i += 30)
-                        {
-                            SceneAs<Level>().ParticlesBG.Emit(appearParticles, 1, Center, Vector2.One * 2f, i * ((float)Math.PI / 180f));
-                        }
-                        sfx.Play("event:/game/04_cliffside/cloud_pink_reappear");
-                    }
-                    return;
-                }
-                if (Y >= startPos.Y + 8)
-                {
-                    Collidable = false;
-                    sprite.Play("fade-dead");
-                    respawnTimer = respawnTime;
-                    outline.Visible = true;
-                    outline.Play("idle-dead");
-                    outline.SetAnimationFrame(0);
                 }
             }
         }

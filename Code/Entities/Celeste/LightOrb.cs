@@ -21,6 +21,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private LightManager Manager;
 
+        private float Cooldown;
+
         public LightOrb(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;
@@ -52,8 +54,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onPlayer(Player player)
         {
-            if (!PlayerOnTop)
+            if (!PlayerOnTop && Cooldown <= 0f)
             {
+                Cooldown = 1f;
                 PlayerOnTop = true;
                 if (Manager != null)
                 {
@@ -79,29 +82,36 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (Manager == null)
+            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
             {
-                Manager = SceneAs<Level>().Tracker.GetEntity<LightManager>();
-            }
-            if (Temporary)
-            {
-                if (Manager.ForceFlagRoutine.Active)
+                if (Cooldown > 0)
                 {
-                    Sprite.Play((Manager.ForcedFlagState ? "light-small" : "dark-small"));
+                    Cooldown -= Engine.DeltaTime;
+                }
+                if (Manager == null)
+                {
+                    Manager = SceneAs<Level>().Tracker.GetEntity<LightManager>();
+                }
+                if (Temporary)
+                {
+                    if (Manager.ForceFlagRoutine.Active)
+                    {
+                        Sprite.Play((Manager.ForcedFlagState ? "light-small" : "dark-small"));
+                    }
+                    else
+                    {
+                        Sprite.Play((Manager.MainFlagState ? "dark-small" : "light-small"));
+                    }
                 }
                 else
                 {
-                    Sprite.Play((Manager.MainFlagState ? "dark-small" : "light-small"));
+                    Sprite.Play((Manager.MainFlagState ? "light" : "dark"));
                 }
-            }
-            else
-            {
-                Sprite.Play((Manager.MainFlagState ? "light" : "dark"));
-            }
-            
-            if (CollideFirst<Player>() == null && PlayerOnTop)
-            {
-                PlayerOnTop = false;
+
+                if (CollideFirst<Player>() == null && PlayerOnTop)
+                {
+                    PlayerOnTop = false;
+                }
             }
         }
     }
