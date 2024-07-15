@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -129,6 +130,13 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 else
                 {
                     XaphanModule.ModSession.LightMode = MainMode;
+                }
+            }
+            else
+            {
+                if (SceneAs<Level>().Tracker.GetEntities<LightOrb>().Count > 0 && MainMode == XaphanModuleSession.LightModes.None)
+                {
+                    MainMode = RespawnMode = XaphanModuleSession.LightModes.Dark;
                 }
             }
             if (SceneAs<Level>().Transitioning)
