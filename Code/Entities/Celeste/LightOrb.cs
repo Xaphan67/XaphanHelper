@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
@@ -22,6 +21,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private LightManager Manager;
 
         private float Cooldown;
+
+        private ParticleType switchParticles;
 
         public LightOrb(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -50,6 +51,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Manager = manager;
             }
+            switchParticles = new ParticleType
+            {
+                Size = 1f,
+                Color = Color.Transparent,
+                DirectionRange = (float)Math.PI / 30f,
+                LifeMin = 0.6f,
+                LifeMax = 1f,
+                SpeedMin = 40f,
+                SpeedMax = 50f,
+                SpeedMultiplier = 0.25f,
+                FadeMode = ParticleType.FadeModes.Late
+            };
         }
 
         private void onPlayer(Player player)
@@ -60,20 +73,41 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 PlayerOnTop = true;
                 if (Manager != null)
                 {
+                    Audio.Play("event:/game/05_mirror_temple/torch_activate");
+                    SceneAs<Level>().Displacement.AddBurst(Position, 0.4f, 8f, Temporary ? 20f : 24f, 0.5f, Ease.QuadOut, Ease.QuadOut);
                     if (Temporary)
                     {
-                        if (Manager.ForceFlagRoutine.Active)
+                        if (Manager.ForceModeRoutine.Active)
                         {
-                            Manager.ForceTemporaryFlag(Manager.ForcedFlagState, Timer);
+                            switchParticles.Color = Calc.HexToColor(Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "FCF859" : "81729F");
                         }
                         else
                         {
-                            Manager.ForceTemporaryFlag(!SceneAs<Level>().Session.GetFlag("XaphanHelper_LightMode"), Timer);
+                            switchParticles.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "81729F" : "FCF859");
                         }
                     }
                     else
                     {
-                        Manager.SetMainFlag(!Manager.MainFlagState);
+                        switchParticles.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "81729F" : "FCF859");
+                    }
+                    for (int i = 0; i < 360; i += 30)
+                    {
+                        SceneAs<Level>().ParticlesFG.Emit(switchParticles, 1, Center, Vector2.One * 2f, i * ((float)Math.PI / 180f));
+                    }
+                    if (Temporary)
+                    {
+                        if (Manager.ForceModeRoutine.Active)
+                        {
+                            Manager.ForceTemporaryMode(Manager.TemporaryMode, Timer);
+                        }
+                        else
+                        {
+                            Manager.ForceTemporaryMode(XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light ? XaphanModuleSession.LightModes.Dark : XaphanModuleSession.LightModes.Light, Timer);
+                        }
+                    }
+                    else
+                    {
+                        Manager.SetMainMode(Manager.MainMode == XaphanModuleSession.LightModes.Light ? XaphanModuleSession.LightModes.Dark : XaphanModuleSession.LightModes.Light);
                     }
                 }
             }
@@ -94,18 +128,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (Temporary)
                 {
-                    if (Manager.ForceFlagRoutine.Active)
+                    if (Manager.ForceModeRoutine.Active)
                     {
-                        Sprite.Play((Manager.ForcedFlagState ? "light-small" : "dark-small"));
+                        Sprite.Play((Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "light-small" : "dark-small"));
                     }
                     else
                     {
-                        Sprite.Play((Manager.MainFlagState ? "dark-small" : "light-small"));
+                        Sprite.Play((Manager.MainMode == XaphanModuleSession.LightModes.Light ? "dark-small" : "light-small"));
                     }
                 }
                 else
                 {
-                    Sprite.Play((Manager.MainFlagState ? "light" : "dark"));
+                    Sprite.Play(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "light" : "dark");
                 }
 
                 if (CollideFirst<Player>() == null && PlayerOnTop)

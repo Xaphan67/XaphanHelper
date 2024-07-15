@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using Celeste.Mod.XaphanHelper.Entities;
+﻿using System.Collections;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -11,24 +9,20 @@ namespace Celeste.Mod.XaphanHelper.Managers
     {
         public XaphanModuleSession.LightModes RespawnMode;
 
-        public bool MainFlagState;
+        public XaphanModuleSession.LightModes MainMode;
 
-        public bool ForcedFlagState;
+        public XaphanModuleSession.LightModes TemporaryMode;
 
-        public float ForcedFlagTimer;
+        public float TemporaryModeTimer;
 
-        public Coroutine ForceFlagRoutine = new();
-
-        public bool wasSwitched;
-
-        public Vector2? startSpawnPoint;
+        public Coroutine ForceModeRoutine = new();
 
         public LightManager()
         {
-            Tag = Tags.Persistent | Tags.TransitionUpdate;
-            TransitionListener transitionListener = new();
-            transitionListener.OnOut = OnTransitionOut;
-            Add(transitionListener);
+            Tag = Tags.Global | Tags.TransitionUpdate;
+            RespawnMode = XaphanModuleSession.LightModes.None;
+            MainMode = XaphanModuleSession.LightModes.None;
+            TemporaryMode = XaphanModuleSession.LightModes.None;
         }
 
         public static void Load()
@@ -50,12 +44,13 @@ namespace Celeste.Mod.XaphanHelper.Managers
             LightManager manager = player.SceneAs<Level>().Tracker.GetEntity<LightManager>();
             if (manager != null)
             {
-                if (manager.ForceFlagRoutine.Active)
+                if (manager.ForceModeRoutine.Active)
                 {
-                    manager.ForceFlagRoutine.Cancel();
+                    manager.ForceModeRoutine.Cancel();
+                    manager.TemporaryMode = XaphanModuleSession.LightModes.None;
                 }
                 XaphanModule.ModSession.LightMode = manager.RespawnMode;
-                manager.SetMainFlag(manager.RespawnMode == XaphanModuleSession.LightModes.Light);
+                manager.SetMainMode(manager.RespawnMode);
             }
         }
 
@@ -81,55 +76,40 @@ namespace Celeste.Mod.XaphanHelper.Managers
             {
                 foreach (LightManager manager in self.SceneAs<Level>().Tracker.GetEntities<LightManager>())
                 {
-                    manager.startSpawnPoint = session.RespawnPoint;
-                    manager.RespawnMode = XaphanModule.ModSession.LightMode;
+                    manager.RespawnMode = manager.MainMode;
                 }
-            }
-        }
-
-        private void OnTransitionOut(float percent)
-        {
-            if (ForceFlagRoutine.Active)
-            {
-                ForceFlagRoutine.Cancel();
             }
         }
 
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            RespawnMode = XaphanModule.ModSession.LightMode;
-            MainFlagState = SceneAs<Level>().Session.GetFlag("XaphanHelper_LightMode");
+            MainMode = RespawnMode = XaphanModule.ModSession.LightMode;
         }
 
-        public void SetMainFlag(bool state)
+        public void SetMainMode(XaphanModuleSession.LightModes mode)
         {
-            MainFlagState = state;
-            wasSwitched = true;
-            startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
+            MainMode = mode;
         }
 
-        public void ForceTemporaryFlag(bool state, float time)
+        public void ForceTemporaryMode(XaphanModuleSession.LightModes mode, float time)
         {
-            ForcedFlagState = state;
-            ForcedFlagTimer = time;
-            if (!ForceFlagRoutine.Active)
+            TemporaryModeTimer = time;
+            if (!ForceModeRoutine.Active)
             {
-                Add(ForceFlagRoutine = new Coroutine(FlagRoutine()));
+                Add(ForceModeRoutine = new Coroutine(TemporaryModeRoutine(mode)));
             }
-            wasSwitched = true;
-            startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
         }
 
-        private IEnumerator FlagRoutine()
+        private IEnumerator TemporaryModeRoutine(XaphanModuleSession.LightModes mode)
         {
-            while (ForcedFlagTimer > 0)
+            TemporaryMode = mode;
+            while (TemporaryModeTimer > 0)
             {
-                ForcedFlagTimer -= Engine.DeltaTime;
+                TemporaryModeTimer -= Engine.DeltaTime;
                 yield return null;
-                SceneAs<Level>().Session.SetFlag("XaphanHelper_LightMode", ForcedFlagState);
-                XaphanModule.ModSession.LightMode = ForcedFlagState ? XaphanModuleSession.LightModes.Light : XaphanModuleSession.LightModes.Dark;
             }
+            TemporaryMode = XaphanModuleSession.LightModes.None;
         }
 
         public override void Update()
@@ -137,10 +117,19 @@ namespace Celeste.Mod.XaphanHelper.Managers
             base.Update();
             if (XaphanModule.ModSaveData.LightMode != XaphanModuleSession.LightModes.None && (XaphanModule.useMergeChaptersController ? SceneAs<Level>().Session.Level == XaphanModule.ModSaveData.SavedRoom[SceneAs<Level>().Session.Area.LevelSet] : true) && (SceneAs<Level>().Session.Area.GetSID().Contains("Xaphan/0") ? SceneAs<Level>().Session.Area.GetSID() != "Xaphan/0/0-Prologue" : true))
             {
-                XaphanModule.ModSession.LightMode = XaphanModule.ModSaveData.LightMode;
+                MainMode = RespawnMode = XaphanModule.ModSaveData.LightMode;
                 XaphanModule.ModSaveData.LightMode = XaphanModuleSession.LightModes.None;
-                MainFlagState = XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light;
-                SceneAs<Level>().Session.SetFlag("XaphanHelper_LightMode", MainFlagState);
+            }
+            if (MainMode != XaphanModuleSession.LightModes.None || TemporaryMode != XaphanModuleSession.LightModes.None)
+            {
+                if (TemporaryMode != XaphanModuleSession.LightModes.None)
+                {
+                    XaphanModule.ModSession.LightMode = TemporaryMode;
+                }
+                else
+                {
+                    XaphanModule.ModSession.LightMode = MainMode;
+                }
             }
             if (SceneAs<Level>().Transitioning)
             {
@@ -152,16 +141,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 {
                     SceneAs<Level>().Lighting.Alpha = SceneAs<Level>().BaseLightingAlpha + 0.25f;
                 }
-                if (wasSwitched)
-                {
-                    RespawnMode = XaphanModule.ModSession.LightMode;
-                    wasSwitched = false;
-                }
-            }
-            if (!ForceFlagRoutine.Active && SceneAs<Level>().Tracker.GetEntities<LightOrb>().Count > 0)
-            {
-                SceneAs<Level>().Session.SetFlag("XaphanHelper_LightMode", MainFlagState);
-                XaphanModule.ModSession.LightMode = MainFlagState ? XaphanModuleSession.LightModes.Light : XaphanModuleSession.LightModes.Dark;
+                RespawnMode = MainMode;
             }
             if (SceneAs<Level>().Tracker.GetEntity<Player>() != null)
             {

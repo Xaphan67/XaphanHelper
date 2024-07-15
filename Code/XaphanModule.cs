@@ -2777,10 +2777,15 @@ namespace Celeste.Mod.XaphanHelper
 
             if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms")
             {
-                if (ModSession.LightMode != LightModes.None)
+                LightManager manager = level.Tracker.GetEntity<LightManager>();
+                if (manager != null)
                 {
-                    ModSaveData.LightMode = ModSession.LightMode;
+                    if (manager.MainMode != LightModes.None)
+                    {
+                        ModSaveData.LightMode = manager.MainMode;
+                    }
                 }
+
             }
 
             onSlope = false;

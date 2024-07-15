@@ -236,8 +236,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         foreach (LightManager manager in SceneAs<Level>().Tracker.GetEntities<LightManager>())
                         {
-                            manager.startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
-                            manager.RespawnMode = XaphanModule.ModSession.LightMode;
+                            manager.RespawnMode = manager.MainMode;
                         }
                         if (XaphanModule.PlayerIsControllingRemoteDrone())
                         {
