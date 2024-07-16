@@ -89,6 +89,21 @@ namespace Celeste.Mod.XaphanHelper
             ));
 
             list.Add(new LorebookData(
+                entryID: "locc4",
+                categoryID: 0,
+                picture: null,
+                flag: null
+            ));
+
+            list.Add(new LorebookData(
+                entryID: "loc3-1",
+                categoryID: 0,
+                picture: "lorebook/Xaphan/Locations/loc3-1",
+                flag: "LorebookEntry_loc3-1",
+                subCategoryID: "locc4"
+            ));
+
+            list.Add(new LorebookData(
                 entryID: "locc5",
                 categoryID: 0,
                 picture: null,
