@@ -2,7 +2,6 @@
 using System;
 using Celeste.Mod.Entities;
 using Monocle;
-using System.IO;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -12,6 +11,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Sprite sprite;
 
         private Sprite outline;
+
+        private string Directory;
 
         private Wiggler wiggler;
 
@@ -48,6 +49,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public Leaf(EntityData data, Vector2 offset) : base(data.Position + offset, 22, safe: false)
         {
             flag = data.Attr("flag");
+            Directory = data.Attr("directory");
+            if (string.IsNullOrEmpty(Directory))
+            {
+                Directory = "objects/XaphanHelper/Leaf";
+            }
             respawnTime = data.Float("respawnTime", 2.5f);
             startPos = Position;
             Collider.Position.X = -11f;
@@ -86,7 +92,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new LightOcclude(0.2f));
             scale = Vector2.One;
             Add(sfx = new SoundSource());
-            Add(outline = new Sprite(GFX.Game, "objects/XaphanHelper/Leaf/"));
+            Add(outline = new Sprite(GFX.Game, Directory + "/"));
             outline.AddLoop("idle", "outline", respawnTime / 48f);
             outline.AddLoop("idle-dead", "outline-dead", respawnTime / 48f);
             outline.Visible = false;
@@ -97,7 +103,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/Leaf/"));
+            Add(sprite = new Sprite(GFX.Game, Directory + "/"));
             sprite.AddLoop("idle", "leaf", 0);
             sprite.AddLoop("idle-dead", "leaf-dead", 0);
             sprite.Add("spawn", "leaf", 0.03f, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);

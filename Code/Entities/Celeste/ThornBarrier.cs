@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -120,6 +121,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         
         private Sprite Sprite;
 
+        public string Directory;
+
         private string flag;
 
         public ThornBarrier(EntityData data, Vector2 offset) : base(data.Position + offset)
@@ -127,7 +130,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Tag = Tags.TransitionUpdate;
             Collider = new Circle(10f);
             flag = data.Attr("flag");
-            Add(Sprite = new Sprite(GFX.Game, "danger/XaphanHelper/ThornBarrier/"));
+            Directory = data.Attr("directory");
+            if (string.IsNullOrEmpty(Directory))
+            {
+                Directory = "danger/XaphanHelper/ThornBarrier";
+            }
+            Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Add(new PlayerCollider(onPlayer, Collider));
             Sprite.AddLoop("light", "light", 0.08f);
             Sprite.AddLoop("dark", "dark", 0.08f);

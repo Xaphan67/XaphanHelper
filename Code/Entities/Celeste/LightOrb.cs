@@ -12,6 +12,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private Sprite Sprite;
 
+        public string Directory;
+
         private bool PlayerOnTop;
 
         private bool Temporary;
@@ -27,9 +29,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public LightOrb(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;
+            Directory = data.Attr("directory");
+            if (string.IsNullOrEmpty(Directory))
+            {
+                Directory = "objects/XaphanHelper/LightOrb";
+            }
             Temporary = data.Bool("temporary", false);
             Timer = data.Float("time", 3f);
-            Add(Sprite = new Sprite(GFX.Game, "objects/XaphanHelper/LightOrb/"));
+            Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Add(new PlayerCollider(onPlayer, Collider));
             Sprite.AddLoop("light", "light", 0.08f);
             Sprite.AddLoop("dark", "dark", 0.08f);
