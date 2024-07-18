@@ -28,7 +28,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             foreach (LightManager manager in level.Tracker.GetEntities<LightManager>())
             {
                 manager.MainMode = manager.RespawnMode = (XaphanModuleSession.LightModes)mode;
-                Logger.Log(LogLevel.Info, "XH", "Change light mode to " + (XaphanModuleSession.LightModes)mode);
             }
             XaphanModuleSession.LightModes lightMode = XaphanModuleSession.LightModes.None;
             lightMode = (XaphanModuleSession.LightModes)mode;

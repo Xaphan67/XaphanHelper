@@ -63,7 +63,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 missingGems++;
             }
-            Logger.Log(LogLevel.Info, "Xh", "missingGems :" + missingGems);
             if (missingGems > 0)
             {
                 yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_b_" + missingGems);
