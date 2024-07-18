@@ -688,16 +688,19 @@ namespace Celeste.Mod.XaphanHelper
                 maxValue: StatsFlags.TotalStrawberries[2],
                 medals: 15
             ));
-            list.Add(new AchievementData(
-                achievementID: "tank2",
-                categoryID: 2,
-                icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
-                flag: "XaphanHelper_StatFlag_EnergyTanksCh2",
-                currentValue: StatsFlags.CurrentEnergyTanks[2],
-                maxValue: StatsFlags.TotalEnergyTanks[2],
-                medals: 15,
-                reqID: "upg2"
-            ));
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            {
+                list.Add(new AchievementData(
+                    achievementID: "tank2",
+                    categoryID: 2,
+                    icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
+                    flag: "XaphanHelper_StatFlag_EnergyTanksCh2",
+                    currentValue: StatsFlags.CurrentEnergyTanks[2],
+                    maxValue: StatsFlags.TotalEnergyTanks[2],
+                    medals: 15,
+                    reqID: "upg2"
+                ));
+            }
             list.Add(new AchievementData(
                 achievementID: "cass2",
                 categoryID: 2,
