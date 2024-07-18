@@ -154,7 +154,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                     }
                 }
-                if (isEnd && flag != null)
+                if (isEnd && flag != null && CollideCheck<FlagBlock>(Position))
                 {
                     SceneAs<Level>().Session.SetFlag(flag);
                     if (registerInSaveData)
