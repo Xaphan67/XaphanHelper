@@ -23,6 +23,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float noCollideDelay;
 
+        public float playerStamina;
+
         public ClimbableVine(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, safe: false)
         {
             Tag = Tags.TransitionUpdate;
@@ -56,11 +58,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void Load()
         {
             On.Celeste.Player.Update += onPlayerUpdate;
+            On.Celeste.Player.ClimbJump += onPlayerClimbJump;
         }
 
         public static void Unload()
         {
             On.Celeste.Player.Update -= onPlayerUpdate;
+            On.Celeste.Player.ClimbJump -= onPlayerClimbJump;
         }
 
         private static void onPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self)
@@ -76,6 +80,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (Input.Jump.Pressed)
                     {
+                        vine.playerStamina = self.Stamina;
                         vine.Collidable = false;
                         vine.noCollideDelay = 0.1f;
                         vine.Add(new Coroutine(vine.CollideDelayRoutine()));
@@ -91,6 +96,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             orig(self);
+        }
+
+        private static void onPlayerClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
+        {
+            orig(self);
+            foreach (ClimbableVine vine in self.Scene.Tracker.GetEntities<ClimbableVine>())
+            {
+                if (self.CollideRect(new Rectangle((int)vine.Position.X + 3, (int)vine.Position.Y, 2, (int)vine.Height), self.Position + Vector2.UnitX * 2f * (float)self.Facing))
+                {
+                    if (vine != null && self.Facing == Facings.Left ? Input.Aim.Value.SafeNormalize().X < 0 : Input.Aim.Value.SafeNormalize().X > 0)
+                    {
+                        self.Stamina = vine.playerStamina;
+                    }
+                    break;
+                }
+            }
+            
         }
 
         private void onPlayer(Player player)

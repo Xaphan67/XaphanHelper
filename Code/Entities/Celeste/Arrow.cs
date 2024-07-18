@@ -45,6 +45,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Level Level;
 
+        public float playerStamina;
+
         public Arrow(Vector2 position, ArrowTrap trap, string side) : base(position, 4, 4, false)
         {
             sourceTrap = trap;
@@ -187,11 +189,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void Load()
         {
             On.Celeste.Player.Update += onPlayerUpdate;
+            On.Celeste.Player.ClimbJump += onPlayerClimbJump;
         }
 
         public static void Unload()
         {
             On.Celeste.Player.Update -= onPlayerUpdate;
+            On.Celeste.Player.ClimbJump -= onPlayerClimbJump;
         }
 
         public override void Update()
@@ -400,6 +404,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (Input.Jump.Pressed)
                         {
+                            arrow.playerStamina = self.Stamina;
                             arrow.Collidable = false;
                             arrow.noCollideDelay = 0.1f;
                             arrow.Add(new Coroutine(arrow.CollideDelayRoutine()));
@@ -428,6 +433,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             }
             orig(self);
+        }
+
+        private static void onPlayerClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
+        {
+            orig(self);
+            
+            foreach (Arrow arrow in self.Scene.Tracker.GetEntities<Arrow>())
+            {
+                if (arrow.inWall && self.CollideRect(new Rectangle((int)arrow.Position.X + 3, (int)arrow.Position.Y, 2, 22), self.Position + Vector2.UnitX * 2f * (float)self.Facing))
+                {
+                    if (arrow != null && self.Facing == Facings.Left ? Input.Aim.Value.SafeNormalize().X < 0 : Input.Aim.Value.SafeNormalize().X > 0)
+                    {
+                        self.Stamina = arrow.playerStamina;
+                    }
+                    break;
+                }
+            }
+
         }
 
         public IEnumerator Shoot()
