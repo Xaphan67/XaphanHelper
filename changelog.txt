@@ -1,5 +1,6 @@
 Version 1.0.63 :
 - Fixed a bug that allowed Magnetic Ceilings to trigger solids as if the player was on top of them when the ceiling was far bellow the solid
+- Fixed a bug that could prevent the player to use the bomb upgrade
 - Fixed a crash happening when trying to browse the list of achievements of The Forgotten Abysses section in The Scret of Celeste Mountain
 
 Version 1.0.62 :

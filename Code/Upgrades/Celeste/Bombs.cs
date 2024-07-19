@@ -88,7 +88,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             bool usedBomb = false;
             while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedBomb)
             {
-                while (player.Speed != Vector2.Zero)
+                while (player.Speed.X != 0 || player.Dead || !player.OnGround())
                 {
                     yield return null;
                 }
