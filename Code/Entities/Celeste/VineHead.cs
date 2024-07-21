@@ -55,6 +55,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Tag = Tags.TransitionUpdate;
             ID = data.ID;
             GrowSpeed = data.Float("growSpeed", 50f);
+            if (GrowSpeed > 300)
+            {
+                GrowSpeed = 300;
+            }
             PauseTime = data.Float("pauseTime", 3f);
             flag = data.Attr("flag");
             Collider = new Hitbox(8f, 8f);
@@ -233,7 +237,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         foreach (VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
                         {
-                            if (Left == pathSection.Left && Right == pathSection.Right && Top == pathSection.Top && Bottom == pathSection.Bottom)
+                            if (Left >= pathSection.Left - 2 && Right <= pathSection.Right + 2 && Top >= pathSection.Top - 2 && Bottom <= pathSection.Bottom + 2)
                             {
                                 pathSection.SetGrownSprite(true);
                             }
@@ -258,7 +262,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         foreach (VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
                         {
-                            if (Left == pathSection.Left && Right == pathSection.Right && Top == pathSection.Top && Bottom == pathSection.Bottom)
+                            if (Left >= pathSection.Left - 2 && Right <= pathSection.Right + 2 && Top >= pathSection.Top - 2 && Bottom <= pathSection.Bottom + 2)
                             {
                                 pathSection.SetGrownSprite(false);
                             }
@@ -367,22 +371,48 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (direction.X != 0)
                 {
-                    MoveH(direction.X * GrowSpeed * Engine.DeltaTime);
+                    Vector2 targetPosition = Position + Vector2.UnitX * (direction.X * GrowSpeed * Engine.DeltaTime);
+                    if (Scene.CollideCheck<VinePath>(new Rectangle ((int)targetPosition.X + (direction.X > 0 ? 8 : 0), (int)targetPosition.Y, 1, (int)Height)))
+                    {
+                        MoveH(direction.X * GrowSpeed * Engine.DeltaTime);
+                    }
+                    else
+                    {
+                        if (direction.X > 0)
+                        {
+                            VinePath path = CollideFirst<VinePath>(CenterRight);
+                            Right = path.Right;
+                        }
+                        else
+                        {
+                            VinePath path = CollideFirst<VinePath>(CenterLeft);
+                            Left = path.Left;
+                        }
+                    }
                     yield return null;
                 }
                 if (direction.Y != 0f)
                 {
-                    MoveV(direction.Y * GrowSpeed * Engine.DeltaTime);
+                    Vector2 targetPosition = Position + Vector2.UnitY * (direction.Y * GrowSpeed * Engine.DeltaTime);
+                    if (Scene.CollideCheck<VinePath>(new Rectangle((int)targetPosition.X, (int)targetPosition.Y + (direction.Y > 0 ? 8 : 0), (int)Width, 1)))
+                    {
+                        MoveV(direction.Y * GrowSpeed * Engine.DeltaTime);
+                    }
+                    else
+                    {
+                        if (direction.Y > 0)
+                        {
+                            VinePath path = CollideFirst<VinePath>(BottomCenter);
+                            Bottom = path.Bottom;
+                        }
+                        else
+                        {
+                            VinePath path = CollideFirst<VinePath>(TopCenter);
+                            Top = path.Top;
+                        }
+                    }
                     yield return null;
                 }
-            }
-            if (direction.X != 0f)
-            {
-                CorrectionH(direction.X);
-            }
-            if (direction.Y != 0f)
-            {
-                CorrectionV(direction.Y);
             }
         }
 
@@ -418,34 +448,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 return false;
             }
             return true;
-        }
-
-        private void CorrectionH(float direction)
-        {
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)(X - 1f), (int)Y, 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X - 1f), (int)(Y + Height - 1), 1, 1)) && !CollideCheck<Solid>(Position - Vector2.UnitX) && direction == -1)
-            {
-                MoveHExact(-1);
-                CorrectionH(direction);
-            }
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width), (int)Y, 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width), (int)(Y + Height - 1), 1, 1)) && !CollideCheck<Solid>(Position + Vector2.UnitX) && direction == 1)
-            {
-                MoveHExact(1);
-                CorrectionH(direction);
-            }
-        }
-
-        private void CorrectionV(float direction)
-        {
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)(Y - 1f), 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1), (int)(Y - 1f), 1, 1)) && !CollideCheck<Solid>(Position - Vector2.UnitY) && direction == -1)
-            {
-                MoveVExact(-1);
-                CorrectionV(direction);
-            }
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)(Y + Height), 1, 1)) && Scene.CollideCheck<VinePath>(new Rectangle((int)(X + Width - 1f), (int)(Y + Height), 1, 1)) && !CollideCheck<Solid>(Position + Vector2.UnitY) && direction == 1)
-            {
-                MoveVExact(1);
-                CorrectionV(direction);
-            }
         }
 
         public override void Render()
