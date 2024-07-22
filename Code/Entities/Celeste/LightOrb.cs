@@ -2,7 +2,9 @@
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Monocle;
+using static Celeste.Overworld;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -25,6 +27,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private float Cooldown;
 
         private ParticleType switchParticles;
+
+        private VertexLight light;
 
         public LightOrb(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -70,6 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 SpeedMultiplier = 0.25f,
                 FadeMode = ParticleType.FadeModes.Late
             };
+            Add(light = new VertexLight(Color.White, 1, 24, 40));
         }
 
         private void onPlayer(Player player)
@@ -138,15 +143,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (Manager.ForceModeRoutine.Active)
                     {
                         Sprite.Play((Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "light-small" : "dark-small"));
+                        light.StartRadius = 16;
+                        light.EndRadius = 36;
+                        light.Color = Calc.HexToColor(Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "FCF859" : "FFFFFF");
                     }
                     else
                     {
                         Sprite.Play((Manager.MainMode == XaphanModuleSession.LightModes.Light ? "dark-small" : "light-small"));
+                        light.StartRadius = 16;
+                        light.EndRadius = 36;
+                        light.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "FFFFFF" : "FCF859");
                     }
                 }
                 else
                 {
                     Sprite.Play(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "light" : "dark");
+                    light.StartRadius = 24;
+                    light.EndRadius = 40;
+                    light.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "FCF859" : "FFFFFF");
                 }
 
                 if (CollideFirst<Player>() == null && PlayerOnTop)
