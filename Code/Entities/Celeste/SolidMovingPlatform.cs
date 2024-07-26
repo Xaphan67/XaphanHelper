@@ -179,6 +179,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 SpeedMax = 8f,
                 SpeedMultiplier = 0.8f
             };
+            if (Orientation == "Bottom")
+            {
+                Add(new ClimbBlocker(false));
+            }
             Depth = -100;
         }
 
