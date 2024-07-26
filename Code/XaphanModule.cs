@@ -4226,23 +4226,22 @@ namespace Celeste.Mod.XaphanHelper
 
         public void PlayerSpriteMetadataHook(On.Celeste.PlayerSprite.orig_CreateFramesMetadata orig, string self)
         {
-
+            orig(self);
+            if (self == null || self.StartsWith("XaphanHelper_Extend_"))
+            {
+                return;
+            }
             string extend_object = "XaphanHelper_Extend_" + self;
             if (!GFX.SpriteBank.Has(extend_object))
             {
                 extend_object = "XaphanHelper_Extend_player";
             }
-
-            SpriteData extendPlayer = GFX.SpriteBank.SpriteData[extend_object];
-            SpriteData objects = GFX.SpriteBank.SpriteData[self];
-
-            PatchSprite(extendPlayer.Sprite, objects.Sprite);
-
+            PatchSprite(GFX.SpriteBank.SpriteData[extend_object].Sprite, GFX.SpriteBank.SpriteData[self].Sprite);
             if (extend_object == "XaphanHelper_Extend_" + self)
             {
-                orig(extend_object);
+                // Avoiding hooks confusion, don't call orig again instead call PlayerSprite.CreateFramesMetadata
+                PlayerSprite.CreateFramesMetadata(extend_object);
             }
-            orig(self);
         }
         private void PatchSprite(Sprite origSprite, Sprite newSprite)
         {
