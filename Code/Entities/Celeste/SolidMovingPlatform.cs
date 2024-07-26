@@ -358,11 +358,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             alpha += Engine.DeltaTime * 4f;
-            if ((Scene as Level).Transitioning)
-            {
-                PositionTrackSfx();
-                return;
-            }
             base.Update();
             Restarted = false;
             if (index >= 1 && !AttachedEntity)
@@ -415,195 +410,243 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 AttachedEntity = true;
             }
-
-            if (mode == "Flag To Move" && !string.IsNullOrEmpty(moveFlag))
+            if ((Scene as Level).Transitioning)
             {
-                if (!SceneAs<Level>().Session.GetFlag(moveFlag))
+                if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
                 {
-                    direction = -1;
-                    if (AtEndOfTrack)
+                    if (AttachedSpike != null)
                     {
-                        AtEndOfTrack = false;
+                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedMagneticCeiling != null)
+                    {
+                        AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedLever != null)
+                    {
+                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedSpring != null)
+                    {
+                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    return;
+                }
+                if (index >= 1)
+                {
+                    if (AttachedSpike != null)
+                    {
+                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedMagneticCeiling != null)
+                    {
+                        AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedLever != null)
+                    {
+                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedSpring != null)
+                    {
+                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
                     }
                 }
-                else
+                if (AttachedMagneticCeiling != null)
                 {
-                    direction = 1;
-                    if (AtStartOfTrack)
-                    {
-                        AtStartOfTrack = false;
-                    }
+                    AttachedMagneticCeiling.Top = Bottom;
                 }
             }
-            if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
+            else
             {
-                if (AttachedSpike != null)
+                if (mode == "Flag To Move" && !string.IsNullOrEmpty(moveFlag))
                 {
-                    AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                }
-                else if (AttachedMagneticCeiling != null)
-                {
-                    AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                }
-                else if (AttachedLever != null)
-                {
-                    AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                }
-                else if (AttachedSpring != null)
-                {
-                    AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                }
-                return;
-            }
-            if (index != 0)
-            {
-                if (mode == "Flag To Move")
-                {
-                    if (string.IsNullOrEmpty(moveFlag))
+                    if (!SceneAs<Level>().Session.GetFlag(moveFlag))
                     {
-                        return;
-                    }
-                    if (direction == -1)
-                    {
-                        percent -= speed * Engine.DeltaTime;
+                        direction = -1;
+                        if (AtEndOfTrack)
+                        {
+                            AtEndOfTrack = false;
+                        }
                     }
                     else
                     {
-                        percent += speed * Engine.DeltaTime;
-                    }
-                    if (percent <= 0)
-                    {
-                        foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
+                        direction = 1;
+                        if (AtStartOfTrack)
                         {
-                            if (platform.id == id && platform.index != 0)
-                            {
-                                platform.AtStartOfTrack = true;
-                                platform.percent = (platform.index - 1) * platform.spacingOffset;
-                            }
-                        }
-                    }
-                    if (percent >= 1)
-                    {
-                        foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
-                        {
-                            if (platform.id == id && platform.index != 0)
-                            {
-                                platform.AtEndOfTrack = true;
-                                platform.percent = 1 - (platform.amount - platform.index) * platform.spacingOffset;
-                            }
+                            AtStartOfTrack = false;
                         }
                     }
                 }
-                else
+                if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
                 {
-                    if (direction == -1)
+                    if (AttachedSpike != null)
                     {
-                        percent -= speed * Engine.DeltaTime;
+                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedMagneticCeiling != null)
+                    {
+                        AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedLever != null)
+                    {
+                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedSpring != null)
+                    {
+                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    return;
+                }
+                if (index != 0)
+                {
+                    if (mode == "Flag To Move")
+                    {
+                        if (string.IsNullOrEmpty(moveFlag))
+                        {
+                            return;
+                        }
+                        if (direction == -1)
+                        {
+                            percent -= speed * Engine.DeltaTime;
+                        }
+                        else
+                        {
+                            percent += speed * Engine.DeltaTime;
+                        }
                         if (percent <= 0)
                         {
-                            if (mode == "Restart")
+                            foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
                             {
-                                percent = percent + 1f;
-                                Restarted = true;
-                            }
-                            else if (mode.Contains("Back And Forth"))
-                            {
-                                if (mode.Contains("All Platforms"))
+                                if (platform.id == id && platform.index != 0)
                                 {
-                                    foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
+                                    platform.AtStartOfTrack = true;
+                                    platform.percent = (platform.index - 1) * platform.spacingOffset;
+                                }
+                            }
+                        }
+                        if (percent >= 1)
+                        {
+                            foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
+                            {
+                                if (platform.id == id && platform.index != 0)
+                                {
+                                    platform.AtEndOfTrack = true;
+                                    platform.percent = 1 - (platform.amount - platform.index) * platform.spacingOffset;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (direction == -1)
+                        {
+                            percent -= speed * Engine.DeltaTime;
+                            if (percent <= 0)
+                            {
+                                if (mode == "Restart")
+                                {
+                                    percent = percent + 1f;
+                                    Restarted = true;
+                                }
+                                else if (mode.Contains("Back And Forth"))
+                                {
+                                    if (mode.Contains("All Platforms"))
                                     {
-                                        if (platform.id == id && platform.index != 0)
+                                        foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
                                         {
-                                            platform.direction = 1;
-                                            if (platform != this)
+                                            if (platform.id == id && platform.index != 0)
                                             {
-                                                platform.percent -= platform.speed * Engine.DeltaTime * 2;
+                                                platform.direction = 1;
+                                                if (platform != this)
+                                                {
+                                                    platform.percent -= platform.speed * Engine.DeltaTime * 2;
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    percent = Math.Abs(percent);
-                                    direction = 1;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        percent += speed * Engine.DeltaTime;
-                        if (percent >= 1f)
-                        {
-                            if (mode == "Restart")
-                            {
-                                percent = percent - 1f;
-                                Restarted = true;
-                            }
-                            else if (mode.Contains("Back And Forth"))
-                            {
-                                if (mode.Contains("All Platforms"))
-                                {
-                                    foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
+                                    else
                                     {
-                                        if (platform.id == id && platform.index != 0)
-                                        {
-                                            platform.direction = -1;
-                                            platform.percent -= platform.speed * Engine.DeltaTime;
-                                        }
+                                        percent = Math.Abs(percent);
+                                        direction = 1;
                                     }
                                 }
-                                else
+                            }
+                        }
+                        else
+                        {
+                            percent += speed * Engine.DeltaTime;
+                            if (percent >= 1f)
+                            {
+                                if (mode == "Restart")
                                 {
-                                    percent = 1 - (percent - 1f);
-                                    direction = -1;
+                                    percent = percent - 1f;
+                                    Restarted = true;
+                                }
+                                else if (mode.Contains("Back And Forth"))
+                                {
+                                    if (mode.Contains("All Platforms"))
+                                    {
+                                        foreach (SolidMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<SolidMovingPlatform>())
+                                        {
+                                            if (platform.id == id && platform.index != 0)
+                                            {
+                                                platform.direction = -1;
+                                                platform.percent -= platform.speed * Engine.DeltaTime;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        percent = 1 - (percent - 1f);
+                                        direction = -1;
+                                    }
                                 }
                             }
                         }
+                        if (!string.IsNullOrEmpty(swapFlag))
+                        {
+                            if (SceneAs<Level>().Session.GetFlag(swapFlag) && !swapped)
+                            {
+                                swapped = true;
+                                direction = -direction;
+                            }
+                            else if (!SceneAs<Level>().Session.GetFlag(swapFlag) && swapped)
+                            {
+                                swapped = false;
+                                direction = -direction;
+                            }
+                        }
                     }
-                    if (!string.IsNullOrEmpty(swapFlag))
+                }
+                if (index >= 1)
+                {
+                    if (AttachedSpike != null)
                     {
-                        if (SceneAs<Level>().Session.GetFlag(swapFlag) && !swapped)
-                        {
-                            swapped = true;
-                            direction = -direction;
-                        }
-                        else if (!SceneAs<Level>().Session.GetFlag(swapFlag) && swapped)
-                        {
-                            swapped = false;
-                            direction = -direction;
-                        }
+                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedMagneticCeiling != null)
+                    {
+                        AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedLever != null)
+                    {
+                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    }
+                    else if (AttachedSpring != null)
+                    {
+                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
                     }
                 }
-            }
-            if (index >= 1)
-            {
-                if (AttachedSpike != null)
+                MoveTo(GetPercentPosition(percent));
+                if (AttachedMagneticCeiling != null)
                 {
-                    AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    AttachedMagneticCeiling.Top = Bottom;
                 }
-                else if (AttachedMagneticCeiling != null)
+                PositionTrackSfx();
+                if (Scene.OnInterval(0.05f) && index != 0 && particles)
                 {
-                    AttachedMagneticCeiling.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                    SceneAs<Level>().ParticlesBG.Emit(P_Trail, 2, Center, Vector2.One * 3f);
                 }
-                else if (AttachedLever != null)
-                {
-                    AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                }
-                else if (AttachedSpring != null)
-                {
-                    AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                }
-            }
-            MoveTo(GetPercentPosition(percent));
-            if (AttachedMagneticCeiling != null)
-            {
-                AttachedMagneticCeiling.Top = Bottom;
-            }
-            PositionTrackSfx();
-            if (Scene.OnInterval(0.05f) && index != 0 && particles)
-            {
-                SceneAs<Level>().ParticlesBG.Emit(P_Trail, 2, Center, Vector2.One * 3f);
             }
         }
 
