@@ -34,11 +34,24 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         public override void Load()
         {
             On.Celeste.Level.Update += modLevelUpdate;
+            On.Celeste.Player.Die += onPlayerDie;
+        }
+
+        private PlayerDeadBody onPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
+        {
+            if (UseBombCoroutine.Active)
+            {
+                UseBombCoroutine.Cancel();
+                delay = 0f;
+                cooldown = false;
+            }
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         public override void Unload()
         {
             On.Celeste.Level.Update -= modLevelUpdate;
+            On.Celeste.Player.Die -= onPlayerDie;
         }
 
         public bool Active(Level level)
@@ -62,7 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 if (isActive)
                 {
                     Player player = self.Tracker.GetEntity<Player>();
-                    if (!cooldown && self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && !UseBombCoroutine.Active)
+                    if (!cooldown && self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "bag");
                         if (bagDisplay != null)
@@ -90,6 +103,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             {
                 while (player.Speed.X != 0 || player.Dead || !player.OnGround())
                 {
+                    Logger.Log(LogLevel.Info, "Xh", "Waiting...");
                     yield return null;
                 }
                 if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb)
