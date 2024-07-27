@@ -83,7 +83,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 OnDisable = OnDisable,
                 OnMove = OnMove,
             });
-            Depth = -9999;
+            Depth = -50;
             playSfx = true;
         }
 
