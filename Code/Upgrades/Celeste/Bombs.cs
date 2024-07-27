@@ -103,7 +103,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             {
                 while (player.Speed.X != 0 || player.Dead || !player.OnGround())
                 {
-                    Logger.Log(LogLevel.Info, "Xh", "Waiting...");
                     yield return null;
                 }
                 if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb)
