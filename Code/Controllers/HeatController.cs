@@ -172,7 +172,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                         FlashingRed = false;
                     }
                 }
-                if (VariaJacket.Active(SceneAs<Level>()) || XaphanModule.PlayerIsControllingRemoteDrone())
+                if (VariaJacket.Active(SceneAs<Level>()) || SceneAs<Level>().Session.GetFlag(inactiveFlag) || XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     if (player.Sprite.Color == Color.Red)
                     {
