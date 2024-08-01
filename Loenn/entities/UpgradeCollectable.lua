@@ -50,7 +50,7 @@ function UpgradeCollectable.texture(room, entity)
     if customSprite == "" then
         customSprite = "collectables/XaphanHelper/UpgradeCollectable"
     end
-    
+
     return customSprite .. "/" .. sprite .. "00"
 end
 
@@ -58,6 +58,6 @@ function UpgradeCollectable.selection(room, entity)
     return utils.rectangle(entity.x, entity.y , 16, 16)
 end
 
-UpgradeCollectable.offset = {0, 0}
+UpgradeCollectable.offset = {-8, -8}
 
 return UpgradeCollectable

@@ -47,6 +47,6 @@ function Elevator.texture(room, entity)
     return texture
 end
 
-Elevator.offset = {0, 0}
+Elevator.offset = {-16, -3}
 
 return Elevator

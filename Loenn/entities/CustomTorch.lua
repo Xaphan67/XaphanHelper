@@ -36,7 +36,7 @@ CustomTorch.placements = {
 
 function CustomTorch.texture(room, entity)
     local texture = entity.sprite or "objects/XaphanHelper/CustomTorch/torch"
-  
+
     return texture .. "00"
 end
 
@@ -44,6 +44,6 @@ function CustomTorch.selection(room, entity)
     return utils.rectangle(entity.x, entity.y , 16, 16)
 end
 
-CustomTorch.offset = {0, 0}
+CustomTorch.offset = {-8, -8}
 
 return CustomTorch

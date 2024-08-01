@@ -44,6 +44,6 @@ function WarpStation.texture(room, entity)
     return texture .. "/idle00"
 end
 
-WarpStation.offset = {0, 0}
+WarpStation.offset = {-16, -8}
 
 return WarpStation
