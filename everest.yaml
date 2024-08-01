@@ -1,5 +1,5 @@
 ﻿- Name: XaphanHelper
-  Version: 1.0.62
+  Version: 1.0.63
   DLL: Code/bin/XaphanHelper.dll
   Dependencies:
     - Name: Everest
