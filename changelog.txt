@@ -1,4 +1,5 @@
 Version 1.0.63 :
+- Reduced the number of light occluders used by Slopes in order to allow more Slopes in a room before the game cannot handle them
 - Fixed a bug that allowed Magnetic Ceilings to trigger solids as if the player was on top of them when the ceiling was far bellow the solid
 - Fixed two bugs that could prevent the player to use the bomb upgrade
 - Fixed a crash happening when trying to browse the list of achievements of The Forgotten Abysses section in The Scret of Celeste Mountain
