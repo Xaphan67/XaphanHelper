@@ -726,6 +726,7 @@ triggers.XaphanHelper/SubAreaNameTrigger.attributes.description.textPositionY=Y 
 
 # TeleportToChapterTrigger
 triggers.XaphanHelper/TeleportToChapterTrigger.placements.name.TeleportToChapterTrigger=Teleport To Chapter
+triggers.XaphanHelper/TeleportToChapterTrigger.attributes.description.destinationChapter=The path to the map bin the player wil be teleported into.\nCorrespond to the structure in your map folder (usually yourName/campaignName/mapName) without the .bin extension.\nThis also works if the map you try to teleport into is in another campaign
 triggers.XaphanHelper/TeleportToChapterTrigger.attributes.description.destinationRoom=Name of the room the player will be transported into. If empty, the starting room of the corresponding chapter will be used.
 triggers.XaphanHelper/TeleportToChapterTrigger.attributes.description.spawnRoomX=X position of the spawn point the player will appear in the destination room.
 triggers.XaphanHelper/TeleportToChapterTrigger.attributes.description.spawnRoomY=Y position of the spawn point the player will appear in the destination room.

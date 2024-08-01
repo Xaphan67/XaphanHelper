@@ -301,5 +301,10 @@
 	Xaphanhelper_UI_Metroid_Misc= DIVERS
 	Xaphanhelper_UI_Metroid_Boots= BOTTES
 
+#Errors
+	XaphanHelper_chapter_not_exist= Le chapitre spécifié n'existe pas
+	XaphanHelper_room_not_exist= La salle spécifiée n'existe pas
+	XaphanHelper_room_name_empty= Le nom de la salle spécifiée est vide
+
 #Temporary
 	LorebookEntry_Boss_2_1_Name= Monstre des ombres

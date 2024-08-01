@@ -301,5 +301,10 @@
 	Xaphanhelper_UI_Metroid_Misc= MISC
 	Xaphanhelper_UI_Metroid_Boots= BOOTS
 
+#Errors
+	XaphanHelper_chapter_not_exist= The destination chapter doses not exist
+	XaphanHelper_room_not_exist= The destination room doses not exist
+	XaphanHelper_room_name_empty= The destination room name is empty
+
 #Temporary
 	LorebookEntry_Boss_2_1_Name= Shadow Monster
