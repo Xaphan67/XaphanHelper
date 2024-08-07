@@ -287,7 +287,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else if (platform.AttachedLever != null)
                         {
-                            AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, platform.AttachedLever.Directory, platform.AttachedLever.Flag, platform.AttachedLever.CanSwapFlag, platform.AttachedLever.Side, platform.AttachedLever.registerInSaveData, platform.AttachedLever.saveDataOnlyAfterCheckpoint);
+                            AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, platform.nodes, platform.AttachedLever.Directory, platform.AttachedLever.Flag, platform.AttachedLever.CanSwapFlag, platform.AttachedLever.Side, platform.AttachedLever.registerInSaveData, platform.AttachedLever.saveDataOnlyAfterCheckpoint);
                             AttachedLever.Depth = Depth + 1;
                         }
                         else if (platform.AttachedSpring != null)
@@ -370,7 +370,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
-                if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
+                if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || (!string.IsNullOrEmpty(moveFlag) && !SceneAs<Level>().Session.GetFlag(moveFlag) && mode != "Flag To Move") || AtStartOfTrack || AtEndOfTrack || !Moving)
                 {
                     if (AttachedSpike != null)
                     {
@@ -427,6 +427,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
+                        if ((!string.IsNullOrEmpty(moveFlag) && !SceneAs<Level>().Session.GetFlag(moveFlag)))
+                        {
+                            return;
+                        }
                         if (direction == -1)
                         {
                             percent -= speed * Engine.DeltaTime;
@@ -520,7 +524,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
                     }
                 }
-
                 MoveTo(GetPercentPosition(percent));
                 PositionTrackSfx();
                 if (Scene.OnInterval(0.05f) && index != 0 && particles)

@@ -10,6 +10,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Lever")]
     class Lever : Entity
     {
+        private Vector2[] nodes;
+
         private Sprite Sprite;
 
         public string Directory;
@@ -48,7 +50,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
         }
 
-        public Lever(Vector2 position, string directory, string flag, bool canSwapFlag, string side, bool registerInSaveData, bool saveDataOnlyAfterCheckpoint) : base(position)
+        public Lever(Vector2 position, Vector2[] nodes, string directory, string flag, bool canSwapFlag, string side, bool registerInSaveData, bool saveDataOnlyAfterCheckpoint) : base(position)
         {
             Tag = Tags.TransitionUpdate;
             Directory = directory;
@@ -63,6 +65,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.registerInSaveData = registerInSaveData;
             this.saveDataOnlyAfterCheckpoint = saveDataOnlyAfterCheckpoint;
             staticMover = new StaticMover();
+            this.nodes = nodes;
             switch (Side)
             {
                 case "Up":
@@ -90,10 +93,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Sprite.Rotation = (float)Math.PI / 2;
                     break;
             }
-            staticMover.OnAttach = delegate (Platform p)
-            {
-                Depth = p.Depth + 1;
-            };
             staticMover.OnEnable = onEnable;
             staticMover.OnDisable = onDisable;
             staticMover.OnShake = onShake;
@@ -102,7 +101,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new PlayerCollider(onPlayer, Collider));
         }
 
-        public Lever(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("directory"), data.Attr("flag"), data.Bool("canSwapFlag", false), data.Attr("side", "Up"), data.Bool("registerInSaveData", false), data.Bool("saveDataOnlyAfterCheckpoint", false))
+        public Lever(EntityData data, Vector2 offset) : this(data.Position + offset, data.NodesWithPosition(offset), data.Attr("directory"), data.Attr("flag"), data.Bool("canSwapFlag", false), data.Attr("side", "Up"), data.Bool("registerInSaveData", false), data.Bool("saveDataOnlyAfterCheckpoint", false))
         {
 
         }
@@ -269,6 +268,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
                 SceneAs<Level>().Session.SetFlag(Flag, !SceneAs<Level>().Session.GetFlag(Flag));
+                foreach (Vector2 node in nodes)
+                {
+                    SceneAs<Level>().Tracker.GetNearestEntity<Lever>(node).canSwitch = false;
+                }
             }
         }
 
