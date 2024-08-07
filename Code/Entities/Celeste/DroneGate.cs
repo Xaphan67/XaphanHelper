@@ -24,6 +24,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public string flag;
 
+        private string forceInactiveFlag;
+
         public Sprite gateSprite;
 
         public Sprite lightSprite;
@@ -35,6 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Tag = Tags.TransitionUpdate;
             side = data.Attr("side");
             flag = data.Attr("flag");
+            forceInactiveFlag = data.Attr("forceInactiveFlag");
             directory = data.Attr("directory", "objects/XaphanHelper/DroneGate");
             Add(gateSprite = new Sprite(GFX.Game, directory + "/"));
             gateSprite.Add("closed", "closed", 0f);
@@ -132,75 +135,98 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             {
                 Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
-                if (string.IsNullOrEmpty(flag) || (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)))
+                if (string.IsNullOrEmpty(forceInactiveFlag) || (!string.IsNullOrEmpty(forceInactiveFlag) && !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)))
                 {
-                    if (lightSprite.CurrentAnimationID.Contains("lock"))
+                    if (string.IsNullOrEmpty(flag) || (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)))
                     {
-                        if (side == "Left" || side == "Right")
+                        if (lightSprite.CurrentAnimationID.Contains("lock"))
                         {
-                            lightSprite.Play(side == "Left" ? "redL" : "redR");
+                            if (side == "Left" || side == "Right")
+                            {
+                                lightSprite.Play(side == "Left" ? "redL" : "redR");
+                            }
+                            else
+                            {
+                                lightSprite.Play(side == "Top" ? "redT" : "redB");
+
+                            }
+                        }
+                        if (drone != null && drone.enabled && !drone.dead)
+                        {
+                            if (side == "Left" || side == "Right")
+                            {
+                                if (drone.Left > Left - 24f && drone.Right < Right + 24f && drone.Top > Top - 16f && drone.Bottom < Bottom + 16f)
+                                {
+                                    if (!open)
+                                    {
+                                        open = true;
+                                        Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
+                                        gateSprite.Play("open");
+                                        lightSprite.Play(side == "Left" ? "greenL" : "greenR");
+                                        gateSprite.OnLastFrame += onLastFrame;
+                                    }
+                                    Collidable = false;
+                                }
+                                else
+                                {
+                                    if (open)
+                                    {
+                                        open = false;
+                                        Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
+                                        gateSprite.Play("close");
+                                        lightSprite.Play(side == "Left" ? "redL" : "redR");
+                                        gateSprite.OnLastFrame += onLastFrame;
+                                    }
+                                    Collidable = true;
+                                }
+                            }
+                            else if (side == "Top" || side == "Bottom")
+                            {
+                                if (drone.Left > Left - 16f && drone.Right < Right + 16f && drone.Top > Top - 24f && drone.Bottom < Bottom + 24f)
+                                {
+                                    if (!open)
+                                    {
+                                        open = true;
+                                        Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
+                                        gateSprite.Play("open");
+                                        lightSprite.Play(side == "Top" ? "greenT" : "greenB");
+                                        gateSprite.OnLastFrame += onLastFrame;
+                                    }
+                                    Collidable = false;
+                                }
+                                else
+                                {
+                                    if (open)
+                                    {
+                                        open = false;
+                                        Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
+                                        gateSprite.Play("close");
+                                        lightSprite.Play(side == "Top" ? "redT" : "redB");
+                                        gateSprite.OnLastFrame += onLastFrame;
+                                    }
+                                    Collidable = true;
+                                }
+                            }
                         }
                         else
                         {
-                            lightSprite.Play(side == "Top" ? "redT" : "redB");
-
-                        }
-                    }
-                    if (drone != null && drone.enabled && !drone.dead)
-                    {
-                        if (side == "Left" || side == "Right")
-                        {
-                            if (drone.Left > Left - 24f && drone.Right < Right + 24f && drone.Top > Top - 16f && drone.Bottom < Bottom + 16f)
+                            if ((side == "Left" || side == "Right") && open)
                             {
-                                if (!open)
-                                {
-                                    open = true;
-                                    Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
-                                    gateSprite.Play("open");
-                                    lightSprite.Play(side == "Left" ? "greenL" : "greenR");
-                                    gateSprite.OnLastFrame += onLastFrame;
-                                }
-                                Collidable = false;
+                                open = false;
+                                Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
+                                gateSprite.Play("close");
+                                lightSprite.Play(side == "Left" ? "redL" : "redR");
+                                gateSprite.OnLastFrame += onLastFrame;
                             }
-                            else
+                            else if ((side == "Top" || side == "Bottom") && open)
                             {
-                                if (open)
-                                {
-                                    open = false;
-                                    Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
-                                    gateSprite.Play("close");
-                                    lightSprite.Play(side == "Left" ? "redL" : "redR");
-                                    gateSprite.OnLastFrame += onLastFrame;
-                                }
-                                Collidable = true;
+                                open = false;
+                                Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
+                                gateSprite.Play("close");
+                                lightSprite.Play(side == "Top" ? "redT" : "redB");
+                                gateSprite.OnLastFrame += onLastFrame;
                             }
-                        }
-                        else if (side == "Top" || side == "Bottom")
-                        {
-                            if (drone.Left > Left - 16f && drone.Right < Right + 16f && drone.Top > Top - 24f && drone.Bottom < Bottom + 24f)
-                            {
-                                if (!open)
-                                {
-                                    open = true;
-                                    Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
-                                    gateSprite.Play("open");
-                                    lightSprite.Play(side == "Top" ? "greenT" : "greenB");
-                                    gateSprite.OnLastFrame += onLastFrame;
-                                }
-                                Collidable = false;
-                            }
-                            else
-                            {
-                                if (open)
-                                {
-                                    open = false;
-                                    Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
-                                    gateSprite.Play("close");
-                                    lightSprite.Play(side == "Top" ? "redT" : "redB");
-                                    gateSprite.OnLastFrame += onLastFrame;
-                                }
-                                Collidable = true;
-                            }
+                            Collidable = true;
                         }
                     }
                     else
@@ -210,7 +236,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             open = false;
                             Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
                             gateSprite.Play("close");
-                            lightSprite.Play(side == "Left" ? "redL" : "redR");
+                            lightSprite.Play(side == "Left" ? "lockL" : "lockR");
                             gateSprite.OnLastFrame += onLastFrame;
                         }
                         else if ((side == "Top" || side == "Bottom") && open)
@@ -218,39 +244,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             open = false;
                             Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
                             gateSprite.Play("close");
-                            lightSprite.Play(side == "Top" ? "redT" : "redB");
+                            lightSprite.Play(side == "Top" ? "lockT" : "lockB");
                             gateSprite.OnLastFrame += onLastFrame;
-                        }
-                        Collidable = true;
-                    }
-                }
-                else
-                {
-                    if ((side == "Left" || side == "Right") && open)
-                    {
-                        open = false;
-                        Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
-                        gateSprite.Play("close");
-                        lightSprite.Play(side == "Left" ? "lockL" : "lockR");
-                        gateSprite.OnLastFrame += onLastFrame;
-                    }
-                    else if ((side == "Top" || side == "Bottom") && open)
-                    {
-                        open = false;
-                        Audio.Play("event:/game/xaphan/pipegate_open_close", Position);
-                        gateSprite.Play("close");
-                        lightSprite.Play(side == "Top" ? "lockT" : "lockB");
-                        gateSprite.OnLastFrame += onLastFrame;
-                    }
-                    else
-                    {
-                        if (side == "Left" || side == "Right")
-                        {
-                            lightSprite.Play(side == "Left" ? "lockL" : "lockR");
                         }
                         else
                         {
-                            lightSprite.Play(side == "Top" ? "lockT" : "lockB");
+                            if (side == "Left" || side == "Right")
+                            {
+                                lightSprite.Play(side == "Left" ? "lockL" : "lockR");
+                            }
+                            else
+                            {
+                                lightSprite.Play(side == "Top" ? "lockT" : "lockB");
+                            }
                         }
                     }
                 }

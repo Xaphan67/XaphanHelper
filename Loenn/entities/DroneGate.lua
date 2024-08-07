@@ -16,14 +16,15 @@ DroneGate.placements = {
     data = {
         flag = "",
         side = "Left",
-        directory = "objects/XaphanHelper/DroneGate"
+        directory = "objects/XaphanHelper/DroneGate",
+        forceInactiveFlag = ""
     }
 }
 
 function DroneGate.sprite(room, entity)
     local side = entity.side or "Left"
     local directory = entity.directory or "objects/XaphanHelper/DroneGate"
-    
+
     local sprites = {}
 
     local spriteRed = nil
