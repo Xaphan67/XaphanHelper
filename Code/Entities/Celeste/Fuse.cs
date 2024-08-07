@@ -83,23 +83,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 GetSpritePos();
             }
 
-            public override void Update()
+            public IEnumerator ExplodeRoutine(float speed, string flag = null, bool registerInSaveData = false)
             {
-                base.Update();
                 if (manager == null)
                 {
                     if (SceneAs<Level>().Tracker.GetEntities<FuseExplosionSoundManager>().Count() == 0)
                     {
                         SceneAs<Level>().Add(new FuseExplosionSoundManager());
+                        yield return null;
                     }
                     manager = SceneAs<Level>().Tracker.GetEntity<FuseExplosionSoundManager>();
                 }
-            }
-
-            public IEnumerator ExplodeRoutine(float speed, string flag = null, bool registerInSaveData = false)
-            {
                 triggered = true;
-                if (manager.explosionSoundCooldown <= 0)
+                if (!manager.CooldownRoutine.Active)
                 {
                     Audio.Play("event:/game/xaphan/fuse_explosion", Position);
                     manager.SetCooldown(speed > 0.1f ? speed : 0.1f);

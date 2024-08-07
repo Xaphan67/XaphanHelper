@@ -6,7 +6,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
     [Tracked(true)]
     class FuseExplosionSoundManager : Entity
     {
-        public float explosionSoundCooldown;
+        public Coroutine CooldownRoutine = new();
 
         public FuseExplosionSoundManager()
         {
@@ -16,27 +16,32 @@ namespace Celeste.Mod.XaphanHelper.Managers
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Add(new Coroutine(ExplosionSoundCooldownRoutine()));
+            if (CooldownRoutine.Active)
+            {
+                CooldownRoutine.Cancel();
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (SceneAs<Level>().Transitioning && CooldownRoutine.Active)
+            {
+                CooldownRoutine.Cancel();
+            }
         }
 
         public void SetCooldown(float cooldown)
         {
-            explosionSoundCooldown = cooldown;
+            Add(CooldownRoutine = new Coroutine(ExplosionSoundCooldownRoutine(cooldown)));
         }
 
-        private IEnumerator ExplosionSoundCooldownRoutine()
+        private IEnumerator ExplosionSoundCooldownRoutine(float cooldown)
         {
-            while (true)
+            while (cooldown > 0)
             {
-                if (explosionSoundCooldown > 0)
-                {
-                    explosionSoundCooldown -= Engine.DeltaTime;
-                    yield return null;
-                }
-                else
-                {
-                    yield return null;
-                }
+                cooldown -= Engine.DeltaTime;
+                yield return null;
             }
         }
     }
