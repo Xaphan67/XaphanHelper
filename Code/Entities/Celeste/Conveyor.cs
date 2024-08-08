@@ -180,7 +180,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (self.CollideCheck<Conveyor>(vector))
             {
                 Conveyor conveyor = self.CollideFirst<Conveyor>(vector);
-                if (conveyor.vertical)
+                if (conveyor.vertical && (string.IsNullOrEmpty(conveyor.forceInactiveFlag) || (!string.IsNullOrEmpty(conveyor.forceInactiveFlag) && !self.SceneAs<Level>().Session.GetFlag(conveyor.forceInactiveFlag))))
                 {
                     return false;
                 }
@@ -194,7 +194,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (self.CollideCheck<Conveyor>(vector))
             {
                 Conveyor conveyor = self.CollideFirst<Conveyor>(vector);
-                if (!conveyor.vertical)
+                if (!conveyor.vertical || (conveyor.vertical && (string.IsNullOrEmpty(conveyor.forceInactiveFlag) || (!string.IsNullOrEmpty(conveyor.forceInactiveFlag) && self.SceneAs<Level>().Session.GetFlag(conveyor.forceInactiveFlag)))))
                 {
                     orig(self);
                 }
