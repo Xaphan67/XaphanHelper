@@ -34,6 +34,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool onlyCellVisible;
 
+        private Vector2 cellOffset;
+
         private bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
@@ -67,6 +69,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             cellInside = data.Bool("cellInside");
             keepCell = data.Bool("keepCell");
             onlyCellVisible = data.Bool("onlyCellVisible");
+            cellOffset = new Vector2(data.Float("cellOffsetX"), data.Float("cellOffsetY"));
             if (string.IsNullOrEmpty(sprite))
             {
                 sprite = "objects/XaphanHelper/CellLock";
@@ -82,21 +85,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 colorSprite.CenterOrigin();
                 colorSprite.Play("colorSprite");
             }
-            Add(new CellCollider(OnCell, new Circle(17f, 0f, 5f)));
-            Add(new CellCollider(OnSlot, new Hitbox(8f, 8f, -4f, 1f)));
+            Add(new CellCollider(OnCell, new Circle(17f, 0f + cellOffset.X, 5f + cellOffset.Y)));
+            Add(new CellCollider(OnSlot, new Hitbox(8f, 8f, -4f + cellOffset.X, 1f + cellOffset.Y)));
             Add(cellSprite = new Sprite(GFX.Game, sprite + "/"));
             cellSprite.Justify = new Vector2(0.5f, 0.2f);
             cellSprite.AddLoop("cellSprite", "bgCell", 0.08f);
             cellSprite.CenterOrigin();
+            cellSprite.Position += cellOffset;
             Add(lightningSprite = new Sprite(GFX.Game, sprite + "/"));
             lightningSprite.Justify = new Vector2(0.5f, 0.2f);
             lightningSprite.AddLoop("lightningSprite", "lightning", 0.06f);
             lightningSprite.CenterOrigin();
+            lightningSprite.Position += cellOffset;
             Add(leverSprite = new Sprite(GFX.Game, sprite + "/"));
             leverSprite.Justify = new Vector2(0.5f, 0.2f);
             leverSprite.AddLoop("leverIdle", "lever", 0.08f, 0);
             leverSprite.AddLoop("leverActive", "lever", 0.08f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0);
             leverSprite.CenterOrigin();
+            leverSprite.Position += cellOffset;
             Depth = 8999;
         }
 
@@ -245,6 +251,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (keepCell)
             {
                 SceneAs<Level>().Session.SetFlag(flag + "_sloted", true);
+                if (registerInSaveData)
+                {
+                    string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                    int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
+                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_sloted"))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_sloted");
+                    }
+                    if (XaphanModule.PlayerHasGolden)
+                    {
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_sloted_GoldenStrawberry"))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_sloted_GoldenStrawberry");
+                        }
+                    }
+                }
             }
             if (cell != null)
             {
