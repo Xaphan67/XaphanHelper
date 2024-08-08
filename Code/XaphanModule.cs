@@ -586,7 +586,7 @@ namespace Celeste.Mod.XaphanHelper
                 if (attrs["flag"] != null)
                 {
                     bool inverted = attrs["inverted"] != null ? bool.Parse(attrs["inverted"].Value) : false;
-                    if (inverted ? !decal.SceneAs<Level>().Session.GetFlag(attrs["flag"].Value) : decal.SceneAs<Level>().Session.GetFlag(attrs["flag"].Value))
+                    //if (inverted ? !decal.SceneAs<Level>().Session.GetFlag(attrs["flag"].Value) : decal.SceneAs<Level>().Session.GetFlag(attrs["flag"].Value))
                     {
                         float X = attrs["offsetX"] != null ? float.Parse(attrs["offsetX"].Value) : 0f;
                         float Y = attrs["offsetY"] != null ? float.Parse(attrs["offsetY"].Value) : 0f;
@@ -594,7 +594,8 @@ namespace Celeste.Mod.XaphanHelper
                         float alpha = attrs["alpha"] != null ? float.Parse(attrs["alpha"].Value) : 1f;
                         int startFade = attrs["startFade"] != null ? int.Parse(attrs["startFade"].Value) : 16;
                         int endFade = attrs["endFade"] != null ? int.Parse(attrs["endFade"].Value) : 24;
-                        decal.Add(new VertexLight(new Vector2(X, Y), color, alpha, startFade, endFade));
+                        //decal.Add(new VertexLight(new Vector2(X, Y), color, alpha, startFade, endFade));
+                        decal.Add(new FlagDecalLightToogle(attrs["flag"].Value, inverted, new Vector2(X, Y), color, alpha, startFade, endFade));
                     }
                 }
             });
