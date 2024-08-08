@@ -106,7 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void OnPlayer(Player player)
         {
-            if (player.StateMachine.State == 2)
+            if (player.StateMachine.State == 2 || player.DashAttacking)
             {
                 RevealSequence();
             }
