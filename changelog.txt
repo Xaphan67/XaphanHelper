@@ -1,6 +1,7 @@
 Version 1.0.64 :
 - Added "Force Inactive Flag" to Drone Gates and Flag Dash Switches
 - Added "Cell Offset X" and "Cell Offset Y" attributes to Cell Locks
+- Break Blocks Indicators now also apear if the player touch them in the Dash Attacking state. This make it more lenient to reveal the indicator in cases where the player dash end just before the block
 
 Version 1.0.63 :
 - Replaced Teleport To Chapter Trigger "To Chapter" attribute with "Destination Chapter". This new attribute accept a chapter map path instead of a chapter index, and can be used to teleport to any chapter, even ouside of the current campaign. Old Teleport To Chapter triggers are unaffected
