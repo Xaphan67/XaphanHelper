@@ -74,10 +74,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool Destroyed;
 
-        public Crate(Vector2 position, string type, CratesSpawner spawner) : base(position)
+        private string noSpawnFlag;
+
+        public Crate(Vector2 position, string type, CratesSpawner spawner, string noSpawnFlag = "") : base(position)
         {
             SourceSpawner = spawner;
             Type = type;
+            this.noSpawnFlag = noSpawnFlag;
             Collider = new Hitbox(8f, 10f, -4f, -10f);
             previousPosition = Position;
             Texture = GFX.Game["objects/XaphanHelper/Crate/" + Type.ToLower() + "00"];
@@ -98,7 +101,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = 100;
         }
 
-        public Crate(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type"), null)
+        public Crate(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type"), null, data.Attr("noSpawnFlag"))
         {
 
         }
@@ -106,7 +109,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            SceneAs<Level>().Add(LaserBlock = new LaserBlocker(Position, new Vector2(-7f, -15f), this));
+            if (!string.IsNullOrEmpty(noSpawnFlag) && SceneAs<Level>().Session.GetFlag(noSpawnFlag))
+            {
+                RemoveSelf();
+            }
+            else
+            {
+                SceneAs<Level>().Add(LaserBlock = new LaserBlocker(Position, new Vector2(-7f, -15f), this));
+            }
         }
 
         private void OnPickup()
@@ -520,7 +530,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Removed(Scene scene)
         {
             base.Removed(scene);
-            LaserBlock.RemoveSelf();
+            if (LaserBlock != null)
+            {
+                LaserBlock.RemoveSelf();
+            }
         }
     }
 }
