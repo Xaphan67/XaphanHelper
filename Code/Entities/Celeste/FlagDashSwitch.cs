@@ -48,6 +48,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool canSwapFlag;
 
+        private string forceInactiveFlag;
+
         public string mode;
 
         public bool flagState;
@@ -100,6 +102,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             spriteName = data.Attr("spriteName");
             flag = data.Attr("flag");
             canSwapFlag = data.Bool("canSwapFlag");
+            forceInactiveFlag = data.Attr("forceInactiveFlag");
             mode = data.Attr("mode", "SetTrue");
             registerInSaveData = data.Bool("registerInSaveData");
             saveDataOnlyAfterCheckpoint = data.Bool("saveDataOnlyAfterCheckpoint");
@@ -358,6 +361,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            if (!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
+            {
+                sprite.Rate = 0f;
+            }
+            else
+            {
+                sprite.Rate = 1f;
+            }
             if (!haveGolden)
             {
                 if ((((mode == "SetTrue" && SceneAs<Level>().Session.GetFlag(flag)) || (mode == "SetFalse" && !SceneAs<Level>().Session.GetFlag(flag))) || FlagRegiseredInSaveData()) && !canSwapFlag)
@@ -544,7 +555,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public DashCollisionResults OnDashed(Player player, Vector2 direction)
         {
-            if (!pressed && direction == pressDirection)
+            if (!pressed && direction == pressDirection && (string.IsNullOrEmpty(forceInactiveFlag) || (!string.IsNullOrEmpty(forceInactiveFlag) && !SceneAs<Level>().Session.GetFlag(forceInactiveFlag))))
             {
                 startSpawnPoint = SceneAs<Level>().Session.RespawnPoint;
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
