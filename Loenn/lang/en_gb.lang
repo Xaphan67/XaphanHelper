@@ -220,6 +220,7 @@ entities.XaphanHelper/DroneGate.placements.name.DroneGate=Drone Gate
 entities.XaphanHelper/DroneGate.attributes.description.side=The side the gate will face.
 entities.XaphanHelper/DroneGate.attributes.description.flag=The flag that must be set forthis gat to open when the drone is nearby.
 entities.XaphanHelper/DroneGate.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/DroneGate.attributes.description.forceInactiveFlag=When this flag is true, the gate will always stay closed.
 
 # DroneSwitch
 entities.XaphanHelper/DroneSwitch.placements.name.DroneSwitch=Drone Switch
@@ -273,6 +274,7 @@ entities.XaphanHelper/FlagDashSwitch.attributes.description.particleColor1=Hexad
 entities.XaphanHelper/FlagDashSwitch.attributes.description.particleColor2=Hexadecimal code of the second color of particles emited when the player dash into the switch.
 entities.XaphanHelper/FlagDashSwitch.attributes.description.mode=SetTrue: The flag will be set to true when the player dash into the switch.\nSetFalse: The flag will be set to false when the player dash into the switch.\nSetInverted: The flag state will be inverted when the player dash into the switch.
 entities.XaphanHelper/FlagDashSwitch.attributes.description.inWall=If true, move the switch 4 pixels toward the wall. If Side is set to Left or Right, prevent the player to stand on it. If Side is set to Up or Down, prevent the player to grab it.
+entities.XaphanHelper/FlagDashSwitch.attributes.description.forceInactiveFlag=When this flag is true, the switch cannot be pressed.
 
 # FlagStrawberry
 entities.XaphanHelper/FlagStrawberry.placements.name.FlagStrawberry=Flag Strawberry
