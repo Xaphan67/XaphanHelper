@@ -176,6 +176,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (loopBurst)
                 {
+                    scaleWiggler.Start();
                     (Scene as Level).Displacement.AddBurst(Center, 0.35f, 8f, 48f, 0.25f);
                 }
             }
