@@ -6,10 +6,14 @@ local CustomCollectable = {}
 CustomCollectable.name = "XaphanHelper/CustomCollectable"
 CustomCollectable.depth = 0
 CustomCollectable.fieldOrder = {
-    "x", "y", "sprite", "particlesColor", "flag", "collectSound", "loopSound", "staticTime", "newMusic", "mapIcon", "wiggle", "collectGoldenStrawberry", "mustDash", "canRespawn", "loopBurst", "changeMusic", "endChapter", "registerInSaveData", "ignoreGolden"
+    "x", "y", "sprite", "particlesColor", "lightColor", "flag", "collectSound", "loopSound", "staticTime", "newMusic", "mapIcon", "wiggle", "collectGoldenStrawberry", "mustDash", "canRespawn", "loopBurst", "changeMusic", "endChapter", "registerInSaveData", "ignoreGolden"
 }
 CustomCollectable.fieldInformation = {
     particlesColor = {
+        fieldType = "color",
+        allowEmpty = true
+    },
+    lightColor = {
         fieldType = "color",
         allowEmpty = true
     }
@@ -33,6 +37,7 @@ CustomCollectable.placements = {
         loopBurst = false,
         staticTime = 0.8,
         particlesColor = "",
+        lightColor = "",
         wiggle = false
     }
 }

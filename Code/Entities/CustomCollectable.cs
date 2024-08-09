@@ -85,6 +85,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public static ParticleType shineParticle;
 
+        private VertexLight light;
+
         private bool Collected;
 
         public bool FlagRegiseredInSaveData()
@@ -142,6 +144,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     collectable.Play("idle");
                 }
             };
+            if (!string.IsNullOrEmpty(data.Attr("lightColor")))
+            {
+                Add(light = new VertexLight(Calc.HexToColor(data.Attr("lightColor")), 1f, 32, 64));
+            }
             Add(scaleWiggler = Wiggler.Create(0.5f, 4f, delegate (float f)
             {
                 collectable.Scale = Vector2.One * (1f + f * 0.3f);
