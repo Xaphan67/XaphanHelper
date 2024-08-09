@@ -106,10 +106,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Collider = new Hitbox(12f, 12f, 2f, 2f);
             Add(collectable = new Sprite(GFX.Game, sprite));
             collectable.AddLoop("idle", "", 0.08f);
-            collectable.AddLoop("static", "", 1f, 0);
+            collectable.AddLoop("static", "", data.Float("staticTime"), 0);
             collectable.Play("idle");
             collectable.CenterOrigin();
             collectable.Position = collectable.Position + new Vector2(8, 8);
+            collectable.OnLastFrame = delegate (string anim)
+            {
+                if (anim == "idle")
+                {
+                    if (data.Float("staticTime") > 0)
+                    {
+                        collectable.Play("static");
+                    }
+                    else
+                    {
+                        collectable.Play("idle");
+                    }
+                    LoopActions(data.Attr("loopSound"), data.Bool("loopBurst"));
+                }
+                else
+                {
+                    collectable.Play("idle");
+                }
+            };
             Add(scaleWiggler = Wiggler.Create(0.5f, 4f, delegate (float f)
             {
                 collectable.Scale = Vector2.One * (1f + f * 0.3f);
@@ -118,6 +137,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
             moveWiggler.StartZero = true;
             Add(moveWiggler);
             Add(new PlayerCollider(OnPlayer));
+        }
+
+        private void LoopActions(string loopSound, bool loopBurst)
+        {
+            if (Visible)
+            {
+                if (!string.IsNullOrEmpty(loopSound))
+                {
+                    Audio.Play(loopSound, Position);
+                }
+                if (loopBurst)
+                {
+                    (Scene as Level).Displacement.AddBurst(Center, 0.35f, 8f, 48f, 0.25f);
+                }
+            }
         }
 
         private void OnPlayer(Player player)

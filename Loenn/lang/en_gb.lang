@@ -140,6 +140,9 @@ entities.XaphanHelper/CustomCollectable.attributes.description.endChapter=If tru
 entities.XaphanHelper/CustomCollectable.attributes.description.registerInSaveData=If true, the flag will be registered in the player Save file and will be set forever.
 entities.XaphanHelper/CustomCollectable.attributes.description.ignoreGolden=If true, the collectable will not re-appear when the player carry a golden berry if it has already been collected.
 entities.XaphanHelper/CustomCollectable.attributes.description.canRespawn=If true, the collectable will respawn when player re-enter the room it is in if the flag set by the collectable is not set.
+entities.XaphanHelper/CustomCollectable.attributes.description.loopSound=The sound event that will play each time the sprite finish a loop. Leave empty for no sound.
+entities.XaphanHelper/CustomCollectable.attributes.description.loopBurst=If true, the collectable will emit a small burst each time the sprite finish a loop.
+entities.XaphanHelper/CustomCollectable.attributes.description.staticTime=Time in seconds between each sprite loop during which the sprite will pause on its first frame. 0 = no pause.
 
 # CustomCoverupWall
 entities.XaphanHelper/CustomCoverupWall.placements.name.CustomCoverupWall=Custom Coverup Wall

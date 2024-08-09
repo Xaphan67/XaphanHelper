@@ -184,7 +184,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (heart != null)
                         {
-                            //level.Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
                             BerryAppeared = false;
                         }
                     }
@@ -277,6 +276,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 ShowHeart = true;
                 heart.Visible = heart.Collidable = true;
+                level.Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
             }
             Scene.Remove(dummy);
         }

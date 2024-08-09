@@ -1,6 +1,7 @@
 Version 1.0.64 :
 - Added "Force Inactive Flag" to Drone Gates and Flag Dash Switches
 - Added "Cell Offset X" and "Cell Offset Y" attributes to Cell Locks
+- Added "Loop Sound", "Loop Burst" and "Static Time" attributes to Custom Collectable
 - Break Blocks Indicators now also apear if the player touch them in the Dash Attacking state. This make it more lenient to reveal the indicator in cases where the player dash end just before the block
 
 Version 1.0.63 :
