@@ -76,7 +76,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool shouldWaitBeforeRemoving;
 
-        private bool FlagRegiseredInSaveData()
+        public bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;

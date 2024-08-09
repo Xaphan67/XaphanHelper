@@ -27,6 +27,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Strawberry strawberry;
 
+        private CustomCollectable heart;
+
+        private bool ShowHeart;
+
         private bool Started;
 
         private int ChapterIndex;
@@ -118,12 +122,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex == -1 ? 0 : SceneAs<Level>().Session.Area.ChapterIndex;
-            if (strawberry == null)
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
-                strawberry = level.Entities.FindFirst<Strawberry>();
-                if (strawberry != null)
+                if (heart == null)
                 {
-                    origBerryPos = strawberry.Position;
+                    heart = level.Entities.FindFirst<CustomCollectable>();
+                }
+                else
+                {
+                    BerryPos = heart.Center;
+                    if (!ShowHeart)
+                    {
+                        heart.Visible = heart.Collidable = false;
+                    }
+                }
+            }
+            else
+            {
+                if (strawberry == null)
+                {
+                    strawberry = level.Entities.FindFirst<Strawberry>();
+                    if (strawberry != null)
+                    {
+                        origBerryPos = strawberry.Position;
+                    }
                 }
             }
             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
@@ -138,7 +160,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
                         level.ParticlesBG.Emit(P_Fire, position + new Vector2(0, -3f));
                     }
-                    if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || level.Session.GetFlag("Boss_Defeated_CM")) && strawberry != null && !BerryAppeared)
+                    if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || level.Session.GetFlag("Boss_Defeated_CM")) && (XaphanModule.SoCMVersion < new Version(3, 0, 0) ? strawberry != null : heart != null) && !BerryAppeared)
                     {
                         Visible = talk.Enabled = false;
                         BerryAppeared = true;
@@ -146,7 +168,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         sprite.Play("completed");
                         sprite.OnLastFrame = onLastFrame;
                     }
-                    else if (strawberry == null)
+                    else if ((XaphanModule.SoCMVersion < new Version(3, 0, 0) && strawberry == null) || XaphanModule.SoCMVersion >= new Version(3, 0, 0) && heart == null)
                     {
                         sprite.Play("completedEnd");
                     }
@@ -158,11 +180,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (strawberry != null && strawberry.Position == BerryPos)
+                    if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                     {
-                        level.Displacement.AddBurst(strawberry.Center, 0.5f, 8f, 32f, 0.5f);
-                        strawberry.Position = origBerryPos;
-                        BerryAppeared = false;
+                        if (heart != null)
+                        {
+                            //level.Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
+                            BerryAppeared = false;
+                        }
+                    }
+                    else
+                    {
+                        if (strawberry != null && strawberry.Position == BerryPos)
+                        {
+                            level.Displacement.AddBurst(strawberry.Center, 0.5f, 8f, 32f, 0.5f);
+                            strawberry.Position = origBerryPos;
+                            BerryAppeared = false;
+                        }
                     }
                     Visible = talk.Enabled = false;
                     Started = true;
@@ -194,13 +227,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
             AreaKey area = level.Session.Area;
             MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
             Image white = null;
-            if (SaveData.Instance.CheckStrawberry(MapData.Area, strawberry.ID))
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
-                white = new Image(GFX.Game["collectables/ghostberry/idle00"]);
+                white = new Image(GFX.Game["collectables/heartGem/white00"]);
             }
             else
             {
-                white = new Image(GFX.Game["collectables/strawberry/normal00"]);
+                if (SaveData.Instance.CheckStrawberry(MapData.Area, strawberry.ID))
+                {
+                    white = new Image(GFX.Game["collectables/ghostberry/idle00"]);
+                }
+                else
+                {
+                    white = new Image(GFX.Game["collectables/strawberry/normal00"]);
+                }
             }
             white.CenterOrigin();
             white.Scale = Vector2.Zero;
@@ -229,7 +269,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 orb2.RemoveSelf();
             }
             (Scene as Level).Flash(Color.White);
-            strawberry.Position = dummy.Position;
+            if (XaphanModule.SoCMVersion < new Version(3, 0, 0))
+            {
+                strawberry.Position = dummy.Position;
+            }
+            else
+            {
+                ShowHeart = true;
+                heart.Visible = heart.Collidable = true;
+            }
             Scene.Remove(dummy);
         }
 
@@ -347,7 +395,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (level.Session.GetFlag("Upgrade_HadBombs"))
                 {
-                    level.Session.SetFlag("Upgrade_SpaceJump", true);
+                    level.Session.SetFlag("Upgrade_Bombs", true);
                     XaphanModule.ModSettings.Bombs = true;
                     level.Session.SetFlag("Upgrade_HadBombs", false);
                 }
