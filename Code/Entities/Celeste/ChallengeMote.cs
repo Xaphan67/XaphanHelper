@@ -182,8 +182,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                     {
-                        if (heart != null)
+                        if (heart != null && heart.Visible)
                         {
+                            level.Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
+                            heart.Visible = heart.Collidable = false;
                             BerryAppeared = false;
                         }
                     }
