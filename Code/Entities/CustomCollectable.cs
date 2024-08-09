@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
@@ -76,6 +77,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool shouldWaitBeforeRemoving;
 
+        private string particlesColor;
+
+        public static ParticleType shineParticle;
+
+        private bool Collected;
+
         public bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
@@ -99,6 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             registerInSaveData = data.Bool("registerInSaveData");
             ignoreGolden = data.Bool("ignoreGolden");
             canRespawn = data.Bool("canRespawn");
+            particlesColor = data.Attr("particlesColor");
             if (sprite == "")
             {
                 sprite = "collectables/XaphanHelper/CustomCollectable/collectable";
@@ -137,6 +145,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
             moveWiggler.StartZero = true;
             Add(moveWiggler);
             Add(new PlayerCollider(OnPlayer));
+            shineParticle = new ParticleType
+            {
+                Size = 1f,
+                Color = Calc.HexToColor(particlesColor),
+                Color2 = Color.White,
+                ColorMode = ParticleType.ColorModes.Blink,
+                FadeMode = ParticleType.FadeModes.InAndOut,
+                Direction = -(float)Math.PI / 2f,
+                DirectionRange = 1.39626336f,
+                SpeedMin = 5f,
+                SpeedMax = 10f,
+                LifeMin = 0.6f,
+                LifeMax = 1f
+            };
         }
 
         private void LoopActions(string loopSound, bool loopBurst)
@@ -242,12 +264,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             bounceSfxDelay -= Engine.DeltaTime;
             collectable.Position = moveWiggleDir * moveWiggler.Value * -8f;
             collectable.Position = collectable.Position + new Vector2(8, 8);
+            if (!string.IsNullOrEmpty(particlesColor) && Visible && !Collected && Scene.OnInterval(0.1f))
+            {
+                SceneAs<Level>().Particles.Emit(shineParticle, 1, Center, Vector2.One * 8f);
+            }
         }
 
         private IEnumerator Collect(Player player, Level level)
         {
             Visible = false;
             Collidable = false;
+            Collected = true;
             Session session = SceneAs<Level>().Session;
             if (!changeMusic)
             {

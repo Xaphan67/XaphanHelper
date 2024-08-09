@@ -143,6 +143,7 @@ entities.XaphanHelper/CustomCollectable.attributes.description.canRespawn=If tru
 entities.XaphanHelper/CustomCollectable.attributes.description.loopSound=The sound event that will play each time the sprite finish a loop. Leave empty for no sound.
 entities.XaphanHelper/CustomCollectable.attributes.description.loopBurst=If true, the collectable will emit a small burst each time the sprite finish a loop.
 entities.XaphanHelper/CustomCollectable.attributes.description.staticTime=Time in seconds between each sprite loop during which the sprite will pause on its first frame. 0 = no pause.
+entities.XaphanHelper/CustomCollectable.attributes.description.particlesColor=Hexadecimal code for the color of the particles. Leave blank for no particles.
 
 # CustomCoverupWall
 entities.XaphanHelper/CustomCoverupWall.placements.name.CustomCoverupWall=Custom Coverup Wall
