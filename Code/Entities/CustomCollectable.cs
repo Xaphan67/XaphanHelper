@@ -65,6 +65,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Wiggler moveWiggler;
 
+        private bool wiggle;
+
+        private float timer;
+
         private float bounceSfxDelay;
 
         private bool endChapter;
@@ -101,6 +105,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             newMusic = data.Attr("newMusic");
             flag = data.Attr("flag");
             mustDash = data.Bool("mustDash");
+            wiggle = data.Bool("wiggle");
             endChapter = data.Bool("completeArea") || data.Bool("endChapter");
             collectGoldenStrawberry = data.Bool("collectGoldenStrawberry");
             registerInSaveData = data.Bool("registerInSaveData");
@@ -262,7 +267,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(new Coroutine(WaitBeforeRemoveRoutine(registerInSaveData)));
             }
             bounceSfxDelay -= Engine.DeltaTime;
-            collectable.Position = moveWiggleDir * moveWiggler.Value * -8f;
+            timer += Engine.DeltaTime;
+            if (wiggle)
+            {
+                collectable.Position = Vector2.UnitY * (float)Math.Sin(timer * 2f) * 2f + moveWiggleDir * moveWiggler.Value * -8f;
+            }
+            else
+            {
+                collectable.Position = moveWiggleDir * moveWiggler.Value * -8f;
+            }
             collectable.Position = collectable.Position + new Vector2(8, 8);
             if (!string.IsNullOrEmpty(particlesColor) && Visible && !Collected && Scene.OnInterval(0.1f))
             {
