@@ -16,6 +16,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Coroutine PopupRoutine = new();
 
+        private Coroutine DelayRoutine = new();
+
         private MTexture Icon;
 
         private MTexture MedalIcon;
@@ -46,12 +48,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Added(scene);
             achievements = Achievements.GenerateAchievementsList(SceneAs<Level>().Session);
             lorebookEntries = LorebookEntries.GenerateLorebookEntriesDataList(SceneAs<Level>().Session);
+            Add(DelayRoutine = new(DelayPopupCheck()));
         }
 
         public override void Update()
         {
             base.Update();
-            if (!PopupRoutine.Active && XaphanModule.ModSaveData.CanDisplayPopups)
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if ((SceneAs<Level>().Transitioning || (player != null && player.StateMachine.State == Player.StDummy)) && !DelayRoutine.Active)
+            {
+                Add(DelayRoutine = new(DelayPopupCheck()));
+            }
+            if (!PopupRoutine.Active && !DelayRoutine.Active && XaphanModule.ModSaveData.CanDisplayPopups)
             {
                 foreach (AchievementData achievement in achievements)
                 {
@@ -130,6 +138,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 yield return null;
             }
             Visible = false;
+        }
+
+        private IEnumerator DelayPopupCheck()
+        {
+            yield return 0.1f;
         }
 
         public override void Render()
