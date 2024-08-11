@@ -3899,126 +3899,151 @@ namespace Celeste.Mod.XaphanHelper
                             {
                                 ModSettings.PowerGrip = true;
                                 level.Session.SetFlag("Upgrade_PowerGrip", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PowerGrip_GoldenStrawberry");
                             }
                             if (goldenClimbingKit)
                             {
                                 ModSettings.ClimbingKit = true;
                                 level.Session.SetFlag("Upgrade_ClimbingKit", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit_GoldenStrawberry");
                             }
                             if (goldenSpiderMagnet)
                             {
                                 ModSettings.SpiderMagnet = true;
                                 level.Session.SetFlag("Upgrade_SpiderMagnet", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SpiderMagnet_GoldenStrawberry");
                             }
                             if (goldenDroneTeleport)
                             {
                                 ModSettings.DroneTeleport = true;
                                 level.Session.SetFlag("Upgrade_DroneTeleport", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_DroneTeleport_GoldenStrawberry");
                             }
                             if (goldenJumpBoost)
                             {
                                 ModSettings.JumpBoost = true;
                                 level.Session.SetFlag("Upgrade_JumpBoost", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_JumpBoost_GoldenStrawberry");
                             }
                             if (goldenScrewAttack)
                             {
                                 ModSettings.ScrewAttack = true;
                                 level.Session.SetFlag("Upgrade_ScrewAttack", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_ScrewAttack_GoldenStrawberry");
                             }
                             if (goldenVariaJacket)
                             {
                                 ModSettings.VariaJacket = true;
                                 level.Session.SetFlag("Upgrade_VariaJacket", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_VariaJacket_GoldenStrawberry");
                             }
                             if (goldenGravityJacket)
                             {
                                 ModSettings.GravityJacket = true;
                                 level.Session.SetFlag("Upgrade_GravityJacket", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_GravityJacket_GoldenStrawberry");
                             }
                             if (goldenBombs)
                             {
                                 ModSettings.Bombs = true;
                                 level.Session.SetFlag("Upgrade_Bombs", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_Bombs_GoldenStrawberry");
                             }
                             if (goldenMegaBombs)
                             {
                                 ModSettings.MegaBombs = true;
                                 level.Session.SetFlag("Upgrade_MegaBombs", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_MegaBombs_GoldenStrawberry");
                             }
                             if (goldenRemoteDrone)
                             {
                                 ModSettings.RemoteDrone = true;
                                 level.Session.SetFlag("Upgrade_RemoteDrone", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_RemoteDrone_GoldenStrawberry");
                             }
                             if (goldenGoldenFeather)
                             {
                                 ModSettings.GoldenFeather = true;
                                 level.Session.SetFlag("Upgrade_GoldenFeather", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_GoldenFeather_GoldenStrawberry");
                             }
                             if (goldenBinoculars)
                             {
                                 ModSettings.Binoculars = true;
                                 level.Session.SetFlag("Upgrade_Binoculars", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_Binoculars_GoldenStrawberry");
                             }
                             if (goldenEtherealDash)
                             {
                                 ModSettings.EtherealDash = true;
                                 level.Session.SetFlag("Upgrade_EtherealDash", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_EtherealDash_GoldenStrawberry");
                             }
                             if (goldenPortableStation)
                             {
                                 ModSettings.PortableStation = true;
                                 level.Session.SetFlag("Upgrade_PortableStation", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PortableStation_GoldenStrawberry");
                             }
                             if (goldenPulseRadar)
                             {
                                 ModSettings.PulseRadar = true;
                                 level.Session.SetFlag("Upgrade_PulseRadar", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PulseRadar_GoldenStrawberry");
                             }
                             if (goldenDashBoots)
                             {
                                 ModSettings.DashBoots = true;
                                 level.Session.SetFlag("Upgrade_DashBoots", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_DashBoots_GoldenStrawberry");
                             }
                             if (goldenSpaceJump)
                             {
                                 ModSettings.SpaceJump = 2;
                                 level.Session.SetFlag("Upgrade_SpaceJump", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SpaceJump_GoldenStrawberry");
                             }
                             if (goldenHoverJet)
                             {
                                 ModSettings.HoverJet = true;
                                 level.Session.SetFlag("Upgrade_HoverJet", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_HoverJet_GoldenStrawberry");
                             }
                             if (goldenLightningDash)
                             {
                                 ModSettings.LightningDash = true;
                                 level.Session.SetFlag("Upgrade_LightningDash", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_LightningDash_GoldenStrawberry");
                             }
                             if (goldenLongBeam)
                             {
                                 ModSettings.LongBeam = true;
                                 level.Session.SetFlag("Upgrade_LongBeam", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_LongBeam_GoldenStrawberry");
                             }
                             if (goldenIceBeam)
                             {
                                 ModSettings.IceBeam = true;
                                 level.Session.SetFlag("Upgrade_IceBeam", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_IceBeam_GoldenStrawberry");
                             }
                             if (goldenWaveBeam)
                             {
                                 ModSettings.WaveBeam = true;
                                 level.Session.SetFlag("Upgrade_WaveBeam", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_WaveBeam_GoldenStrawberry");
                             }
                             if (goldenMissilesModule)
                             {
                                 ModSettings.MissilesModule = true;
                                 level.Session.SetFlag("Upgrade_MissilesModule", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_MissilesModule_GoldenStrawberry");
                             }
                             if (goldenSuperMissilesModule)
                             {
                                 ModSettings.SuperMissilesModule = true;
                                 level.Session.SetFlag("Upgrade_SuperMissilesModule", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule_GoldenStrawberry");
                             }
                         }
                     }
