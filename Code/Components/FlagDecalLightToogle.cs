@@ -38,6 +38,7 @@ namespace Celeste.Mod.XaphanHelper.Components
         public override void Added(Entity entity)
         {
             base.Added(entity);
+            entity.Tag = Tags.TransitionUpdate;
             Light = new VertexLight(Position, Color, Alpha, StartFade, EndFade);
         }
 
