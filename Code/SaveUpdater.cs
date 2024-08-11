@@ -187,7 +187,7 @@ namespace Celeste.Mod.XaphanHelper
                             RoomsNamesConversion.Add("D-W2", "I-W4");
                             RoomsNamesConversion.Add("N-Ch1-0", "G-Ch1-0");
                             RoomsNamesConversion.Add("N-Ch1-0-Arrow", "G-Ch1-0-Arrow");
-                            RoomsNamesConversion.Add("N-Ch2-0-Shaft", "I-Ch2-0-Shaft");
+                            RoomsNamesConversion.Add("dummy-14", "I-Ch2-0-Shaft");
                             RoomsNamesConversion.Add("N-Ch5-0", "I-Ch5-0");
                             RoomsNamesConversion.Add("N-Ch5-0-Arrow", "I-Ch5-0-Arrow");
                             RoomsNamesConversion.Add("S-Begin", "G-00");
@@ -203,7 +203,19 @@ namespace Celeste.Mod.XaphanHelper
                         HashSet<EntityID> deletedStrawberries = new();
                         foreach (EntityID strawberry in SaveData.Instance.Areas_Safe[i].Modes[0].Strawberries)
                         {
-                            if (strawberry.Level == "A-06")
+                            // Removed strawberries
+                            if (i == SaveData.Instance.LevelSetStats.AreaOffset + 1 && (strawberry.Level == "A-06" || strawberry.Level == "A-07"))
+                            {
+                                deletedStrawberries.Add(strawberry);
+                            }
+                            // Old boss strawberry
+                            if (strawberry.Level == "D-03")
+                            {
+                                deletedStrawberries.Add(strawberry);
+                                XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch2_Boss_ShadowMonster_CM");
+                            }
+                            // Golden Strawberries
+                            if ((i == SaveData.Instance.LevelSetStats.AreaOffset + 1 && strawberry.Level == "A-00") || (i == SaveData.Instance.LevelSetStats.AreaOffset + 2 && strawberry.Level == "A-01"))
                             {
                                 deletedStrawberries.Add(strawberry);
                             }
@@ -226,7 +238,14 @@ namespace Celeste.Mod.XaphanHelper
                                 if (strawberry.Level == oldRoom.Key)
                                 {
                                     oldStrawberries.Add(strawberry);
-                                    newStrawberries.Add(new EntityID(oldRoom.Value, strawberry.ID));
+                                    if (i == SaveData.Instance.LevelSetStats.AreaOffset + 1 && oldRoom.Key == "C-01") // New strawberry has a different ID -- Hardcode the new ID insead of using old one
+                                    {
+                                        newStrawberries.Add(new EntityID(oldRoom.Value, 1708));
+                                    }
+                                    else
+                                    {
+                                        newStrawberries.Add(new EntityID(oldRoom.Value, strawberry.ID));
+                                    }
                                 }
                             }
                         }
@@ -241,13 +260,46 @@ namespace Celeste.Mod.XaphanHelper
                             level.Session.DoNotLoad.Add(strawberry);
                         }
 
+                        // Adjust Lorebook entries
+
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch0/A-03-1-0"))
+                        {
+                            level.Session.SetFlag("LorebookEntry_loc0");
+                        }
+                        if (XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Gem_Room_B"))
+                        {
+                            level.Session.SetFlag("CS_Ch0_Gem_Room_B");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/S-Begin-0-1"))
+                        {
+                            level.Session.SetFlag("LorebookEntry_loc1-1");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/S-Begin-0-1"))
+                        {
+                            level.Session.SetFlag("LorebookEntry_loc2-1");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/B-00-1-0"))
+                        {
+                            level.Session.SetFlag("LorebookEntry_loc2-2");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/C-00-0-0"))
+                        {
+                            level.Session.SetFlag("LorebookEntry_loc2-3");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/C-07-0-0"))
+                        {
+                            level.Session.SetFlag("LorebookEntry_poi2-1");
+                        }
+
                         // Adjust in-game map explored and warps
 
                         int index = i - SaveData.Instance.LevelSetStats.AreaOffset;
                         HashSet<string> oldVisitedRooms = new();
                         HashSet<string> oldVisitedRoomsTiles = new();
+                        HashSet<string> oldExtraUnexploredRooms = new();
                         HashSet<string> newVisitedRooms = new();
                         HashSet<string> newVisitedRoomsTiles = new();
+                        HashSet<string> newExtraUnexploredRooms = new();
                         HashSet<string> oldUnlockedWarps = new();
                         HashSet<string> newUnlockedWarps = new();
                         foreach (KeyValuePair<string, string> oldRoom in RoomsNamesConversion)
@@ -268,6 +320,14 @@ namespace Celeste.Mod.XaphanHelper
                                     newVisitedRoomsTiles.Add(visitedRoomTile.Replace(oldRoom.Key, oldRoom.Value));
                                 }
                             }
+                            foreach (string extraUnexploredRooms in XaphanModule.ModSaveData.ExtraUnexploredRooms)
+                            {
+                                if (extraUnexploredRooms == "Xaphan/0/Ch" + index + "/" + oldRoom.Key)
+                                {
+                                    oldExtraUnexploredRooms.Add(extraUnexploredRooms);
+                                    newExtraUnexploredRooms.Add(extraUnexploredRooms.Replace(oldRoom.Key, oldRoom.Value));
+                                }
+                            }
                             foreach (string unlockedWarp in XaphanModule.ModSaveData.UnlockedWarps)
                             {
                                 if (unlockedWarp == "Xaphan/0_Ch" + index + "_" + oldRoom.Key)
@@ -281,9 +341,43 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             XaphanModule.ModSaveData.VisitedRooms.Remove(visitedRoom);
                         }
+                        // Specific removed rooms
+                        if (XaphanModule.ModSaveData.VisitedRooms.Contains("Xaphan/0/Ch1/A-06"))
+                        {
+                            XaphanModule.ModSaveData.VisitedRooms.Remove("Xaphan/0/Ch1/A-06");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRooms.Contains("Xaphan/0/Ch1/A-07"))
+                        {
+                            XaphanModule.ModSaveData.VisitedRooms.Remove("Xaphan/0/Ch1/A-07");
+                        }
                         foreach (string visitedRoomTile in oldVisitedRoomsTiles)
                         {
                             XaphanModule.ModSaveData.VisitedRoomsTiles.Remove(visitedRoomTile);
+                        }
+                        foreach (string extraUnexploredRooms in oldExtraUnexploredRooms)
+                        {
+                            XaphanModule.ModSaveData.ExtraUnexploredRooms.Remove(extraUnexploredRooms);
+                        }
+                        // Specific removed rooms tiles
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/A-06-0-0"))
+                        {
+                            XaphanModule.ModSaveData.VisitedRoomsTiles.Remove("Xaphan/0/Ch1/A-06-0-0");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/A-06-0-1"))
+                        {
+                            XaphanModule.ModSaveData.VisitedRoomsTiles.Remove("Xaphan/0/Ch1/A-06-0-1");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/A-06-0-2"))
+                        {
+                            XaphanModule.ModSaveData.VisitedRoomsTiles.Remove("Xaphan/0/Ch1/A-06-0-2");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/A-07-0-0"))
+                        {
+                            XaphanModule.ModSaveData.VisitedRoomsTiles.Remove("Xaphan/0/Ch1/A-07-0-0");
+                        }
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/A-07-0-1"))
+                        {
+                            XaphanModule.ModSaveData.VisitedRoomsTiles.Remove("Xaphan/0/Ch1/A-07-0-1");
                         }
                         foreach (string unlockedWarp in oldUnlockedWarps)
                         {
@@ -296,6 +390,10 @@ namespace Celeste.Mod.XaphanHelper
                         foreach (string visitedRoomTile in newVisitedRoomsTiles)
                         {
                             XaphanModule.ModSaveData.VisitedRoomsTiles.Add(visitedRoomTile);
+                        }
+                        foreach (string extraUnexploredRooms in newExtraUnexploredRooms)
+                        {
+                            XaphanModule.ModSaveData.ExtraUnexploredRooms.Add(extraUnexploredRooms);
                         }
                         foreach (string unlockedWarp in newUnlockedWarps)
                         {
