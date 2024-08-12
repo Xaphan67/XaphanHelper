@@ -23,14 +23,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private IntroText message;
 
-        private Image decoLeft;
-
-        private Image decoRight;
-
-        private NormalText FirstInput;
-
-        private Image InputImage;
-
         private bool DrawBlackBg;
 
         private Image logo;
@@ -39,11 +31,15 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private float logoAlpha = 0f;
 
-        private float inputAlpha = 0f;
-
         private float fade;
 
         private Vector2 normalCameraPos;
+
+        private TextMenu menu;
+
+        private bool StartCampaign;
+
+        private CS_Credits CreditsCutscene;
 
         public SoCMIntro(Player player)
         {
@@ -94,18 +90,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             Add(TitleScreenCoroutine = new Coroutine(TitleScreen(level)));
             Add(LogoCoroutine = new Coroutine(FadeLogo()));
-            Add(InputCoroutine = new Coroutine(FadeInput()));
             while (TitleScreenCoroutine.Active)
             {
                 yield return null;
             }
             level.DoScreenWipe(false);
             yield return 0.47f;
-            decoLeft = null;
-            FirstInput.RemoveSelf();
-            FirstInput = null;
-            InputImage = null;
-            decoRight = null;
             player.StateMachine.Locked = false;
             player.StateMachine.State = 0;
             EndCutscene(Level);
@@ -217,48 +207,46 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 level.Session.Audio.Music.Event = "event:/music/xaphan/lvl_0_intro_loop";
                 level.Session.Audio.Apply(forceSixteenthNoteHack: false);
             }
-            decoLeft = new Image(GFX.Gui["poemside"]);
-            decoRight = new Image(GFX.Gui["poemside"]);
-            string prefix = "UI_QUICK_RESTART_PRESS";
-            VirtualButton control = Input.MenuConfirm;
-            MTexture buttonTexture = Input.GuiButton(control, "controls/keyboard/oemquestion");
-            float TotalLenght = decoLeft.Width + 19 + ActiveFont.Measure(Dialog.Clean(prefix)).X * 1.5f + 29 + buttonTexture.Width + 19 + decoRight.Width;
-            float DecoLeftPosition = Engine.Width / 2f - TotalLenght / 2f + decoLeft.Width / 2;
-            float PrefixPosition = DecoLeftPosition + decoLeft.Width / 2 + 19 + (ActiveFont.Measure(Dialog.Clean(prefix)).X * 1.5f) / 2;
-            float InputPosition = PrefixPosition + (ActiveFont.Measure(Dialog.Clean(prefix)).X * 1.5f) / 2 + 29 + buttonTexture.Width / 2;
-            float DecoRightPosition = InputPosition + buttonTexture.Width / 2 + 19 + decoRight.Width / 2;
-            decoLeft.CenterOrigin();
-            decoLeft.Position = new Vector2(DecoLeftPosition, Engine.Height / 2 + 206);
-            decoRight.CenterOrigin();
-            decoRight.Position = new Vector2(DecoRightPosition, Engine.Height / 2 + 206);
-            level.Add(FirstInput = new NormalText(prefix, new Vector2(PrefixPosition, Engine.Height / 2 + 206), Color.White, inputAlpha, 1.5f));
-            InputImage = new Image(buttonTexture);
-            InputImage.CenterOrigin();
-            InputImage.Position = new Vector2(InputPosition, Engine.Height / 2 + 206);
-            while (!Input.MenuConfirm.Check)
+            SceneAs<Level>().Add(menu = new TextMenu());
+            menu.AutoScroll = false;
+            menu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
+            menu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.ModSaveData.VisitedRooms.Contains("Xaphan/0/Ch0/A-00") ? "Resume" : "Start"))).Pressed(StartResume));
+            menu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Credits")).Pressed(ShowCredits));
+            while (!StartCampaign)
             {
                 yield return null;
             }
-            Audio.Play("event:/ui/main/button_select");
-            /*if (XaphanModule.ModSettings.SpeedrunModeUnlocked)
+            menu.Focused = false;
+        }
+
+        private void StartResume()
+        {
+            StartCampaign = true;
+        }
+
+        private void ShowCredits()
+        {
+            Add(new Coroutine(ShowCreditsRoutine(SceneAs<Level>())));
+        }
+
+        private IEnumerator ShowCreditsRoutine(Level level)
+        {
+            menu.Focused = false;
+            Scene.Add(CreditsCutscene = new CS_Credits(player, true));
+            yield return null;
+            while (!CreditsCutscene.Finished)
             {
-                Add(menu = new TextMenu());
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.SubHeader(""));
-                menu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Start")).Pressed(StartGame));
-                menu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Speedrun")).Pressed(ActivateSpeedrunMode));
-                while (!Input.MenuConfirm.Pressed)
-                {
-                    yield return null;
-                }
+                yield return null;
             }
-            else*/
+            menu.Selection = 0;
+            menu.Focused = true;
+            level.Session.Audio.Music.Event = "event:/music/xaphan/lvl_0_intro_loop";
+            level.Session.Audio.Apply(forceSixteenthNoteHack: false);
+            yield return new FadeWipe(level, wipeIn: true)
+            {
+                Duration = 1f
+            }.Duration;
+            Audio.SetMusicParam("fade", 1f);
         }
 
         private IEnumerator FadeLogo()
@@ -279,28 +267,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
         }
 
-        private IEnumerator FadeInput()
-        {
-            if (skipedIntro)
-            {
-                float timer = 0.7f;
-                while (timer > 0f)
-                {
-                    yield return null;
-                    timer -= Engine.DeltaTime;
-                }
-            }
-            while (inputAlpha != 1)
-            {
-                yield return null;
-                inputAlpha = Calc.Approach(inputAlpha, 1, Engine.DeltaTime * 2f);
-                if (FirstInput != null)
-                {
-                    FirstInput.Appear();
-                }
-            }
-        }
-
         public override void Update()
         {
             base.Update();
@@ -313,6 +279,17 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 }
                 IntroCoroutine.Cancel();
             }
+            if (menu != null)
+            {
+                foreach (TextMenu.Item item in menu.Items)
+                {
+                    if (item is TextMenu.Button)
+                    {
+                        TextMenu.Button button = (TextMenu.Button)item;
+                        button.Container.Alpha = logoAlpha;
+                    }
+                }
+            }
         }
 
         public override void Render()
@@ -324,29 +301,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             logo.Color = Color.White * logoAlpha;
             logo.Render();
-            if (decoLeft != null)
-            {
-                decoLeft.Color = Color.White * inputAlpha;
-                decoLeft.Render();
-            }
-            if (FirstInput != null)
-            {
-                FirstInput.Render();
-            }
-            if (InputImage != null)
-            {
-                InputImage.Color = Color.White * inputAlpha;
-                InputImage.Render();
-            }
-            if (decoRight != null)
-            {
-                decoRight.Color = Color.White * inputAlpha;
-                decoRight.Render();
-            }
-            /*if (menu != null)
-            {
-                menu.Render();
-            }*/
         }
     }
 }

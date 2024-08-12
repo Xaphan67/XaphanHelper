@@ -336,7 +336,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public static float LineHeight;
 
-        private static List<CreditNode> CreateCredits(bool title, bool polaroids)
+        private static List<CreditNode> CreateCredits(bool title, bool polaroids, bool FromTitleScreen)
         {
             List<CreditNode> list = new();
             if (title)
@@ -366,16 +366,19 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             list.Add(new Thanks(padding, spacing, "Special Thanks", "0x0ade", "Cruor", "The Devs of Celeste", "The FMod Celeste Project", "The Mt. Celeste Climbing Association Discord", "Vexatos"));
             list.Add(new Thanks(padding, spacing, Dialog.Clean("Xaphan_0_Credits_End_Message")));
             list.Add(new Thanks(padding - 135, spacing, Dialog.Clean("Xaphan_0_Credits_End_Message_b")));
-            list.Add(new Break(540f));
-            list.Add(new Ending(Dialog.Clean("CREDITS_THANKYOU"), !polaroids));
+            list.Add(new Break(FromTitleScreen ? 475f : 540f));
+            if (!FromTitleScreen)
+            {
+                list.Add(new Ending(Dialog.Clean("CREDITS_THANKYOU"), !polaroids));
+            }
             return list;
         }
 
-        public CustomCredits(float alignment = 0.5f, float scale = 1f, bool haveTitle = true, bool havePolaroids = false)
+        public CustomCredits(float alignment = 0.5f, float scale = 1f, bool haveTitle = true, bool havePolaroids = false, bool FromTitleScreen = false)
         {
             this.alignment = alignment;
             this.scale = scale;
-            credits = CreateCredits(haveTitle, havePolaroids);
+            credits = CreateCredits(haveTitle, havePolaroids, FromTitleScreen);
             Font = Dialog.Languages["english"].Font;
             FontSize = Dialog.Languages["english"].FontFaceSize;
             LineHeight = Font.Get(FontSize).LineHeight;

@@ -62,6 +62,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private float skipWiggleDelay;
 
+        private bool FromTitleScreen;
+
+        public bool Finished;
+
         public bool DashBootsCollected(Level level)
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DashBoots");
@@ -87,8 +91,9 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpaceJump");
         }
 
-        public CS_Credits(Player player)
+        public CS_Credits(Player player, bool fromTitleScreen = false)
         {
+            FromTitleScreen = fromTitleScreen;
             this.player = player;
             Instance = this;
             Tag = (Tags.Global | Tags.HUD);
@@ -172,8 +177,15 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnEnd(Level level)
         {
-            Audio.SetMusicParam("fade", 0);
-            level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: true);
+            if (!FromTitleScreen)
+            {
+                Audio.SetMusicParam("fade", 0);
+                level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: true);
+            }
+            else
+            {
+                Finished = true;
+            }
         }
 
         public IEnumerator Cutscene(Level level)
@@ -186,31 +198,37 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             while (fade > 0f)
             {
                 yield return null;
-                Audio.SetMusicParam("fade", fade);
+                if (!FromTitleScreen)
+                {
+                    Audio.SetMusicParam("fade", fade);
+                }
                 fade -= Engine.DeltaTime;
             }
             DrawBlackBg = true;
             level.Session.Audio.Apply();
-            float timer = 3f;
-            intro = new IntroText("Xaphan_0_Credits_Intro", "Middle", Engine.Height / 2, Color.White, 1f);
-            Scene.Add(intro);
-            intro.Show = true;
-            while (timer > 0f)
+            if (!FromTitleScreen)
             {
-                yield return null;
-                timer -= Engine.DeltaTime;
+                float timer = 3f;
+                intro = new IntroText("Xaphan_0_Credits_Intro", "Middle", Engine.Height / 2, Color.White, 1f);
+                Scene.Add(intro);
+                intro.Show = true;
+                while (timer > 0f)
+                {
+                    yield return null;
+                    timer -= Engine.DeltaTime;
+                }
+                yield return new FadeWipe(level, wipeIn: false)
+                {
+                    Duration = 2.25f
+                }.Duration;
+                intro.Visible = false;
+                intro.RemoveSelf();
+                yield return 1f;
             }
-            yield return new FadeWipe(level, wipeIn: false)
-            {
-                Duration = 2.25f
-            }.Duration;
-            intro.Visible = false;
-            intro.RemoveSelf();
-            yield return 1f;
             level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/menu/credits");
             level.Session.Audio.Apply();
             yield return 1.5f;
-            credits = new CustomCredits(1.085f);
+            credits = new CustomCredits(1.085f, FromTitleScreen: FromTitleScreen);
             credits.AllowInput = false;
             credits.Enabled = true;
             while (credits.BottomTimer <= 3f && !Skipped)
@@ -228,17 +246,20 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     Duration = 2.25f
                 }.Duration;
                 credits = null;
-                yield return 1f;
-                Add(Bg);
-                Bg.Play("colored");
-                Bg.Visible = true;
-                yield return new FadeWipe(level, wipeIn: true)
+                if (!FromTitleScreen)
                 {
-                    Duration = 1.25f
-                }.Duration;
-                yield return 0.5f;
-                Bg.Play("toGrayscale");
-                yield return 0.5f;
+                    Add(Bg);
+                    yield return 1f;
+                    Bg.Play("colored");
+                    Bg.Visible = true;
+                    yield return new FadeWipe(level, wipeIn: true)
+                    {
+                        Duration = 1.25f
+                    }.Duration;
+                    yield return 0.5f;
+                    Bg.Play("toGrayscale");
+                    yield return 0.5f;
+                }
             }
             else
             {
@@ -254,163 +275,173 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     Audio.SetMusicParam("fade", fade);
                     fade -= Engine.DeltaTime;
                 }
-                Add(Bg);
-                Bg.Play("grayscale");
-                Bg.Visible = true;
-                Scene.Add(new FadeWipe(level, wipeIn: true)
+                if (!FromTitleScreen)
                 {
-                    Duration = 1f
-                });
-            }
-            int TotalUpgradeCount = 0;
-            int TotalStrawberryCount = 0;
-            int TotalheartCount = 0;
-            int TotalCassetteCount = 0;
-            if (DashBootsCollected(level))
-            {
-                TotalUpgradeCount += 1;
-            }
-            if (PowerGripCollected(level))
-            {
-                TotalUpgradeCount += 1;
-            }
-            if (ClimbingKitCollected(level))
-            {
-                TotalUpgradeCount += 1;
-            }
-            if (BombsCollected(level))
-            {
-                TotalUpgradeCount += 1;
-            }
-            if (SpaceJumpCollected(level))
-            {
-                TotalUpgradeCount += 1;
-            }
-            foreach (AreaStats item in SaveData.Instance.Areas_Safe)
-            {
-                if (item.LevelSet == "Xaphan/0")
-                {
-                    AreaModeStats areaModeStats = item.Modes[0];
-                    int strawberryCount = 0;
-                    if (areaModeStats.TotalStrawberries > 0 || item.TotalStrawberries > 0)
+                    Add(Bg);
+                    Bg.Play("grayscale");
+                    Bg.Visible = true;
+                    Scene.Add(new FadeWipe(level, wipeIn: true)
                     {
-                        strawberryCount = item.TotalStrawberries;
-                    }
-                    int heartCount = 0;
-                    if (areaModeStats.HeartGem)
-                    {
-                        heartCount += 1;
-                    }
-                    int cassetteCount = 0;
-                    if (item.Cassette)
-                    {
-                        cassetteCount += 1;
-                    }
-                    TotalStrawberryCount += strawberryCount;
-                    TotalheartCount += heartCount;
-                    TotalCassetteCount += cassetteCount;
+                        Duration = 1f
+                    });
                 }
             }
-            TimeSpan timespan = TimeSpan.FromTicks(XaphanModule.ModSaveData.SavedTime.ContainsKey(SaveData.Instance.CurrentSession.Area.LevelSet) ? XaphanModule.ModSaveData.SavedTime[SaveData.Instance.CurrentSession.Area.LevelSet] : 0L);
-            string gameTime = ((int)timespan.TotalHours).ToString() + timespan.ToString("\\:mm\\:ss\\.fff");
-            float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(gameTime);
-            TimeDisplay totaltime = new(gameTime, 960 - timeWidth / 2, Engine.Height / 2 + 146);
-            int TotalItemsCollected = TotalUpgradeCount + TotalStrawberryCount + TotalheartCount + TotalCassetteCount;
-            double ItemPercentage = Math.Round(TotalItemsCollected * 100f / TotalItems, 0, MidpointRounding.AwayFromZero);
-            if (!Skipped)
+            if (!FromTitleScreen)
             {
-                Scene.Add(endTextA = new IntroText("Xaphan_0_Credits_ClearTime", "Middle", Engine.Height / 2 + 35, Color.DarkGreen, 1f, outline: true)
+                int TotalUpgradeCount = 0;
+                int TotalStrawberryCount = 0;
+                int TotalheartCount = 0;
+                int TotalCassetteCount = 0;
+                if (DashBootsCollected(level))
                 {
-                    Show = true
-                });
-                yield return 2f;
-                Add(totaltime);
-                yield return 2f;
-                for (int i = 0; i <= 25; i++)
+                    TotalUpgradeCount += 1;
+                }
+                if (PowerGripCollected(level))
                 {
-                    endTextA.UpdatePosition(new Vector2(0, -6));
-                    totaltime.UpdatePosition(new Vector2(0, -6));
+                    TotalUpgradeCount += 1;
+                }
+                if (ClimbingKitCollected(level))
+                {
+                    TotalUpgradeCount += 1;
+                }
+                if (BombsCollected(level))
+                {
+                    TotalUpgradeCount += 1;
+                }
+                if (SpaceJumpCollected(level))
+                {
+                    TotalUpgradeCount += 1;
+                }
+                foreach (AreaStats item in SaveData.Instance.Areas_Safe)
+                {
+                    if (item.LevelSet == "Xaphan/0")
+                    {
+                        AreaModeStats areaModeStats = item.Modes[0];
+                        int strawberryCount = 0;
+                        if (areaModeStats.TotalStrawberries > 0 || item.TotalStrawberries > 0)
+                        {
+                            strawberryCount = item.TotalStrawberries;
+                        }
+                        int heartCount = 0;
+                        if (areaModeStats.HeartGem)
+                        {
+                            heartCount += 1;
+                        }
+                        int cassetteCount = 0;
+                        if (item.Cassette)
+                        {
+                            cassetteCount += 1;
+                        }
+                        TotalStrawberryCount += strawberryCount;
+                        TotalheartCount += heartCount;
+                        TotalCassetteCount += cassetteCount;
+                    }
+                }
+                TimeSpan timespan = TimeSpan.FromTicks(XaphanModule.ModSaveData.SavedTime.ContainsKey(SaveData.Instance.CurrentSession.Area.LevelSet) ? XaphanModule.ModSaveData.SavedTime[SaveData.Instance.CurrentSession.Area.LevelSet] : 0L);
+                string gameTime = ((int)timespan.TotalHours).ToString() + timespan.ToString("\\:mm\\:ss\\.fff");
+                float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(gameTime);
+                TimeDisplay totaltime = new(gameTime, 960 - timeWidth / 2, Engine.Height / 2 + 146);
+                int TotalItemsCollected = TotalUpgradeCount + TotalStrawberryCount + TotalheartCount + TotalCassetteCount;
+                double ItemPercentage = Math.Round(TotalItemsCollected * 100f / TotalItems, 0, MidpointRounding.AwayFromZero);
+                if (!Skipped)
+                {
+                    Scene.Add(endTextA = new IntroText("Xaphan_0_Credits_ClearTime", "Middle", Engine.Height / 2 + 35, Color.DarkGreen, 1f, outline: true)
+                    {
+                        Show = true
+                    });
+                    yield return 2f;
+                    Add(totaltime);
+                    yield return 2f;
+                    for (int i = 0; i <= 25; i++)
+                    {
+                        endTextA.UpdatePosition(new Vector2(0, -6));
+                        totaltime.UpdatePosition(new Vector2(0, -6));
+                        yield return null;
+                    }
+                    yield return 1f;
+                    Scene.Add(endTextB = new IntroText("Xaphan_0_Credits_CollectedItems", "Middle", Engine.Height / 2 + 75, Color.DarkGreen, 1f, outline: true)
+                    {
+                        Show = true
+                    });
+                    yield return 1f;
+                    Scene.Add(endTextC = new IntroText("Xaphan_0_Credits_CollectedItems_b", "Middle", Engine.Height / 2 + 155, Color.DarkGreen, 1f, outline: true)
+                    {
+                        Show = true
+                    });
+                    yield return 2f;
+                    Scene.Add(endTextD = new IntroText(ItemPercentage.ToString() + "%", "Middle", Engine.Height / 2 + 265, Color.Gold, 1.5f, false, true)
+                    {
+                        Show = true
+                    });
+                    yield return 2f;
+                    for (int i = 0; i <= 25; i++)
+                    {
+                        endTextB.UpdatePosition(new Vector2(0, 6));
+                        endTextC.UpdatePosition(new Vector2(0, 6));
+                        endTextD.UpdatePosition(new Vector2(0, 6));
+                        yield return null;
+                    }
+                    yield return 1f;
+                    Scene.Add(endTextE = new IntroText("Xaphan_0_Credits_End", "Middle", Engine.Height / 2 + 95, Color.White, 1.5f, outline: true)
+                    {
+                        Show = true
+                    });
+                    yield return 1f;
+                }
+                else
+                {
+                    level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/menu/credits_end");
+                    level.Session.Audio.Apply();
+                    Scene.Add(endTextA = new IntroText("Xaphan_0_Credits_ClearTime", "Middle", Engine.Height / 2 + 35, Color.DarkGreen, 1f, outline: true, fastdisplay: true)
+                    {
+                        Show = true
+                    });
+                    for (int i = 0; i <= 25; i++)
+                    {
+                        endTextA.UpdatePosition(new Vector2(0, -6));
+                        totaltime.UpdatePosition(new Vector2(0, -6));
+                        yield return null;
+                    }
+                    Add(totaltime);
+                    Scene.Add(endTextB = new IntroText("Xaphan_0_Credits_CollectedItems", "Middle", Engine.Height / 2 + 75, Color.DarkGreen, 1f, outline: true, fastdisplay: true)
+                    {
+                        Show = true
+                    });
+                    Scene.Add(endTextC = new IntroText("Xaphan_0_Credits_CollectedItems_b", "Middle", Engine.Height / 2 + 155, Color.DarkGreen, 1f, outline: true, fastdisplay: true)
+                    {
+                        Show = true
+                    });
+                    Scene.Add(endTextD = new IntroText(ItemPercentage.ToString() + "%", "Middle", Engine.Height / 2 + 265, Color.Gold, 1.5f, false, true, fastdisplay: true)
+                    {
+                        Show = true
+                    });
+                    for (int i = 0; i <= 25; i++)
+                    {
+                        endTextB.UpdatePosition(new Vector2(0, 6));
+                        endTextC.UpdatePosition(new Vector2(0, 6));
+                        endTextD.UpdatePosition(new Vector2(0, 6));
+                        yield return null;
+                    }
+                    Scene.Add(endTextE = new IntroText("Xaphan_0_Credits_End", "Middle", Engine.Height / 2 + 95, Color.White, 1.5f, outline: true, fastdisplay: true)
+                    {
+                        Show = true
+                    });
+                }
+                while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed)
+                {
                     yield return null;
                 }
-                yield return 1f;
-                Scene.Add(endTextB = new IntroText("Xaphan_0_Credits_CollectedItems", "Middle", Engine.Height / 2 + 75, Color.DarkGreen, 1f, outline: true)
+                Audio.Play("event:/new_content/game/10_farewell/endscene_final_input");
+                level.RegisterAreaComplete();
+                yield return new FadeWipe(level, false, () => EndCutscene(Level))
                 {
-                    Show = true
-                });
-                yield return 1f;
-                Scene.Add(endTextC = new IntroText("Xaphan_0_Credits_CollectedItems_b", "Middle", Engine.Height / 2 + 155, Color.DarkGreen, 1f, outline: true)
-                {
-                    Show = true
-                });
-                yield return 2f;
-                Scene.Add(endTextD = new IntroText(ItemPercentage.ToString() + "%", "Middle", Engine.Height / 2 + 265, Color.Gold, 1.5f, false, true)
-                {
-                    Show = true
-                });
-                yield return 2f;
-                for (int i = 0; i <= 25; i++)
-                {
-                    endTextB.UpdatePosition(new Vector2(0, 6));
-                    endTextC.UpdatePosition(new Vector2(0, 6));
-                    endTextD.UpdatePosition(new Vector2(0, 6));
-                    yield return null;
-                }
-                yield return 1f;
-                Scene.Add(endTextE = new IntroText("Xaphan_0_Credits_End", "Middle", Engine.Height / 2 + 95, Color.White, 1.5f, outline: true)
-                {
-                    Show = true
-                });
-                yield return 1f;
+                    Duration = 5.25f
+                }.Duration;
             }
             else
             {
-                level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/menu/credits_end");
-                level.Session.Audio.Apply();
-                Scene.Add(endTextA = new IntroText("Xaphan_0_Credits_ClearTime", "Middle", Engine.Height / 2 + 35, Color.DarkGreen, 1f, outline: true, fastdisplay: true)
-                {
-                    Show = true
-                });
-                for (int i = 0; i <= 25; i++)
-                {
-                    endTextA.UpdatePosition(new Vector2(0, -6));
-                    totaltime.UpdatePosition(new Vector2(0, -6));
-                    yield return null;
-                }
-                Add(totaltime);
-                Scene.Add(endTextB = new IntroText("Xaphan_0_Credits_CollectedItems", "Middle", Engine.Height / 2 + 75, Color.DarkGreen, 1f, outline: true, fastdisplay: true)
-                {
-                    Show = true
-                });
-                Scene.Add(endTextC = new IntroText("Xaphan_0_Credits_CollectedItems_b", "Middle", Engine.Height / 2 + 155, Color.DarkGreen, 1f, outline: true, fastdisplay: true)
-                {
-                    Show = true
-                });
-                Scene.Add(endTextD = new IntroText(ItemPercentage.ToString() + "%", "Middle", Engine.Height / 2 + 265, Color.Gold, 1.5f, false, true, fastdisplay: true)
-                {
-                    Show = true
-                });
-                for (int i = 0; i <= 25; i++)
-                {
-                    endTextB.UpdatePosition(new Vector2(0, 6));
-                    endTextC.UpdatePosition(new Vector2(0, 6));
-                    endTextD.UpdatePosition(new Vector2(0, 6));
-                    yield return null;
-                }
-                Scene.Add(endTextE = new IntroText("Xaphan_0_Credits_End", "Middle", Engine.Height / 2 + 95, Color.White, 1.5f, outline: true, fastdisplay: true)
-                {
-                    Show = true
-                });
+                EndCutscene(Level);
             }
-            while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed)
-            {
-                yield return null;
-            }
-            Audio.Play("event:/new_content/game/10_farewell/endscene_final_input");
-            level.RegisterAreaComplete();
-            yield return new FadeWipe(level, false, () => EndCutscene(Level))
-            {
-                Duration = 5.25f
-            }.Duration;
         }
     }
 }

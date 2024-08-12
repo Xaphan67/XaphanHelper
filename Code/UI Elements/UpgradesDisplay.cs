@@ -277,6 +277,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Update()
         {
             base.Update();
+            if (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" && SceneAs<Level>().Session.Level.Contains("Intro"))
+            {
+                Visible = false;
+                return;
+            }
             SetXPosition();
             Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
             ShowAmmo = (drone != null && !Drone.Hold.IsHeld && drone.canDestroy);
