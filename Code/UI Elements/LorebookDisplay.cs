@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Celeste.Mod.XaphanHelper.Data;
+using FMOD;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -266,6 +268,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private bool showEntryInfo;
 
+            private Coroutine TextRoutine = new();
+
+            private int index = 0;
+
+            private int currentDisplayID;
+
+            private int previousDisplayID;
+
+
             public EntryInfo(Vector2 position) : base(position)
             {
                 Tag = Tags.HUD;
@@ -284,19 +295,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         Text = FancyText.Parse(Dialog.Clean(category.Description), 850, 4);
                         Picture = null;
                         Sprite = null;
+                        if (TextRoutine.Active)
+                        {
+                            TextRoutine.Cancel();
+                        }
                         break;
                     }
                 }
                 if (showEntryInfo)
                 {
+                    previousDisplayID = currentDisplayID;
                     foreach (EntryDisplay display in SceneAs<Level>().Tracker.GetEntities<EntryDisplay>())
                     {
                         if (display.Selected)
                         {
+                            currentDisplayID = display.ID;
                             if (!display.Name.Contains("?"))
                             {
                                 Name = display.Name;
-                                Text = FancyText.Parse(Dialog.Clean(display.Text), 1390, 5);
+                                Text = FancyText.Parse(Dialog.Get(display.Text.Trim()), 1390, 5);
                                 Picture = display.Picture;
                                 Sprite = new Sprite(GFX.Gui, Picture);
                                 Sprite.AddLoop("picture", "", 0.05f);
@@ -318,6 +335,41 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         Picture = null;
                         Sprite = null;
                     }
+                    if (TextRoutine.Active && currentDisplayID != previousDisplayID)
+                    {
+                        TextRoutine.Cancel();
+                    }
+                    if (!TextRoutine.Active)
+                    {
+                        Add(TextRoutine = new Coroutine(DisplayTextRoutine()));
+                    }
+                }
+                if (TextRoutine != null && Text != null)
+                {
+                    TextRoutine.Update();
+                }
+            }
+
+            private IEnumerator DisplayTextRoutine()
+            {
+                index = 0;
+                float num = 0f;
+                while (index < Text.Nodes.Count)
+                {
+                    if (Text.Nodes[index] is FancyText.Char)
+                    {
+                        num += (Text.Nodes[index] as FancyText.Char).Delay;
+                    }
+                    index++;
+                    if (num > 0.008f)
+                    {
+                        yield return num;
+                        num = 0f;
+                    }
+                }
+                while (currentDisplayID == previousDisplayID)
+                {
+                    yield return null;
                 }
             }
 
@@ -332,7 +384,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 ActiveFont.DrawOutline(Name, Position, new Vector2(0.5f, 0.5f), Vector2.One * 1f, Color.Gold, 2f, Color.Black);
                 if (Text != null)
                 {
-                    Text.DrawJustifyPerLine(Position + Vector2.UnitY * 25f - Vector2.UnitY * (Picture == null && showEntryInfo ? 60f : 0), new Vector2(0.5f, 0f), Vector2.One * scale, 1f);
+                    if (TextRoutine.Active)
+                    {
+                        Text.DrawJustifyPerLine(Position + Vector2.UnitY * 25f - Vector2.UnitY * (Picture == null && showEntryInfo ? 60f : 0), new Vector2(0.5f, 0f), Vector2.One * scale, 1f, 0, index);
+                    }
+                    else
+                    {
+                        Text.DrawJustifyPerLine(Position + Vector2.UnitY * 25f - Vector2.UnitY * (Picture == null && showEntryInfo ? 60f : 0), new Vector2(0.5f, 0f), Vector2.One * scale, 1f);
+                    }
                 }
             }
         }
