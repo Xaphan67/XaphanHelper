@@ -66,7 +66,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     if (SceneAs<Level>().Session.GetFlag(achievement.Flag) && !XaphanModule.ModSaveData.Achievements.Contains(achievement.AchievementID))
                     {
                         XaphanModule.ModSaveData.Achievements.Add(achievement.AchievementID);
-                        Add(PopupRoutine = new Coroutine(DisplayAchievementPopup(achievement)));
+                        if (XaphanModule.ModSettings.ShowAchievementsPopups)
+                        {
+                            Add(PopupRoutine = new Coroutine(DisplayAchievementPopup(achievement)));
+                        }
                         break;
                     }
                 }
@@ -79,7 +82,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             if (SceneAs<Level>().Session.GetFlag(entry.Flag) && !XaphanModule.ModSaveData.LorebookEntries.Contains(entry.EntryID))
                             {
                                 XaphanModule.ModSaveData.LorebookEntries.Add(entry.EntryID);
-                                Add(PopupRoutine = new Coroutine(DisplayLorebookPopup(entry)));
+                                if (XaphanModule.ModSettings.ShowLorebookPopups)
+                                {
+                                    Add(PopupRoutine = new Coroutine(DisplayLorebookPopup(entry)));
+                                }
                                 break;
                             }
                         }

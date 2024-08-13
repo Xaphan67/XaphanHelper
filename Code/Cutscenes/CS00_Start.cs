@@ -15,7 +15,15 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnBegin(Level level)
         {
-            Add(new Coroutine(Cutscene(level)));
+            if (XaphanModule.ModSettings.AutoSkipCutscenes)
+            {
+                EndCutscene(Level);
+                WasSkipped = true;
+            }
+            else
+            {
+                Add(new Coroutine(Cutscene(level)));
+            }
         }
 
         public override void OnEnd(Level level)

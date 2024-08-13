@@ -183,5 +183,16 @@ namespace Celeste.Mod.XaphanHelper
 
         [SettingIgnore]
         public int SpaceJump { get; set; } = 1;
+
+        // SoCM only settings
+
+        [SettingIgnore]
+        public bool ShowAchievementsPopups { get; set; } = true;
+
+        [SettingIgnore]
+        public bool ShowLorebookPopups { get; set; } = true;
+
+        [SettingIgnore]
+        public bool AutoSkipCutscenes { get; set; } = false;
     }
 }

@@ -35,7 +35,9 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private Vector2 normalCameraPos;
 
-        private TextMenu menu;
+        private TextMenu mainMenu;
+
+        private TextMenu optionsMenu;
 
         private bool StartCampaign;
 
@@ -207,21 +209,93 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 level.Session.Audio.Music.Event = "event:/music/xaphan/lvl_0_intro_loop";
                 level.Session.Audio.Apply(forceSixteenthNoteHack: false);
             }
-            SceneAs<Level>().Add(menu = new TextMenu());
-            menu.AutoScroll = false;
-            menu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
-            menu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.ModSaveData.VisitedRooms.Contains("Xaphan/0/Ch0/A-00") ? "Resume" : "Start"))).Pressed(StartResume));
-            menu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Credits")).Pressed(ShowCredits));
+            SceneAs<Level>().Add(mainMenu = new TextMenu());
+            mainMenu.AutoScroll = false;
+            mainMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
+            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.ModSaveData.VisitedRooms.Contains("Xaphan/0/Ch0/A-00") ? "Resume" : "Start"))).Pressed(StartResume));
+            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Options")).Pressed(ShowOptions));
+            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Credits")).Pressed(ShowCredits));
             while (!StartCampaign)
             {
                 yield return null;
             }
-            menu.Focused = false;
+            mainMenu.Focused = false;
         }
 
         private void StartResume()
         {
             StartCampaign = true;
+        }
+
+        private void ShowOptions()
+        {
+            Add(new Coroutine(ShowOptionsRoutine(SceneAs<Level>())));
+        }
+
+        private bool BackToMainMenu;
+
+        private IEnumerator ShowOptionsRoutine(Level level)
+        {
+            level.FormationBackdrop.Display = true;
+            BackToMainMenu = false;
+            mainMenu.Focused = mainMenu.Visible = false;
+            SceneAs<Level>().Add(optionsMenu = new TextMenu());
+            optionsMenu.AutoScroll = false;
+            optionsMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 150f);
+            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Popups")));
+            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowAchievementsPopups"), XaphanModule.ModSettings.ShowAchievementsPopups).Change(delegate (bool b)
+            {
+                XaphanModule.ModSettings.ShowAchievementsPopups = b;
+            }));
+            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowLorebookPopups"), XaphanModule.ModSettings.ShowLorebookPopups).Change(delegate (bool b)
+            {
+                XaphanModule.ModSettings.ShowLorebookPopups = b;
+            }));
+            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Cutscenes")));
+            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Cutscenes_AutoSkipCutscenes"), XaphanModule.ModSettings.AutoSkipCutscenes).Change(delegate (bool b)
+            {
+                XaphanModule.ModSettings.AutoSkipCutscenes = b;
+            }));
+            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("options_controls")));
+            optionsMenu.Add(new TextMenu.Button(Dialog.Clean("options_keyconfig")).Pressed(() => {
+                optionsMenu.Focused = false;
+                Engine.Scene.Add(CreateKeyboardConfigUI(optionsMenu));
+                Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
+            }));
+            optionsMenu.Add(new TextMenu.Button(Dialog.Clean("options_btnconfig")).Pressed(() => {
+                optionsMenu.Focused = false;
+                Engine.Scene.Add(CreateButtonConfigUI(optionsMenu));
+                Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
+            }));
+            optionsMenu.OnCancel = ReturnToMainmenu;
+            while (!BackToMainMenu)
+            {
+                yield return null;
+            }
+            level.FormationBackdrop.Display = false;
+        }
+
+        private Entity CreateKeyboardConfigUI(TextMenu menu)
+        {
+            return new ModuleSettingsKeyboardConfigUI(XaphanModule.Instance)
+            {
+                OnClose = () => menu.Focused = true
+            };
+        }
+
+        private Entity CreateButtonConfigUI(TextMenu menu)
+        {
+            return new ModuleSettingsButtonConfigUI(XaphanModule.Instance)
+            {
+                OnClose = () => menu.Focused = true
+            };
+        }
+
+        private void ReturnToMainmenu()
+        {
+            BackToMainMenu = true;
+            mainMenu.Focused = mainMenu.Visible = true;
+            optionsMenu.RemoveSelf();
         }
 
         private void ShowCredits()
@@ -231,15 +305,15 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private IEnumerator ShowCreditsRoutine(Level level)
         {
-            menu.Focused = false;
+            mainMenu.Focused = false;
             Scene.Add(CreditsCutscene = new CS_Credits(player, true));
             yield return null;
             while (!CreditsCutscene.Finished)
             {
                 yield return null;
             }
-            menu.Selection = 0;
-            menu.Focused = true;
+            mainMenu.Selection = 0;
+            mainMenu.Focused = true;
             level.Session.Audio.Music.Event = "event:/music/xaphan/lvl_0_intro_loop";
             level.Session.Audio.Apply(forceSixteenthNoteHack: false);
             yield return new FadeWipe(level, wipeIn: true)
@@ -279,9 +353,9 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 }
                 IntroCoroutine.Cancel();
             }
-            if (menu != null)
+            if (mainMenu != null)
             {
-                foreach (TextMenu.Item item in menu.Items)
+                foreach (TextMenu.Item item in mainMenu.Items)
                 {
                     if (item is TextMenu.Button)
                     {
