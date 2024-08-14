@@ -80,6 +80,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool SkipSoCMIntro = false;
 
+        public static bool SoCMTitleFromGame = false;
+
         public static bool onSlope;
 
         public static int onSlopeDir;
@@ -2869,6 +2871,70 @@ namespace Celeste.Mod.XaphanHelper
                 ExitSideButton.ConfirmSfx = "event:/ui/main/message_confirm";
                 menu.Insert(returnToMapIndex, ExitSideButton);
             }
+
+            // SoCM Only
+            if (level.Session.Area.LevelSet == "Xaphan/0" && SoCMVersion >= new Version(3, 0, 0))
+            {
+                // Find the position of "Save and Quit"
+                int saveAndQuitIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_SAVEQUIT"));
+
+                if (saveAndQuitIndex == -1)
+                {
+                    // Bottom of the menu if "Return to map" is not found
+                    saveAndQuitIndex = menu.Items.Count - 1;
+                }
+
+                // remove "Save and Quit" from the menu
+                if (saveAndQuitIndex != -1)
+                {
+                    menu.Remove(menu.Items[saveAndQuitIndex]);
+                }
+
+                // Find the position of "Restart Campaign"
+                int restartCampaignIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("XaphanHelper_UI_RestartCampaign"));
+
+                if (restartCampaignIndex == -1)
+                {
+                    // Bottom of the menu if "Restart Campaign" is not found
+                    restartCampaignIndex = menu.Items.Count - 1;
+                }
+
+                // remove "Restart Campaign" from the menu
+                if (restartCampaignIndex != -1)
+                {
+                    menu.Remove(menu.Items[restartCampaignIndex]);
+                }
+
+                if (level.Session.Area.Mode == AreaMode.Normal)
+                {
+                    // Find the position of "Return to map"
+                    int returnToMapIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETURN"));
+
+                    if (returnToMapIndex == -1)
+                    {
+                        // Bottm of the menu if "Return to map" is not found
+                        returnToMapIndex = menu.Items.Count - 1;
+                    }
+
+                    // remove "Return to map" from the menu
+                    if (returnToMapIndex != -1)
+                    {
+                        menu.Remove(menu.Items[returnToMapIndex]);
+                    }
+
+                    // add the "Return to Title Screen" button
+                    TextMenu.Button ReturnToTitleButton = new(Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle"));
+                    ReturnToTitleButton.Pressed(() =>
+                    {
+                        level.PauseMainMenuOpen = false;
+                        menu.RemoveSelf();
+                        confirmReturnToTitleMenu(level, menu.Selection);
+                    });
+                    ReturnToTitleButton.ConfirmSfx = "event:/ui/main/message_confirm";
+                    menu.Insert(returnToMapIndex, ReturnToTitleButton);
+                }
+
+            }
         }
 
         private static void confirmGiveUpCMMenu(Level level, int returnIndex)
@@ -3051,6 +3117,58 @@ namespace Celeste.Mod.XaphanHelper
                         component.OnEnd();
                     }
                 }
+            }));
+            menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_cancel")).Pressed(delegate
+            {
+                menu.OnCancel();
+            }));
+            menu.OnPause = (menu.OnESC = delegate
+            {
+                menu.RemoveSelf();
+                returnHint.RemoveSelf();
+                level.Paused = false;
+                Engine.FreezeTimer = 0.15f;
+                Audio.Play("event:/ui/game/unpause");
+            });
+            menu.OnCancel = delegate
+            {
+                returnHint.RemoveSelf();
+                Audio.Play("event:/ui/main/button_back");
+                menu.RemoveSelf();
+                level.Pause(returnIndex, minimal: false);
+            };
+            level.Add(menu);
+        }
+
+        private static void confirmReturnToTitleMenu(Level level, int returnIndex)
+        {
+            level.Paused = true;
+            RestartToTitleHint returnHint = null;
+            level.Add(returnHint = new RestartToTitleHint());
+            TextMenu menu = new();
+            menu.AutoScroll = false;
+            menu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f - 100f);
+            menu.Add(new TextMenu.Header(Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle_title")));
+            menu.Add(new TextMenu.Button(Dialog.Clean("menu_restart_continue")).Pressed(delegate
+            {
+                returnHint.RemoveSelf();
+                Engine.TimeRate = 1f;
+                menu.Focused = false;
+                level.DoScreenWipe(false, delegate
+                {
+                    SoCMTitleFromGame = true;
+                    SkipSoCMIntro = false;
+                    level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
+                    ModSaveData.LoadedPlayer = false;
+                    long currentTime = level.Session.Time;
+                    LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
+                    {
+                        Time = currentTime,
+                        DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
+                        Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
+                    }
+                    , fromSaveData: false);
+                });
             }));
             menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_cancel")).Pressed(delegate
             {
@@ -3357,7 +3475,7 @@ namespace Celeste.Mod.XaphanHelper
 
                     else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
                     {
-                        ModSaveData.LoadedPlayer = true;
+                        //ModSaveData.LoadedPlayer = true;
                         if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))
                         {
                             ModSaveData.SavedChapter.Add(self.Session.Area.LevelSet, self.Session.Area.ChapterIndex);

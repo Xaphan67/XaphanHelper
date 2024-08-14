@@ -43,6 +43,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private CS_Credits CreditsCutscene;
 
+        private bool BackToMainMenu;
+
         public SoCMIntro(Player player)
         {
             this.player = player;
@@ -212,27 +214,48 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             SceneAs<Level>().Add(mainMenu = new TextMenu());
             mainMenu.AutoScroll = false;
             mainMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
-            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.ModSaveData.VisitedRooms.Contains("Xaphan/0/Ch0/A-00") ? "Resume" : "Start"))).Pressed(StartResume));
-            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Options")).Pressed(ShowOptions));
-            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Credits")).Pressed(ShowCredits));
+            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.SoCMTitleFromGame ? "Resume" : "Start")).ToUpper()).Pressed(delegate
+            {
+                StartCampaign = true;
+                XaphanModule.SoCMTitleFromGame = false;
+            }));
+            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Settings").ToUpper()).Pressed(delegate
+            {
+                Add(new Coroutine(ShowOptionsRoutine(SceneAs<Level>())));
+            }));
+            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Credits").ToUpper()).Pressed(delegate
+            {
+                Add(new Coroutine(ShowCreditsRoutine(SceneAs<Level>())));
+            }));
+            TextMenu.Item item = null;
+            mainMenu.Add(item = new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Exit").ToUpper()).Pressed(delegate
+            {
+                level.Paused = true;
+                Engine.TimeRate = 1f;
+                mainMenu.Focused = false;
+                level.Session.InArea = false;
+                Audio.SetMusic(null);
+                Audio.BusStopAll("bus:/gameplay_sfx", immediate: true);
+                level.DoScreenWipe(wipeIn: false, delegate
+                {
+                    Engine.Scene = new LevelExit(LevelExit.Mode.GiveUp, level.Session, level.HiresSnow);
+                }, hiresSnow: true);
+                foreach (LevelEndingHook component in level.Tracker.GetComponents<LevelEndingHook>())
+                {
+                    if (component.OnEnd != null)
+                    {
+                        component.OnEnd();
+                    }
+                }
+                XaphanModule.SoCMTitleFromGame = false;
+                mainMenu.RemoveSelf();
+            }));
             while (!StartCampaign)
             {
                 yield return null;
             }
             mainMenu.Focused = false;
         }
-
-        private void StartResume()
-        {
-            StartCampaign = true;
-        }
-
-        private void ShowOptions()
-        {
-            Add(new Coroutine(ShowOptionsRoutine(SceneAs<Level>())));
-        }
-
-        private bool BackToMainMenu;
 
         private IEnumerator ShowOptionsRoutine(Level level)
         {
@@ -296,11 +319,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             BackToMainMenu = true;
             mainMenu.Focused = mainMenu.Visible = true;
             optionsMenu.RemoveSelf();
-        }
-
-        private void ShowCredits()
-        {
-            Add(new Coroutine(ShowCreditsRoutine(SceneAs<Level>())));
         }
 
         private IEnumerator ShowCreditsRoutine(Level level)
