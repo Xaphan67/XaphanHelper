@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
@@ -290,7 +291,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         LevelEnter.Go(new Session(new AreaKey(SceneAs<Level>().Session.Area.ID, AreaMode.Normal))
                         {
-                            Time = XaphanModule.ModSaveData.SavedTime.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedTime[SceneAs<Level>().Session.Area.LevelSet] : 0L
+                            Time = XaphanModule.ModSaveData.SavedTime.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedTime[SceneAs<Level>().Session.Area.LevelSet] : 0L,
+                            DoNotLoad = XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedNoLoadEntities[SceneAs<Level>().Session.Area.LevelSet] : new HashSet<EntityID>(),
+                            Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[SceneAs<Level>().Session.Area.LevelSet] : new HashSet<EntityID>()
                         }
                         , fromSaveData: false);
                     }

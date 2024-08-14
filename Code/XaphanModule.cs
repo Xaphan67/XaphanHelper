@@ -1501,7 +1501,9 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     LevelEnter.Go(new Session(self.Area, checkpoint)
                     {
-                        Time = ModSaveData.SavedTime.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? ModSaveData.SavedTime[SaveData.Instance.LevelSetStats.Name] : 0L
+                        Time = ModSaveData.SavedTime.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? ModSaveData.SavedTime[SaveData.Instance.LevelSetStats.Name] : 0L,
+                        DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? ModSaveData.SavedNoLoadEntities[SaveData.Instance.LevelSetStats.Name] : new HashSet<EntityID>(),
+                        Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? ModSaveData.SavedSessionStrawberries[SaveData.Instance.LevelSetStats.Name] : new HashSet<EntityID>()
                     }
                     , fromSaveData: false);
 
@@ -3008,7 +3010,9 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     LevelEnter.Go(new Session(new AreaKey(level.Session.Area.ID, AreaMode.Normal))
                     {
-                        Time = ModSaveData.SavedTime.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedTime[level.Session.Area.LevelSet] : 0L
+                        Time = ModSaveData.SavedTime.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedTime[level.Session.Area.LevelSet] : 0L,
+                        DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
+                        Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
                     }
                     , fromSaveData: false);
                 });
@@ -3165,8 +3169,8 @@ namespace Celeste.Mod.XaphanHelper
                     LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
                     {
                         Time = currentTime,
-                        DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
-                        Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
+                        DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
+                        Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
                     }
                     , fromSaveData: false);
                 });
@@ -3467,7 +3471,9 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet] - (hasInterlude ? 0 : 1))))
                             {
-                                Time = ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedTime[self.Session.Area.LevelSet] : 0L
+                                Time = ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedTime[self.Session.Area.LevelSet] : 0L,
+                                DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet] : new HashSet<EntityID>(),
+                                Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[self.Session.Area.LevelSet] : new HashSet<EntityID>()
                             }, fromSaveData: false);
                         }
                     }
@@ -4207,6 +4213,20 @@ namespace Celeste.Mod.XaphanHelper
                     AreaKey area = self.SceneAs<Level>().Session.Area;
                     MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
                     GiveUpgradesToPlayer(MapData, self.SceneAs<Level>());
+                }
+                if (useMergeChaptersController)
+                {
+                    self.SceneAs<Level>().Session.Time += ModSaveData.PreGoldenTimer;
+                    foreach (EntityID entity in self.SceneAs<Level>().Session.DoNotLoad)
+                    {
+                        if (!ModSaveData.PreGoldenDoNotLoad.Contains(entity))
+                        {
+                            ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                        }
+                    }
+                    self.SceneAs<Level>().Session.DoNotLoad = ModSaveData.PreGoldenDoNotLoad;
+                    ModSaveData.PreGoldenDoNotLoad.Clear();
+                    ModSaveData.PreGoldenTimer = 0;
                 }
             }
         }

@@ -426,7 +426,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 long currentTime = SceneAs<Level>().Session.Time;
                 LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))
                 {
-                    Time = currentTime
+                    Time = currentTime,
+                    DoNotLoad = XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
+                    Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
                 }
                 , fromSaveData: false);
             }

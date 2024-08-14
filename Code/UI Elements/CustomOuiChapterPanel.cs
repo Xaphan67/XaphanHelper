@@ -449,7 +449,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             yield return 0.5f;
             LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + ((XaphanModule.MergeChaptersControllerKeepPrologue && chapterIndex == 0) ? 1 : 0) + chapterIndex, Area.Mode), checkpoint)
             {
-                Time = XaphanModule.ModSaveData.SavedTime.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? XaphanModule.ModSaveData.SavedTime[SaveData.Instance.LevelSetStats.Name] : 0L
+                Time = XaphanModule.ModSaveData.SavedTime.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? XaphanModule.ModSaveData.SavedTime[SaveData.Instance.LevelSetStats.Name] : 0L,
+                DoNotLoad = XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? XaphanModule.ModSaveData.SavedNoLoadEntities[SaveData.Instance.LevelSetStats.Name] : new HashSet<EntityID>(),
+                Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(SaveData.Instance.LevelSetStats.Name) ? XaphanModule.ModSaveData.SavedSessionStrawberries[SaveData.Instance.LevelSetStats.Name] : new HashSet<EntityID>()
             }, fromSaveData: false);
         }
 

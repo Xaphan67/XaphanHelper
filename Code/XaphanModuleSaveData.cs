@@ -247,6 +247,12 @@ namespace Celeste.Mod.XaphanHelper
 
         public LightModes LightMode = LightModes.None;
 
+        // Golden Strawberry
+
+        public long PreGoldenTimer = 0;
+
+        public HashSet<EntityID> PreGoldenDoNotLoad = new();
+        
         // Others
 
         public string CurrentSubArea = "";
@@ -256,8 +262,6 @@ namespace Celeste.Mod.XaphanHelper
         public int BagUIId2 = 0;
 
         public bool LoadedPlayer = false;
-
-        public long PreGoldenTimer = 0;
 
         public int SoCMVer = 0;
     }

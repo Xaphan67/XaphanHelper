@@ -120,7 +120,13 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                     XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
                 }
                 XaphanModule.ModSaveData.PreGoldenTimer = level.Session.Time;
+                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
+                foreach (EntityID entity in level.Session.DoNotLoad)
+                {
+                    XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                }
                 level.Session.Time = 0;
+                level.Session.DoNotLoad.Clear();
                 Audio.Play(SaveData.Instance.CheckStrawberry(self.ID) ? "event:/game/general/strawberry_blue_touch" : "event:/game/general/strawberry_touch", self.Position);
             }
             if (Grabbed)
@@ -180,6 +186,15 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 StartRoom = "";
                 StartSpawn = Vector2.Zero;
                 level.Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
+                foreach (EntityID entity in level.Session.DoNotLoad)
+                {
+                    XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                }
+                foreach (EntityID entity in XaphanModule.ModSaveData.PreGoldenDoNotLoad)
+                {
+                    level.Session.DoNotLoad.Add(entity);
+                }
+                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
                 XaphanModule.ModSaveData.PreGoldenTimer = 0;
             }
         }
@@ -209,9 +224,15 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         StartRoom = "";
                         StartSpawn = Vector2.Zero;
 
+                        foreach (EntityID entity in level.Session.DoNotLoad)
+                        {
+                            XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                        }
                         LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))
                         {
-                            Time = XaphanModule.ModSaveData.PreGoldenTimer + level.Session.Time
+                            Time = XaphanModule.ModSaveData.PreGoldenTimer + level.Session.Time,
+                            DoNotLoad = XaphanModule.ModSaveData.PreGoldenDoNotLoad,
+                            Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
                         }, fromSaveData: false);
                         XaphanModule.ModSaveData.PreGoldenTimer = 0;
                     };
