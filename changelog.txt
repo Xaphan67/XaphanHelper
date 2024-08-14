@@ -3,6 +3,7 @@ Version 1.0.64 :
 - Added "Cell Offset X" and "Cell Offset Y" attributes to Cell Locks
 - Added "Particles Color", "Light Color", "Wiggle", "Loop Sound", "Loop Burst" and "Static Time" attributes to Custom Collectable
 - Break Blocks Indicators now also apear if the player touch them in the Dash Attacking state. This make it more lenient to reveal the indicator in cases where the player dash end just before the block
+- Golden swtrawberries in campaigns using a Merge Chapter Controller now reset the current timer to 0 when grabbed, and restore it back (+ the time spent with the berry) on death or berry collection
 - Achievements popups in Secret of Celeste Mountain can no longer appear while the player is in dummy state or for the first 0.1s after entering a room, to prevent them appearing while the player is teleported.
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 

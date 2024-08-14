@@ -257,6 +257,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public bool LoadedPlayer = false;
 
+        public long PreGoldenTimer = 0;
+
         public int SoCMVer = 0;
     }
 }

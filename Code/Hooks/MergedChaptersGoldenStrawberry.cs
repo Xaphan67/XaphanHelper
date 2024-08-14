@@ -86,6 +86,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             {
                 string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
+                self.SceneAs<Level>().Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
             }
             yield return new SwapImmediately(orig(self, collectIndex));
         }
@@ -101,11 +102,11 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void onStrawberryOnPlayer(On.Celeste.Strawberry.orig_OnPlayer orig, Strawberry self, Player player)
         {
+            Level level = player.SceneAs<Level>();
             if (XaphanModule.useMergeChaptersController && self.Golden && !Grabbed)
             {
                 Grabbed = true;
                 ResetFlags = true;
-                Level level = player.SceneAs<Level>();
                 StartChapter = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
                 StartRoom = level.Session.Level;
                 StartSpawn = level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
@@ -118,6 +119,8 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                     XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Clear();
                     XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
                 }
+                XaphanModule.ModSaveData.PreGoldenTimer = level.Session.Time;
+                level.Session.Time = 0;
                 Audio.Play(SaveData.Instance.CheckStrawberry(self.ID) ? "event:/game/general/strawberry_blue_touch" : "event:/game/general/strawberry_touch", self.Position);
             }
             if (Grabbed)
@@ -190,7 +193,11 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         StartRoom = "";
                         StartSpawn = Vector2.Zero;
 
-                        LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset)), fromSaveData: false);
+                        LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))
+                        {
+                            Time = XaphanModule.ModSaveData.PreGoldenTimer + level.Session.Time
+                        }, fromSaveData: false);
+                        XaphanModule.ModSaveData.PreGoldenTimer = 0;
                     };
                 }
             }
