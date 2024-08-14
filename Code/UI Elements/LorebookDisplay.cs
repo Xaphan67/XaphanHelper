@@ -40,20 +40,31 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private int alphaStatus = 0;
 
+            private Sprite Sprite;
+
+            private int discoveredLogs;
+
+            public int readLogs;
+
             public CategoryDisplay(Level level, Vector2 position, int id, string name, List<LorebookData> data, string description, bool noDialog = false) : base(position)
             {
                 Tag = Tags.HUD;
+                Sprite = new Sprite(GFX.Gui, "lorebook/");
+                Sprite.AddLoop("new", "new", 0.05f);
+                Sprite.Play("new");
                 LorebookScreen = level.Tracker.GetEntity<LorebookScreen>();
                 ID = id;
                 Name = noDialog ? name : Dialog.Clean(name);
-
-                int discoveredLogs = 0;
                 int totalLogs = 0;
                 foreach (LorebookData entry in data)
                 {
                     if (XaphanModule.ModSaveData.LorebookEntries.Contains(entry.EntryID))
                     {
                         discoveredLogs++;
+                    }
+                    if (XaphanModule.ModSaveData.LorebookEntriesRead.Contains(entry.EntryID))
+                    {
+                        readLogs++;
                     }
                     if (entry.Picture != null)
                     {
@@ -118,7 +129,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     Draw.Rect(Position, width, height, Color.DarkGreen * 0.7f);
                 }
-                ActiveFont.DrawOutline(Name, Position + new Vector2(width / 2, Locked ? height / 2 : 41f), new Vector2(0.5f, 0.5f), Vector2.One * 0.8f, !Name.Contains("?") ? (AllLogs ? Color.Gold : Color.White) : Color.Gray, 2f, Color.Black);
+                float paddingLeft = 0f;
+                if (readLogs < discoveredLogs && !Locked)
+                {
+                    float nameWidth = ActiveFont.Measure(Name).X;
+                    paddingLeft = Sprite.Width;
+                    Sprite.RenderPosition = Position + new Vector2(width / 2 - nameWidth / 2 + paddingLeft / 2 - 5f, 41f - Sprite.Height / 2);
+                    Sprite.Render();
+                }
+                ActiveFont.DrawOutline(Name, Position + new Vector2(width / 2 + paddingLeft / 2, Locked ? height / 2 : 41f), new Vector2(0.5f, 0.5f), Vector2.One * 0.8f, !Name.Contains("?") ? (AllLogs ? Color.Gold : Color.White) : Color.Gray, 2f, Color.Black);
                 if (!Locked)
                 {
                     ActiveFont.DrawOutline(Discovered, Position + new Vector2(width / 2, 60f), Vector2.UnitX * 0.5f, Vector2.One * 0.5f, Color.Gray, 2f, Color.Black);
@@ -136,6 +155,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             public int ID;
 
             public string entryID;
+
+            public int categoryID;
 
             public bool isSubCategory;
 
@@ -165,11 +186,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private Coroutine readRoutine = new();
 
-            public EntryDisplay(Level level, Vector2 position, int id, string entryID, string name, string text, string picture, bool noDialog = false) : base(position)
+            public EntryDisplay(Level level, Vector2 position, int id, string entryID, string name, int categoryID, string text, string picture, bool noDialog = false) : base(position)
             {
                 Tag = Tags.HUD;
                 ID = id;
                 this.entryID = entryID;
+                this.categoryID = categoryID;
                 Name = noDialog ? name : Dialog.Clean(name);
                 isSubCategory = picture == null;
                 Text = text;
@@ -227,6 +249,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (timer <= 0)
                 {
                     XaphanModule.ModSaveData.LorebookEntriesRead.Add(entryID);
+                    foreach (CategoryDisplay display in SceneAs<Level>().Tracker.GetEntities<CategoryDisplay>())
+                    {
+                        if (display.ID == categoryID)
+                        {
+                            display.readLogs++;
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -479,7 +509,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             categoryName = ConvertNameToHiddenName(entry.Name);
                         }
-                        Scene.Add(new EntryDisplay(level, new Vector2(155f, 481f + YPos), ID, entry.EntryID, categoryName, entry.Text, entry.Picture, !unlocked || lockedSubCategory));
+                        Scene.Add(new EntryDisplay(level, new Vector2(155f, 481f + YPos), ID, entry.EntryID, categoryName, categoryID, entry.Text, entry.Picture, !unlocked || lockedSubCategory));
                         YPos += 50;
                         ID++;
                     }
