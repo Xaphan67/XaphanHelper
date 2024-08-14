@@ -194,7 +194,6 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 {
                     level.Session.DoNotLoad.Add(entity);
                 }
-                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
                 XaphanModule.ModSaveData.PreGoldenTimer = 0;
             }
         }

@@ -4219,13 +4219,12 @@ namespace Celeste.Mod.XaphanHelper
                     self.SceneAs<Level>().Session.Time += ModSaveData.PreGoldenTimer;
                     foreach (EntityID entity in self.SceneAs<Level>().Session.DoNotLoad)
                     {
-                        if (!ModSaveData.PreGoldenDoNotLoad.Contains(entity))
-                        {
-                            ModSaveData.PreGoldenDoNotLoad.Add(entity);
-                        }
+                        ModSaveData.PreGoldenDoNotLoad.Add(entity);
                     }
-                    self.SceneAs<Level>().Session.DoNotLoad = ModSaveData.PreGoldenDoNotLoad;
-                    ModSaveData.PreGoldenDoNotLoad.Clear();
+                    foreach (EntityID entity in ModSaveData.PreGoldenDoNotLoad)
+                    {
+                        self.SceneAs<Level>().Session.DoNotLoad.Add(entity);
+                    }
                     ModSaveData.PreGoldenTimer = 0;
                 }
             }
