@@ -148,24 +148,40 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             if (evenIfInvincible)
             {
                 Grabbed = false;
-                List<string> ToRemove = new();
-                foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
-                {
-                    if (flag.Contains(self.SceneAs<Level>().Session.Area.LevelSet) && flag.Contains("_GoldenStrawberry"))
-                    {
-                        ToRemove.Add(flag);
-                    }
-                }
-                foreach (string flag in ToRemove)
-                {
-                    XaphanModule.ModSaveData.SavedFlags.Remove(flag);
-                }
-                if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0")
-                {
-                    self.SceneAs<Level>().Session.SetFlag("SoCM-CarryGolden", false);
-                }
+                ResetProgression(self.SceneAs<Level>());
             }
             return orig(self, direction, evenIfInvincible, registerDeathInStats);
+        }
+
+        public static void ResetProgression(Level level, bool fullReset = false)
+        {
+            List<string> ToRemove = new();
+            foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+            {
+                if (flag.Contains(level.Session.Area.LevelSet) && flag.Contains("_GoldenStrawberry"))
+                {
+                    ToRemove.Add(flag);
+                }
+            }
+            foreach (string flag in ToRemove)
+            {
+                XaphanModule.ModSaveData.SavedFlags.Remove(flag);
+            }
+            if (level.Session.Area.LevelSet == "Xaphan/0")
+            {
+                level.Session.SetFlag("SoCM-CarryGolden", false);
+            }
+            if (fullReset)
+            {
+                level.Session.GrabbedGolden = false;
+                XaphanModule.PlayerHasGolden = false;
+                Grabbed = false;
+                StartChapter = -999;
+                StartRoom = "";
+                StartSpawn = Vector2.Zero;
+                level.Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
+                XaphanModule.ModSaveData.PreGoldenTimer = 0;
+            }
         }
 
         private static void onPlayerDeadBodyEnd(On.Celeste.PlayerDeadBody.orig_End orig, PlayerDeadBody self)

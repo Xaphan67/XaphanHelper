@@ -3156,6 +3156,7 @@ namespace Celeste.Mod.XaphanHelper
                 menu.Focused = false;
                 level.DoScreenWipe(false, delegate
                 {
+                    MergedChaptersGoldenStrawberry.ResetProgression(level, true);
                     SoCMTitleFromGame = true;
                     SkipSoCMIntro = false;
                     level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
