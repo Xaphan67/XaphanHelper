@@ -3039,15 +3039,18 @@ namespace Celeste.Mod.XaphanHelper
             level.Add(menu);
         }
 
-        private static void confirmRestartCampaign(Level level, int returnIndex)
+        public static void confirmRestartCampaign(Level level, int returnIndex, bool fromTitleScreen = false, TextMenu previousTitleMenu = null)
         {
-            level.Paused = true;
+            if (!fromTitleScreen)
+            {
+                level.Paused = true;
+            }
             RestartCampaignHint returnHint = null;
-            level.Add(returnHint = new RestartCampaignHint());
+            level.Add(returnHint = new RestartCampaignHint(fromTitleScreen ? true : false));
             TextMenu menu = new();
             menu.AutoScroll = false;
-            menu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f - 100f);
-            menu.Add(new TextMenu.Header(Dialog.Clean("XaphanHelper_UI_RestartCampaign_title")));
+            menu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + (fromTitleScreen ? 100f : -100f));
+            menu.Add(new TextMenu.Header(Dialog.Clean(fromTitleScreen ? "Xaphan_0_EraseProgress" : "XaphanHelper_UI_RestartCampaign_title")));
             menu.Add(new TextMenu.Button(Dialog.Clean("menu_restart_continue")).Pressed(delegate
             {
                 returnHint.RemoveSelf();
@@ -3139,7 +3142,15 @@ namespace Celeste.Mod.XaphanHelper
                 returnHint.RemoveSelf();
                 Audio.Play("event:/ui/main/button_back");
                 menu.RemoveSelf();
-                level.Pause(returnIndex, minimal: false);
+                if (!fromTitleScreen)
+                {
+                    level.Pause(returnIndex, minimal: false);
+                }
+                else
+                {
+                    previousTitleMenu.Focused = previousTitleMenu.Visible = true;
+                    level.FormationBackdrop.Display = false;
+                }
             };
             level.Add(menu);
         }

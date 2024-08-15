@@ -15,10 +15,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private Coroutine TitleScreenCoroutine;
 
-        private Coroutine LogoCoroutine;
-
-        private Coroutine InputCoroutine;
-
         private bool skipedIntro;
 
         private IntroText message;
@@ -38,6 +34,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         private TextMenu mainMenu;
 
         private TextMenu optionsMenu;
+
+        private TextMenu infoMenu;
 
         private bool StartCampaign;
 
@@ -93,7 +91,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return null;
             }
             Add(TitleScreenCoroutine = new Coroutine(TitleScreen(level)));
-            Add(LogoCoroutine = new Coroutine(FadeLogo()));
+            Add(new Coroutine(FadeLogo()));
             while (TitleScreenCoroutine.Active)
             {
                 yield return null;
@@ -214,10 +212,11 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             SceneAs<Level>().Add(mainMenu = new TextMenu());
             mainMenu.AutoScroll = false;
             mainMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
-            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.SoCMTitleFromGame ? "Resume" : "Start")).ToUpper()).Pressed(delegate
+            mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Play").ToUpper()).Pressed(delegate
             {
-                StartCampaign = true;
-                XaphanModule.SoCMTitleFromGame = false;
+                /*StartCampaign = true;
+                XaphanModule.SoCMTitleFromGame = false;*/
+                Add(new Coroutine(ShowPlayerInfoRoutine(SceneAs<Level>())));
             }));
             mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Settings").ToUpper()).Pressed(delegate
             {
@@ -255,6 +254,31 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return null;
             }
             mainMenu.Focused = false;
+        }
+
+        private IEnumerator ShowPlayerInfoRoutine(Level level)
+        {
+            BackToMainMenu = false;
+            mainMenu.Focused = mainMenu.Visible = false;
+            SceneAs<Level>().Add(infoMenu = new TextMenu());
+            infoMenu.AutoScroll = false;
+            infoMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
+            infoMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Start") ? "Resume" : "Start")).ToUpper()).Pressed(delegate
+            {
+                StartCampaign = true;
+                XaphanModule.SoCMTitleFromGame = false;
+            }));
+            infoMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Erase").ToUpper()).Pressed(delegate
+            {
+                level.FormationBackdrop.Display = true;
+                infoMenu.Focused = infoMenu.Visible = false;
+                XaphanModule.confirmRestartCampaign(level, infoMenu.Selection, true, infoMenu);
+            }));
+            infoMenu.OnCancel = ReturnToMainmenu;
+            while (!BackToMainMenu)
+            {
+                yield return null;
+            }
         }
 
         private IEnumerator ShowOptionsRoutine(Level level)
@@ -318,7 +342,14 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             BackToMainMenu = true;
             mainMenu.Focused = mainMenu.Visible = true;
-            optionsMenu.RemoveSelf();
+            if (optionsMenu != null)
+            {
+                optionsMenu.RemoveSelf();
+            }
+            if (infoMenu != null)
+            {
+                infoMenu.RemoveSelf();
+            }
         }
 
         private IEnumerator ShowCreditsRoutine(Level level)
