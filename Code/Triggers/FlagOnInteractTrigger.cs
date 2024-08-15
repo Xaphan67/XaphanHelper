@@ -33,7 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void Update()
         {
             base.Update();
-            if (talk != null)
+            if (talk != null && !string.IsNullOrEmpty(setFlag))
             {
                 if (!SceneAs<Level>().Session.GetFlag(setFlag))
                 {
@@ -49,13 +49,20 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         private void CheckFlags()
         {
             bool showTalker = true;
-            foreach (string flag in reqFlags.Split(','))
+            if (!string.IsNullOrEmpty(reqFlags))
             {
-                if (!SceneAs<Level>().Session.GetFlag(flag))
+                foreach (string flag in reqFlags.Split(','))
                 {
-                    showTalker = false;
-                    break;
+                    if (!SceneAs<Level>().Session.GetFlag(flag))
+                    {
+                        showTalker = false;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                showTalker = true;
             }
             talk.Enabled = showTalker;
         }
