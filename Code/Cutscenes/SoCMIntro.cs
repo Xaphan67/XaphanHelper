@@ -37,6 +37,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private TextMenu infoMenu;
 
+        private SaveProgressDisplay progressDisplay;
+
         private bool StartCampaign;
 
         private CS_Credits CreditsCutscene;
@@ -63,6 +65,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             level.TimerStopped = true;
             Add(new Coroutine(Cutscene(level)));
+            SceneAs<Level>().Add(progressDisplay = new SaveProgressDisplay(new Vector2(Engine.Width / 2, Engine.Height / 2 + 55f))
+            {
+                Visible = false
+            });
             Add(IntroCoroutine = new Coroutine(IntroSequence(level)));
         }
 
@@ -214,8 +220,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             mainMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
             mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Play").ToUpper()).Pressed(delegate
             {
-                /*StartCampaign = true;
-                XaphanModule.SoCMTitleFromGame = false;*/
                 Add(new Coroutine(ShowPlayerInfoRoutine(SceneAs<Level>())));
             }));
             mainMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_Settings").ToUpper()).Pressed(delegate
@@ -260,11 +264,13 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             BackToMainMenu = false;
             mainMenu.Focused = mainMenu.Visible = false;
+            progressDisplay.Visible = true;
             SceneAs<Level>().Add(infoMenu = new TextMenu());
             infoMenu.AutoScroll = false;
             infoMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 300f);
-            infoMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + (XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Start") ? "Resume" : "Start")).ToUpper()).Pressed(delegate
+            infoMenu.Add(new TextMenu.Button(Dialog.Clean("Xaphan_0_0_intro_vignette_" + ((XaphanModule.ModSaveData.SavedTime.ContainsKey("Xaphan/0") && XaphanModule.ModSaveData.SavedTime["Xaphan/0"] > 170000) ? "Resume" : "Start")).ToUpper()).Pressed(delegate
             {
+                infoMenu.Focused = false;
                 StartCampaign = true;
                 XaphanModule.SoCMTitleFromGame = false;
             }));
@@ -272,7 +278,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 level.FormationBackdrop.Display = true;
                 infoMenu.Focused = infoMenu.Visible = false;
-                XaphanModule.confirmRestartCampaign(level, infoMenu.Selection, true, infoMenu);
+                progressDisplay.Visible = false;
+                XaphanModule.confirmRestartCampaign(level, infoMenu.Selection, true, infoMenu, progressDisplay);
             }));
             infoMenu.OnCancel = ReturnToMainmenu;
             while (!BackToMainMenu)
@@ -349,6 +356,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             if (infoMenu != null)
             {
                 infoMenu.RemoveSelf();
+            }
+            if (progressDisplay != null)
+            {
+                progressDisplay.Visible = false;
             }
         }
 

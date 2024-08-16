@@ -3039,7 +3039,7 @@ namespace Celeste.Mod.XaphanHelper
             level.Add(menu);
         }
 
-        public static void confirmRestartCampaign(Level level, int returnIndex, bool fromTitleScreen = false, TextMenu previousTitleMenu = null)
+        public static void confirmRestartCampaign(Level level, int returnIndex, bool fromTitleScreen = false, TextMenu previousTitleMenu = null, SaveProgressDisplay progressDisplay = null)
         {
             if (!fromTitleScreen)
             {
@@ -3148,7 +3148,14 @@ namespace Celeste.Mod.XaphanHelper
                 }
                 else
                 {
-                    previousTitleMenu.Focused = previousTitleMenu.Visible = true;
+                    if (previousTitleMenu != null)
+                    {
+                        previousTitleMenu.Focused = previousTitleMenu.Visible = true;
+                    }
+                    if (progressDisplay != null)
+                    {
+                        progressDisplay.Visible = true;
+                    }
                     level.FormationBackdrop.Display = false;
                 }
             };
@@ -3256,6 +3263,13 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)
         {
+            // SoCm Only - Prevent Timer to start when teleporting to Title Screen
+
+            if (SoCMVersion >= new Version(3, 0, 0) && startedAnySoCMChapter && (self.Session.Level == "A-00" || self.Session.Level == "Intro") && !SkipSoCMIntro)
+            {
+                self.TimerStopped = true;
+            }
+
             orig(self);
             Player player = self.Tracker.GetEntity<Player>();
             AreaKey area = self.Session.Area;
