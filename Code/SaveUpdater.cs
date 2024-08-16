@@ -1,11 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using IL.Monocle;
 
 namespace Celeste.Mod.XaphanHelper
 {
     class SaveUpdater
     {
         private static List<string> upgradesToRemove = new();
+
+        public static void Load()
+        {
+            On.Celeste.Level.Update += onLevelUpdate;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Level.Update -= onLevelUpdate;
+        }
 
         public static void UpdateSave(Level level)
         {
@@ -260,37 +271,6 @@ namespace Celeste.Mod.XaphanHelper
                             level.Session.DoNotLoad.Add(strawberry);
                         }
 
-                        // Adjust Lorebook entries
-
-                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch0/A-03-1-0"))
-                        {
-                            level.Session.SetFlag("LorebookEntry_loc0");
-                        }
-                        if (XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Gem_Room_B"))
-                        {
-                            level.Session.SetFlag("CS_Ch0_Gem_Room_B");
-                        }
-                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/S-Begin-0-1"))
-                        {
-                            level.Session.SetFlag("LorebookEntry_loc1-1");
-                        }
-                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/S-Begin-0-1"))
-                        {
-                            level.Session.SetFlag("LorebookEntry_loc2-1");
-                        }
-                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/B-00-1-0"))
-                        {
-                            level.Session.SetFlag("LorebookEntry_loc2-2");
-                        }
-                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/C-00-0-0"))
-                        {
-                            level.Session.SetFlag("LorebookEntry_loc2-3");
-                        }
-                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/C-07-0-0"))
-                        {
-                            level.Session.SetFlag("LorebookEntry_poi2-1");
-                        }
-
                         // Adjust in-game map explored and warps
 
                         int index = i - SaveData.Instance.LevelSetStats.AreaOffset;
@@ -399,7 +379,43 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             XaphanModule.ModSaveData.UnlockedWarps.Add(unlockedWarp);
                         }
+
+                        // Adjust Saved Flags
+
+                        string newFlags = "";
+                        foreach (string flag in XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"].Split(','))
+                        {
+                            if (!flag.Contains("XaphanHelper_StatFlag") && flag != "Upgrade_Bombs")
+                            {
+                                if (!string.IsNullOrEmpty(newFlags))
+                                {
+                                    newFlags += ",";
+                                }
+                                newFlags += flag;
+                            }
+                        }
+                        XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"] = newFlags;
+
+                        // Adjust Starting Room
+
+                        if (XaphanModule.ModSaveData.SavedChapter["Xaphan/0"] == i - SaveData.Instance.LevelSetStats.AreaOffset)
+                        {
+                            string newRoom = "";
+                            foreach (KeyValuePair<string, string> oldRoom in RoomsNamesConversion)
+                            {
+                                if (XaphanModule.ModSaveData.SavedRoom["Xaphan/0"] == oldRoom.Key)
+                                {
+                                    newRoom = oldRoom.Value;
+                                    break;
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(newRoom))
+                            {
+                                XaphanModule.ModSaveData.SavedRoom["Xaphan/0"] = newRoom;
+                            }
+                        }
                     }
+                    XaphanModule.SaveUpdaterUpdateLorebook = true;
                 }
             }
             XaphanModule.ModSaveData.SoCMVer = XaphanModule.SoCMVersion.Major * 100 + XaphanModule.SoCMVersion.Minor * 10 + XaphanModule.SoCMVersion.Build;
@@ -413,5 +429,67 @@ namespace Celeste.Mod.XaphanHelper
             }
             upgradesToRemove.Clear();
         }
+
+        private static void onLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)
+        {
+            orig(self);
+
+            // Adjust Lorebook entries
+
+            if (XaphanModule.SaveUpdaterUpdateLorebook)
+            {
+                // Check entries to unlock
+                bool shouldUnlockLoc0 = XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch0/A-04-1-0");
+                bool shouldUnlockPoi01 = XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Gem_Room_B");
+                bool shouldUnlockLoc11 = XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch1/B-00-0-1");
+                bool shouldUnlockLoc21 = XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/G-00-0-1");
+                bool shouldUnlockLoc22 = XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/H-00-1-0");
+                bool shouldUnlockLoc23 = XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/I-00-0-0");
+                bool shouldUnlockPoi21 = XaphanModule.ModSaveData.VisitedRoomsTiles.Contains("Xaphan/0/Ch2/I-07-0-0");
+
+                // Set corresponding flag as long as entry is not savec (and pop-up not displayed)
+                if (shouldUnlockLoc0 && !XaphanModule.ModSaveData.LorebookEntries.Contains("loc0"))
+                {
+                    self.Session.SetFlag("LorebookEntry_loc0");
+                }
+                if (shouldUnlockPoi01 && !XaphanModule.ModSaveData.LorebookEntries.Contains("poi0-1"))
+                {
+                    self.Session.SetFlag("CS_Ch0_Gem_Room_B");
+                }
+                if (shouldUnlockLoc11 && !XaphanModule.ModSaveData.LorebookEntries.Contains("loc1-1"))
+                {
+                    self.Session.SetFlag("LorebookEntry_loc1-1");
+                }
+                if (shouldUnlockLoc21 && !XaphanModule.ModSaveData.LorebookEntries.Contains("loc2-1"))
+                {
+                    self.Session.SetFlag("LorebookEntry_loc2-1");
+                }
+                if (shouldUnlockLoc22 && !XaphanModule.ModSaveData.LorebookEntries.Contains("loc2-2"))
+                {
+                    self.Session.SetFlag("LorebookEntry_loc2-2");
+                }
+                if (shouldUnlockLoc23 && !XaphanModule.ModSaveData.LorebookEntries.Contains("loc2-3"))
+                {
+                    self.Session.SetFlag("LorebookEntry_loc2-3");
+                }
+                if (shouldUnlockPoi21 && !XaphanModule.ModSaveData.LorebookEntries.Contains("poi2-1"))
+                {
+                    self.Session.SetFlag("LorebookEntry_poi2-1");
+                }
+
+                // End once all entries that must be unlocked are unlocked
+                if ((shouldUnlockLoc0 ? XaphanModule.ModSaveData.LorebookEntries.Contains("loc0") : true)
+                    && (shouldUnlockPoi01 ? XaphanModule.ModSaveData.LorebookEntries.Contains("poi0-1") : true)
+                    && (shouldUnlockLoc11 ? XaphanModule.ModSaveData.LorebookEntries.Contains("loc1-1") : true)
+                    && (shouldUnlockLoc21 ? XaphanModule.ModSaveData.LorebookEntries.Contains("loc2-1") : true)
+                    && (shouldUnlockLoc22 ? XaphanModule.ModSaveData.LorebookEntries.Contains("loc2-2") : true)
+                    && (shouldUnlockLoc23 ? XaphanModule.ModSaveData.LorebookEntries.Contains("loc2-3") : true)
+                    && (shouldUnlockPoi21 ? XaphanModule.ModSaveData.LorebookEntries.Contains("poi2-1") : true))
+                {
+                    XaphanModule.SaveUpdaterUpdateLorebook = false;
+                }
+            }
+        }
+
     }
 }

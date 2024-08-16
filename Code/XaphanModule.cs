@@ -74,6 +74,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static Version SoCMVersion;
 
+        public static bool SaveUpdaterUpdateLorebook = false;
+
         public static bool startedAnyChapter = false;
 
         public static bool startedAnySoCMChapter = false;
@@ -694,6 +696,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapList.Inspect += modOuiMapListInspect;
+            SaveUpdater.Load();
             MetroidGameplayController.Load();
             ScrewAttackManager.Load();
             MapDisplay.Load();
@@ -798,6 +801,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.CollectRoutine -= onStrawberryCollectRoutine;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapList.Inspect -= modOuiMapListInspect;
+            SaveUpdater.Unload();
             MetroidGameplayController.Unload();
             ScrewAttackManager.Unload();
             MapDisplay.Unload();
