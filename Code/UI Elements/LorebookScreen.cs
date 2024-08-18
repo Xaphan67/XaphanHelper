@@ -296,6 +296,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         previousCategorySelection = -1;
                         lorebookDisplay.GenerateEntryList(categorySelection);
                     }
+                    bool stopSfx = false;
                     if (Input.MenuLeft.Pressed && (categorySelection > 0 || previousCategorySelection > 0))
                     {
                         if (previousCategorySelection != -1)
@@ -310,6 +311,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         entrySelection = -1;
                         lorebookDisplay.GenerateEntryList(categorySelection);
                         Audio.Play("event:/ui/main/rollover_up");
+                        stopSfx = true;
                     }
                     if (Input.MenuRight.Pressed && ((categorySelection >= 0 && categorySelection < 2) || (previousCategorySelection >= 0 && previousCategorySelection <= 1)))
                     {
@@ -325,6 +327,21 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         entrySelection = -1;
                         lorebookDisplay.GenerateEntryList(categorySelection);
                         Audio.Play("event:/ui/main/rollover_down");
+                        stopSfx = true;
+                    }
+                    if (stopSfx)
+                    {
+                        LorebookDisplay.EntryInfo infoDisplay = SceneAs<Level>().Tracker.GetEntity<LorebookDisplay.EntryInfo>();
+                        if (infoDisplay != null)
+                        {
+                            infoDisplay.Visible= false;
+                            if (infoDisplay.TextRoutine.Active)
+                            {
+                                infoDisplay.TextRoutine.Cancel();
+                            }
+                            infoDisplay.textSfx.Stop();
+                            infoDisplay.textSfx.Param("end", 1f);
+                        }
                     }
                     if (entrySelection != -1 && !switchedToEntries)
                     {

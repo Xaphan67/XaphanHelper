@@ -299,7 +299,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private bool showEntryInfo;
 
-            private Coroutine TextRoutine = new();
+            public Coroutine TextRoutine = new();
 
             private int index = 0;
 
@@ -307,11 +307,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private int previousDisplayID;
 
+            public SoundSource textSfx;
 
             public EntryInfo(Vector2 position) : base(position)
             {
                 Tag = Tags.HUD;
                 Depth = -10001;
+                Add(textSfx = new SoundSource());
             }
 
             public override void Update()
@@ -321,6 +323,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (category.Selected)
                     {
+                        Visible = true;
                         showEntryInfo = false;
                         Name = category.Name;
                         Text = FancyText.Parse(Dialog.Clean(category.Description), 850, 4);
@@ -385,11 +388,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 index = 0;
                 float num = 0f;
+                textSfx.Play("event:/ui/game/memorial_text_loop");
+                textSfx.Param("end", 0f);
+                Visible = true;
                 while (index < Text.Nodes.Count)
                 {
                     if (Text.Nodes[index] is FancyText.Char)
                     {
-                        num += (Text.Nodes[index] as FancyText.Char).Delay;
+                        num += (Text.Nodes[index] as FancyText.Char).Delay / 4;
                     }
                     index++;
                     if (num > 0.008f)
@@ -398,6 +404,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         num = 0f;
                     }
                 }
+                textSfx.Stop();
+                textSfx.Param("end", 1f);
                 while (currentDisplayID == previousDisplayID)
                 {
                     yield return null;
