@@ -97,8 +97,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Add(talk = new TalkComponent(new Rectangle(28, 80, 24, 16), new Vector2(40f, 64f), Interact));
                 talk.PlayerMustBeFacing = false;
-                showPortrait = isOn = SceneAs<Level>().Session.GetFlag(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID);
-                if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID))
+                showPortrait = isOn = SceneAs<Level>().Session.GetFlag(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+                if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
                 {
                     showPortrait = true;
                     isOn = true;

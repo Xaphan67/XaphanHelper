@@ -17,14 +17,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private readonly bool registerInSaveData;
 
-        private bool FlagRegisteredInSaveData()
-        {
-            Session session = SceneAs<Level>().Session;
-            string Prefix = session.Area.LevelSet;
-            int chapterIndex = session.Area.ChapterIndex;
-            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + session.Level + "_" + screen.ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
-        }
-
         public BigScreenCutscene(Player player, string dialogID, string music, bool registerInSaveData)
         {
             this.player = player;
@@ -50,17 +42,27 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             screen.bgAlpha = 0f;
             screen.PlayerPose = "XaphanHelper_turnAround_reverse";
             player.Sprite.Play(screen.PlayerPose);
-            player.Sprite.OnLastFrame = resumeSprite;
+            player.Sprite.OnLastFrame = delegate
+            {
+                screen.PlayerPose = "";
+            };
             screen.talk.Enabled = true;
             screen.Depth = 9010;
             string Prefix = level.Session.Area.LevelSet;
             int chapterIndex = level.Session.Area.ChapterIndex;
-            level.Session.SetFlag(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID);
+            level.Session.SetFlag(level.Session.Level + "_" + screen.ID.ID);
             if (registerInSaveData)
             {
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID))
                 {
                     XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID);
+                }
+                if (XaphanModule.PlayerHasGolden)
+                {
+                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID + "_GoldenStrawberry"))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID + "_GoldenStrawberry");
+                    }
                 }
             }
         }
@@ -73,7 +75,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return player.DummyWalkToExact((int)screen.X + 40, false, 1f, true);
             screen.PlayerPose = "XaphanHelper_turnAround";
             player.Sprite.Play(screen.PlayerPose);
-            player.Sprite.OnLastFrame = stopSprite;
+            player.Sprite.OnLastFrame = delegate
+            {
+                screen.PlayerPose = "XaphanHelper_turnAround_end";
+                player.Sprite.Play(screen.PlayerPose);
+                level.Session.SetFlag(SceneAs<Level>().Session.Level + "_" + screen.ID.ID);
+            };
             yield return level.ZoomTo(new Vector2(160f, 92f), 1.75f, 2f);
             if (level.Session.Audio.Music.Event != music || !screen.showPortrait)
             {
@@ -119,18 +126,5 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             EndCutscene(Level);
             yield return null;
         }
-
-        public void stopSprite(string s)
-        {
-            screen.PlayerPose = "XaphanHelper_turnAround_end";
-            player.Sprite.Play(screen.PlayerPose);
-        }
-
-        public void resumeSprite(string s)
-        {
-            screen.PlayerPose = "";
-        }
-
-
     }
 }
