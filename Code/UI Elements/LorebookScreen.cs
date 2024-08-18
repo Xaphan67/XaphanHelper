@@ -332,25 +332,26 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             LorebookDisplay.EntryDisplay previousDisplay = Displays.Find(entry => entry.ID == entrySelection - 1);
                             entrySelection -= previousDisplay.isSubCategory ? 2 : 1;
-                            if (entrySelection <= Displays.Count - 6 && entrySelection >= 5)
+                            if (entrySelection <= Displays.Count - 6 && entrySelection - (previousDisplay.isSubCategory ? 3 : 4) > 0)
                             {
                                 foreach (LorebookDisplay.EntryDisplay display in Displays)
                                 {
-                                    display.Position.Y += display.height * (previousDisplay.isSubCategory ? entrySelection == Displays.Count - 6 ? 1 : 2 : 1);
+                                    display.Position.Y += display.height * (previousDisplay.isSubCategory ? 2 : 1);
                                 }
                             }
-                            LorebookDisplay.EntryDisplay firstDisplay = Displays.Find(entry => entry.ID == 0);
-                            if (firstDisplay.Position.Y <= 480f && entrySelection < 5)
+                            LorebookDisplay.EntryDisplay currentDisplay = Displays.Find(entry => entry.ID == entrySelection);
+                            if (currentDisplay.Position.Y > 731f && entrySelection < Displays.Count - 5 && entrySelection >= 6)
                             {
-                                while (firstDisplay.Position.Y < 480f)
+                                while (currentDisplay.Position.Y > 731f)
                                 {
                                     foreach (LorebookDisplay.EntryDisplay display in Displays)
                                     {
-                                        display.Position.Y += display.height;
+                                        display.Position.Y -= display.height;
                                     }
                                 }
                             }
-                            if (firstDisplay.Position.Y == 531f && entrySelection < 6)
+                            LorebookDisplay.EntryDisplay firstDisplay = Displays.Find(entry => entry.ID == 0);
+                            if (firstDisplay.Position.Y > 481f && entrySelection < 6)
                             {
                                 while (firstDisplay.Position.Y > 481f)
                                 {
@@ -360,28 +361,38 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     }
                                 }
                             }
-
                             Audio.Play("event:/ui/main/rollover_up");
                         }
                         if (Input.MenuDown.Pressed && entrySelection < Displays.Count - 1)
                         {
                             LorebookDisplay.EntryDisplay nextDisplay = Displays.Find(entry => entry.ID == entrySelection + 1);
                             entrySelection += nextDisplay.isSubCategory ? 2 : 1;
-                            if (entrySelection >= 6 && Displays.Count - 1 >= entrySelection + (nextDisplay.isSubCategory ? 3 : 4))
+                            if (entrySelection >= 6 && entrySelection + 3 <= Displays.Count - 1)
                             {
                                 foreach (LorebookDisplay.EntryDisplay display in Displays)
                                 {
-                                    display.Position.Y -= display.height;
+                                    display.Position.Y -= display.height * (nextDisplay.isSubCategory ? 2 : 1);
                                 }
                             }
-                            LorebookDisplay.EntryDisplay lastDisplay = Displays.Find(entry => entry.ID == Displays.Count - 1);
-                            if (lastDisplay.Position.Y > 933f && entrySelection > Displays.Count - 5)
+                            LorebookDisplay.EntryDisplay currentDisplay = Displays.Find(entry => entry.ID == entrySelection);
+                            if (currentDisplay.Position.Y < 731f && entrySelection < Displays.Count - 5 && entrySelection >= 6)
                             {
-                                while (lastDisplay.Position.Y > 933f)
+                                while (currentDisplay.Position.Y < 731f)
                                 {
                                     foreach (LorebookDisplay.EntryDisplay display in Displays)
                                     {
-                                        display.Position.Y -= display.height;
+                                        display.Position.Y += display.height;
+                                    }
+                                }
+                            }
+                            LorebookDisplay.EntryDisplay lastDisplay = Displays.Find(entry => entry.ID == Displays.Count - 1);
+                            if (lastDisplay.Position.Y < 931f && entrySelection > Displays.Count - 5)
+                            {
+                                while (lastDisplay.Position.Y < 931f)
+                                {
+                                    foreach (LorebookDisplay.EntryDisplay display in Displays)
+                                    {
+                                        display.Position.Y += display.height;
                                     }
                                 }
                             }
