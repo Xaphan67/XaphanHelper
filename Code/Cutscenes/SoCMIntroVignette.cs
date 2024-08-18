@@ -84,6 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private IEnumerator IntroSequence()
         {
+            MInput.Disabled = false;
             areaMusic = session.Audio.Music.Event;
             session.Audio.Music.Event = "event:/music/xaphan/lvl_0_intro_start";
             session.Audio.Apply(forceSixteenthNoteHack: false);

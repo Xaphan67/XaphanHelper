@@ -63,6 +63,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnBegin(Level level)
         {
+            MInput.Disabled = true;
             level.TimerStopped = true;
             Add(new Coroutine(Cutscene(level)));
             SceneAs<Level>().Add(progressDisplay = new SaveProgressDisplay(new Vector2(Engine.Width / 2, Engine.Height / 2 + 55f))
