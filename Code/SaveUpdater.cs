@@ -382,36 +382,42 @@ namespace Celeste.Mod.XaphanHelper
 
                         // Adjust Saved Flags
 
-                        string newFlags = "";
-                        foreach (string flag in XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"].Split(','))
+                        if (XaphanModule.ModSaveData.SavedSesionFlags.ContainsKey("Xaphan/0"))
                         {
-                            if (!flag.Contains("XaphanHelper_StatFlag") && flag != "Upgrade_Bombs")
+                            string newFlags = "";
+                            foreach (string flag in XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"].Split(','))
                             {
-                                if (!string.IsNullOrEmpty(newFlags))
+                                if (!flag.Contains("XaphanHelper_StatFlag") && flag != "Upgrade_Bombs")
                                 {
-                                    newFlags += ",";
+                                    if (!string.IsNullOrEmpty(newFlags))
+                                    {
+                                        newFlags += ",";
+                                    }
+                                    newFlags += flag;
                                 }
-                                newFlags += flag;
                             }
+                            XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"] = newFlags;
                         }
-                        XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"] = newFlags;
 
                         // Adjust Starting Room
 
-                        if (XaphanModule.ModSaveData.SavedChapter["Xaphan/0"] == i - SaveData.Instance.LevelSetStats.AreaOffset)
+                        if (XaphanModule.ModSaveData.SavedChapter.ContainsKey("Xaphan/0") && XaphanModule.ModSaveData.SavedRoom.ContainsKey("Xaphan/0"))
                         {
-                            string newRoom = "";
-                            foreach (KeyValuePair<string, string> oldRoom in RoomsNamesConversion)
+                            if (XaphanModule.ModSaveData.SavedChapter["Xaphan/0"] == i - SaveData.Instance.LevelSetStats.AreaOffset)
                             {
-                                if (XaphanModule.ModSaveData.SavedRoom["Xaphan/0"] == oldRoom.Key)
+                                string newRoom = "";
+                                foreach (KeyValuePair<string, string> oldRoom in RoomsNamesConversion)
                                 {
-                                    newRoom = oldRoom.Value;
-                                    break;
+                                    if (XaphanModule.ModSaveData.SavedRoom["Xaphan/0"] == oldRoom.Key)
+                                    {
+                                        newRoom = oldRoom.Value;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (!string.IsNullOrEmpty(newRoom))
-                            {
-                                XaphanModule.ModSaveData.SavedRoom["Xaphan/0"] = newRoom;
+                                if (!string.IsNullOrEmpty(newRoom))
+                                {
+                                    XaphanModule.ModSaveData.SavedRoom["Xaphan/0"] = newRoom;
+                                }
                             }
                         }
                     }
