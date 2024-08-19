@@ -3269,9 +3269,13 @@ namespace Celeste.Mod.XaphanHelper
         {
             // SoCm Only - Prevent Timer to start when teleporting to Title Screen
 
-            if (SoCMVersion >= new Version(3, 0, 0) && startedAnySoCMChapter && (self.Session.Level == "A-00" || self.Session.Level == "Intro") && !SkipSoCMIntro)
+            if (SoCMVersion >= new Version(3, 0, 0) && startedAnySoCMChapter && (self.Session.Level == "A-00" || self.Session.Level == "Intro") && !SkipSoCMIntro && self.Session.Area.Mode == 0)
             {
                 self.TimerStopped = true;
+                if (self.Wipe != null && self.Wipe.GetType() == typeof(SpotlightWipe))
+                {
+                    self.Wipe.Cancel();
+                }
             }
 
             orig(self);

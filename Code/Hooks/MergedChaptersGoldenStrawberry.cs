@@ -103,55 +103,58 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         private static void onStrawberryOnPlayer(On.Celeste.Strawberry.orig_OnPlayer orig, Strawberry self, Player player)
         {
             Level level = player.SceneAs<Level>();
-            if (XaphanModule.useMergeChaptersController && self.Golden && !Grabbed)
+            if (level.Session.Area.Mode == AreaMode.Normal)
             {
-                Grabbed = true;
-                ResetFlags = true;
-                StartChapter = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
-                StartRoom = level.Session.Level;
-                StartSpawn = level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
-                ID = self.ID.ID;
-                XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps.Clear();
-                if (XaphanModule.useUpgrades)
+                if (XaphanModule.useMergeChaptersController && self.Golden && !Grabbed)
                 {
-                    XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Clear();
-                    XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Clear();
-                    XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Clear();
-                    XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
+                    Grabbed = true;
+                    ResetFlags = true;
+                    StartChapter = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
+                    StartRoom = level.Session.Level;
+                    StartSpawn = level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
+                    ID = self.ID.ID;
+                    XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps.Clear();
+                    if (XaphanModule.useUpgrades)
+                    {
+                        XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Clear();
+                        XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades.Clear();
+                        XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades.Clear();
+                        XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
+                    }
+                    XaphanModule.ModSaveData.PreGoldenTimer = level.Session.Time;
+                    XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
+                    foreach (EntityID entity in level.Session.DoNotLoad)
+                    {
+                        XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                    }
+                    level.Session.Time = 0;
+                    level.Session.DoNotLoad.Clear();
+                    Audio.Play(SaveData.Instance.CheckStrawberry(self.ID) ? "event:/game/general/strawberry_blue_touch" : "event:/game/general/strawberry_touch", self.Position);
                 }
-                XaphanModule.ModSaveData.PreGoldenTimer = level.Session.Time;
-                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
-                foreach (EntityID entity in level.Session.DoNotLoad)
+                if (Grabbed)
                 {
-                    XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                    if (self.Follower.Leader != null)
+                    {
+                        return;
+                    }
+                    self.ReturnHomeWhenLost = true;
+                    self.SceneAs<Level>().Session.GrabbedGolden = true;
+                    player.Leader.GainFollower(self.Follower);
+                    Wiggler wiggler = (Wiggler)Strawberry_wiggler.GetValue(self);
+                    wiggler.Start();
+                    self.Depth = -1000000;
                 }
-                level.Session.Time = 0;
-                level.Session.DoNotLoad.Clear();
-                Audio.Play(SaveData.Instance.CheckStrawberry(self.ID) ? "event:/game/general/strawberry_blue_touch" : "event:/game/general/strawberry_touch", self.Position);
-            }
-            if (Grabbed)
-            {
-                if (self.Follower.Leader != null)
+                if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0")
                 {
-                    return;
+                    self.SceneAs<Level>().Session.SetFlag("SoCM-CarryGolden", true);
                 }
-                self.ReturnHomeWhenLost = true;
-                self.SceneAs<Level>().Session.GrabbedGolden = true;
-                player.Leader.GainFollower(self.Follower);
-                Wiggler wiggler = (Wiggler)Strawberry_wiggler.GetValue(self);
-                wiggler.Start();
-                self.Depth = -1000000;
-            }
-            if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0")
-            {
-                self.SceneAs<Level>().Session.SetFlag("SoCM-CarryGolden", true);
             }
             orig(self, player);
         }
 
         private static PlayerDeadBody onPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            if (evenIfInvincible)
+            if (evenIfInvincible && self.SceneAs<Level>().Session.Area.Mode == 0)
             {
                 Grabbed = false;
                 ResetProgression(self.SceneAs<Level>());
@@ -201,40 +204,43 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         private static void onPlayerDeadBodyEnd(On.Celeste.PlayerDeadBody.orig_End orig, PlayerDeadBody self)
         {
             Level level = self.SceneAs<Level>();
-            if (XaphanModule.useMergeChaptersController && StartChapter != -999)
+            if (level.Session.Area.Mode == AreaMode.Normal)
             {
-                if (level.Session.Area.ChapterIndex != StartChapter || (level.Session.Area.ChapterIndex == StartChapter && level.Session.Level != StartRoom))
+                if (XaphanModule.useMergeChaptersController && StartChapter != -999)
                 {
-                    self.DeathAction = delegate
+                    if (level.Session.Area.ChapterIndex != StartChapter || (level.Session.Area.ChapterIndex == StartChapter && level.Session.Level != StartRoom))
                     {
-                        level.Session.GrabbedGolden = false;
-                        AreaKey area = level.Session.Area;
-                        int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
-                        XaphanModule.ModSaveData.DestinationRoom = StartRoom;
-                        XaphanModule.ModSaveData.Spawn = (Vector2)StartSpawn;
-                        XaphanModule.ModSaveData.Wipe = "Fade";
-                        XaphanModule.ModSaveData.WipeDuration = 0.35f;
-                        int chapterOffset = StartChapter - currentChapter;
-                        int currentChapterID = area.ID;
-
-                        XaphanModule.PlayerHasGolden = false;
-                        Grabbed = false;
-                        StartChapter = -999;
-                        StartRoom = "";
-                        StartSpawn = Vector2.Zero;
-
-                        foreach (EntityID entity in level.Session.DoNotLoad)
+                        self.DeathAction = delegate
                         {
-                            XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
-                        }
-                        LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))
-                        {
-                            Time = XaphanModule.ModSaveData.PreGoldenTimer + level.Session.Time,
-                            DoNotLoad = XaphanModule.ModSaveData.PreGoldenDoNotLoad,
-                            Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
-                        }, fromSaveData: false);
-                        XaphanModule.ModSaveData.PreGoldenTimer = 0;
-                    };
+                            level.Session.GrabbedGolden = false;
+                            AreaKey area = level.Session.Area;
+                            int currentChapter = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
+                            XaphanModule.ModSaveData.DestinationRoom = StartRoom;
+                            XaphanModule.ModSaveData.Spawn = (Vector2)StartSpawn;
+                            XaphanModule.ModSaveData.Wipe = "Fade";
+                            XaphanModule.ModSaveData.WipeDuration = 0.35f;
+                            int chapterOffset = StartChapter - currentChapter;
+                            int currentChapterID = area.ID;
+
+                            XaphanModule.PlayerHasGolden = false;
+                            Grabbed = false;
+                            StartChapter = -999;
+                            StartRoom = "";
+                            StartSpawn = Vector2.Zero;
+
+                            foreach (EntityID entity in level.Session.DoNotLoad)
+                            {
+                                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                            }
+                            LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))
+                            {
+                                Time = XaphanModule.ModSaveData.PreGoldenTimer + level.Session.Time,
+                                DoNotLoad = XaphanModule.ModSaveData.PreGoldenDoNotLoad,
+                                Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
+                            }, fromSaveData: false);
+                            XaphanModule.ModSaveData.PreGoldenTimer = 0;
+                        };
+                    }
                 }
             }
             orig(self);
