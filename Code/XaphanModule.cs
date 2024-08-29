@@ -3177,7 +3177,7 @@ namespace Celeste.Mod.XaphanHelper
             menu.Add(new TextMenu.Header(Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle_title")));
             menu.Add(new TextMenu.Button(Dialog.Clean("menu_restart_continue")).Pressed(delegate
             {
-                returnHint.RemoveSelf();
+                level.AutoSave();
                 Engine.TimeRate = 1f;
                 menu.Focused = false;
                 level.DoScreenWipe(false, delegate
