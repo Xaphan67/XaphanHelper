@@ -610,6 +610,18 @@ namespace Celeste.Mod.XaphanHelper
                 maxValue: 1,
                 medals: 5
             ));
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            {
+                list.Add(new AchievementData(
+                    achievementID: "map2-3s",
+                    categoryID: 2,
+                    icon: "achievements/Xaphan/MapBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh2-3-Visited",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[2][3] > 0 ? 1 : 0,
+                    maxValue: 1,
+                    medals: 5
+                ));
+            }
             list.Add(new AchievementData(
                 achievementID: "map2-0",
                 categoryID: 2,
@@ -640,6 +652,19 @@ namespace Celeste.Mod.XaphanHelper
                 medals: 10,
                 reqID: "map2-2s"
             ));
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            {
+                list.Add(new AchievementData(
+                    achievementID: "map2-3",
+                    categoryID: 2,
+                    icon: "achievements/Xaphan/MapCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh2-3",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[2][3],
+                    maxValue: StatsFlags.TotalSubAreaTiles[2][3],
+                    medals: 10,
+                    reqID: "map2-3s"
+                ));
+            }
             list.Add(new AchievementData(
                 achievementID: "strwb2-0",
                 categoryID: 2,
@@ -670,6 +695,19 @@ namespace Celeste.Mod.XaphanHelper
                 medals: 10,
                 reqID: "map2-2s"
             ));
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            {
+                list.Add(new AchievementData(
+                    achievementID: "strwb2-3",
+                    categoryID: 2,
+                    icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_StrawberriesCh2-3",
+                    currentValue: StatsFlags.CurrentSubAreaStrawberries[2][3],
+                    maxValue: StatsFlags.TotalSubAreaStrawberries[2][3],
+                    medals: 10,
+                    reqID: "map2-3s"
+                ));
+            }
             list.Add(new AchievementData(
                 achievementID: "map2",
                 categoryID: 2,
@@ -816,6 +854,24 @@ namespace Celeste.Mod.XaphanHelper
                     medals: 5
                 ));
                 list.Add(new AchievementData(
+                    achievementID: "map4-1s",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/MapBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh4-1-Visited",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[4][1] > 0 ? 1 : 0,
+                    maxValue: 1,
+                    medals: 5
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "map4-2s",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/MapBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh4-2-Visited",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[4][2] > 0 ? 1 : 0,
+                    maxValue: 1,
+                    medals: 5
+                ));
+                list.Add(new AchievementData(
                     achievementID: "map4-0",
                     categoryID: 4,
                     icon: "achievements/Xaphan/MapCheckmarkBronze",
@@ -826,6 +882,26 @@ namespace Celeste.Mod.XaphanHelper
                     reqID: "map4-0s"
                 ));
                 list.Add(new AchievementData(
+                    achievementID: "map4-1",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/MapCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh4-1",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[4][1],
+                    maxValue: StatsFlags.TotalSubAreaTiles[4][1],
+                    medals: 10,
+                    reqID: "map4-1s"
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "map4-2",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/MapCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_MapCh4-2",
+                    currentValue: StatsFlags.CurrentSubAreaTiles[4][2],
+                    maxValue: StatsFlags.TotalSubAreaTiles[4][2],
+                    medals: 10,
+                    reqID: "map4-2s"
+                ));
+                list.Add(new AchievementData(
                     achievementID: "strwb4-0",
                     categoryID: 4,
                     icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
@@ -834,6 +910,26 @@ namespace Celeste.Mod.XaphanHelper
                     maxValue: StatsFlags.TotalSubAreaStrawberries[4][0],
                     medals: 10,
                     reqID: "map4-0s"
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "strwb4-1",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_StrawberriesCh4-1",
+                    currentValue: StatsFlags.CurrentSubAreaStrawberries[4][1],
+                    maxValue: StatsFlags.TotalSubAreaStrawberries[4][1],
+                    medals: 10,
+                    reqID: "map4-1s"
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "strwb4-2",
+                    categoryID: 4,
+                    icon: "achievements/Xaphan/StrawberryCheckmarkBronze",
+                    flag: "XaphanHelper_StatFlag_StrawberriesCh4-2",
+                    currentValue: StatsFlags.CurrentSubAreaStrawberries[4][2],
+                    maxValue: StatsFlags.TotalSubAreaStrawberries[4][2],
+                    medals: 10,
+                    reqID: "map4-2s"
                 ));
                 list.Add(new AchievementData(
                     achievementID: "map4",
