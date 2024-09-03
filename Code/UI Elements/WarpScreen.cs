@@ -126,14 +126,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-
-            if (warpMenu.LastPossibleSelection > 10 && warpMenu.Selection <= ActiveWarps.Count - 5)
+            if (XaphanModule.ShowUI)
             {
-                arrowTex.DrawCentered(new Vector2(warpMenu.X, 1009f), Color.White, 1f, (float)Math.PI * 3f / 2f);
-            }
-            if (warpMenu.Selection > 6 && warpMenu.LastPossibleSelection > 10)
-            {
-                arrowTex.DrawCentered(new Vector2(warpMenu.X, 190f), Color.White, 1f, (float)Math.PI / 2f);
+                if (warpMenu.LastPossibleSelection > 10 && warpMenu.Selection <= ActiveWarps.Count - 5)
+                {
+                    arrowTex.DrawCentered(new Vector2(warpMenu.X, 1009f), Color.White, 1f, (float)Math.PI * 3f / 2f);
+                }
+                if (warpMenu.Selection > 6 && warpMenu.LastPossibleSelection > 10)
+                {
+                    arrowTex.DrawCentered(new Vector2(warpMenu.X, 190f), Color.White, 1f, (float)Math.PI / 2f);
+                }
             }
 
             if (mapDisplay?.Scene != null)

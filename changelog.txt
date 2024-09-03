@@ -6,6 +6,7 @@ Version 1.0.64 :
 - Golden strawberries in campaigns using a Merge Chapter Controller now reset the current timer to 0 when grabbed, and restore it back (+ the time spent with the berry) on death or berry collection
 - Golden strawberries in campaigns using a Merge Chapter Controller now reset entities that should not reload anymore when grabbed, and resture them back (+ any new entity that got added with the berry) on death or berry collection
 - Achievements popups in Secret of Celeste Mountain can no longer appear while the player is in dummy state or for the first 0.1s after entering a room, to prevent them appearing while the player is teleported
+- Arrows on the warp menu disapear correctly when there is more than 10 warps in the menu and the player select the "Stay Here" option
 - If the player die after using the Remote drone but before the drone can be controlled, the player will now respawn at their current spawn point to prevent an infitire respawn softlock
 - The Remote Drone can no longer be deployed by pressing down while holding it. Madeline will now attempt to throw it instead
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
