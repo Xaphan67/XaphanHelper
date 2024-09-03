@@ -8,6 +8,8 @@ Version 1.0.64 :
 - Achievements popups in Secret of Celeste Mountain can no longer appear while the player is in dummy state or for the first 0.1s after entering a room, to prevent them appearing while the player is teleported.
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 - Fixed a bug that prevented Flag On Interact Triggers to work if their "Req Flags" attribute was left empty
+- Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone
+- Fixed a crash when using the retry option in the pause menu while holding the drone
 
 Version 1.0.63 :
 - Replaced Teleport To Chapter Trigger "To Chapter" attribute with "Destination Chapter". This new attribute accept a chapter map path instead of a chapter index, and can be used to teleport to any chapter, even ouside of the current campaign. Old Teleport To Chapter triggers are unaffected

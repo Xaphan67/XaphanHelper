@@ -147,6 +147,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.Player.Die += OnCelestePlayerDie;
             On.Celeste.Player.Jump += OnPlayerjump;
             On.Celeste.Player.Throw += OnPlayerThrow;
+            On.Celeste.Player.Drop += OnPlayerDrop;
             On.Celeste.Level.LoadLevel += OnLevelLoadLevel;
             On.Celeste.LevelExit.Begin += OnLevelExitBegin;
             On.Celeste.ChangeRespawnTrigger.OnEnter += onChangeRespawnTriggerOnEnter;
@@ -268,6 +269,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private static void OnPlayerDrop(On.Celeste.Player.orig_Drop orig, Player self)
+        {
+            if (self.Holding != Hold)
+            {
+                orig(self);
+            }
+            else
+            {
+                if (self.Holding != null)
+                {
+                    Input.Rumble(RumbleStrength.Light, RumbleLength.Short);
+                    self.Holding.Release(Vector2.UnitX * (float)self.Facing);
+                    self.Speed.X += 80f * (0 - self.Facing);
+                    self.Play("event:/char/madeline/crystaltheo_throw");
+                    self.Sprite.Play("throw");
+                    self.Holding = null;
+                }
+            }
+        }
+
         private static void onChangeRespawnTriggerOnEnter(On.Celeste.ChangeRespawnTrigger.orig_OnEnter orig, ChangeRespawnTrigger self, Player player)
         {
             orig(self, player);
@@ -305,6 +326,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.Player.Die -= OnCelestePlayerDie;
             On.Celeste.Player.Jump -= OnPlayerjump;
             On.Celeste.Player.Throw -= OnPlayerThrow;
+            On.Celeste.Player.Drop -= OnPlayerDrop;
             On.Celeste.Level.LoadLevel -= OnLevelLoadLevel;
             On.Celeste.LevelExit.Begin -= OnLevelExitBegin;
             On.Celeste.ChangeRespawnTrigger.OnEnter -= onChangeRespawnTriggerOnEnter;
@@ -348,30 +370,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static PlayerDeadBody OnCelestePlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
+            Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
             if (XaphanModule.PlayerIsControllingRemoteDrone())
             {
-                Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
                 if (drone != null)
                 {
-                    if (Hold.IsHeld)
+                    if (!drone.enabled)
                     {
-                        drone.RemoveSelf();
-                        return orig(self, direction, evenIfInvincible, registerDeathInStats);
-                    }
-                    else if (!drone.enabled)
-                    {
+                        XaphanModule.ModSaveData.startAsDrone[self.SceneAs<Level>().Session.Area.LevelSet] = false;
                         if (self != drone.FakePlayer)
                         {
                             if (!drone.dead)
                             {
-                                drone.ForceDestroy();
+                                drone.ForceDestroy(forced: true);
                             }
                         }
                         else
                         {
                             if (!drone.dead)
                             {
-                                drone.ForceDestroy(true, true);
+                                drone.ForceDestroy(true, true, true);
                             }
                             return orig(self, direction, evenIfInvincible, registerDeathInStats);
                         }
@@ -388,7 +406,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         drone.ForceDestroy();
                     }
-                    return null;
+                        return null;
+                }
+            }
+            else
+            {
+                if (drone != null)
+                {
+                    if (Hold.IsHeld)
+                    {
+                        drone.RemoveSelf();
+                    }
                 }
             }
             return orig(self, direction, evenIfInvincible, registerDeathInStats);
@@ -459,14 +487,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 tutorialGui.RemoveSelf();
             }
             UpgradesDisplay display = scene.Tracker.GetEntity<UpgradesDisplay>();
-            display.ResetSelectedAmmo = false;
+            if (display != null)
+            {
+                display.ResetSelectedAmmo = false;
+            }
         }
 
-        private void ForceDestroy(bool normalRespawn = false, bool silence = false)
+        private void ForceDestroy(bool normalRespawn = false, bool silence = false, bool forced = false)
         {
             if (!DestroyRoutine.Active)
             {
-                Add(DestroyRoutine = new Coroutine(Destroy(normalRespawn, silence)));
+                Add(DestroyRoutine = new Coroutine(Destroy(normalRespawn, silence, forced)));
             }
         }
 
@@ -480,7 +511,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnRelease(Vector2 force)
         {
-            if (player != null)
+            if (player != null && !player.Dead)
             {
                 GiveAmmo();
                 DynData<Player> playerData = new(player);
@@ -527,7 +558,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     force.Y = -0.4f;
                 }
-                Speed = force * 200f;
+                Speed = force * 180f;
                 if (Speed != Vector2.Zero)
                 {
                     noGravityTimer = 0.1f;
@@ -639,7 +670,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Speed.Y = 0f;
                 if (!enabled)
                 {
-                    enabled = true;
                     canControl = true;
                     Speed = Vector2.Zero;
                     Add(new Coroutine(HatchingRoutine()));
@@ -657,6 +687,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 player.Position.Y = (float)Math.Floor(player.Position.Y);
             }
 
+            enabled = true;
             player.StateMachine.State = 0;
         }
 
@@ -1307,10 +1338,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 duckPlayerHurtbox.Width = 8f;
                                 duckPlayerHurtbox.Left = -4f;
                                 duckPlayerHurtbox.Top = -6f;
-                                if (FakePlayer != null && !normalRespawn)
+                                if (FakePlayer != null && !FakePlayer.Dead && !normalRespawn)
                                 {
                                     player.Position = FakePlayer.Position;
                                     player.DummyGravity = true;
+                                }
+                                if (FakePlayer.Dead)
+                                {
+                                    yield break;
                                 }
                                 SceneAs<Level>().CameraOffset = Vector2.Zero;
                                 if (!normalRespawn)
@@ -1485,33 +1520,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else
                         {
-                            Level.DoScreenWipe(false, delegate
-                            {
-                                player.StateMachine.Locked = false;
-                                player.StateMachine.State = 0;
-                                Level.PauseLock = false;
-                                int chapterIndex = Level.Session.Area.ChapterIndex;
-                                foreach (DroneSwitch droneSwitch in Level.Tracker.GetEntities<DroneSwitch>())
-                                {
-                                    Level.Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_true", false);
-                                    Level.Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_false", false);
-                                    if (!droneSwitch.persistent && !droneSwitch.FlagRegiseredInSaveData() && droneSwitch.startSpawnPoint == Level.Session.RespawnPoint)
-                                    {
-                                        if ((droneSwitch.registerInSaveData && droneSwitch.saveDataOnlyAfterCheckpoint) || !droneSwitch.registerInSaveData)
-                                        {
-                                            if (droneSwitch.flagState)
-                                            {
-                                                Level.Session.SetFlag(droneSwitch.flag, true);
-                                            }
-                                            else
-                                            {
-                                                Level.Session.SetFlag(droneSwitch.flag, false);
-                                            }
-                                        }
-                                    }
-                                }
-                                Level.Reload();
-                            });
+                            ReloadLevel(Level);
                         }
                     }
                     else
@@ -1520,6 +1529,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             Session session = player.SceneAs<Level>().Session;
                             Audio.Play("event:/new_content/char/madeline/death_golden", Position);
+                            XaphanModule.ModSaveData.startAsDrone[player.SceneAs<Level>().Session.Area.LevelSet] = false;
                             Level.DoScreenWipe(false, delegate
                             {
                                 Engine.Scene = new LevelExit(LevelExit.Mode.GoldenBerryRestart, session)
@@ -1531,6 +1541,37 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+        }
+
+        private void ReloadLevel(Level level)
+        {
+            level.DoScreenWipe(false, delegate
+            {
+                player.StateMachine.Locked = false;
+                player.StateMachine.State = 0;
+                level.PauseLock = false;
+                int chapterIndex = level.Session.Area.ChapterIndex;
+                foreach (DroneSwitch droneSwitch in level.Tracker.GetEntities<DroneSwitch>())
+                {
+                    level.Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_true", false);
+                    level.Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_false", false);
+                    if (!droneSwitch.persistent && !droneSwitch.FlagRegiseredInSaveData() && droneSwitch.startSpawnPoint == level.Session.RespawnPoint)
+                    {
+                        if ((droneSwitch.registerInSaveData && droneSwitch.saveDataOnlyAfterCheckpoint) || !droneSwitch.registerInSaveData)
+                        {
+                            if (droneSwitch.flagState)
+                            {
+                                level.Session.SetFlag(droneSwitch.flag, true);
+                            }
+                            else
+                            {
+                                level.Session.SetFlag(droneSwitch.flag, false);
+                            }
+                        }
+                    }
+                }
+                level.Reload();
+            });
         }
 
         public override void Render()

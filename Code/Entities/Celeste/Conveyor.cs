@@ -56,6 +56,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string directory;
 
+        public FakePlayer GetFakePlayerOnTop()
+        {
+            return CollideFirst<FakePlayer>(Position - Vector2.UnitY);
+        }
+
         public Conveyor(EntityData data, Vector2 offset) : base(data.Position + offset, 8, 8, safe: false)
         {
             conveyorSpeed = data.Int("speed", 75);
@@ -286,6 +291,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             Add(moveRoutine = new Coroutine(MovePlayerRoutine()));
                         }
                     }
+                    if (GetFakePlayerOnTop() != null)
+                    {
+                        FakePlayer player = GetFakePlayerOnTop();
+                        if (player != null && !moveRoutine.Active)
+                        {
+                            Add(moveRoutine = new Coroutine(MoveFakePlayerRoutine()));
+                        }
+                    }
                 }
                 currentTotalActors = Scene.Tracker.GetEntities<Actor>().Count;
                 if (currentTotalActors > 0 && !actorsMoveRoutine.Active)
@@ -385,6 +398,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     GetPlayerRider().MoveH(conveyorSpeed * Engine.DeltaTime * direction);
                     yield return null;
                 }
+            }
+        }
+
+        private IEnumerator MoveFakePlayerRoutine()
+        {
+            FakePlayer player = SceneAs<Level>().Tracker.GetEntity<FakePlayer>();
+            while (GetFakePlayerOnTop() != null)
+            {
+                GetFakePlayerOnTop().LiftSpeed = Vector2.UnitX * conveyorSpeed * direction;
+                GetFakePlayerOnTop().MoveH(conveyorSpeed * Engine.DeltaTime * direction);
+                yield return null;
             }
         }
 
