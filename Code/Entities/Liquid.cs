@@ -53,7 +53,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool waterOut;
 
-        private bool[,] grid;
+        public bool[,] grid;
 
         private EntityID ID;
 
@@ -115,7 +115,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool upsideDown;
 
-        private DisplacementRenderHook Displacement;
+        public DisplacementRenderHook Displacement;
 
         public Liquid(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
@@ -1023,7 +1023,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void CheckSolidsForDisplacement()
+        public void CheckSolidsForDisplacement()
         {
             int i = 0;
             for (int length = grid.GetLength(0); i < length; i++)
