@@ -3885,6 +3885,21 @@ namespace Celeste.Mod.XaphanHelper
 
             if (self.Session.Area.LevelSet == "Xaphan/0")
             {
+                // Under liquids rooms
+
+                foreach (Liquid liquid in self.Tracker.GetEntities<Liquid>())
+                {
+                    if (liquid.Position == new Vector2(self.Bounds.Left, self.Bounds.Top))
+                    {
+                        liquid.Collider = new Hitbox(self.Bounds.Width, self.Bounds.Height);
+                        liquid.Displacement.RemoveSelf();
+                        liquid.grid = new bool[(int)(liquid.Collider.Width / 8f), (int)(liquid.Collider.Height / 8f)];
+                        liquid.CheckSolidsForDisplacement();
+                        liquid.Add(liquid.Displacement = new DisplacementRenderHook(liquid.RenderDisplacement));
+                        break;
+                    }
+                }
+                
                 // Backward saves compatibility
 
                 SaveUpdater.RemoveUpgrades();
