@@ -266,6 +266,33 @@ namespace Celeste.Mod.XaphanHelper
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
                 list.Add(new AchievementData(
+                    achievementID: "lore0",
+                    categoryID: 0,
+                    icon: "achievements/Xaphan/LoreBookCheckmarkSilver",
+                    flag: "XaphanHelper_StatFlag_LoreBook_0",
+                    currentValue: StatsFlags.ReadLoreBookEntries[0],
+                    maxValue: StatsFlags.TotalLoreBookEntries[0],
+                    medals: 25
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "lore1",
+                    categoryID: 0,
+                    icon: "achievements/Xaphan/LoreBookCheckmarkSilver",
+                    flag: "XaphanHelper_StatFlag_LoreBook_1",
+                    currentValue: StatsFlags.ReadLoreBookEntries[1],
+                    maxValue: StatsFlags.TotalLoreBookEntries[1],
+                    medals: 25
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "lore2",
+                    categoryID: 0,
+                    icon: "achievements/Xaphan/LoreBookCheckmarkSilver",
+                    flag: "XaphanHelper_StatFlag_LoreBook_2",
+                    currentValue: StatsFlags.ReadLoreBookEntries[2],
+                    maxValue: StatsFlags.TotalLoreBookEntries[2],
+                    medals: 25
+                ));
+                list.Add(new AchievementData(
                     achievementID: "map",
                     categoryID: 0,
                     icon: "achievements/Xaphan/MapCheckmarkGold",
@@ -282,6 +309,15 @@ namespace Celeste.Mod.XaphanHelper
                    currentValue: currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + currentTotalCassettes + currentTotalASideHearts,
                    maxValue: maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + maxTotalCassettes + maxTotalASideHearts,
                    medals: 50
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "lore",
+                    categoryID: 0,
+                    icon: "achievements/Xaphan/LoreBookCheckmarkGold",
+                    flag: "XaphanHelper_StatFlag_LoreBook",
+                    currentValue: StatsFlags.ReadLoreBookEntries[0] + StatsFlags.ReadLoreBookEntries[1] + StatsFlags.ReadLoreBookEntries[2],
+                    maxValue: StatsFlags.TotalLoreBookEntries[0] + StatsFlags.TotalLoreBookEntries[1] + StatsFlags.TotalLoreBookEntries[2],
+                    medals: 50
                 ));
                 list.Add(new AchievementData(
                     achievementID: "golden",
@@ -440,22 +476,6 @@ namespace Celeste.Mod.XaphanHelper
                 maxValue: StatsFlags.TotalStrawberries[1],
                 medals: 15
             ));
-
-            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
-            {
-                list.Add(new AchievementData(
-                    achievementID: "tank1",
-                    categoryID: 1,
-                    icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
-                    flag: "XaphanHelper_StatFlag_EnergyTanksCh1",
-                    currentValue: StatsFlags.CurrentEnergyTanks[1],
-                    maxValue: StatsFlags.TotalEnergyTanks[1],
-                    medals: 15,
-                    reqID: "upg2"
-                ));
-            }
-
-
             list.Add(new AchievementData(
                 achievementID: "cass1",
                 categoryID: 1,
@@ -485,6 +505,29 @@ namespace Celeste.Mod.XaphanHelper
                 reqID: "cass1"
             ));
 
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            {
+                list.Add(new AchievementData(
+                    achievementID: "boss1-1",
+                    categoryID: 1,
+                    icon: "achievements/Xaphan/Boss",
+                    flag: "XaphanHelper_StatFlag_BossCh1",
+                    currentValue: session.GetFlag("XaphanHelper_StatFlag_BossCh1") ? 1 : 0,
+                    maxValue: 1,
+                    medals: 25
+                ));
+                list.Add(new AchievementData(
+                    achievementID: "boss1-1cm",
+                    categoryID: 1,
+                    icon: "achievements/Xaphan/BossCM",
+                    flag: "XaphanHelper_StatFlag_BossCMCh1",
+                    currentValue: session.GetFlag("XaphanHelper_StatFlag_BossCMCh1") ? 1 : 0,
+                    maxValue: 1,
+                    medals: 50,
+                    reqID: "boss1-1"
+                ));
+            }
+
             if (XaphanModule.SoCMVersion < new Version(3, 0, 0))
             {
                 list.Add(new AchievementData(
@@ -508,29 +551,6 @@ namespace Celeste.Mod.XaphanHelper
                 medals: 50,
                 reqID: "bside1"
             ));
-
-            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
-            {
-                list.Add(new AchievementData(
-                    achievementID: "boss1-1",
-                    categoryID: 1,
-                    icon: "achievements/Xaphan/Boss",
-                    flag: "XaphanHelper_StatFlag_BossCh1",
-                    currentValue: session.GetFlag("XaphanHelper_StatFlag_BossCh1") ? 1 : 0,
-                    maxValue: 1,
-                    medals: 25
-                ));
-                list.Add(new AchievementData(
-                    achievementID: "boss1-1cm",
-                    categoryID: 1,
-                    icon: "achievements/Xaphan/BossCM",
-                    flag: "XaphanHelper_StatFlag_BossCMCh1",
-                    currentValue: session.GetFlag("XaphanHelper_StatFlag_BossCMCh1") ? 1 : 0,
-                    maxValue: 1,
-                    medals: 50,
-                    reqID: "boss1-1"
-                ));
-            }
 
             // Area 2
             list.Add(new AchievementData(
@@ -726,19 +746,6 @@ namespace Celeste.Mod.XaphanHelper
                 maxValue: StatsFlags.TotalStrawberries[2],
                 medals: 15
             ));
-            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
-            {
-                list.Add(new AchievementData(
-                    achievementID: "tank2",
-                    categoryID: 2,
-                    icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
-                    flag: "XaphanHelper_StatFlag_EnergyTanksCh2",
-                    currentValue: StatsFlags.CurrentEnergyTanks[2],
-                    maxValue: StatsFlags.TotalEnergyTanks[2],
-                    medals: 15,
-                    reqID: "upg2"
-                ));
-            }
             list.Add(new AchievementData(
                 achievementID: "cass2",
                 categoryID: 2,
@@ -821,16 +828,6 @@ namespace Celeste.Mod.XaphanHelper
                     maxValue: StatsFlags.TotalSubAreaStrawberries[3][0],
                     medals: 10,
                     reqID: "map3-0s"
-                ));
-                list.Add(new AchievementData(
-                    achievementID: "tank3",
-                    categoryID: 3,
-                    icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
-                    flag: "XaphanHelper_StatFlag_EnergyTanksCh3",
-                    currentValue: StatsFlags.CurrentEnergyTanks[3],
-                    maxValue: StatsFlags.TotalEnergyTanks[3],
-                    medals: 15,
-                    reqID: "upg2"
                 ));
 
                 // Area 4
@@ -948,16 +945,6 @@ namespace Celeste.Mod.XaphanHelper
                     currentValue: StatsFlags.CurrentStrawberries[4] - (session.GetFlag("XaphanHelper_StatFlag_GoldenCh4-1") ? 1 : 0),
                     maxValue: StatsFlags.TotalStrawberries[4],
                     medals: 15
-                ));
-                list.Add(new AchievementData(
-                    achievementID: "tank4",
-                    categoryID: 4,
-                    icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
-                    flag: "XaphanHelper_StatFlag_EnergyTanksCh4",
-                    currentValue: StatsFlags.CurrentEnergyTanks[4],
-                    maxValue: StatsFlags.TotalEnergyTanks[4],
-                    medals: 15,
-                    reqID: "upg2"
                 ));
 
                 list.Add(new AchievementData(
@@ -1154,26 +1141,6 @@ namespace Celeste.Mod.XaphanHelper
                     currentValue: StatsFlags.CurrentStrawberries[5] - (session.GetFlag("XaphanHelper_StatFlag_GoldenCh5-1") ? 1 : 0),
                     maxValue: StatsFlags.TotalStrawberries[5],
                     medals: 15
-                ));
-                list.Add(new AchievementData(
-                    achievementID: "tank5",
-                    categoryID: 5,
-                    icon: "achievements/Xaphan/EnergyTankCheckmarkSilver",
-                    flag: "XaphanHelper_StatFlag_EnergyTanksCh5",
-                    currentValue: StatsFlags.CurrentEnergyTanks[5],
-                    maxValue: StatsFlags.TotalEnergyTanks[5],
-                    medals: 15,
-                    reqID: "upg2"
-                ));
-                list.Add(new AchievementData(
-                    achievementID: "dfrm5",
-                    categoryID: 5,
-                    icon: "achievements/Xaphan/FireRateModuleCheckmarkSilver",
-                    flag: "XaphanHelper_StatFlag_FireRateModulesCh5",
-                    currentValue: StatsFlags.CurrentFireRateModules[5],
-                    maxValue: StatsFlags.TotalFireRateModules[5],
-                    medals: 15,
-                    reqID: "upg7"
                 ));
                 list.Add(new AchievementData(
                     achievementID: "boss5-1",

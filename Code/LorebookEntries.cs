@@ -5,9 +5,8 @@ namespace Celeste.Mod.XaphanHelper
 {
     static class LorebookEntries
     {
-        public static List<LorebookData> GenerateLorebookEntriesDataList(Session session)
+        public static List<LorebookData> GenerateLorebookEntriesDataList()
         {
-            StatsFlags.GetStats(session);
             List<LorebookData> list = new();
 
             // Locations
@@ -89,6 +88,14 @@ namespace Celeste.Mod.XaphanHelper
             ));
 
             list.Add(new LorebookData(
+                entryID: "loc2-4",
+                categoryID: 0,
+                picture: "lorebook/Xaphan/Locations/loc2-4",
+                flag: "LorebookEntry_loc2-4",
+                subCategoryID: "locc3"
+            ));
+
+            list.Add(new LorebookData(
                 entryID: "locc4",
                 categoryID: 0,
                 picture: null,
@@ -115,6 +122,22 @@ namespace Celeste.Mod.XaphanHelper
                 categoryID: 0,
                 picture: "lorebook/Xaphan/Locations/loc4-1",
                 flag: "LorebookEntry_loc4-1",
+                subCategoryID: "locc5"
+            ));
+
+            list.Add(new LorebookData(
+                entryID: "loc4-2",
+                categoryID: 0,
+                picture: "lorebook/Xaphan/Locations/loc4-2",
+                flag: "LorebookEntry_loc4-2",
+                subCategoryID: "locc5"
+            ));
+
+            list.Add(new LorebookData(
+                entryID: "loc4-3",
+                categoryID: 0,
+                picture: "lorebook/Xaphan/Locations/loc4-3",
+                flag: "LorebookEntry_loc4-3",
                 subCategoryID: "locc5"
             ));
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
@@ -77,6 +78,10 @@ namespace Celeste.Mod.XaphanHelper
         public static bool[] BSideHearts;
 
         public static bool[] Cassettes;
+
+        public static int[] ReadLoreBookEntries;
+
+        public static int[] TotalLoreBookEntries;
 
         public static int cassetteCount;
 
@@ -215,6 +220,16 @@ namespace Celeste.Mod.XaphanHelper
                 }
                 GetCurrentItems(i);
             }
+            if (Prefix == "Xaphan/0")
+            {
+                ReadLoreBookEntries = new int[3];
+                TotalLoreBookEntries = new int[3];
+                for(int i = 0; i < 3; i++)
+                {
+                    ReadLoreBookEntries[i] = GetReadLoreBookEntries(i);
+                    TotalLoreBookEntries[i] = GetTotalLoreBookEntries(i);
+                }
+            }
         }
 
         public static void ResetStats()
@@ -239,6 +254,8 @@ namespace Celeste.Mod.XaphanHelper
             EntitiesData.Clear();
             CurrentTiles = null;
             TotalTiles = null;
+            ReadLoreBookEntries = null;
+            TotalLoreBookEntries = null;
             initialized = false;
         }
 
@@ -256,6 +273,7 @@ namespace Celeste.Mod.XaphanHelper
                     achievement.AchievementID.Contains("dmiss") || // Drone Missiles Modules achievements
                     achievement.AchievementID.Contains("cass") || // Cassettes achievements
                     achievement.AchievementID.Contains("heart") || // Blue Hearts achievements
+                    achievement.AchievementID.Contains("lore") || // LoreBook achievements
                     achievement.AchievementID.Contains("items") || // All Items achievement
                     achievement.AchievementID.Contains("golden") // Golden Strawberries achievements
                     )
@@ -529,6 +547,67 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
                 }
+
+                // SoCM
+
+                if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+                {
+                    // Items
+
+                    int currentTotalStrawberries = 0;
+                    int currentTotalEnergyTanks = 0;
+                    int currentTotalFireRateModules = 0;
+                    int currentTotalMissiles = 0;
+                    int currentTotalSuperMissiles = 0;
+                    int maxTotalStrawberries = 0;
+                    int maxTotalEnergyTanks = 0;
+                    int maxTotalFireRateModules = 0;
+                    int maxTotalMissiles = 0;
+                    int maxTotalSuperMissiles = 0;
+
+                    for (int i = 1; i <= 5; i++)
+                    {
+                        currentTotalStrawberries += (CurrentStrawberries[i] - (self.Session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
+                        currentTotalEnergyTanks += CurrentEnergyTanks[i];
+                        currentTotalFireRateModules += CurrentFireRateModules[i];
+                        currentTotalMissiles += CurrentMissiles[i];
+                        currentTotalSuperMissiles += CurrentSuperMissiles[i];
+                        maxTotalStrawberries += TotalStrawberries[i];
+                        maxTotalEnergyTanks += TotalEnergyTanks[i];
+                        maxTotalFireRateModules += TotalFireRateModules[i];
+                        maxTotalMissiles += TotalMissiles[i];
+                        maxTotalSuperMissiles += TotalSuperMissiles[i];
+                    }
+
+                    int currentItems = currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + cassetteCount + heartCount;
+                    int totalItems = maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxCassettes + TotalASideHearts;
+
+                    if (currentItems == totalItems)
+                    {
+                        self.Session.SetFlag("XaphanHelper_StatFlag_Items");
+                    }
+
+                    // LoreBook
+
+                    if (ReadLoreBookEntries != null && TotalLoreBookEntries != null)
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            if (ReadLoreBookEntries[i] == TotalLoreBookEntries[i])
+                            {
+                                self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook_" + i);
+                            }
+                        }
+
+                        if ((ReadLoreBookEntries[0] + ReadLoreBookEntries[1] + ReadLoreBookEntries[2]) == (TotalLoreBookEntries[0] + TotalLoreBookEntries[1] + TotalLoreBookEntries[2]))
+                        {
+                            self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook");
+                        }
+                    }
+                }
+
+                // Achievements
+
                 if (self.Session.Area.Mode == 0 && self.Session.Area.LevelSet == "Xaphan/0" && !fixedAchievements)
                 {
                     RemoveCompletedAchievementsIfNoLongerComplete(self.Session);
@@ -778,6 +857,34 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
             }
+        }
+
+        public static int GetReadLoreBookEntries(int categoryID)
+        {
+            int readLogs = 0;
+            List<LorebookData> LorebookEntriesData = LorebookEntries.GenerateLorebookEntriesDataList();
+            foreach (LorebookData entry in LorebookEntriesData.FindAll(entry => entry.CategoryID == categoryID))
+            {
+                if (XaphanModule.ModSaveData.LorebookEntriesRead.Contains(entry.EntryID))
+                {
+                    readLogs++;
+                }
+            }
+            return readLogs;
+        }
+
+        public static int GetTotalLoreBookEntries(int categoryID)
+        {
+            int totalLogs = 0;
+            List<LorebookData> LorebookEntriesData = LorebookEntries.GenerateLorebookEntriesDataList();
+            foreach (LorebookData entry in LorebookEntriesData.FindAll(entry => entry.CategoryID == categoryID))
+            {
+                if (entry.Picture != null)
+                {
+                    totalLogs++;
+                }
+            }
+            return totalLogs;
         }
 
         public static int getCurrentMapTiles(string prefix, int chapterIndex)

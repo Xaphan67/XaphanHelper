@@ -47,7 +47,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             base.Added(scene);
             achievements = Achievements.GenerateAchievementsList(SceneAs<Level>().Session);
-            lorebookEntries = LorebookEntries.GenerateLorebookEntriesDataList(SceneAs<Level>().Session);
+            lorebookEntries = LorebookEntries.GenerateLorebookEntriesDataList();
             Add(DelayRoutine = new(DelayPopupCheck()));
         }
 

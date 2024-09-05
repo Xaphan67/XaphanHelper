@@ -452,7 +452,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             base.Added(scene);
             SceneAs<Level>().Add(Info = new EntryInfo(new Vector2(1260f, 685f)));
-            LorebookEntriesData = LorebookEntries.GenerateLorebookEntriesDataList(level.Session);
+            LorebookEntriesData = LorebookEntries.GenerateLorebookEntriesDataList();
         }
 
         public IEnumerator GenerateLorebookDisplay()
