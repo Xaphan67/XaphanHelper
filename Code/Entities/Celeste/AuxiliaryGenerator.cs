@@ -178,6 +178,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 XaphanModule.ModSaveData.GlobalFlags.Remove("Xaphan/0_Ch4_Main_Power_Off");
             }
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Main_Power_Off"))
+            {
+                XaphanModule.ModSaveData.SavedFlags.Remove("Xaphan/0_Ch4_Main_Power_Off");
+            }
             XaphanModule.ModSaveData.GlobalFlags.Add("Xaphan/0_Ch5_Auxiliary_Power");
             if (SceneAs<Level>().Session.GetFlag("Ch4_Main_Power_Off"))
             {
