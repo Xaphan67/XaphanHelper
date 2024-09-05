@@ -25,6 +25,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public TalkComponent talk;
 
+        private bool alwaysOn;
+
+        private bool noInteract;
+
         public bool isOn;
 
         public bool showPortrait;
@@ -47,6 +51,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool skipTurnOnAnim;
 
+        private string PortraitPath;
+
         public BigScreen(EntityData data, Vector2 position, EntityID eID) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
@@ -58,6 +64,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             music = data.Attr("music");
             forceInactiveFlag = data.Attr("forceInactiveFlag");
             registerInSaveData = data.Bool("registerInSaveData");
+            alwaysOn = data.Bool("alwaysOn");
+            noInteract = data.Bool("noInteract");
+            PortraitPath = data.Attr("portrait", "objects/Xaphan/BigScreen/Portrait");
             Add(new CustomBloom(RenderBloom));
         }
 
@@ -92,13 +101,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
-            Portrait = GFX.Game["objects/Xaphan/BigScreen/Portrait"];
+            Portrait = GFX.Game[PortraitPath];
             if (string.IsNullOrEmpty(forceInactiveFlag) || !SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
             {
-                Add(talk = new TalkComponent(new Rectangle(28, 80, 24, 16), new Vector2(40f, 64f), Interact));
-                talk.PlayerMustBeFacing = false;
+                if (!noInteract)
+                {
+                    Add(talk = new TalkComponent(new Rectangle(28, 80, 24, 16), new Vector2(40f, 64f), Interact));
+                    talk.PlayerMustBeFacing = false;
+                }
                 showPortrait = isOn = SceneAs<Level>().Session.GetFlag(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
-                if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || alwaysOn)
                 {
                     showPortrait = true;
                     isOn = true;
@@ -242,12 +254,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Draw.Rect(Collider, BackgroundColor);
             if (Portrait != null && showPortrait)
             {
-                Draw.SpriteBatch.Draw(Portrait.Texture.Texture_Safe, Position + new Vector2(20f, 0f), Color.White * 0.75f);
+                Draw.SpriteBatch.Draw(Portrait.Texture.Texture_Safe, Position, Color.White * 0.75f);
             }
             if (isOn)
             {
                 DrawNoise(Collider.Bounds, ref seed, Color.White * noiseAlpha);
-                onLedTexture.Draw(Position + new Vector2(-8f, 48f));
+                onLedTexture.Draw(Position + new Vector2(-8f, Height));
             }
         }
 
