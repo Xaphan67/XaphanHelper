@@ -496,6 +496,10 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool TriggeredCountDown;
 
+        public static bool minimapEnabled;
+
+        public static bool onTitleScreen;
+
         public XaphanModule()
         {
             Instance = this;
@@ -3182,6 +3186,7 @@ namespace Celeste.Mod.XaphanHelper
                 menu.Focused = false;
                 level.DoScreenWipe(false, delegate
                 {
+                    onTitleScreen = false;
                     MergedChaptersGoldenStrawberry.ResetProgression(level, true);
                     SoCMTitleFromGame = true;
                     SkipSoCMIntro = false;
@@ -3263,18 +3268,25 @@ namespace Celeste.Mod.XaphanHelper
             orig(self);
         }
 
-        public static bool minimapEnabled;
-
         private void onLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)
         {
-            // SoCm Only - Prevent Timer to start when teleporting to Title Screen
+            // SoCm Only
 
-            if (SoCMVersion >= new Version(3, 0, 0) && startedAnySoCMChapter && (self.Session.Level == "A-00" || self.Session.Level == "Intro") && !SkipSoCMIntro && self.Session.Area.Mode == 0)
+            if (startedAnySoCMChapter && SoCMVersion >= new Version(3, 0, 0))
             {
-                self.TimerStopped = true;
-                if (self.Wipe != null && self.Wipe.GetType() == typeof(SpotlightWipe))
+                // Prevent any input before the title screen cinematic start
+
+                MInput.Disabled = !onTitleScreen;
+
+                // Prevent Timer to start when teleporting to Title Screen
+
+                if ((self.Session.Level == "A-00" || self.Session.Level == "Intro") && !SkipSoCMIntro && self.Session.Area.Mode == 0)
                 {
-                    self.Wipe.Cancel();
+                    self.TimerStopped = true;
+                    if (self.Wipe != null && self.Wipe.GetType() == typeof(SpotlightWipe))
+                    {
+                        self.Wipe.Cancel();
+                    }
                 }
             }
 

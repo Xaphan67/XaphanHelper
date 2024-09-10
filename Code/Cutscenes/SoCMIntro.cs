@@ -112,6 +112,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public IEnumerator IntroSequence(Level level)
         {
+            XaphanModule.onTitleScreen = true;
             normalCameraPos = level.Camera.Position;
             DrawBlackBg = true;
             yield return 1f;
