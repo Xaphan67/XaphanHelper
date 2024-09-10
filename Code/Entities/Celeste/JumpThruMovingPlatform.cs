@@ -223,6 +223,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (index == 1)
             {
                 AttachedSpike = CollideFirst<Spikes>(OrigPosition - Vector2.UnitY * 2);
+                if (AttachedSpike != null && AttachedSpike.Direction != Spikes.Directions.Up)
+                {
+                    AttachedSpike = null;
+                }
                 if (AttachedSpike != null)
                 {
                     attachedEntityOffset = OrigPosition - AttachedSpike.Position;
@@ -236,6 +240,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
 
                 AttachedLever = CollideFirst<Lever>(OrigPosition - Vector2.UnitY * 2);
+                if (AttachedLever != null && AttachedLever.Side != "Up")
+                {
+                    AttachedLever = null;
+                }
                 if (AttachedLever != null)
                 {
                     attachedEntityOffset = OrigPosition - AttachedLever.Position;
@@ -250,7 +258,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 foreach (Spring spring in Springs)
                 {
-                    if (CollideCheck(spring, OrigPosition - Vector2.UnitY * 2))
+                    if (CollideCheck(spring, OrigPosition - Vector2.UnitY * 2) && spring.Orientation == Spring.Orientations.Floor)
                     {
                         AttachedSpring = spring;
                         break;

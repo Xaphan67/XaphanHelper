@@ -283,10 +283,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Orientation == "Left")
                 {
                     AttachedSpike = CollideFirst<Spikes>(OrigPosition - Vector2.UnitX * 2);
+                    if (AttachedSpike != null && AttachedSpike.Direction != Spikes.Directions.Left)
+                    {
+                        AttachedSpike = null;
+                    }
                     AttachedLever = CollideFirst<Lever>(OrigPosition - Vector2.UnitX * 2);
+                    if (AttachedLever != null && AttachedLever.Side != "Left")
+                    {
+                        AttachedLever = null;
+                    }
                     foreach (Spring spring in Springs)
                     {
-                        if (CollideCheck(spring, OrigPosition - Vector2.UnitX * 2))
+                        if (CollideCheck(spring, OrigPosition - Vector2.UnitX * 2) && spring.Orientation == Spring.Orientations.WallRight)
                         {
                             AttachedSpring = spring;
                             break;
@@ -296,10 +304,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 else if (Orientation == "Right")
                 {
                     AttachedSpike = CollideFirst<Spikes>(OrigPosition + Vector2.UnitX * 2);
+                    if (AttachedSpike != null && AttachedSpike.Direction != Spikes.Directions.Right)
+                    {
+                        AttachedSpike = null;
+                    }
                     AttachedLever = CollideFirst<Lever>(OrigPosition + Vector2.UnitX * 2);
+                    if (AttachedLever != null && AttachedLever.Side != "Right")
+                    {
+                        AttachedLever = null;
+                    }
                     foreach (Spring spring in Springs)
                     {
-                        if (CollideCheck(spring, OrigPosition + Vector2.UnitX * 2))
+                        if (CollideCheck(spring, OrigPosition + Vector2.UnitX * 2) && spring.Orientation == Spring.Orientations.WallLeft)
                         {
                             AttachedSpring = spring;
                             break;
@@ -309,7 +325,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 else if (Orientation == "Bottom")
                 {
                     AttachedSpike = CollideFirst<Spikes>(OrigPosition + Vector2.UnitY * 2);
+                    if (AttachedSpike != null && AttachedSpike.Direction != Spikes.Directions.Down)
+                    {
+                        AttachedSpike = null;
+                    }
                     AttachedLever = CollideFirst<Lever>(OrigPosition + Vector2.UnitY * 2);
+                    if (AttachedLever != null && AttachedLever.Side != "Down")
+                    {
+                        AttachedLever = null;
+                    }
                     AttachedMagneticCeiling = CollideFirst<MagneticCeiling>(OrigPosition + Vector2.UnitY * 2);
                 }
                 if (AttachedSpike != null)
