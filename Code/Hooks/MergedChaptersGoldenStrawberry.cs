@@ -28,72 +28,18 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         {
             On.Celeste.Strawberry.OnPlayer += onStrawberryOnPlayer;
             On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
+            On.Celeste.Strawberry.Update += onStrawberryUpdate;
             On.Celeste.Player.Die += onPlayerDie;
             On.Celeste.PlayerDeadBody.End += onPlayerDeadBodyEnd;
             Everest.Events.Level.OnExit += onLevelExit;
             On.Celeste.Level.RegisterAreaComplete += onLevelRegisterAreaComplete;
         }
 
-        private static void onLevelRegisterAreaComplete(On.Celeste.Level.orig_RegisterAreaComplete orig, Level self)
-        {
-            if (XaphanModule.useMergeChaptersController)
-            {
-                if (self.Completed)
-                {
-                    return;
-                }
-                Player entity = self.Tracker.GetEntity<Player>();
-                if (entity != null)
-                {
-                    List<IStrawberry> list = new();
-                    ReadOnlyCollection<Type> berryTypes = StrawberryRegistry.GetBerryTypes();
-                    foreach (Follower follower in entity.Leader.Followers)
-                    {
-                        if (berryTypes.Contains(follower.Entity.GetType()) && follower.Entity is IStrawberry)
-                        {
-                            bool skip = false;
-                            if (follower.Entity is Strawberry)
-                            {
-                                Strawberry berry = (Strawberry)follower.Entity;
-                                if (berry.Golden)
-                                {
-                                    skip = true;
-                                }
-                            }
-                            if (!skip)
-                            {
-                                list.Add(follower.Entity as IStrawberry);
-                            }
-                        }
-                    }
-                    foreach (IStrawberry item in list)
-                    {
-                        item.OnCollect();
-                    }
-                }
-                self.Completed = true;
-                SaveData.Instance.RegisterCompletion(self.Session);
-            }
-            else
-            {
-                orig(self);
-            }
-        }
-
-        private static IEnumerator onStrawberryCollectRoutine(On.Celeste.Strawberry.orig_CollectRoutine orig, Strawberry self, int collectIndex)
-        {
-            if (self.Golden && XaphanModule.useMergeChaptersController)
-            {
-                string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
-                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
-                self.SceneAs<Level>().Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
-            }
-            yield return new SwapImmediately(orig(self, collectIndex));
-        }
-
         public static void Unload()
         {
             On.Celeste.Strawberry.OnPlayer -= onStrawberryOnPlayer;
+            On.Celeste.Strawberry.CollectRoutine -= onStrawberryCollectRoutine;
+            On.Celeste.Strawberry.Update -= onStrawberryUpdate;
             On.Celeste.Player.Die -= onPlayerDie;
             On.Celeste.PlayerDeadBody.End -= onPlayerDeadBodyEnd;
             Everest.Events.Level.OnExit -= onLevelExit;
@@ -150,6 +96,48 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 }
             }
             orig(self, player);
+        }
+
+        private static IEnumerator onStrawberryCollectRoutine(On.Celeste.Strawberry.orig_CollectRoutine orig, Strawberry self, int collectIndex)
+        {
+            if (self.Golden && XaphanModule.useMergeChaptersController)
+            {
+                string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
+                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
+                self.SceneAs<Level>().Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
+            }
+            yield return new SwapImmediately(orig(self, collectIndex));
+        }
+
+        public static void onStrawberryUpdate(On.Celeste.Strawberry.orig_Update orig, Strawberry self)
+        {
+            if (XaphanModule.useMergeChaptersController && self.Golden && self.Follower.Leader == null)
+            {
+                if (PlayerHasGolden(self.SceneAs<Level>()))
+                {
+                    self.RemoveSelf();
+                }
+                else
+                {
+                    orig(self);
+                }
+            }
+            else
+            {
+                orig(self);
+            }
+        }
+
+        private static bool PlayerHasGolden(Scene scene)
+        {
+            foreach (Strawberry item in scene.Entities.FindAll<Strawberry>())
+            {
+                if (item.Golden && item.Follower.Leader != null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static PlayerDeadBody onPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
@@ -252,6 +240,52 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             StartChapter = -999;
             StartRoom = "";
             StartSpawn = Vector2.Zero;
+        }
+
+        private static void onLevelRegisterAreaComplete(On.Celeste.Level.orig_RegisterAreaComplete orig, Level self)
+        {
+            if (XaphanModule.useMergeChaptersController)
+            {
+                if (self.Completed)
+                {
+                    return;
+                }
+                Player entity = self.Tracker.GetEntity<Player>();
+                if (entity != null)
+                {
+                    List<IStrawberry> list = new();
+                    ReadOnlyCollection<Type> berryTypes = StrawberryRegistry.GetBerryTypes();
+                    foreach (Follower follower in entity.Leader.Followers)
+                    {
+                        if (berryTypes.Contains(follower.Entity.GetType()) && follower.Entity is IStrawberry)
+                        {
+                            bool skip = false;
+                            if (follower.Entity is Strawberry)
+                            {
+                                Strawberry berry = (Strawberry)follower.Entity;
+                                if (berry.Golden)
+                                {
+                                    skip = true;
+                                }
+                            }
+                            if (!skip)
+                            {
+                                list.Add(follower.Entity as IStrawberry);
+                            }
+                        }
+                    }
+                    foreach (IStrawberry item in list)
+                    {
+                        item.OnCollect();
+                    }
+                }
+                self.Completed = true;
+                SaveData.Instance.RegisterCompletion(self.Session);
+            }
+            else
+            {
+                orig(self);
+            }
         }
     }
 }
