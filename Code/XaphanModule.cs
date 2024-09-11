@@ -4514,6 +4514,10 @@ namespace Celeste.Mod.XaphanHelper
             {
                 return new Glow(child.Attr("color"));
             }
+            if (child.Name.Equals("XaphanHelper/LightPetals", StringComparison.OrdinalIgnoreCase))
+            {
+                return new LightPetals(child.Attr("lightColor"), child.Attr("darkColor"));
+            }
             return null;
         }
 
