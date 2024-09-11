@@ -1880,6 +1880,13 @@ namespace Celeste.Mod.XaphanHelper
             AreaKey area = level.Session.Area;
             MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
 
+            // SoCM - Prevent any input before the title screen cinematic start
+
+            if (area.LevelSet == "Xaphan/0" && room.Contains("Intro"))
+            {
+                MInput.Disabled = !onTitleScreen;
+            }
+
             // Define current side played
 
             ModSaveData.LastPlayedSide = (int)level.Session.Area.Mode;
@@ -3345,13 +3352,6 @@ namespace Celeste.Mod.XaphanHelper
 
             if (startedAnySoCMChapter && SoCMVersion >= new Version(3, 0, 0))
             {
-                // Prevent any input before the title screen cinematic start
-
-                if (self.Session.Level.Contains("Intro"))
-                {
-                    MInput.Disabled = !onTitleScreen;
-                }
-
                 // Prevent Timer to start when teleporting to Title Screen
 
                 if ((self.Session.Level == "A-00" || self.Session.Level == "Intro") && !SkipSoCMIntro && self.Session.Area.Mode == 0)
