@@ -3123,6 +3123,77 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         ModSaveData.GlobalFlags.Remove(value);
                     }
+
+                    // SoCM only
+
+                    if (fromTitleScreen)
+                    {
+                        // For each chapter...
+
+                        for (int i = SaveData.Instance.LevelSetStats.AreaOffset; i < SaveData.Instance.LevelSetStats.AreaOffset + SaveData.Instance.LevelSetStats.Areas.Count; i++)
+                        {
+                            // Remove Strawberries
+
+                            HashSet<EntityID> deletedStrawberries = new();
+                            foreach (EntityID strawberry in SaveData.Instance.Areas_Safe[i].Modes[0].Strawberries)
+                            {
+                                deletedStrawberries.Add(strawberry);
+                            }
+                            if (deletedStrawberries.Count > 0)
+                            {
+                                foreach (EntityID strawberry in deletedStrawberries)
+                                {
+                                    SaveData.Instance.Areas_Safe[i].Modes[0].Strawberries.Remove(strawberry);
+                                    AreaModeStats areaModeStats = SaveData.Instance.Areas_Safe[i].Modes[0];
+                                    areaModeStats.Strawberries.Remove(strawberry);
+                                    areaModeStats.TotalStrawberries--;
+                                    SaveData.Instance.TotalStrawberries_Safe--;
+                                }
+                            }
+
+                            // Remove Hearts for all sides
+
+                            for (int j = 0; j <= 2; j++)
+                            {
+                                SaveData.Instance.Areas_Safe[i].Modes[j].HeartGem = false;
+                            }
+
+                            // Remove Cassette
+
+                            SaveData.Instance.Areas_Safe[i].Cassette = false;
+                        }
+
+                        // Remove Lorebook entries
+
+                        ModSaveData.LorebookEntries.Clear();
+                        ModSaveData.LorebookEntriesRead.Clear();
+
+                        // Reset achievements
+
+                        List<string> chapters = new();
+                        foreach (string chapter in ModSaveData.VisitedChapters)
+                        {
+                            if (chapter.Contains("Xaphan/0"))
+                            {
+                                chapters.Add(chapter);
+                            }
+                        }
+
+                        if (chapters.Count > 0)
+                        {
+                            foreach (string chapter in chapters)
+                            {
+                                ModSaveData.VisitedChapters.Remove(chapter);
+                            }
+                        }
+
+                        ModSaveData.Achievements.Clear();
+
+                        // Reset NoLoad entities
+
+                        ModSaveData.SavedNoLoadEntities.Remove("Xaphan/0");
+                        SaveData.Instance.CurrentSession_Safe.DoNotLoad.Clear();
+                    }
                     LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (MergeChaptersControllerKeepPrologue ? 1 : 0), AreaMode.Normal)), fromSaveData: false);
                 });
                 foreach (LevelEndingHook component in level.Tracker.GetComponents<LevelEndingHook>())
@@ -3276,7 +3347,10 @@ namespace Celeste.Mod.XaphanHelper
             {
                 // Prevent any input before the title screen cinematic start
 
-                MInput.Disabled = !onTitleScreen;
+                if (self.Session.Level.Contains("Intro"))
+                {
+                    MInput.Disabled = !onTitleScreen;
+                }
 
                 // Prevent Timer to start when teleporting to Title Screen
 
