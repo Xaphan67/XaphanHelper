@@ -641,7 +641,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (hasController)
                 {
-                    worldMapMapDisplays.Add(new MapDisplay(level, "map", chapter, true, chapter == currentChapter ? false : true) { Visible = false });
+                    worldMapMapDisplays.Add(new MapDisplay(level, "worldmap", chapter, true, chapter == currentChapter ? false : true) { Visible = false });
                 }
             }
             if (worldMapMapDisplays.Count > 1)

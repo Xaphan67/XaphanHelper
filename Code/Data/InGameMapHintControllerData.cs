@@ -20,7 +20,9 @@
 
         public bool RemoveWhenReachedByPlayer;
 
-        public InGameMapHintControllerData(int chapterIndex, string room, string tileCord, string[] displayFlags, string hideFlag, string type, string direction, bool removeWhenReachedByPlayer)
+        public bool HideOnWorldMap;
+
+        public InGameMapHintControllerData(int chapterIndex, string room, string tileCord, string[] displayFlags, string hideFlag, string type, string direction, bool removeWhenReachedByPlayer, bool hideOnWorldMap)
         {
             ChapterIndex = chapterIndex;
             Room = room;
@@ -32,6 +34,7 @@
             Type = type;
             Direction = direction;
             RemoveWhenReachedByPlayer = removeWhenReachedByPlayer;
+            HideOnWorldMap = hideOnWorldMap;
         }
     }
 }

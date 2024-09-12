@@ -310,7 +310,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public void SetGrid()
         {
-            if (mode == "map")
+            if (mode == "map" || mode == "worldmap")
             {
                 Grid = new Rectangle(100, 180, 1720, 840);
             }
@@ -519,7 +519,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (entity.Name == "XaphanHelper/InGameMapHintController")
                     {
-                        HintControllerData.Add(new InGameMapHintControllerData(chapterIndex, level.Name, entity.Attr("tileCords"), entity.Attr("displayFlags").Split(','), entity.Attr("hideFlag"), entity.Attr("type"), entity.Attr("direction"), entity.Bool("removeWhenReachedByPlayer")));
+                        HintControllerData.Add(new InGameMapHintControllerData(chapterIndex, level.Name, entity.Attr("tileCords"), entity.Attr("displayFlags").Split(','), entity.Attr("hideFlag"), entity.Attr("type"), entity.Attr("direction"), entity.Bool("removeWhenReachedByPlayer"), entity.Bool("hideOnWorldMap")));
                     }
                 }
             }
@@ -619,7 +619,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             float PosYFinal = 0;
             int PosYInt = Math.DivRem((int)Room.Y, ScreenTilesY, out PosYResult);
             PosYFinal = PosYInt * ScreenTilesY + ((PosYResult >= -ScreenTilesY / 2 && PosYResult <= ScreenTilesY / 2) ? 0 : PosYResult);
-            return Position = MapPosition + new Vector2((float)Math.Floor(PosXFinal / ScreenTilesX) * 40, (float)Math.Round(PosYFinal / ScreenTilesY, 0, MidpointRounding.AwayFromZero) * 40) - ((mode == "map") ? currentMapPosition : currentRoomPosition) - currentRoomJustify + worldmapPosition;
+            return Position = MapPosition + new Vector2((float)Math.Floor(PosXFinal / ScreenTilesX) * 40, (float)Math.Round(PosYFinal / ScreenTilesY, 0, MidpointRounding.AwayFromZero) * 40) - ((mode == "map" || mode == "worldmap") ? currentMapPosition : currentRoomPosition) - currentRoomJustify + worldmapPosition;
         }
 
         public void SetCurrentMapCoordinates()
@@ -1839,7 +1839,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-            if (mode == "map")
+            if (mode == "map" || mode == "worldmap")
             {
                 if (playerPosition.Y == -1)
                 {
@@ -1864,7 +1864,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public IEnumerator GenerateMap()
         {
-            if (mode == "map")
+            if (mode == "map" || mode == "worldmap")
             {
                 GetMapSize();
                 SetCurrentMapCoordinates();
@@ -2318,7 +2318,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Added(scene);
             if (!HideIndicator)
             {
-                if (mode == "map")
+                if (mode == "map" || mode == "worldmap")
                 {
                     Player player = level.Tracker.GetEntity<Player>();
                     playerPosition = new Vector2(Math.Min((float)Math.Floor((player.Center.X - level.Bounds.X) / ScreenTilesX), (float)Math.Round(level.Bounds.Width / (float)ScreenTilesX, MidpointRounding.AwayFromZero) - 1), Math.Min((float)Math.Floor((player.Center.Y - level.Bounds.Y) / ScreenTilesY), (float)Math.Round(level.Bounds.Height / (float)ScreenTilesY, MidpointRounding.AwayFromZero) + 1));
@@ -2674,7 +2674,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 if (AllFlagsTrue && (!level.Session.GetFlag(hint.HideFlag) && !level.Session.GetFlag("Ch" + chapterIndex + "_" + hint.HideFlag)))
                                 {
                                     Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(hint.Room) + (roomIsAdjusted(hint.Room) ? GetAdjustedPosition(hint.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                                    if (hint.Type == "Arrow" && mode != "minimap")
+                                    if (hint.Type == "Arrow" && mode != "minimap" && (mode == "worldmap" ? !hint.HideOnWorldMap : true))
                                     {
                                         if (isNotVisibleOnScreen(RoomPosition, HintArrowSprite.Position))
                                         {

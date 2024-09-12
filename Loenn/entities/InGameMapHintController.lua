@@ -3,7 +3,7 @@ local InGameMapHintController = {}
 InGameMapHintController.name = "XaphanHelper/InGameMapHintController"
 InGameMapHintController.depth = -100000
 InGameMapHintController.fieldOrder = {
-    "x", "y", "displayFlags", "hideFlag", "type", "direction", "tileCords", "removeWhenReachedByPlayer"
+    "x", "y", "displayFlags", "hideFlag", "type", "direction", "tileCords", "removeWhenReachedByPlayer", "hideOnWorldMap"
 }
 InGameMapHintController.fieldInformation = {
     type = {
@@ -23,7 +23,8 @@ InGameMapHintController.placements = {
         tileCords= "0-0",
         removeWhenReachedByPlayer = false,
         type = "Target",
-        direction = "Up"
+        direction = "Up",
+        hideOnWorldMap = false
     }
 }
 
