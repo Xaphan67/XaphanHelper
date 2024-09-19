@@ -162,10 +162,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int ExtraUnexploredRoomsCount = 0;
 
-        public Sprite HintTargetSprite;
-
-        public Sprite HintArrowSprite;
-
         public string SubAreaName;
 
         public static bool ForceRevealUnexploredRooms;
@@ -202,14 +198,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             Tag = mode == "minimap" ? (Tags.HUD | Tags.Persistent | Tags.PauseUpdate) : (Tags.HUD);
             this.level = level;
-            Add(HintTargetSprite = new Sprite(GFX.Gui, "maps/"));
-            HintTargetSprite.AddLoop("hint", "hint", 0.15f);
-            HintTargetSprite.Play("hint");
-            HintTargetSprite.Visible = false;
-            Add(HintArrowSprite = new Sprite(GFX.Gui, "maps/"));
-            HintArrowSprite.AddLoop("hintArrow", "hintArrow", 0.15f);
-            HintArrowSprite.Play("hintArrow");
-            HintArrowSprite.Visible = false;
             RoomControllerData.Clear();
             RoomAdjustControllerData.Clear();
             HeatedRooms.Clear();
@@ -328,16 +316,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public void UpdateMap(int chapter, string room, int index)
         {
             AreaKey area = level.Session.Area;
-            HintTargetSprite = null;
-            HintArrowSprite = null;
-            Add(HintTargetSprite = new Sprite(GFX.Gui, "maps/"));
-            HintTargetSprite.AddLoop("hint", "hint", 0.15f);
-            HintTargetSprite.Play("hint");
-            HintTargetSprite.Visible = false;
-            Add(HintArrowSprite = new Sprite(GFX.Gui, "maps/"));
-            HintArrowSprite.AddLoop("hintArrow", "hintArrow", 0.15f);
-            HintArrowSprite.Play("hintArrow");
-            HintArrowSprite.Visible = false;
             Icons.Clear();
             TilesImage.Clear();
             Entrances.Clear();
@@ -522,6 +500,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         HintControllerData.Add(new InGameMapHintControllerData(chapterIndex, level.Name, entity.Attr("tileCords"), entity.Attr("displayFlags").Split(','), entity.Attr("hideFlag"), entity.Attr("type"), entity.Attr("direction"), entity.Bool("removeWhenReachedByPlayer"), entity.Bool("hideOnWorldMap")));
                     }
                 }
+            }
+            foreach(InGameMapHintControllerData hintData in HintControllerData)
+            {
+                Add(hintData.Sprite);
             }
         }
 
@@ -1239,7 +1221,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             foreach (LevelData level in MapData.Levels)
             {
                 getMapColors(level.Name);
-                if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name)) || ForceRevealUnexploredRooms)
+                if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name)) || (InGameMapControllerData.RevealUnexploredRooms && !roomIsSecret(level.Name)) || ForceRevealUnexploredRooms)
                 {
                     List<InGameMapTilesData> ToDelete = new();
                     List<string> TilesTypes = GetTilesType(level.Name);
@@ -1656,7 +1638,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             List<int> mapShards = GetUnlockedMapShards();
             foreach (InGameMapEntitiesData entity in EntitiesData)
             {
-                if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + entity.Room) || ForceRevealUnexploredRooms)
+                if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + entity.Room) || (InGameMapControllerData.RevealUnexploredRooms && !roomIsSecret(entity.Room)) || ForceRevealUnexploredRooms)
                 {
                     bool TilesControllerCheck = IsInBounds(entity.LevelData, entity.Position) && (roomUseTilesController(entity.Room) ? XaphanModule.ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + entity.Room + "-" + entity.MapTilesPosition.X + "-" + entity.MapTilesPosition.Y) : true);
                     if (TilesControllerCheck || (IsInBounds(entity.LevelData, entity.Position) && ForceRevealUnexploredRooms))
@@ -2629,7 +2611,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     foreach (InGameMapImageControllerData image in ImageControllerData)
                     {
                         List<int> mapShards = GetUnlockedMapShards();
-                        if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + image.Room) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + image.Room)) || RevealUnexploredRooms())
+                        if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + image.Room) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + image.Room)) || (InGameMapControllerData.RevealUnexploredRooms && !roomIsSecret(image.Room)) || ForceRevealUnexploredRooms)
                         {
                             Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(image.Room) + (roomIsAdjusted(image.Room) ? GetAdjustedPosition(image.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                             Image Image = new(GFX.Gui["maps/" + Prefix + "/areas/" + image.ImagePath + (Settings.Instance.Language == "french" ? "-" + Settings.Instance.Language : "")]);
@@ -2653,7 +2635,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 // Hints
 
-                if (ShowHints && HintTargetSprite != null && HintArrowSprite != null)
+                if (ShowHints)
                 {
                     foreach (InGameMapHintControllerData hint in HintControllerData)
                     {
@@ -2676,45 +2658,46 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(hint.Room) + (roomIsAdjusted(hint.Room) ? GetAdjustedPosition(hint.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                                     if (hint.Type == "Arrow" && mode != "minimap" && (mode == "worldmap" ? !hint.HideOnWorldMap : true))
                                     {
-                                        if (isNotVisibleOnScreen(RoomPosition, HintArrowSprite.Position))
+                                        if (isNotVisibleOnScreen(RoomPosition, hint.Sprite.Position))
                                         {
                                             continue;
                                         }
-                                        HintArrowSprite.Play("hintArrow");
+                                        hint.Sprite.Play("hint");
                                         if (hint.Direction == "Up" || hint.Direction == "Down")
                                         {
-                                            HintArrowSprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40) + Vector2.UnitY * -10;
+                                            hint.Sprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40) + Vector2.UnitY * -10;
                                             if (hint.Direction == "Down")
                                             {
-                                                HintArrowSprite.FlipY = true;
+                                                hint.Sprite.FlipY = true;
                                             }
                                         }
                                         else
                                         {
                                             if (hint.Direction == "Left")
                                             {
-                                                HintArrowSprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40) + new Vector2(-10f, 40f);
-                                                HintArrowSprite.Rotation = -(float)Math.PI / 2f;
+                                                hint.Sprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40) + new Vector2(-10f, 40f);
+                                                hint.Sprite.Rotation = -(float)Math.PI / 2f;
                                             }
                                             else if (hint.Direction == "Right")
                                             {
-                                                HintArrowSprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40) + new Vector2(50f, 0f);
-                                                HintArrowSprite.Rotation = (float)Math.PI / 2f;
+                                                hint.Sprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40) + new Vector2(50f, 0f);
+                                                hint.Sprite.Rotation = (float)Math.PI / 2f;
                                             }
                                         }
-                                        HintArrowSprite.Color = Color.White * Opacity;
-                                        HintArrowSprite.Render();
+                                        hint.Sprite.Color = Color.White * Opacity;
+
+                                        hint.Sprite.Render();
                                     }
                                     else if (hint.Type == "Target")
                                     {
-                                        if (isNotVisibleOnScreen(RoomPosition, HintTargetSprite.Position))
+                                        if (isNotVisibleOnScreen(RoomPosition, hint.Sprite.Position))
                                         {
                                             continue;
                                         }
-                                        HintTargetSprite.Play("hint");
-                                        HintTargetSprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40);
-                                        HintTargetSprite.Color = Color.White * Opacity;
-                                        HintTargetSprite.Render();
+                                        hint.Sprite.Play("hint");
+                                        hint.Sprite.Position = Vector2.One + new Vector2(hint.TileCordX * 40, hint.TileCordY * 40);
+                                        hint.Sprite.Color = Color.White * Opacity;
+                                        hint.Sprite.Render();
                                     }
                                 }
                             }
