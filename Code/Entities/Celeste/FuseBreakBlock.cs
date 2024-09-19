@@ -172,7 +172,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 base.Removed(scene);
                 foreach (StaticMover staticMover in staticMovers)
                 {
-                    staticMover.Destroy();
+                    if (!CollideCheck(staticMover.Entity))
+                    {
+                        staticMover.Destroy();
+                    }
                 }
             }
 
