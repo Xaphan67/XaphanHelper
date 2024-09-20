@@ -3089,11 +3089,16 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.SavedCoreMode.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedMusic.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedAmbience.Remove(level.Session.Area.LevelSet);
-                    ModSaveData.SavedNoLoadEntities.Remove(level.Session.Area.LevelSet);
+                    if (ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet)) {
+                        ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Clear();
+                    }
                     ModSaveData.SavedTime.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedFromBeginning.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedSesionFlags.Remove(level.Session.Area.LevelSet);
-                    ModSaveData.SavedSessionStrawberries.Remove(level.Session.Area.LevelSet);
+                    if (ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet))
+                    {
+                        ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet].Clear();
+                    }
                     List<string> FlagsToRemove = new();
                     List<string> CutscenesToRemove = new();
                     List<string> GlobalFlagsToRemove = new();
@@ -3198,7 +3203,7 @@ namespace Celeste.Mod.XaphanHelper
 
                         // Reset NoLoad entities
 
-                        ModSaveData.SavedNoLoadEntities.Remove("Xaphan/0");
+                        ModSaveData.PreGoldenDoNotLoad.Clear();
                         SaveData.Instance.CurrentSession_Safe.DoNotLoad.Clear();
                     }
                     LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (MergeChaptersControllerKeepPrologue ? 1 : 0), AreaMode.Normal)), fromSaveData: false);
