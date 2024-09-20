@@ -832,9 +832,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if ((upsideDown ? (player.Top <= Bottom + 1f && player.Top >= Bottom - 1f && player.Speed.Y < 0) : (player.Bottom >= Top - 1f && player.Bottom <= Top + 1f && player.Speed.Y > 0)) && !waterIn)
                     {
                         waterIn = true;
-                        waterSplashIn.RenderPosition = new Vector2(player.Position.X - 12f, (upsideDown ? Bottom - 20f : Top - 21f));
-                        waterSplashIn.Play("splash", restart: true);
-                        waterSplashIn.OnLastFrame = onLastFrameIn;
+                        PlaySplashIn(new Vector2(player.Position.X - 12f, (upsideDown ? Bottom - 20f : Top - 21f)));
                     }
                     if ((upsideDown ? (player.Top <= Bottom + 1f && player.Top >= Bottom - 1f && player.Speed.Y > 0) : (player.Bottom >= Top - 1f && player.Bottom <= Top + 1f && player.Speed.Y < 0)) && !waterOut)
                     {
@@ -908,6 +906,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     player.Die(Vector2.Zero);
                 }
             }
+        }
+
+        public void PlaySplashIn(Vector2 position)
+        {
+            waterSplashIn.RenderPosition = position;
+            waterSplashIn.Play("splash", restart: true);
+            waterSplashIn.OnLastFrame = onLastFrameIn;
         }
 
         public override void Render()
