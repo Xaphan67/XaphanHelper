@@ -24,10 +24,15 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             bc.Collider = new Hitbox(16f, 16f, -5f, -5f);
             Clockwise = data.Bool("clockwise");
             speedValue = data.Float("speed", 20f);
-            Add(sprite = new Sprite(GFX.Game, "enemies/Xaphan/Geemer/"));
-            sprite.AddLoop("walk", "walk", 0.05f);
-            sprite.Position += new Vector2(-3f, -5f);
-            sprite.Play("walk");
+            Sprite body = new Sprite(GFX.Game, "enemies/Xaphan/Geemer/");
+            body.AddLoop("walk", "walk", 0.05f);
+            body.Position += new Vector2(-3f, -5f);
+            body.Play("walk");
+            sprites.Add(body);
+            foreach (Sprite sprite in sprites)
+            {
+                Add(sprite);
+            }
         }
 
         public override void Update()
@@ -47,8 +52,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Bottom = SceneAs<Level>().Bounds.Bottom;
                         }
                         Speed.X = -speedValue;
-                        sprite.Rotation = 0;
-                        sprite.Position = new Vector2(-4f, -7f);
+                        sprites[0].Rotation = 0;
+                        sprites[0].Position = new Vector2(-4f, -7f);
                     }
                     else if ((CollideCheck<Solid, WorkRobot>(Position + new Vector2(0f, -2f)) || Top <= SceneAs<Level>().Bounds.Top) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(1f, 0f)))
                     {
@@ -57,8 +62,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Top = SceneAs<Level>().Bounds.Top;
                         }
                         Speed.X = speedValue;
-                        sprite.Rotation = (float)Math.PI;
-                        sprite.Position = new Vector2(12f, 13f);
+                        sprites[0].Rotation = (float)Math.PI;
+                        sprites[0].Position = new Vector2(12f, 13f);
                     }
                     else if (CollideCheck<Solid, WorkRobot>(Position + new Vector2(2f, -2f)) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(-1f, 1f)))
                     {
@@ -80,8 +85,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Right = SceneAs<Level>().Bounds.Right;
                         }
                         Speed.Y = speedValue;
-                        sprite.Rotation = -(float)Math.PI / 2f;
-                        sprite.Position = new Vector2(-6f, 11f);
+                        sprites[0].Rotation = -(float)Math.PI / 2f;
+                        sprites[0].Position = new Vector2(-6f, 11f);
                     }
                     else if ((CollideCheck<Solid, WorkRobot>(Position + new Vector2(-2f, 0f)) || Left <= SceneAs<Level>().Bounds.Left) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(0f, -1f)))
                     {
@@ -90,8 +95,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Left = SceneAs<Level>().Bounds.Left;
                         }
                         Speed.Y = -speedValue;
-                        sprite.Rotation = (float)Math.PI / 2f;
-                        sprite.Position = new Vector2(14f, -5f);
+                        sprites[0].Rotation = (float)Math.PI / 2f;
+                        sprites[0].Position = new Vector2(14f, -5f);
                     }
                     else if (CollideCheck<Solid, WorkRobot>(Position + new Vector2(2f, 2f)) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(-1f, -1f)))
                     {
@@ -116,8 +121,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Bottom = SceneAs<Level>().Bounds.Bottom;
                         }
                         Speed.X = speedValue;
-                        sprite.Rotation = 0;
-                        sprite.Position = new Vector2(-4f, -7f);
+                        sprites[0].Rotation = 0;
+                        sprites[0].Position = new Vector2(-4f, -7f);
                     }
                     else if ((CollideCheck<Solid, WorkRobot>(Position + new Vector2(0f, -2f)) || Top <= SceneAs<Level>().Bounds.Top) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(-1f, 0f)))
                     {
@@ -126,8 +131,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Top = SceneAs<Level>().Bounds.Top;
                         }
                         Speed.X = -speedValue;
-                        sprite.Rotation = (float)Math.PI;
-                        sprite.Position = new Vector2(12f, 13f);
+                        sprites[0].Rotation = (float)Math.PI;
+                        sprites[0].Position = new Vector2(12f, 13f);
                     }
                     else if (CollideCheck<Solid, WorkRobot>(Position + new Vector2(-2f, -2f)) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(1f, 1f)))
                     {
@@ -149,8 +154,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Right = SceneAs<Level>().Bounds.Right;
                         }
                         Speed.Y = -speedValue;
-                        sprite.Rotation = -(float)Math.PI / 2f;
-                        sprite.Position = new Vector2(-6f, 11f);
+                        sprites[0].Rotation = -(float)Math.PI / 2f;
+                        sprites[0].Position = new Vector2(-6f, 11f);
                     }
                     else if ((CollideCheck<Solid, WorkRobot>(Position + new Vector2(-2f, 0f)) || Left <= SceneAs<Level>().Bounds.Left) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(0f, 1f)))
                     {
@@ -159,8 +164,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                             Left = SceneAs<Level>().Bounds.Left;
                         }
                         Speed.Y = speedValue;
-                        sprite.Rotation = (float)Math.PI / 2f;
-                        sprite.Position = new Vector2(14f, -5f);
+                        sprites[0].Rotation = (float)Math.PI / 2f;
+                        sprites[0].Position = new Vector2(14f, -5f);
                     }
                     else if (CollideCheck<Solid, WorkRobot>(Position + new Vector2(-2f, 2f)) && !CollideCheck<Solid, WorkRobot>(Position + new Vector2(1f, -1f)))
                     {
@@ -178,20 +183,20 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 }
                 if (CollideCheck<Slope>(Position + new Vector2(2f, 3f)) || CollideCheck<Slope>(Position + new Vector2(-2f, 3f)))
                 {
-                    sprite.Rotation = 0;
-                    sprite.Position = new Vector2(-4f, -7f);
+                    sprites[0].Rotation = 0;
+                    sprites[0].Position = new Vector2(-4f, -7f);
                 }
                 else if (CollideCheck<Slope>(Position + new Vector2(2f, -3f)) || CollideCheck<Slope>(Position + new Vector2(-2f, -3f)))
                 {
-                    sprite.Rotation = (float)Math.PI;
-                    sprite.Position = new Vector2(12f, 13f);
+                    sprites[0].Rotation = (float)Math.PI;
+                    sprites[0].Position = new Vector2(12f, 13f);
                 }
                 if (noCollideX && noCollideY)
                 {
                     Speed.X = 0;
                     Speed.Y = 100f;
-                    sprite.Rotation = 0;
-                    sprite.Position = new Vector2(-4f, -7f);
+                    sprites[0].Rotation = 0;
+                    sprites[0].Position = new Vector2(-4f, -7f);
                 }
                 MoveH(Speed.X * Engine.DeltaTime);
                 MoveV(Speed.Y * Engine.DeltaTime);

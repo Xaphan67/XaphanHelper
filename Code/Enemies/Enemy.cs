@@ -27,7 +27,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private PlayerBlocker playerBlocker;
 
-        public Sprite sprite;
+        public List<Sprite> sprites = new();
 
         public PlayerCollider pc;
 
@@ -200,10 +200,12 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private IEnumerator FreezedSequence()
         {
-            int currentSpriteFrame = sprite.CurrentAnimationFrame;
-            string currentSpriteAnimation = sprite.CurrentAnimationID;
-            sprite.Stop();
-            SceneAs<Level>().Add(playerBlocker = new PlayerBlocker(Collider.AbsolutePosition + pc.Collider.AbsolutePosition, pc.Collider.Width, pc.Collider.Height));
+            for (int i = 0; i <= sprites.Count -1; i++)
+            {
+                sprites[i].Active = false;
+            }
+
+            SceneAs<Level>().Add(playerBlocker = new PlayerBlocker(Position + pc.Collider.AbsolutePosition, pc.Collider.Width, pc.Collider.Height));
             float timer = FreezeTimer;
             while (timer > 0)
             {
@@ -219,8 +221,12 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             }
             SceneAs<Level>().Remove(playerBlocker);
             Flashing = false;
-            sprite.Play(currentSpriteAnimation);
-            sprite.SetAnimationFrame(currentSpriteFrame);
+
+            for (int i = 0; i <= sprites.Count - 1; i++)
+            {
+                sprites[i].Active = true;
+            }
+
             Freezed = false;
         }
 
@@ -310,30 +316,37 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         public override void Render()
         {
             base.Render();
-            if (sprite != null)
+            if (sprites.Count() > 0)
             {
-                sprite.Render();
-                if (Freezed)
+                foreach (Sprite sprite in sprites)
                 {
-                    if (Flashing)
-                    {
-                        sprite.Color = Calc.HexToColor("A4F9F9");
-                    }
-                    else
-                    {
-                        sprite.Color = Calc.HexToColor("60DCF8");
-                    }
-
+                    sprite.DrawOutline();
                 }
-                else
+                foreach (Sprite sprite in sprites)
                 {
-                    if (Flashing)
+                    sprite.Render();
+                    if (Freezed)
                     {
-                        sprite.Color = Color.Red;
+                        if (Flashing)
+                        {
+                            sprite.Color = Calc.HexToColor("A4F9F9");
+                        }
+                        else
+                        {
+                            sprite.Color = Calc.HexToColor("60DCF8");
+                        }
+
                     }
                     else
                     {
-                        sprite.Color = Color.White;
+                        if (Flashing)
+                        {
+                            sprite.Color = Color.Red;
+                        }
+                        else
+                        {
+                            sprite.Color = Color.White;
+                        }
                     }
                 }
             }
