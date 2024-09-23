@@ -645,7 +645,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         drone = "_drone";
                     }
                     string UpgDesc = Dialog.Clean("XaphanHelper_get_" + SelectedDisplay.internalName + "_Desc" + drone);
-                    string UpgDesc_b = Dialog.Clean("XaphanHelper_get_" + SelectedDisplay.internalName + "_Desc_b");
+                    string UpgDesc_b = null;
+                    bool useExtraLineDesc = false;
                     object controlA = null;
                     object controlB = null;
                     string inputActionA = null;
@@ -656,32 +657,39 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         case "PowerGrip":
                             controlA = Input.Grab;
                             inputActionA = "XaphanHelper_Press";
+                            useExtraLineDesc = true;
                             break;
                         case "ClimbingKit":
                             controlA = Input.MenuUp;
                             controlB = Input.MenuDown;
                             inputActionA = "XaphanHelper_Hold";
                             inputActionB = "XaphanHelper_Or";
+                            useExtraLineDesc = true;
                             break;
                         case "SpiderMagnet":
                             controlA = Input.Grab;
                             inputActionA = "XaphanHelper_Hold";
+                            useExtraLineDesc = true;
                             break;
                         case "DashBoots":
                             controlA = Input.Dash;
                             inputActionA = "XaphanHelper_Press";
+                            useExtraLineDesc = true;
                             break;
                         case "SpaceJump":
                             controlA = Input.Jump;
                             inputActionA = "XaphanHelper_Press";
+                            useExtraLineDesc = true;
                             break;
                         case "HoverJet":
                             controlA = Input.Grab;
                             inputActionA = "XaphanHelper_Hold";
+                            useExtraLineDesc = true;
                             break;
                         case "LightningDash":
                             controlA = Input.Dash;
                             inputActionA = "XaphanHelper_ClingingPress";
+                            useExtraLineDesc = true;
                             break;
                         case "LongBeam":
                             UpgDesc_b = null;
@@ -695,6 +703,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         case "DroneTeleport":
                             controlA = XaphanModule.ModSettings.UseBagItemSlot;
                             inputActionA = "XaphanHelper_Press";
+                            useExtraLineDesc = true;
                             break;
                         case "GravityJacket":
                             UpgDesc_b = null;
@@ -704,22 +713,26 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             controlA = XaphanModule.ModSettings.SelectItem;
                             controlB = XaphanModule.ModSettings.UseBagItemSlot;
                             inputActionA = "XaphanHelper_ThenHold";
+                            useExtraLineDesc = true;
                             break;
                         case "MegaBombs":
                             select = true;
                             controlA = XaphanModule.ModSettings.SelectItem;
                             controlB = XaphanModule.ModSettings.UseBagItemSlot;
                             inputActionA = "XaphanHelper_ThenHold";
+                            useExtraLineDesc = true;
                             break;
                         case "RemoteDrone":
                             select = true;
                             controlA = XaphanModule.ModSettings.SelectItem;
                             controlB = XaphanModule.ModSettings.UseBagItemSlot;
                             inputActionA = "XaphanHelper_ThenHold";
+                            useExtraLineDesc = true;
                             break;
                         case "GoldenFeather":
                             controlA = Input.Grab;
                             inputActionA = "XaphanHelper_Hold";
+                            useExtraLineDesc = true;
                             break;
                         case "EtherealDash":
                             UpgDesc_b = null;
@@ -729,22 +742,26 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             controlA = XaphanModule.ModSettings.SelectItem;
                             controlB = XaphanModule.ModSettings.UseMiscItemSlot;
                             inputActionA = "XaphanHelper_ThenPress";
+                            useExtraLineDesc = true;
                             break;
                         case "PortableStation":
                             select = true;
                             controlA = XaphanModule.ModSettings.SelectItem;
                             controlB = XaphanModule.ModSettings.UseMiscItemSlot;
                             inputActionA = "XaphanHelper_ThenPress";
+                            useExtraLineDesc = true;
                             break;
                         case "PulseRadar":
                             select = true;
                             controlA = XaphanModule.ModSettings.SelectItem;
                             controlB = XaphanModule.ModSettings.UseMiscItemSlot;
                             inputActionA = "XaphanHelper_ThenPress";
+                            useExtraLineDesc = true;
                             break;
                         case "JumpBoost":
                             controlA = Input.Jump;
                             inputActionA = "XaphanHelper_Hold";
+                            useExtraLineDesc = true;
                             break;
                         case "EnergyTank":
                             UpgDesc_b = null;
@@ -754,6 +771,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             break;
                         default:
                             break;
+                    }
+                    if (useExtraLineDesc)
+                    {
+                        UpgDesc_b = Dialog.Clean("XaphanHelper_get_" + SelectedDisplay.internalName + "_Desc_b");
                     }
                     if (select)
                     {
