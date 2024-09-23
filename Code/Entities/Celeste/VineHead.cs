@@ -78,6 +78,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Position += new Vector2(4);
             Sprite.Play("idle");
             Scale = Vector2.One;
+            Depth = -8501;
         }
 
         private void onPlayer(Player player)
@@ -220,12 +221,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             SequenceRoutine.Cancel();
                         }
+                        if (CanBounce)
+                        {
+                            Sprite.Play("open");
+                            CanBounce = false;
+                            BouncePlayer = false;
+                        }
                     }
 
                     else
                     // Not at end and flag set -> Expand
                     if (Position != nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
                     {
+                        if (!CanBounce)
+                        {
+                            Sprite.Play("close");
+                            CanBounce = true;
+                        }
                         if (!SequenceRoutine.Active)
                         {
                             if (JustSwapped)
