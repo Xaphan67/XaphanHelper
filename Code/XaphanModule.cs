@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Xml;
 using Celeste.Mod.Meta;
+using Celeste.Mod.UI;
 using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Cutscenes;
@@ -20,6 +22,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using MonoMod.Utils;
+using On.Celeste;
 using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
 namespace Celeste.Mod.XaphanHelper
@@ -65,6 +68,8 @@ namespace Celeste.Mod.XaphanHelper
         private FieldInfo OuiFileSelectSlot_HighlightEase = typeof(OuiFileSelectSlot).GetField("highlightEase", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private FieldInfo Overworld_transitioning = typeof(Overworld).GetField("transitioning", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo OuiMapList_menu = typeof(OuiMapList).GetField("menu", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private Type OuiChapterPanel_T_Option = typeof(OuiChapterPanel).GetNestedType("Option", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
 
@@ -700,6 +705,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapList.Inspect += modOuiMapListInspect;
+            On.Celeste.Mod.UI.OuiMapList.ReloadItems += modOuiMapListReloadItems;
             SaveUpdater.Load();
             MetroidGameplayController.Load();
             ScrewAttackManager.Load();
@@ -805,6 +811,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.CollectRoutine -= onStrawberryCollectRoutine;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapList.Inspect -= modOuiMapListInspect;
+            On.Celeste.Mod.UI.OuiMapList.ReloadItems -= modOuiMapListReloadItems;
             SaveUpdater.Unload();
             MetroidGameplayController.Unload();
             ScrewAttackManager.Unload();
@@ -1092,6 +1099,43 @@ namespace Celeste.Mod.XaphanHelper
             else
             {
                 orig(self, area, mode);
+            }
+        }
+
+        private void modOuiMapListReloadItems(On.Celeste.Mod.UI.OuiMapList.orig_ReloadItems orig, UI.OuiMapList self)
+        {
+            orig(self);
+
+            // Remove All SoCM chapters from the list, except prologue
+
+            TextMenu menu = (TextMenu)OuiMapList_menu.GetValue(self);
+            List<int> indexes = new();
+            foreach (TextMenu.Item item in menu.Items)
+            {
+                if (item.GetType() == typeof(TextMenuExt.ButtonExt))
+                {
+                    TextMenuExt.ButtonExt Item = item as TextMenuExt.ButtonExt;
+                    if (Item.Label == Dialog.Clean("Xaphan_0_0_Prologue"))
+                    {
+                        Item.Label = Dialog.Clean("Xaphan_0");
+                    }
+                    else if (Item.Label == Dialog.Clean("Xaphan_0_1_AncientRuins") ||
+                        Item.Label == Dialog.Clean("Xaphan_0_2_ForgottenAbyss") ||
+                        Item.Label == Dialog.Clean("Xaphan_0_3_ExoticUndergrowth") ||
+                        Item.Label == Dialog.Clean("Xaphan_0_4_BlazingGorge") ||
+                        Item.Label == Dialog.Clean("Xaphan_0_5_SubterraneanTerminal"))
+                    {
+                        indexes.Add(menu.IndexOf(item));
+                    }
+                }
+            }
+            indexes.Sort((a, b) => b.CompareTo(a));
+            foreach (int index in indexes)
+            {
+                if (index != -1)
+                {
+                    menu.Remove(menu.Items[index]);
+                }
             }
         }
 
