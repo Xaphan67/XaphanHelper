@@ -155,11 +155,11 @@ namespace Celeste.Mod.XaphanHelper.Managers
             {
                 if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
                 {
-                    SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.25f, Engine.DeltaTime);
+                    SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.05f, Engine.DeltaTime);
                 }
                 else if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Dark)
                 {
-                    SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.4f, Engine.DeltaTime);
+                    SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.2f, Engine.DeltaTime);
                 }
             }
         }
