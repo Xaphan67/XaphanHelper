@@ -25,10 +25,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float playerStamina;
 
+        private float fullHeight;
+
         public ClimbableVine(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, safe: false)
         {
             Tag = Tags.TransitionUpdate;
-            Collider = new Hitbox(2f, data.Height - 3f, 3f, 0f);
+            fullHeight = data.Height - 3f;
+            Collider = new Hitbox(2f, fullHeight, 3f, 0f);
             Add(new PlayerCollider(onPlayer, new Hitbox(8f, data.Height - 3f)));
             Directory = data.Attr("directory");
             flag = data.Attr("flag");
@@ -126,19 +129,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
+            bool playerNotDead = SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead;
+            if (playerNotDead || (!playerNotDead && GetPlayerRider() != null))
             {
                 if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
                 {
                     spriteA.Play("light");
                     spriteB.Play("light");
                     edgeSprite.Play("light");
+                    Collider.Height = fullHeight;
                 }
                 else
                 {
                     spriteA.Play("dark");
                     spriteB.Play("dark");
                     edgeSprite.Play("dark");
+                    Collider.Height = fullHeight - 2f;
                 }
             }
         }
