@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -29,7 +30,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (onlyOnce && SceneAs<Level>().Session.DoNotLoad.Contains(ID))
+            if ((onlyOnce && SceneAs<Level>().Session.DoNotLoad.Contains(ID)) || (!CollideCheck<UpgradeCollectable>()))
             {
                 RemoveSelf();
             }

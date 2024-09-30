@@ -6,6 +6,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/UpgradeCollectable")]
     class UpgradeCollectable : Entity
     {
