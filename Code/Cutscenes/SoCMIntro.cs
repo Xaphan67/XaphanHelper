@@ -193,6 +193,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 message.RemoveSelf();
             }
+            if (IntroCoroutine.Active)
+            {
+                IntroCoroutine.Cancel();
+            }
             if (skipedIntro)
             {
                 FadeWipe fadeWipe = new(level, false);
@@ -253,6 +257,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     }
                 }
                 XaphanModule.SoCMTitleFromGame = false;
+                XaphanModule.startedGame = false;
                 mainMenu.RemoveSelf();
             }));
             while (!StartCampaign)
@@ -260,6 +265,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return null;
             }
             mainMenu.Focused = false;
+            XaphanModule.startedGame = true;
         }
 
         private IEnumerator ShowPlayerInfoRoutine(Level level)

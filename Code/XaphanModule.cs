@@ -505,6 +505,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool onTitleScreen;
 
+        public static bool startedGame;
+
         private bool onMapListOrSearch;
 
         public XaphanModule()
@@ -1303,6 +1305,13 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onLevelPause(On.Celeste.Level.orig_Pause orig, Level self, int startIndex, bool minimal, bool quickReset)
         {
+            if (startedAnySoCMChapter && SoCMVersion >= new Version(3, 0, 0))
+            {
+                if (self.Session.Level == "A-00" && !startedGame)
+                {
+                    return;
+                }
+            }
             if (useMergeChaptersController && (MergeChaptersControllerKeepPrologue ? SaveData.Instance.LastArea_Safe.ID != SaveData.Instance.LevelSetStats.AreaOffset : true))
             {
                 if (quickReset)
@@ -1933,13 +1942,6 @@ namespace Celeste.Mod.XaphanHelper
             int chapterIndex = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
             AreaKey area = level.Session.Area;
             MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
-
-            // SoCM - Prevent any input before the title screen cinematic start
-
-            if (area.LevelSet == "Xaphan/0" && room.Contains("Intro"))
-            {
-                MInput.Disabled = !onTitleScreen;
-            }
 
             // Define current side played
 
@@ -3423,6 +3425,7 @@ namespace Celeste.Mod.XaphanHelper
 
                 if ((self.Session.Level == "A-00" || self.Session.Level == "Intro") && !SkipSoCMIntro && self.Session.Area.Mode == 0)
                 {
+                    MInput.Disabled = !onTitleScreen;
                     self.TimerStopped = true;
                     if (self.Wipe != null && self.Wipe.GetType() == typeof(SpotlightWipe))
                     {
