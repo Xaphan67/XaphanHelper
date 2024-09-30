@@ -296,6 +296,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     WarpManager.ActivateWarp(warpId);
                 }
             }
+            else
+            {
+                WarpManager.ActivateWarp(warpId);
+            }
         }
 
         private void Deactivate()
