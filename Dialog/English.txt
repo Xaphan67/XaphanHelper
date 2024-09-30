@@ -24,6 +24,7 @@
 	XaphanHelper_Destroy= DESTROY
 
 #Infos
+	XaphanHelper_Select= Select
 	XaphanHelper_ToSelect= to select
 	XaphanHelper_Press= Press
 	XaphanHelper_Hold= Hold
@@ -35,8 +36,6 @@
 
 #Metroid Infos
 	XaphanHelper_MorphMode= in Morph Ball form
-	XaphanHelper_Select= Select it with
-	XaphanHelper_Select_2= Select it with
 	XaphanHelper_Fire= and fire with
 	XaphanHelper_Set= and set it with
 

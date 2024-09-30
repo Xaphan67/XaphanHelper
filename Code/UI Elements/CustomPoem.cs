@@ -187,9 +187,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     MTexture buttonBTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
                     buttonBTextureWidth = buttonBTexture.Width;
                 }
-                string selectHold = Dialog.Clean("XaphanHelper_Hold");
-                string selectAndPress = Dialog.Clean("XaphanHelper_AndPress");
-                string selectString = !XaphanModule.useMetroidGameplay ? Dialog.Clean("XaphanHelper_ToSelect") : Dialog.Clean("XaphanHelper_Select");
+                string selectString = Dialog.Clean("XaphanHelper_Select");
                 if (upgradeSprite != null)
                 {
                     upgradeSprite.Scale = new Vector2(0.15f);
@@ -201,14 +199,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 float TotalLenght = 0;
                 if (select)
                 {
-                    if (!XaphanModule.useMetroidGameplay)
-                    {
-                        TotalLenght = ActiveFont.Measure(selectHold).X * scale + buttonATextureWidth + ActiveFont.Measure(selectAndPress).X * scale + buttonBTextureWidth + ActiveFont.Measure(selectString).X * scale + spriteWidth + 10 + ActiveFont.Measure(inputActA).X * scale + spacing + buttonATextureWidth + spacing + (controlB != null ? ActiveFont.Measure(inputActB).X * scale + spacing + buttonBTextureWidth + spacing : 0) + ActiveFont.Measure(textC).X * scale;
-                    }
-                    else
-                    {
-                        TotalLenght = ActiveFont.Measure(selectString).X * scale + spriteWidth + spacing + ActiveFont.Measure(inputActA).X * scale + spacing + buttonATextureWidth + spacing + (controlB != null ? ActiveFont.Measure(inputActB).X * scale + spacing + buttonBTextureWidth + spacing : 0) + ActiveFont.Measure(textC).X * scale;
-                    }
+                    TotalLenght = ActiveFont.Measure(selectString).X * scale + spriteWidth + spacing + ActiveFont.Measure(inputActA).X * scale + spacing + buttonATextureWidth + spacing + (controlB != null ? ActiveFont.Measure(inputActB).X * scale + spacing + buttonBTextureWidth + spacing : 0) + ActiveFont.Measure(textC).X * scale;
                 }
                 else
                 {
@@ -220,14 +211,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     spacing -= 3.5f;
                     if (select)
                     {
-                        if (!XaphanModule.useMetroidGameplay)
-                        {
-                            TotalLenght = ActiveFont.Measure(selectHold).X * scale + buttonATextureWidth + ActiveFont.Measure(selectAndPress).X * scale + buttonBTextureWidth + ActiveFont.Measure(selectString).X * scale + spriteWidth + ActiveFont.Measure(inputActA).X * scale + spacing + buttonATextureWidth + spacing + (controlB != null ? ActiveFont.Measure(inputActB).X * scale + spacing + buttonBTextureWidth + spacing : 0) + ActiveFont.Measure(textC).X * scale;
-                        }
-                        else
-                        {
-                            TotalLenght = ActiveFont.Measure(selectString).X * scale + spriteWidth + ActiveFont.Measure(inputActA).X * scale + spacing + buttonATextureWidth + spacing + (controlB != null ? ActiveFont.Measure(inputActB).X * scale + spacing + buttonBTextureWidth + spacing : 0) + ActiveFont.Measure(textC).X * scale;
-                        }
+                        TotalLenght = ActiveFont.Measure(selectString).X * scale + spriteWidth + ActiveFont.Measure(inputActA).X * scale + spacing + buttonATextureWidth + spacing + (controlB != null ? ActiveFont.Measure(inputActB).X * scale + spacing + buttonBTextureWidth + spacing : 0) + ActiveFont.Measure(textC).X * scale;
                     }
                     else
                     {
@@ -254,57 +238,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else
                 {
-                    if (!XaphanModule.useMetroidGameplay)
-                    {
-                        selectHoldPosition = vector.X - TotalLenght / 2f + (ActiveFont.Measure(selectHold).X * scale) / 2;
-                        InputAPosition = selectHoldPosition + (ActiveFont.Measure(selectHold).X * scale) / 2 + spacing + buttonATextureWidth / 2;
-                        selectAndPressPosition = InputAPosition + buttonATextureWidth / 2 + spacing + (ActiveFont.Measure(selectAndPress).X * scale) / 2;
-                        InputCPosition = selectAndPressPosition + (ActiveFont.Measure(selectAndPress).X * scale) / 2 + spacing + buttonBTextureWidth / 2;
-                        selectPosition = InputCPosition + buttonBTextureWidth / 2 + spacing + (ActiveFont.Measure(selectString).X * scale) / 2;
-                        SpritePosition = selectPosition + (ActiveFont.Measure(selectString).X * scale) / 2 + spacing + spriteWidth / 2;
-                        inputActAPosition = SpritePosition + spriteWidth / 2 + spacing + (ActiveFont.Measure(inputActA).X * scale) / 2;
-                        InputBPosition = inputActAPosition + (ActiveFont.Measure(inputActA).X * scale) / 2 + spacing + buttonBTextureWidth / 2;
-                        TextCPosition = (controlB == null ? -2 * spacing : 0) + InputBPosition + buttonBTextureWidth / 2 + spacing + (ActiveFont.Measure(textC).X * scale) / 2;
-                    }
-                    else
-                    {
-                        selectPosition = vector.X - TotalLenght / 2f + (ActiveFont.Measure(selectString).X * scale) / 2;
-                        SpritePosition = selectPosition + (ActiveFont.Measure(selectString).X * scale) / 2 + spacing + spriteWidth / 2;
-                        inputActAPosition = SpritePosition + spriteWidth / 2 + spacing + (ActiveFont.Measure(inputActA).X * scale) / 2;
-                        InputAPosition = inputActAPosition + (ActiveFont.Measure(inputActA).X * scale) / 2 + spacing + buttonATextureWidth / 2;
-                        inputActBPosition = InputAPosition + buttonATextureWidth / 2 + spacing + (ActiveFont.Measure(inputActB).X * scale) / 2;
-                        InputBPosition = inputActBPosition + (ActiveFont.Measure(inputActB).X * scale) / 2 + spacing + buttonBTextureWidth / 2;
-                        TextCPosition = (controlB == null ? -2 * spacing : 0) + InputBPosition + buttonBTextureWidth / 2 + spacing + (ActiveFont.Measure(textC).X * scale) / 2;
-                    }
+                    selectPosition = vector.X - TotalLenght / 2f + (ActiveFont.Measure(selectString).X * scale) / 2;
+                    SpritePosition = selectPosition + (ActiveFont.Measure(selectString).X * scale) / 2 + spacing + spriteWidth / 2;
+                    inputActAPosition = SpritePosition + spriteWidth / 2 + spacing + (ActiveFont.Measure(inputActA).X * scale) / 2;
+                    InputAPosition = inputActAPosition + (ActiveFont.Measure(inputActA).X * scale) / 2 + spacing + buttonATextureWidth / 2;
+                    inputActBPosition = InputAPosition + buttonATextureWidth / 2 + spacing + (ActiveFont.Measure(inputActB).X * scale) / 2;
+                    InputBPosition = inputActBPosition + (ActiveFont.Measure(inputActB).X * scale) / 2 + spacing + buttonBTextureWidth / 2;
+                    TextCPosition = (controlB == null ? -2 * spacing : 0) + InputBPosition + buttonBTextureWidth / 2 + spacing + (ActiveFont.Measure(textC).X * scale) / 2;
                 }
                 if (select)
                 {
-                    if (!XaphanModule.useMetroidGameplay)
-                    {
-                        ActiveFont.Draw(selectHold, new Vector2(selectHoldPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * scale, color);
-                        ActiveFont.Draw(selectAndPress, new Vector2(selectAndPressPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * scale, color);
-                        ActiveFont.Draw(selectString, new Vector2(selectPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * scale, color);
-                        upgradeSprite.Position = new Vector2(SpritePosition, vector.Y);
-                        if (controlB is VirtualButton)
-                        {
-                            MTexture buttonBTexture = Input.GuiButton((VirtualButton)controlB, "controls/keyboard/oemquestion");
-                            buttonBTexture.DrawCentered(new Vector2(InputCPosition, vector.Y), Color.White);
-                        }
-                        else if (controlB is ButtonBinding)
-                        {
-                            VirtualButton Button = new();
-                            ButtonBinding ControlB = (ButtonBinding)controlB;
-                            Button.Binding = ControlB.Binding;
-                            MTexture buttonBTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
-                            buttonATextureWidth = buttonBTexture.Width;
-                            buttonBTexture.DrawCentered(new Vector2(InputCPosition, vector.Y), Color.White);
-                        }
-                    }
-                    else
-                    {
-                        ActiveFont.Draw(selectString, new Vector2(selectPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * scale, color);
-                        upgradeSprite.Position = new Vector2(SpritePosition, vector.Y);
-                    }
+                    ActiveFont.Draw(selectString, new Vector2(selectPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * scale, color);
+                    upgradeSprite.Position = new Vector2(SpritePosition, vector.Y);
                 }
                 ActiveFont.Draw(inputActA, new Vector2(inputActAPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * scale, color);
                 if (controlA is VirtualButton)

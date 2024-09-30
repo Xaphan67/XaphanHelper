@@ -10,6 +10,7 @@ Version 1.0.64 :
 - Arrows on the warp menu disapear correctly when there is more than 10 warps in the menu and the player select the "Stay Here" option
 - If the player die after using the Remote drone but before the drone can be controlled, the player will now respawn at their current spawn point to prevent an infitire respawn softlock
 - The Remote Drone can no longer be deployed by pressing down while holding it. Madeline will now attempt to throw it instead
+- Bag and Misc upgrades now only tell the player to select the upgrade to use it if the player already have another upgrade using the same slot
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 - Fixed a bug that prevented Flag On Interact Triggers to work if their "Req Flags" attribute was left empty
 - Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone

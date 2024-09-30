@@ -24,6 +24,7 @@
 	XaphanHelper_Destroy= DETRUIRE
 
 #Infos
+	XaphanHelper_Select= Sélectionnez
 	XaphanHelper_ToSelect= pour sélectionner
 	XaphanHelper_Press= Appuyez sur
 	XaphanHelper_Hold= Maintenez
@@ -35,8 +36,6 @@
 
 #Metroid Infos
 	XaphanHelper_MorphMode= en boule morphing
-	XaphanHelper_Select= Sélectionnez-le avec
-	XaphanHelper_Select_2= Sélectionnez-la avec
 	XaphanHelper_Fire= puis tirez avec
 	XaphanHelper_Set= puis placez-la avec
 

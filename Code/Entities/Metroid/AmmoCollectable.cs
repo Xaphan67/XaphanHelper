@@ -178,7 +178,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             controlA = XaphanModule.ModSettings.SelectItem;
                             controlB = Input.Dash;
-                            inputActionA = "XaphanHelper_Select_2";
+                            inputActionA = "XaphanHelper_Select";
                             inputActionB = "XaphanHelper_Set";
                         }
                         else

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
+using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -216,6 +218,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 particleColor = "FFFFFF";
             }
             bool select = false;
+            bool hasOtherBagUpgrade = Upgrade.GetDisplay(level, "bag") != null;
+            bool hasOtherMiscUpgrade = Upgrade.GetDisplay(level, "misc") != null;
             switch (upgrade)
             {
                 case "Map":
@@ -269,22 +273,40 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     poemTextC = null;
                     break;
                 case "Bombs":
-                    select = true;
-                    controlA = XaphanModule.ModSettings.SelectItem;
-                    controlB = XaphanModule.ModSettings.UseBagItemSlot;
-                    inputActionA = "XaphanHelper_ThenHold";
+                    controlA = XaphanModule.ModSettings.UseBagItemSlot;
+                    if (hasOtherBagUpgrade)
+                    {
+                        select = true;
+                        inputActionA = "XaphanHelper_ThenHold";
+                    }
+                    else
+                    {
+                        inputActionA = "XaphanHelper_Hold";
+                    }
                     break;
                 case "MegaBombs":
-                    select = true;
-                    controlA = XaphanModule.ModSettings.SelectItem;
-                    controlB = XaphanModule.ModSettings.UseBagItemSlot;
-                    inputActionA = "XaphanHelper_ThenHold";
+                    controlA = XaphanModule.ModSettings.UseBagItemSlot;
+                    if (hasOtherBagUpgrade)
+                    {
+                        select = true;
+                        inputActionA = "XaphanHelper_ThenHold";
+                    }
+                    else
+                    {
+                        inputActionA = "XaphanHelper_Hold";
+                    }
                     break;
                 case "RemoteDrone":
-                    select = true;
-                    controlA = XaphanModule.ModSettings.SelectItem;
-                    controlB = XaphanModule.ModSettings.UseBagItemSlot;
-                    inputActionA = "XaphanHelper_ThenHold";
+                    controlA = XaphanModule.ModSettings.UseBagItemSlot;
+                    if (hasOtherBagUpgrade)
+                    {
+                        select = true;
+                        inputActionA = "XaphanHelper_ThenHold";
+                    }
+                    else
+                    {
+                        inputActionA = "XaphanHelper_Hold";
+                    }
                     break;
                 case "GoldenFeather":
                     controlA = Input.Grab;
@@ -294,22 +316,40 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     poemTextC = null;
                     break;
                 case "Binoculars":
-                    select = true;
-                    controlA = XaphanModule.ModSettings.SelectItem;
-                    controlB = XaphanModule.ModSettings.UseMiscItemSlot;
-                    inputActionA = "XaphanHelper_ThenPress";
+                    controlA = XaphanModule.ModSettings.UseMiscItemSlot;
+                    if (hasOtherMiscUpgrade)
+                    {
+                        select = true;
+                        inputActionA = "XaphanHelper_ThenHold";
+                    }
+                    else
+                    {
+                        inputActionA = "XaphanHelper_Hold";
+                    }
                     break;
                 case "PortableStation":
-                    select = true;
-                    controlA = XaphanModule.ModSettings.SelectItem;
-                    controlB = XaphanModule.ModSettings.UseMiscItemSlot;
-                    inputActionA = "XaphanHelper_ThenPress";
+                    controlA = XaphanModule.ModSettings.UseMiscItemSlot;
+                    if (hasOtherMiscUpgrade)
+                    {
+                        select = true;
+                        inputActionA = "XaphanHelper_ThenHold";
+                    }
+                    else
+                    {
+                        inputActionA = "XaphanHelper_Hold";
+                    }
                     break;
                 case "PulseRadar":
-                    select = true;
-                    controlA = XaphanModule.ModSettings.SelectItem;
-                    controlB = XaphanModule.ModSettings.UseMiscItemSlot;
-                    inputActionA = "XaphanHelper_ThenPress";
+                    controlA = XaphanModule.ModSettings.UseMiscItemSlot;
+                    if (hasOtherMiscUpgrade)
+                    {
+                        select = true;
+                        inputActionA = "XaphanHelper_ThenHold";
+                    }
+                    else
+                    {
+                        inputActionA = "XaphanHelper_Hold";
+                    }
                     break;
                 case "JumpBoost":
                     controlA = Input.Jump;
