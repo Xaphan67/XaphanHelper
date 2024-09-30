@@ -55,6 +55,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private bool isFading;
 
+        public bool shownTutorial;
+
         public BagDisplay(Level level, string type)
         {
             this.level = level;
@@ -383,6 +385,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         tutorialTimer += Engine.DeltaTime;
                         tutorialGui.Open = tutorialTimer > 0.25f;
+                        shownTutorial = true;
                     }
                 }
                 else if (tutorialGui.Open && !tutorial)

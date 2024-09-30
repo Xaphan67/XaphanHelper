@@ -16,6 +16,8 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         bool onlyOnce;
 
+        bool shownTutorial;
+
         public BagDisplayTutorialTrigger(EntityData data, Vector2 offset, EntityID eid) : base(data, offset)
         {
             ID = eid;
@@ -47,10 +49,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                     display.ShowTutorial(true);
                 }
             }
-            if (onlyOnce && !SceneAs<Level>().Session.DoNotLoad.Contains(ID))
-            {
-                SceneAs<Level>().Session.DoNotLoad.Add(ID);
-            }
         }
 
         public override void OnLeave(Player player)
@@ -58,23 +56,31 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             base.OnLeave(player);
             foreach (BagDisplay display in SceneAs<Level>().Tracker.GetEntities<BagDisplay>())
             {
-                if (!keepUIOpenOnLeave)
+                if (display.shownTutorial)
                 {
+                    shownTutorial = true;
+                    if (!keepUIOpenOnLeave)
+                    {
+                        if (display.type == slot.ToLower())
+                        {
+                            display.ShowTutorial(false);
+                        }
+                    }
                     if (display.type == slot.ToLower())
                     {
-                        display.ShowTutorial(false);
-                    }
-                }
-                if (display.type == slot.ToLower())
-                {
-                    display.preventTutorialDisplay = false;
-                    if (onlyOnce)
-                    {
-                        RemoveSelf();
+                        display.preventTutorialDisplay = false;
+                        if (onlyOnce)
+                        {
+                            RemoveSelf();
+                        }
                     }
                 }
             }
-
+            if (shownTutorial && onlyOnce && !SceneAs<Level>().Session.DoNotLoad.Contains(ID))
+            {
+                SceneAs<Level>().Session.DoNotLoad.Add(ID);
+                RemoveSelf();
+            }
         }
     }
 }
