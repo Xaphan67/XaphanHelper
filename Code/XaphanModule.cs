@@ -505,6 +505,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool onTitleScreen;
 
+        private bool onMapListOrSearch;
+
         public XaphanModule()
         {
             Instance = this;
@@ -663,6 +665,7 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadLevel += onLevelLoad;
             Everest.Events.Level.OnExit += onLevelExit;
             Everest.Events.Level.OnCreatePauseMenuButtons += onCreatePauseMenuButtons;
+            On.Celeste.AreaData.HasMode += monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn += modCassetteUnlockedBSideEaseIn;
             On.Celeste.Cassette.UnlockedBSide.EaseOut += modCassetteUnlockedBSideEaseOut;
             On.Celeste.Cassette.UnlockedBSide.Render += modCassetteUnlockedBSideRender;
@@ -703,9 +706,12 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.OnPlayer += modStrawberryOnPlayer;
             On.Celeste.Strawberry.OnLoseLeader += modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
-            On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
+            On.Celeste.Mod.UI.OuiMapList.Enter += modOuiMapListEnter;
             On.Celeste.Mod.UI.OuiMapList.Inspect += modOuiMapListInspect;
-            On.Celeste.Mod.UI.OuiMapList.ReloadItems += modOuiMapListReloadItems;
+            On.Celeste.Mod.UI.OuiMapList.Leave += modOuiMapListLeave;
+            On.Celeste.Mod.UI.OuiMapSearch.Enter += modOuiMapSeatchEnter;
+            On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
+            On.Celeste.Mod.UI.OuiMapSearch.Leave += modOuiMapSeatchLeave;
             SaveUpdater.Load();
             MetroidGameplayController.Load();
             ScrewAttackManager.Load();
@@ -771,6 +777,7 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadLevel -= onLevelLoad;
             Everest.Events.Level.OnExit -= onLevelExit;
             Everest.Events.Level.OnCreatePauseMenuButtons -= onCreatePauseMenuButtons;
+            On.Celeste.AreaData.HasMode -= monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn -= modCassetteUnlockedBSideEaseIn;
             On.Celeste.Cassette.UnlockedBSide.EaseOut -= modCassetteUnlockedBSideEaseOut;
             On.Celeste.Cassette.UnlockedBSide.Render -= modCassetteUnlockedBSideRender;
@@ -809,9 +816,12 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.OnPlayer -= modStrawberryOnPlayer;
             On.Celeste.Strawberry.OnLoseLeader -= modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine -= onStrawberryCollectRoutine;
-            On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
+            On.Celeste.Mod.UI.OuiMapList.Enter -= modOuiMapListEnter;
             On.Celeste.Mod.UI.OuiMapList.Inspect -= modOuiMapListInspect;
-            On.Celeste.Mod.UI.OuiMapList.ReloadItems -= modOuiMapListReloadItems;
+            On.Celeste.Mod.UI.OuiMapList.Leave -= modOuiMapListLeave;
+            On.Celeste.Mod.UI.OuiMapSearch.Enter -= modOuiMapSeatchEnter;
+            On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
+            On.Celeste.Mod.UI.OuiMapSearch.Leave -= modOuiMapSeatchLeave;
             SaveUpdater.Unload();
             MetroidGameplayController.Unload();
             ScrewAttackManager.Unload();
@@ -859,6 +869,7 @@ namespace Celeste.Mod.XaphanHelper
             LightManager.Unload();
             ClimbableVine.Unload();
         }
+
 
         // Custom States
 
@@ -1102,43 +1113,6 @@ namespace Celeste.Mod.XaphanHelper
             }
         }
 
-        private void modOuiMapListReloadItems(On.Celeste.Mod.UI.OuiMapList.orig_ReloadItems orig, UI.OuiMapList self)
-        {
-            orig(self);
-
-            // Remove All SoCM chapters from the list, except prologue
-
-            TextMenu menu = (TextMenu)OuiMapList_menu.GetValue(self);
-            List<int> indexes = new();
-            foreach (TextMenu.Item item in menu.Items)
-            {
-                if (item.GetType() == typeof(TextMenuExt.ButtonExt))
-                {
-                    TextMenuExt.ButtonExt Item = item as TextMenuExt.ButtonExt;
-                    if (Item.Label == Dialog.Clean("Xaphan_0_0_Prologue"))
-                    {
-                        Item.Label = Dialog.Clean("Xaphan_0");
-                    }
-                    else if (Item.Label == Dialog.Clean("Xaphan_0_1_AncientRuins") ||
-                        Item.Label == Dialog.Clean("Xaphan_0_2_ForgottenAbyss") ||
-                        Item.Label == Dialog.Clean("Xaphan_0_3_ExoticUndergrowth") ||
-                        Item.Label == Dialog.Clean("Xaphan_0_4_BlazingGorge") ||
-                        Item.Label == Dialog.Clean("Xaphan_0_5_SubterraneanTerminal"))
-                    {
-                        indexes.Add(menu.IndexOf(item));
-                    }
-                }
-            }
-            indexes.Sort((a, b) => b.CompareTo(a));
-            foreach (int index in indexes)
-            {
-                if (index != -1)
-                {
-                    menu.Remove(menu.Items[index]);
-                }
-            }
-        }
-
         private IEnumerator modOuiChapterPanelLeave(On.Celeste.OuiChapterPanel.orig_Leave orig, OuiChapterPanel self, Oui next)
         {
             if (!useMergeChaptersController || (useMergeChaptersController && MergeChaptersControllerKeepPrologue && SaveData.Instance.LastArea_Safe.ID == SaveData.Instance.LevelSetStats.AreaOffset))
@@ -1166,6 +1140,39 @@ namespace Celeste.Mod.XaphanHelper
             {
                 yield return new SwapImmediately(orig(self, from));
             }
+        }
+
+        private IEnumerator modOuiMapListEnter(On.Celeste.Mod.UI.OuiMapList.orig_Enter orig, OuiMapList self, Oui from)
+        {
+            onMapListOrSearch = true;
+            return orig(self, from);
+        }
+
+        private IEnumerator modOuiMapListLeave(On.Celeste.Mod.UI.OuiMapList.orig_Leave orig, OuiMapList self, Oui next)
+        {
+            onMapListOrSearch = false;
+            return orig(self, next);
+        }
+
+        private IEnumerator modOuiMapSeatchEnter(On.Celeste.Mod.UI.OuiMapSearch.orig_Enter orig, OuiMapSearch self, Oui from)
+        {
+            onMapListOrSearch = true;
+            return orig(self, from);
+        }
+
+        private IEnumerator modOuiMapSeatchLeave(On.Celeste.Mod.UI.OuiMapSearch.orig_Leave orig, OuiMapSearch self, Oui next)
+        {
+            onMapListOrSearch = false;
+            return orig(self, next);
+        }
+
+        private bool monAreaDataHasMode(On.Celeste.AreaData.orig_HasMode orig, AreaData self, AreaMode mode)
+        {
+            if (onMapListOrSearch && self.Name.Contains("Xaphan/0") && !self.Name.Contains("Prologue"))
+            {
+                return false;
+            }
+            return orig(self, mode);
         }
 
         private void modOverworldSetNormalMusic(On.Celeste.Overworld.orig_SetNormalMusic orig, Overworld self)
@@ -1610,7 +1617,10 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
 
-                    OuiJournalPage.Row row = Table.AddRow().Add(new OuiJournalPage.TextCell((Visited || i == 0) ? Dialog.Clean(areaData.Name) : "???", new Vector2(1f, 0.5f), 0.6f, TextColor, 400f, true)).Add(null);
+                    // Change name of prologue in SoCM, else use normal area name
+                    string areaName = areaData.Name == "Xaphan/0/0-Prologue" ? "Xaphan/0/0-Prologue_Journal" : areaData.Name;
+
+                    OuiJournalPage.Row row = Table.AddRow().Add(new OuiJournalPage.TextCell((Visited || i == 0) ? Dialog.Clean(areaName) : "???", new Vector2(1f, 0.5f), 0.6f, TextColor, 400f, true)).Add(null);
                     if (!areaData.Interlude_Safe)
                     {
                         List<string> list = new();
