@@ -1646,20 +1646,15 @@ namespace Celeste.Mod.XaphanHelper
                         }
                         row.Add(new OuiJournalPage.IconsCell(areaStats.Cassette ? "cassette" : "dot"));
                         row.Add(new OuiJournalPage.IconsCell(-32f, list.ToArray()));
-                        string text = null;
-                        if (areaData.Mode[0].TotalStrawberries > 0 || areaStats.TotalStrawberries > 0)
+                        string text = "0";
+                        if (Visited && (areaData.Mode[0].TotalStrawberries > 0 || areaStats.TotalStrawberries > 0))
                         {
-                            text = areaStats.TotalStrawberries.ToString();
-                            if (areaStats.Modes[0].Completed)
-                            {
-                                text = text + "/" + areaData.Mode[0].TotalStrawberries;
-                            }
+                            text = $"{areaStats.TotalStrawberries.ToString()}/{areaData.Mode[0].TotalStrawberries}";
                         }
-                        else
+                        if (Visited)
                         {
-                            text = "-";
+                            row.Add(new OuiJournalPage.TextCell(text, TextJustify, 0.5f, TextColor));
                         }
-                        row.Add(new OuiJournalPage.TextCell(text, TextJustify, 0.5f, TextColor));
                     }
                     else
                     {
