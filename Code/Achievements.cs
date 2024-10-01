@@ -1054,6 +1054,27 @@ namespace Celeste.Mod.XaphanHelper
                     maxValue: 1,
                     medals: 5
                 ));
+
+                int currentTotalLambertLogs = 0;
+
+                foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+                {
+                    if (flag.Contains("Xaphan/0") && (flag.Contains("V-Lore-00") || flag.Contains("V-Lore-01") || flag.Contains("V-Lore-02") || flag.Contains("W-Lore-00") || flag.Contains("W-Lore-01") || flag.Contains("X-Lore-00") || flag.Contains("Y-Lore-00")))
+                    {
+                        currentTotalLambertLogs++;
+                    }
+                }
+
+                list.Add(new AchievementData(
+                    achievementID: "logs-0",
+                    categoryID: 5,
+                    icon: "achievements/Xaphan/Lambert",
+                    flag: "XaphanHelper_StatFlag_LambertLogs",
+                    currentValue: currentTotalLambertLogs,
+                    maxValue: 7,
+                    medals: 10,
+                    hidden: true
+                ));
                 list.Add(new AchievementData(
                     achievementID: "map5-0",
                     categoryID: 5,

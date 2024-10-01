@@ -275,7 +275,8 @@ namespace Celeste.Mod.XaphanHelper
                     achievement.AchievementID.Contains("heart") || // Blue Hearts achievements
                     achievement.AchievementID.Contains("lore") || // LoreBook achievements
                     achievement.AchievementID.Contains("items") || // All Items achievement
-                    achievement.AchievementID.Contains("golden") // Golden Strawberries achievements
+                    achievement.AchievementID.Contains("golden") || // Golden Strawberries achievements
+                    achievement.AchievementID.Contains("logs") // lore Rooms Logs achievements
                     )
                 {
                     if (XaphanModule.ModSaveData.Achievements.Contains(achievement.AchievementID) && !session.GetFlag(achievement.Flag))
@@ -603,6 +604,23 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook");
                         }
+                    }
+
+                    // Big Screens Logs
+
+                    int currentTotalLambertLogs = 0;
+
+                    foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+                    {
+                        if (flag.Contains("Xaphan/0") && (flag.Contains("V-Lore-00") || flag.Contains("V-Lore-01") || flag.Contains("V-Lore-02") || flag.Contains("W-Lore-00") || flag.Contains("W-Lore-01") || flag.Contains("X-Lore-00") || flag.Contains("Y-Lore-00")))
+                        {
+                            currentTotalLambertLogs++;
+                        }
+                    }
+
+                    if (currentTotalLambertLogs == 7)
+                    {
+                        self.Session.SetFlag("XaphanHelper_StatFlag_LambertLogs");
                     }
                 }
 
