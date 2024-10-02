@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
+using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -9,6 +11,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 {
     class SoCMIntro : CutsceneEntity
     {
+        private FieldInfo LevelPauseSnapshot = typeof(Level).GetField("PauseSnapshot", BindingFlags.Static | BindingFlags.NonPublic);
+
         private readonly Player player;
 
         private Coroutine IntroCoroutine;
@@ -63,6 +67,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnBegin(Level level)
         {
+            Audio.ReleaseSnapshot((EventInstance)LevelPauseSnapshot.GetValue(level));
+            LevelPauseSnapshot.SetValue(level, null);
             MInput.Disabled = true;
             level.TimerStopped = true;
             Add(new Coroutine(Cutscene(level)));

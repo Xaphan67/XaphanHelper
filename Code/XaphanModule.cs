@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Xml;
 using Celeste.Mod.Meta;
 using Celeste.Mod.UI;
@@ -675,6 +674,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.LevelEnter.Routine += modLevelEnterRoutine;
             On.Celeste.LevelEnter.BeforeRender += modLevelEnterBeforeRender;
             On.Celeste.LevelEnter.Go += onLevelEnterGo;
+            On.Celeste.Level.EndPauseEffects += onLevelEndPauseEffects;
             On.Celeste.Level.Pause += onLevelPause;
             On.Celeste.Level.Update += onLevelUpdate;
             On.Celeste.OuiChapterSelect.GetMinMaxArea += modOuiChapterSelectGetMinMaxArea;
@@ -787,6 +787,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.LevelEnter.Routine -= modLevelEnterRoutine;
             On.Celeste.LevelEnter.BeforeRender -= modLevelEnterBeforeRender;
             On.Celeste.LevelEnter.Go -= onLevelEnterGo;
+            On.Celeste.Level.EndPauseEffects -= onLevelEndPauseEffects;
             On.Celeste.Level.Pause -= onLevelPause;
             On.Celeste.Level.Update -= onLevelUpdate;
             On.Celeste.OuiChapterSelect.GetMinMaxArea -= modOuiChapterSelectGetMinMaxArea;
@@ -1300,6 +1301,14 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     SoCMVersion = module.Metadata.Version;
                 }
+            }
+        }
+
+        private void onLevelEndPauseEffects(On.Celeste.Level.orig_EndPauseEffects orig, Level self)
+        {
+            if (!SoCMTitleFromGame)
+            {
+                orig(self);
             }
         }
 
