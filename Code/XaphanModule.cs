@@ -1651,10 +1651,7 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             text = $"{areaStats.TotalStrawberries.ToString()}/{areaData.Mode[0].TotalStrawberries}";
                         }
-                        if (Visited)
-                        {
-                            row.Add(new OuiJournalPage.TextCell(text, TextJustify, 0.5f, TextColor));
-                        }
+                        row.Add(new OuiJournalPage.TextCell(text, TextJustify, 0.5f, TextColor));
                     }
                     else
                     {
@@ -3197,20 +3194,23 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             // Remove Strawberries
 
-                            HashSet<EntityID> deletedStrawberries = new();
-                            foreach (EntityID strawberry in SaveData.Instance.Areas_Safe[i].Modes[0].Strawberries)
+                            for (int j = 0; j <= 2; j++)
                             {
-                                deletedStrawberries.Add(strawberry);
-                            }
-                            if (deletedStrawberries.Count > 0)
-                            {
-                                foreach (EntityID strawberry in deletedStrawberries)
+                                HashSet<EntityID> deletedStrawberries = new();
+                                foreach (EntityID strawberry in SaveData.Instance.Areas_Safe[i].Modes[j].Strawberries)
                                 {
-                                    SaveData.Instance.Areas_Safe[i].Modes[0].Strawberries.Remove(strawberry);
-                                    AreaModeStats areaModeStats = SaveData.Instance.Areas_Safe[i].Modes[0];
-                                    areaModeStats.Strawberries.Remove(strawberry);
-                                    areaModeStats.TotalStrawberries--;
-                                    SaveData.Instance.TotalStrawberries_Safe--;
+                                    deletedStrawberries.Add(strawberry);
+                                }
+                                if (deletedStrawberries.Count > 0)
+                                {
+                                    foreach (EntityID strawberry in deletedStrawberries)
+                                    {
+                                        SaveData.Instance.Areas_Safe[i].Modes[j].Strawberries.Remove(strawberry);
+                                        AreaModeStats areaModeStats = SaveData.Instance.Areas_Safe[i].Modes[j];
+                                        areaModeStats.Strawberries.Remove(strawberry);
+                                        areaModeStats.TotalStrawberries--;
+                                        SaveData.Instance.TotalStrawberries_Safe--;
+                                    }
                                 }
                             }
 
