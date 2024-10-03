@@ -100,6 +100,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             alphaStatus = 1;
                         }
                     }
+                    foreach (EntryInfo info in SceneAs<Level>().Tracker.GetEntities<EntryInfo>())
+                    {
+                        if (info.textSfx.Playing)
+                        {
+                            info.textSfx.Stop();
+                            info.textSfx.Param("end", 1f);
+                        }
+                    }
                 }
                 else
                 {
