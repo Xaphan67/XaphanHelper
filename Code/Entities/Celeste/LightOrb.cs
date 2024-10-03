@@ -4,7 +4,6 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Monocle;
-using static Celeste.Overworld;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -13,6 +12,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
     class LightOrb : Entity
     {
         private Sprite Sprite;
+
+        private Sprite OutlineSprite;
+
+        private float alpha = 0f;
 
         public string Directory;
 
@@ -47,10 +50,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.AddLoop("light-small", "light-small", 0.08f);
             Sprite.AddLoop("dark-small", "dark-small", 0.08f);
             Sprite.CenterOrigin();
-            Collider = new Circle(Temporary ? 5f : 9f);
+            Add(OutlineSprite = new Sprite(GFX.Game, Directory + '/'));
+            OutlineSprite.AddLoop("outline", "outline", 0.08f);
+            OutlineSprite.AddLoop("outline-small", "outline-small", 0.08f);
+            OutlineSprite.CenterOrigin();
+            OutlineSprite.Play("outline" + (Temporary ? "-small" : ""));
+            Collider = new Circle(Temporary ? 6f : 10f);
             if (Temporary)
             {
                 Sprite.Position += Vector2.One * 4f;
+                OutlineSprite.Position += Vector2.One * 4f;
             }
         }
 
@@ -138,36 +147,69 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Manager = SceneAs<Level>().Tracker.GetEntity<LightManager>();
                 }
-                if (Temporary)
+                else
                 {
-                    if (Manager.ForceModeRoutine.Active)
+                    if (Temporary)
                     {
-                        Sprite.Play((Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "light-small" : "dark-small"));
-                        light.StartRadius = 16;
-                        light.EndRadius = 36;
-                        light.Color = Calc.HexToColor(Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "FCF859" : "FFFFFF");
+                        if (Manager.ForceModeRoutine.Active)
+                        {
+                            Sprite.Play((Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "light-small" : "dark-small"));
+                            light.StartRadius = 16;
+                            light.EndRadius = 36;
+                            light.Color = Calc.HexToColor(Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? "FCF859" : "FFFFFF");
+                        }
+                        else
+                        {
+                            Sprite.Play((Manager.MainMode == XaphanModuleSession.LightModes.Light ? "dark-small" : "light-small"));
+                            light.StartRadius = 16;
+                            light.EndRadius = 36;
+                            light.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "FFFFFF" : "FCF859");
+                        }
                     }
                     else
                     {
-                        Sprite.Play((Manager.MainMode == XaphanModuleSession.LightModes.Light ? "dark-small" : "light-small"));
-                        light.StartRadius = 16;
-                        light.EndRadius = 36;
-                        light.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "FFFFFF" : "FCF859");
+                        Sprite.Play(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "light" : "dark");
+                        light.StartRadius = 24;
+                        light.EndRadius = 40;
+                        light.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "FCF859" : "FFFFFF");
                     }
                 }
-                else
-                {
-                    Sprite.Play(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "light" : "dark");
-                    light.StartRadius = 24;
-                    light.EndRadius = 40;
-                    light.Color = Calc.HexToColor(Manager.MainMode == XaphanModuleSession.LightModes.Light ? "FCF859" : "FFFFFF");
-                }
-
                 if (CollideFirst<Player>() == null && PlayerOnTop)
                 {
                     PlayerOnTop = false;
                 }
             }
+            if (Manager != null)
+            {
+                if (Manager.TemporaryModeTimer > 0)
+                {
+                    alpha += Engine.DeltaTime * (Manager.TemporaryModeTimer > 2 ? 4f : (Manager.TemporaryModeTimer > 1 ? 8f : 16f));
+                }
+                else
+                {
+                    alpha = 0;
+                }
+            }
+        }
+
+        public override void Render()
+        {
+            OutlineSprite.DrawOutline(0);
+            Sprite.Render();
+            if (Manager != null)
+            {
+                if (Manager.TemporaryModeTimer > 0)
+                {
+                    alpha += Engine.DeltaTime * (Manager.TemporaryModeTimer > 2 ? 4f : (Manager.TemporaryModeTimer > 1 ? 8f : 16f));
+                    OutlineSprite.Color = (Manager.TemporaryMode == XaphanModuleSession.LightModes.Light ? Calc.HexToColor("FCF859") : Calc.HexToColor("81729F")) * (0.9f * (0.9f + ((float)Math.Sin(alpha) + 0f) * 0.25f));
+                }
+                else
+                {
+                    alpha = 1;
+                    OutlineSprite.Color = Color.White;
+                }
+            }
+            OutlineSprite.Render();
         }
     }
 }

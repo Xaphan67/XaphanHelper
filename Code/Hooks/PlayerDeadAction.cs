@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.XaphanHelper.Entities;
+using Celeste.Mod.XaphanHelper.Managers;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Hooks
@@ -17,7 +18,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void onPlayerDeaDBodyEnd(On.Celeste.PlayerDeadBody.orig_End orig, PlayerDeadBody self)
         {
-            if ((self.SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<DroneSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<Detonator>().Count > 0) && !self.SceneAs<Level>().Session.GrabbedGolden)
+            if ((self.SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<DroneSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<Detonator>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntity<LightManager>() != null) && !self.SceneAs<Level>().Session.GrabbedGolden)
             {
                 self.DeathAction = DeathAction;
             }
@@ -53,6 +54,10 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                     {
                         level.Session.SetFlag(detonator.flag, false);
                     }
+                }
+                foreach (LightManager manager in level.Tracker.GetEntities<LightManager>())
+                {
+                    manager.TemporaryModeTimer = 0f;
                 }
                 level.Reload();
             }
