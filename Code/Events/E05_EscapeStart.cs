@@ -37,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Events
         {
             if (!level.Session.GetFlag("Ch4_Escape_Complete"))
             {
-                while (!level.Session.GetFlag("Gem_Collected") || !playerHasMoved)
+                while (!level.Session.GetFlag("reactor_glass_broken") || !playerHasMoved)
                 {
                     if (player != null && player.Speed != Vector2.Zero)
                     {
