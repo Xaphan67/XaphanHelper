@@ -81,17 +81,13 @@ namespace Celeste.Mod.XaphanHelper.Effects
 
         private int UpdateColor(Scene scene)
         {
-            Player player = scene.Tracker.GetEntity<Player>();
-            if (player != null && !player.Dead)
+            if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light && previousLightMode == XaphanModuleSession.LightModes.Dark)
             {
-                if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light && previousLightMode == XaphanModuleSession.LightModes.Dark)
-                {
-                    return 0;
-                }
-                if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Dark && previousLightMode == XaphanModuleSession.LightModes.Light)
-                {
-                    return 1;
-                }
+                return 0;
+            }
+            if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Dark && previousLightMode == XaphanModuleSession.LightModes.Light)
+            {
+                return 1;
             }
             return -1;
         }

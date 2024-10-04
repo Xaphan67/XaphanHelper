@@ -2,7 +2,6 @@
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -137,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
+            //if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
             {
                 if (Cooldown > 0)
                 {

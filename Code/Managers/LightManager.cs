@@ -29,30 +29,13 @@ namespace Celeste.Mod.XaphanHelper.Managers
         public static void Load()
         {
             Everest.Events.Level.OnLoadLevel += modOnLevelLoad;
-            Everest.Events.Player.OnDie += modOnPlayerDie;
             On.Celeste.ChangeRespawnTrigger.OnEnter += onChangeRespawnTriggerOnEnter;
         }
 
         public static void Unload()
         {
             Everest.Events.Level.OnLoadLevel -= modOnLevelLoad;
-            Everest.Events.Player.OnDie -= modOnPlayerDie;
             On.Celeste.ChangeRespawnTrigger.OnEnter -= onChangeRespawnTriggerOnEnter;
-        }
-
-        private static void modOnPlayerDie(Player player)
-        {
-            LightManager manager = player.SceneAs<Level>().Tracker.GetEntity<LightManager>();
-            if (manager != null)
-            {
-                if (manager.ForceModeRoutine.Active)
-                {
-                    manager.ForceModeRoutine.Cancel();
-                    manager.TemporaryMode = XaphanModuleSession.LightModes.None;
-                }
-                XaphanModule.ModSession.LightMode = manager.RespawnMode;
-                manager.SetMainMode(manager.RespawnMode);
-            }
         }
 
         private static void modOnLevelLoad(Level level, Player.IntroTypes playerIntro, bool isFromLoader)
@@ -151,16 +134,13 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 }
                 RespawnMode = MainMode;
             }
-            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null)
+            if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
             {
-                if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
-                {
-                    SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.05f, Engine.DeltaTime);
-                }
-                else if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Dark)
-                {
-                    SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.2f, Engine.DeltaTime);
-                }
+                SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.05f, Engine.DeltaTime);
+            }
+            else if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Dark)
+            {
+                SceneAs<Level>().Lighting.Alpha = Calc.Approach(SceneAs<Level>().Lighting.Alpha, SceneAs<Level>().BaseLightingAlpha + 0.2f, Engine.DeltaTime);
             }
         }
     }

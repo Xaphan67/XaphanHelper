@@ -187,8 +187,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
-            {
                 Scale.X = Calc.Approach(Scale.X, 1f, 1f * Engine.DeltaTime);
                 Scale.Y = Calc.Approach(Scale.Y, 1f, 1f * Engine.DeltaTime);
                 if (!StopMoving)
@@ -315,14 +313,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Facing = Facings.Up;
                 }
-            }
-            else
-            {
-                if (SequenceRoutine.Active)
-                {
-                    SequenceRoutine.Cancel();
-                }
-            }
         }
 
         private void StartSequence(bool reverseSprite = false)

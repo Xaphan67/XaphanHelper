@@ -58,6 +58,13 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 foreach (LightManager manager in level.Tracker.GetEntities<LightManager>())
                 {
                     manager.TemporaryModeTimer = 0f;
+                    if (manager.ForceModeRoutine.Active)
+                    {
+                        manager.ForceModeRoutine.Cancel();
+                        manager.TemporaryMode = XaphanModuleSession.LightModes.None;
+                    }
+                    XaphanModule.ModSession.LightMode = manager.RespawnMode;
+                    manager.SetMainMode(manager.RespawnMode);
                 }
                 level.Reload();
             }

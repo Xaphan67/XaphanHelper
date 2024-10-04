@@ -130,22 +130,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             bool playerNotDead = SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead;
-            if (playerNotDead || (!playerNotDead && GetPlayerRider() != null))
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
             {
-                if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
-                {
-                    spriteA.Play("light");
-                    spriteB.Play("light");
-                    edgeSprite.Play("light");
-                    Collider.Height = fullHeight;
-                }
-                else
-                {
-                    spriteA.Play("dark");
-                    spriteB.Play("dark");
-                    edgeSprite.Play("dark");
-                    Collider.Height = fullHeight - 2f;
-                }
+                spriteA.Play("light");
+                spriteB.Play("light");
+                edgeSprite.Play("light");
+                Collider.Height = fullHeight;
+            }
+            else
+            {
+                spriteA.Play("dark");
+                spriteB.Play("dark");
+                edgeSprite.Play("dark");
+                Collider.Height = fullHeight - 2f;
             }
         }
 
