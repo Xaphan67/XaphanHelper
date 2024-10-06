@@ -437,6 +437,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 }
                             }
                         }
+                        else if (entityList.Key == typeof(ExplosiveBoulder))
+                        {
+                            foreach (Entity entity in entityList.Value)
+                            {
+                                ExplosiveBoulder boulder = (ExplosiveBoulder)entity;
+                                if (CollideCheck(boulder))
+                                {
+                                    shouldExplodeImmediately = true;
+                                }
+                            }
+                        }
                         else if (entityList.Key == typeof(Torizo))
                         {
                             foreach (Entity entity in entityList.Value)
@@ -589,6 +600,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CollideCheck(blocker) && blocker.Crate.Type == "Wood" && !blocker.Crate.Destroyed)
                 {
                     blocker.Crate.Destroy();
+                }
+            }
+
+            foreach (ExplosiveBoulder boulder in Scene.Tracker.GetEntities<ExplosiveBoulder>())
+            {
+                if (CollideCheck(boulder))
+                {
+                    boulder.Explode();
                 }
             }
         }

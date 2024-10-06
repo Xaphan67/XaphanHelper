@@ -58,11 +58,38 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        [Tracked(true)]
+        public class Filler : Entity
+        {
+            public Filler(Vector2 position) : base(position)
+            {
+                Collider = new Circle(4f);
+            }
+
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                foreach (Entity entity in Scene.Tracker.GetEntities<Filler>())
+                {
+                    Filler filler = (Filler)entity;
+                    if (CollideCheck(filler) && filler != this)
+                    {
+                        filler.RemoveSelf();
+                    }
+                }
+            }
+
+            public override void DebugRender(Camera camera)
+            {
+                //base.DebugRender(camera);
+            }
+        }
+
         public const float ParticleInterval = 0.02f;
 
         public bool AttachToSolid;
 
-        private Entity filler;
+        public Filler filler;
 
         private Border border;
 
@@ -84,12 +111,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool AlwaysCollidable;
 
+        public bool CanDestroy;
+
         public CustomSpinner(EntityData data, Vector2 position) : base(data.Position + position)
         {
             ID = data.ID;
             offset = Calc.Random.NextFloat();
             type = data.Attr("type");
             AlwaysCollidable = data.Bool("alwaysCollidable");
+            CanDestroy = data.Bool("canDestroy");
             bgDirectory = "danger/crystal/Xaphan/" + type + "/bg";
             fgDirectory = "danger/crystal/Xaphan/" + type + "/fg";
             List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgDirectory);
@@ -170,7 +200,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (filler != null)
             {
                 filler.Visible = !Hidden;
-                filler.Position = Position;
             }
         }
 
@@ -209,9 +238,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 foreach (CustomSpinner item in Scene.Entities.FindAll<CustomSpinner>())
                 {
-                    if (item.ID > ID && item.AttachToSolid == AttachToSolid && (item.Position - Position).LengthSquared() < 576f)
+                    if (item.AttachToSolid == AttachToSolid && (item.Position - Position).LengthSquared() < 576f && (item.type == type || type != "hell"))
                     {
-                        AddSprite((Position + item.Position) / 2f - Position);
+                        AddFiller((Position + item.Position) / 2f - Position);
                     }
                 }
                 Scene.Add(border = new Border(this, filler));
@@ -220,18 +249,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void AddSprite(Vector2 offset)
+        private void AddFiller(Vector2 offset)
         {
-            if (filler == null)
-            {
-                Scene.Add(filler = new Entity(Position));
-                filler.Depth = Depth + 1;
-            }
             List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgDirectory);
             Image image = new(Calc.Random.Choose(atlasSubtextures));
-            image.Position = offset;
             image.Rotation = Calc.Random.Choose(0, 1, 2, 3) * ((float)Math.PI / 2f);
             image.CenterOrigin();
+            Scene.Add(filler = new Filler(Position + offset));
+            filler.Depth = Depth + 1;
             filler.Add(image);
         }
 
@@ -320,7 +345,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     color = Calc.HexToColor("5B3311");
                 }
-                CrystalDebris.Burst(Position, color, boss, 8);
+                if (type != "magma")
+                {
+                    CrystalDebris.Burst(Position, color, boss, 8);
+                }
+                else
+                {
+                    color = Calc.HexToColor("792E00");
+                    CrystalDebris.Burst(Position, color, boss, 4);
+                    color = Calc.HexToColor("F0900F");
+                    CrystalDebris.Burst(Position, color, boss, 4);
+                }
+            }
+            foreach (Entity entity in Scene.Tracker.GetEntities<Filler>())
+            {
+                Filler filler = (Filler)entity;
+                if (CollideCheck(filler))
+                {
+                    filler.RemoveSelf();
+                }
             }
             RemoveSelf();
         }
