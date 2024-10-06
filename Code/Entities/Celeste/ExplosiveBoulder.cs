@@ -83,38 +83,44 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onPlayer(Player player)
         {
-            if (player.StateMachine.State != Player.StDash && !player.DashAttacking)
+            if (!explode)
             {
-                player.Die((player.Position - Position).SafeNormalize());
-            }
-            else
-            {
-                Vector2 vector2 = player.ExplodeLaunch(Position, false);
-                SceneAs<Level>().DirectionalShake(vector2, 0.15f);
-                SceneAs<Level>().Displacement.AddBurst(Center, 0.3f, 8f, 32f, 0.8f);
-                SceneAs<Level>().Particles.Emit(Bumper.P_Launch, 12, Center + vector2 * 12f, Vector2.One * 3f, vector2.Angle());
-                Explode();
+                if (player.StateMachine.State != Player.StDash && !player.DashAttacking)
+                {
+                    player.Die((player.Position - Position).SafeNormalize());
+                }
+                else
+                {
+                    Vector2 vector2 = player.ExplodeLaunch(Position, false);
+                    SceneAs<Level>().DirectionalShake(vector2, 0.15f);
+                    SceneAs<Level>().Displacement.AddBurst(Center, 0.3f, 8f, 32f, 0.8f);
+                    SceneAs<Level>().Particles.Emit(Bumper.P_Launch, 12, Center + vector2 * 12f, Vector2.One * 3f, vector2.Angle());
+                    Explode();
+                }
             }
         }
 
         private void onSpring(Spring spring)
         {
-            Gravity = true;
-            if (spring.Orientation == Spring.Orientations.Floor)
+            if (!explode)
             {
-                Spring_BounceAnimate.Invoke(spring, null);
-                Bottom = spring.Top;
-                Push(new Vector2(100, -235), Speed.X < 0 ? -Vector2.UnitX : (Speed.X > 0 ? Vector2.UnitX : Vector2.Zero));
-            }
-            else if (spring.Orientation == Spring.Orientations.WallLeft)
-            {
-                Spring_BounceAnimate.Invoke(spring, null);
-                Push(new Vector2(200, -180), Vector2.UnitX);
-            }
-            else if (spring.Orientation == Spring.Orientations.WallRight)
-            {
-                Spring_BounceAnimate.Invoke(spring, null);
-                Push(new Vector2(200, -180), -Vector2.UnitX);
+                Gravity = true;
+                if (spring.Orientation == Spring.Orientations.Floor)
+                {
+                    Spring_BounceAnimate.Invoke(spring, null);
+                    Bottom = spring.Top;
+                    Push(new Vector2(100, -235), Speed.X < 0 ? -Vector2.UnitX : (Speed.X > 0 ? Vector2.UnitX : Vector2.Zero));
+                }
+                else if (spring.Orientation == Spring.Orientations.WallLeft)
+                {
+                    Spring_BounceAnimate.Invoke(spring, null);
+                    Push(new Vector2(200, -180), Vector2.UnitX);
+                }
+                else if (spring.Orientation == Spring.Orientations.WallRight)
+                {
+                    Spring_BounceAnimate.Invoke(spring, null);
+                    Push(new Vector2(200, -180), -Vector2.UnitX);
+                }
             }
         }
 
