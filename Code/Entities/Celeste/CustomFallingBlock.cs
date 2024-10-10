@@ -82,6 +82,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             tiles.Position += amount;
         }
 
+        public override void OnStaticMoverTrigger(StaticMover sm)
+        {
+            Triggered = true;
+        }
+
         private bool PlayerFallCheck()
         {
             if (climbFall)
