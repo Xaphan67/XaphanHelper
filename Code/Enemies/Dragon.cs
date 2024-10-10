@@ -81,6 +81,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         Coroutine MainRoutine = new();
 
+        private float initialDelay;
+
         int StartHeight;
 
         public Vector2 Speed;
@@ -93,6 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public Dragon(EntityData data, Vector2 offset) : base(data, offset + Vector2.UnitY * 16)
         {
+            initialDelay = data.Float("initialDelay");
             Collider = new Hitbox(13f, 34f, 3f, 3f);
             Health = 20;
             Damage = 20;
@@ -155,6 +158,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public IEnumerator Routine()
         {
+            yield return initialDelay;
             while (true)
             {
                 // Rise for 2 tiles
@@ -178,6 +182,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 }
 
                 // Wait
+
+                yield return 0.3f;
 
                 Head.Play("idle");
 
