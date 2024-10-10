@@ -79,6 +79,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
+            public override void Awake(Scene scene)
+            {
+                base.Awake(scene);
+                Depth = -8498;
+            }
+
             public override void DebugRender(Camera camera)
             {
                 //base.DebugRender(camera);
@@ -113,6 +119,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool CanDestroy;
 
+        public bool CanAttach;
+
         public CustomSpinner(EntityData data, Vector2 position) : base(data.Position + position)
         {
             ID = data.ID;
@@ -120,6 +128,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             type = data.Attr("type");
             AlwaysCollidable = data.Bool("alwaysCollidable");
             CanDestroy = data.Bool("canDestroy");
+            CanAttach = data.Bool("canAttachToBoulders");
             bgDirectory = "danger/crystal/Xaphan/" + type + "/bg";
             fgDirectory = "danger/crystal/Xaphan/" + type + "/fg";
             List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgDirectory);
@@ -236,11 +245,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Image image4 = new Image(mtexture.GetSubtexture(0, 10, 14, 14)).SetOrigin(12f, 2f);
                     Add(image4);
                 }
-                foreach (CustomSpinner item in Scene.Entities.FindAll<CustomSpinner>())
+                foreach (CustomSpinner spinner in Scene.Entities.FindAll<CustomSpinner>())
                 {
-                    if (item.AttachToSolid == AttachToSolid && (item.Position - Position).LengthSquared() < 576f && (item.type == type || type != "hell"))
+                    if (spinner.AttachToSolid == AttachToSolid && (spinner.Position - Position).LengthSquared() < 576f && (spinner.type == type || type != "hell"))
                     {
-                        AddFiller((Position + item.Position) / 2f - Position);
+                        AddFiller((Position + spinner.Position) / 2f - Position);
+                    }
+                }
+                if (CanAttach)
+                {
+                    foreach (ExplosiveBoulder boulder in Scene.Entities.FindAll<ExplosiveBoulder>())
+                    {
+                        if ((boulder.Position - Position).LengthSquared() < 1152f)
+                        {
+                            AddFiller((Position + boulder.Position) / 2f - Position);
+                        }
                     }
                 }
                 Scene.Add(border = new Border(this, filler));
@@ -256,7 +275,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             image.Rotation = Calc.Random.Choose(0, 1, 2, 3) * ((float)Math.PI / 2f);
             image.CenterOrigin();
             Scene.Add(filler = new Filler(Position + offset));
-            filler.Depth = Depth + 1;
             filler.Add(image);
         }
 

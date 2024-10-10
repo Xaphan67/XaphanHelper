@@ -32,6 +32,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private ParticleType P_Explode;
 
+        public ParticleType P_Steam;
+
+
         public ExplosiveBoulder(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Collider = new Circle(12f);
@@ -44,16 +47,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new PlayerCollider(onPlayer, Collider));
             Add(new SpringCollider(onSpring, Collider));
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
-            Sprite.AddLoop("idleA", "boulder", 0.08f, 0);
-            Sprite.AddLoop("idleB", "boulder", 0.08f, 1);
+            Sprite.AddLoop("idleA", "boulder", 0.12f, 0, 1, 2, 3, 4, 3, 2, 1);
+            Sprite.AddLoop("idleB", "boulder", 0.12f, 5, 6, 7, 8, 9, 8, 7, 6);
             Sprite.AddLoop("explode", "explode", 0.08f);
             Sprite.CenterOrigin();
             Sprite.Position += new Vector2(20);
             Sprite.Play("idle" + (Calc.Random.Next(2) == 1 ? "A" : "B"));
             onCollide = OnCollide;
             Add(new Coroutine(GravityRoutine()));
-            Add(light = new VertexLight(Center, Color.Red, 1f, 16, 32));
-            Add(bloom = new BloomPoint(0.5f, 16f));
             P_Explode = new ParticleType
             {
                 Color = Calc.HexToColor("F8C820"),
@@ -68,6 +69,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 SpeedMultiplier = 0.3f,
                 DirectionRange = (float)Math.PI / 3f
             };
+            P_Steam = new ParticleType(ParticleTypes.Steam)
+            {
+                LifeMin = 1f,
+                LifeMax = 2f,
+            };
+            Depth = -8499;
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            Add(light = new VertexLight(Color.OrangeRed, 1, 24, 40));
+            Add(bloom = new BloomPoint(1f, 16f));
         }
 
         public override void Update()
@@ -75,6 +89,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             MoveH(Speed.X * Engine.DeltaTime, onCollide);
             MoveV(Speed.Y * Engine.DeltaTime, onCollide);
+            if (Scene.OnInterval(0.25f))
+            {
+                int count = (int)Math.Floor(Width * Height / 256f);
+                SceneAs<Level>().ParticlesFG.Emit(P_Steam, count, Center, new Vector2(Width / 2, Height / 2), -(float)Math.PI / 2f);
+            }
             if (CollideCheck<ExplosiveBoulder>() || CollideCheck<CrystalStaticSpinner>() || CollideCheck<CustomSpinner>() || (Scene.CollideCheck<Solid>(new Rectangle((int)(Position.X - Width / 2), (int)(Position.Y - Height / 2), (int)Width, (int)Height)) && Speed.Y > 0))
             {
                 Explode();
@@ -143,6 +162,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!explode)
             {
+                foreach (Entity entity in Scene.Tracker.GetEntities<CustomSpinner.Filler>())
+                {
+                    CustomSpinner.Filler filler = (CustomSpinner.Filler)entity;
+                    if (CollideCheck(filler))
+                    {
+                        filler.RemoveSelf();
+                    }
+                }
                 AllowPushing = false;
                 explode = true;
                 light.Visible = false;
