@@ -62,7 +62,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             PauseTime = data.Float("pauseTime", 3f);
             flag = data.Attr("flag");
             Collider = new Hitbox(8f, 8f);
-            Add(new PlayerCollider(onPlayer, new Circle(8, 4, 4)));
+            Add(new PlayerCollider(onPlayer, new Circle(6, 4, 4)));
             Add(new PlayerCollider(onBounce, new Circle(6, 4, 4)));
             nodes = data.NodesWithPosition(offset);
             directory = data.Attr("directory");

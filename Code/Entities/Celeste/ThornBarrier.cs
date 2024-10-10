@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -190,7 +189,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Directory = "danger/XaphanHelper/ThornBarrier";
             }
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
-            Add(new PlayerCollider(onPlayer, Collider));
+            Add(new PlayerCollider(onPlayer, new Circle(8f)));
             Sprite.AddLoop("light", "light", 0.08f);
             Sprite.AddLoop("dark", "dark", 0.08f);
             Sprite.CenterOrigin();
