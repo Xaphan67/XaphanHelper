@@ -109,6 +109,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public string bgDirectory;
 
+        public string bgBoulderDirectory;
+
         public string fgDirectory;
 
         public int ID;
@@ -123,6 +125,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public CustomSpinner(EntityData data, Vector2 position) : base(data.Position + position)
         {
+            Tag = Tags.TransitionUpdate;
             ID = data.ID;
             offset = Calc.Random.NextFloat();
             type = data.Attr("type");
@@ -130,11 +133,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             CanDestroy = data.Bool("canDestroy");
             CanAttach = data.Bool("canAttachToBoulders");
             bgDirectory = "danger/crystal/Xaphan/" + type + "/bg";
+            bgBoulderDirectory = "danger/crystal/Xaphan/" + type + "/bgBoulder";
             fgDirectory = "danger/crystal/Xaphan/" + type + "/fg";
-            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgDirectory);
-            MTexture mtexture = Calc.Random.Choose(atlasSubtextures);
-            offset = Calc.Random.NextFloat();
-            Tag = Tags.TransitionUpdate;
             Collider = new ColliderList(new Circle(6f), new Hitbox(16f, 4f, -8f, -3f));
             Visible = false;
             Add(new PlayerCollider(OnPlayer));
@@ -256,9 +256,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     foreach (ExplosiveBoulder boulder in Scene.Entities.FindAll<ExplosiveBoulder>())
                     {
-                        if ((boulder.Position - Position).LengthSquared() < 1152f)
+                        if ((boulder.Position - Position).LengthSquared() < 576f)
                         {
-                            AddFiller((Position + boulder.Position) / 2f - Position);
+                            AddFiller((Position + boulder.Position) / 2f - Position, true);
                         }
                     }
                 }
@@ -268,9 +268,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void AddFiller(Vector2 offset)
+        private void AddFiller(Vector2 offset, bool boulder = false)
         {
-            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgDirectory);
+            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(boulder ? bgBoulderDirectory : bgDirectory);
             Image image = new(Calc.Random.Choose(atlasSubtextures));
             image.Rotation = Calc.Random.Choose(0, 1, 2, 3) * ((float)Math.PI / 2f);
             image.CenterOrigin();
