@@ -359,7 +359,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void HitByMissile(Missile missile)
         {
-            missile.CollideImmune(missile.Direction);
+            missile.CollideImmune(missile.Direction, missile.Center.X < Center.X ? -30f : 30f);
         }
 
         public override void Removed(Scene scene)

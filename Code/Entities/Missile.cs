@@ -456,16 +456,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             RemoveSelf();
         }
 
-        public void CollideImmune(Vector2 dir)
+        public void CollideImmune(Vector2 dir, float extraXSpeed = 0f)
         {
             Collidable = false;
             Audio.Play("event:/game/xaphan/impact_immune", Position);
-            Add(new Coroutine(BounceRoutine(dir)));
+            Add(new Coroutine(BounceRoutine(dir, extraXSpeed)));
         }
 
-        private IEnumerator BounceRoutine(Vector2 dir)
+        private IEnumerator BounceRoutine(Vector2 dir, float extraXSpeed)
         {
-            Speed = new Vector2(0, dir.Y == 0 ? -125f : 125f);
+            Speed = new Vector2(extraXSpeed, dir.Y == 0 ? -125f : 125f);
             Rotation = missileSprite.Rotation;
             missileSprite.CenterOrigin();
             missileSprite.Position = new Vector2(Width / 2, Height / 2);
