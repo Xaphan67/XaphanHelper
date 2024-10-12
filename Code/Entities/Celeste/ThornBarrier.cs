@@ -1,5 +1,6 @@
 ﻿using System;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -190,6 +191,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Add(new PlayerCollider(onPlayer, new Circle(8f)));
+            Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
             Sprite.AddLoop("light", "light", 0.08f);
             Sprite.AddLoop("dark", "dark", 0.08f);
             Sprite.CenterOrigin();
@@ -259,19 +261,34 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private void HitByBeam(Beam beam)
+        {
+            beam.CollideSolid(beam.Direction);
+        }
+
+        private void HitByMissile(Missile missile)
+        {
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
+            {
+                missile.CollideImmune(missile.Direction);
+            }
+            else
+            {
+                missile.CollideSolid(missile.Direction);
+                Destroy();
+            }
+        }
+
         public override void Update()
         {
             base.Update();
-            if (SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead)
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
             {
-                if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
-                {
-                    Sprite.Play("light");
-                }
-                else
-                {
-                    Sprite.Play("dark");
-                }
+                Sprite.Play("light");
+            }
+            else
+            {
+                Sprite.Play("dark");
             }
         }
 

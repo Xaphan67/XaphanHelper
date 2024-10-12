@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -77,12 +78,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         filler.RemoveSelf();
                     }
                 }
+                //Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
             }
 
             public override void Awake(Scene scene)
             {
                 base.Awake(scene);
                 Depth = -8498;
+            }
+
+            private void HitByBeam(Beam beam)
+            {
+                beam.CollideSolid(beam.Direction);
+            }
+
+            private void HitByMissile(Missile missile)
+            {
+                missile.CollideImmune(missile.Direction);
             }
 
             public override void DebugRender(Camera camera)
@@ -139,6 +151,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Visible = false;
             Add(new PlayerCollider(OnPlayer));
             Add(new HoldableCollider(OnHoldable));
+            Add(new WeaponCollider(HitByBeam, HitByMissile, new Circle(8f)));
             Add(new LedgeBlocker());
             Depth = -8500;
             AttachToSolid = data.Bool("attachToSolid");
@@ -198,11 +211,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     if (Scene.OnInterval(0.05f, offset))
                     {
-                        Player entity = Scene.Tracker.GetEntity<Player>();
-                        if (entity != null)
-                        {
-                            Collidable = AlwaysCollidable || (Math.Abs(entity.X - X) < 128f && Math.Abs(entity.Y - Y) < 128f);
-                        }
+                        Player player = Scene.Tracker.GetEntity<Player>();
+                        Beam beam = Scene.Tracker.GetEntity<Beam>();
+                        Missile missile = Scene.Tracker.GetEntity<Missile>();
+                        Collidable = AlwaysCollidable || (player != null && Math.Abs(player.X - X) < 128f && Math.Abs(player.Y - Y) < 128f) || (beam != null && Math.Abs(beam.X - X) < 32f && Math.Abs(beam.Y - Y) < 32f) || (missile != null && Math.Abs(missile.X - X) < 32f && Math.Abs(missile.Y - Y) < 32f);
                     }
                 }
             }
@@ -338,6 +350,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void OnHoldable(Holdable h)
         {
             h.HitSpinner(this);
+        }
+
+        private void HitByBeam(Beam beam)
+        {
+            beam.CollideImmune(beam.Direction);
+        }
+
+        private void HitByMissile(Missile missile)
+        {
+            missile.CollideImmune(missile.Direction);
         }
 
         public override void Removed(Scene scene)

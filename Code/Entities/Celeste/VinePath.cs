@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -30,6 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Tag = Tags.TransitionUpdate;
                 Collider = new Hitbox(8f, 8f);
                 Add(new PlayerCollider(onPlayer, Collider));
+                Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
                 directory = data.Attr("directory");
                 if (string.IsNullOrEmpty(directory))
                 {
@@ -49,6 +51,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CollideFirst<VineHead>() == null)
                 {
                     player.Die((player.Position - Position).SafeNormalize());
+                }
+            }
+            private void HitByBeam(Beam beam)
+            {
+                beam.CollideSolid(beam.Direction);
+            }
+
+            private void HitByMissile(Missile missile)
+            {
+                if (!missile.CollideCheck<VineHead>())
+                {
+                    missile.CollideImmune(missile.Direction);
                 }
             }
 

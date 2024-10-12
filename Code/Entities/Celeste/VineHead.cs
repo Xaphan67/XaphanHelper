@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -50,6 +51,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float PauseTime;
 
+        private bool WasHitByMissile;
+
         public VineHead(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;
@@ -64,6 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Collider = new Hitbox(8f, 8f);
             Add(new PlayerCollider(onPlayer, new Circle(6, 4, 4)));
             Add(new PlayerCollider(onBounce, new Circle(6, 4, 4)));
+            Add(new WeaponCollider(HitByBeam, HitByMissile, new Circle(6, 4, 4)));
             nodes = data.NodesWithPosition(offset);
             directory = data.Attr("directory");
             if (string.IsNullOrEmpty(directory))
@@ -141,6 +145,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 player.Speed = Vector2.UnitY * (wasDashing ? 300f : 175f);
             }
+        }
+
+        private void HitByBeam(Beam beam)
+        {
+            beam.CollideImmune(beam.Direction);
+        }
+
+        private void HitByMissile(Missile missile)
+        {
+            if (Position != nodes[0] && ((missile.Direction.X <0 && Facing == Facings.Right) || (missile.Direction.X > 0 && Facing == Facings.Left) || (missile.Direction.Y < 0 && Facing == Facings.Up) || (missile.Direction.Y > 0 && Facing == Facings.Down)))
+            {
+                Add(new Coroutine(BounceCooldownRoutine()));
+            }
+            missile.CollideSolid(missile.Direction);
         }
 
         private IEnumerator BounceCooldownRoutine()
