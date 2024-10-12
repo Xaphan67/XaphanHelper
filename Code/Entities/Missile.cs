@@ -298,6 +298,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Speed.Y -= 900f * Engine.DeltaTime * Math.Min(Math.Max(multY, 1f), 2f);
                 }
+                if (Math.Abs(Speed.X) > 750)
+                {
+                    Speed.X = Math.Sign(Speed.X) * 750;
+                }
+                if (Math.Abs(Speed.Y) > 750)
+                {
+                    Speed.Y = Math.Sign(Speed.Y) * 750;
+                }
                 if (Left > SceneAs<Level>().Bounds.Right || Right < SceneAs<Level>().Bounds.Left || Top > SceneAs<Level>().Bounds.Bottom || Bottom < SceneAs<Level>().Bounds.Top)
                 {
                     RemoveSelf();
