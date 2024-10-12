@@ -402,6 +402,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     droneSwitch.Triggered(Direction);
                 }
             }
+            foreach (PlayerBlocker playerBlocker in Scene.Tracker.GetEntities<PlayerBlocker>())
+            {
+                if (playerBlocker.Enemy != null)
+                {
+                    if (CollideCheck(playerBlocker, Position + dir))
+                    {
+                        playerBlocker.HitByMissile(this);
+                    }
+                }
+            }
             if (XaphanModule.useMetroidGameplay)
             {
                 foreach (BubbleDoor bubbleDoor in Scene.Tracker.GetEntities<BubbleDoor>())

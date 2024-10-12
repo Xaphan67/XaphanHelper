@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.XaphanHelper.Colliders;
+using Celeste.Mod.XaphanHelper.Enemies;
+using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -10,7 +12,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool UpsideDown;
 
-        public PlayerBlocker(Vector2 position, float width, float height, bool canClimb = false, int surfaceSoundIndex = 33, bool upsideDown = false, bool canJumpThrough = false) : base(position, width, height, safe: true)
+        public Enemy Enemy;
+
+        public PlayerBlocker(Vector2 position, float width, float height, bool canClimb = false, int surfaceSoundIndex = 33, bool upsideDown = false, bool canJumpThrough = false, Enemy enemy = null) : base(position, width, height, safe: true)
         {
             Tag = Tags.TransitionUpdate;
             Collidable = true;
@@ -22,6 +26,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SurfaceSoundIndex = surfaceSoundIndex;
             UpsideDown = upsideDown;
             CanJumpThrough = canJumpThrough;
+            Enemy = enemy;
         }
 
         public PlayerBlocker(Collider collider, bool canClimb = false, int surfaceSoundIndex = 33, bool upsideDown = false, bool canJumpThrough = false) : base(collider.AbsolutePosition, collider.Width, collider.Height, safe: true)
@@ -36,6 +41,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SurfaceSoundIndex = surfaceSoundIndex;
             UpsideDown = upsideDown;
             CanJumpThrough = canJumpThrough;
+        }
+
+        public void HitByBeam(Beam beam)
+        {
+            Enemy.HitByBeam(beam);
+        }
+
+        public void HitByMissile(Missile missile)
+        {
+            Enemy.HitByMissile(missile);
         }
 
         public override void Update()

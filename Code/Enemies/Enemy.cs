@@ -158,7 +158,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Flashing = false;
         }
 
-        private void HitByBeam(Beam beam)
+        public void HitByBeam(Beam beam)
         {
             if (Health > 0)
             {
@@ -201,7 +201,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 sprites[i].Active = false;
             }
 
-            SceneAs<Level>().Add(playerBlocker = new PlayerBlocker(Position + pc.Collider.AbsolutePosition, pc.Collider.Width, pc.Collider.Height));
+            SceneAs<Level>().Add(playerBlocker = new PlayerBlocker(Position + pc.Collider.AbsolutePosition, pc.Collider.Width, pc.Collider.Height, enemy: this));
             float timer = FreezeTimer;
             while (timer > 0)
             {
@@ -226,7 +226,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Freezed = false;
         }
 
-        private void HitByMissile(Missile missile)
+        public void HitByMissile(Missile missile)
         {
             if (Health > 0)
             {
