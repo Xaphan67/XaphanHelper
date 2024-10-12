@@ -212,9 +212,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (Scene.OnInterval(0.05f, offset))
                     {
                         Player player = Scene.Tracker.GetEntity<Player>();
-                        Beam beam = Scene.Tracker.GetEntity<Beam>();
-                        Missile missile = Scene.Tracker.GetEntity<Missile>();
-                        Collidable = AlwaysCollidable || (player != null && Math.Abs(player.X - X) < 128f && Math.Abs(player.Y - Y) < 128f) || (beam != null && Math.Abs(beam.X - X) < 32f && Math.Abs(beam.Y - Y) < 32f) || (missile != null && Math.Abs(missile.X - X) < 32f && Math.Abs(missile.Y - Y) < 32f);
+                        bool beamClose = false;
+                        bool missileClose = false;
+                        foreach (Beam beam in Scene.Tracker.GetEntities<Beam>())
+                        {
+                            if (Math.Abs(beam.X - X) < 32f && Math.Abs(beam.Y - Y) < 32f)
+                            {
+                                beamClose = true;
+                                break;
+                            }
+                        }
+                        foreach (Missile missile in Scene.Tracker.GetEntities<Missile>())
+                        {
+                            if (Math.Abs(missile.X - X) < 32f && Math.Abs(missile.Y - Y) < 32f)
+                            {
+                                missileClose = true;
+                                break;
+                            }
+                        }
+                        Collidable = AlwaysCollidable || (player != null && Math.Abs(player.X - X) < 128f && Math.Abs(player.Y - Y) < 128f) || beamClose || missileClose;
                     }
                 }
             }
