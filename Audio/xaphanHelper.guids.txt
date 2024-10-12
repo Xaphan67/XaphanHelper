@@ -571,6 +571,7 @@
 {9ff88ba6-9e26-4644-8ff4-f990704e2fae} event:/game/xaphan/wave_beam_fire
 {15ee171d-a571-4f88-ac1a-2210a9cc4940} event:/game/xaphan/zip_mover_end
 {ed2dc90f-5028-4598-9cf0-a30c99795626} event:/game/xaphan/zip_mover_start
+{29ede671-fb9a-4ec8-a428-b66606510e76} event:/game/xaphan/impact_immune
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
@@ -652,7 +653,11 @@
 {dfb573c9-c5f5-4413-9524-e86b0c6bca51} event:/music/xaphan/lvl_1_ruins_deeper
 {5910f626-fbc5-442a-9764-bbb6b899903f} event:/music/xaphan/lvl_2_abyss
 {26df2989-e01e-4294-99cd-d986d89bfb2d} event:/music/xaphan/lvl_2_abyss_deeper
+{cd935382-2582-4ca6-a45e-bf2c3fd62331} event:/music/xaphan/lvl_2_chasm
+{6c5b5884-8150-42ff-b426-ef0b40681b43} event:/music/xaphan/lvl_3_grove
 {97561eeb-963f-45f3-91f1-2affa5b42928} event:/music/xaphan/lvl_4_ancient_guardian
+{d92add95-ffc3-4044-b454-727bb131d119} event:/music/xaphan/lvl_4_crevice
+{5d291492-176a-4eb9-8900-34d4b8e08290} event:/music/xaphan/lvl_4_hell
 {ef50ea3d-7e80-4dde-b2f2-44fc4be8c5cf} event:/music/xaphan/lvl_4_mines
 {988e8c2a-58d3-4227-9bd5-b76d5d6baeff} event:/music/xaphan/lvl_5_geothermal
 {f623520a-99fc-4fa4-b9c0-3cf970a0d89a} event:/music/xaphan/lvl_5_geothermal_active

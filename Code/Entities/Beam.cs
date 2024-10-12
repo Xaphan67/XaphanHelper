@@ -10,7 +10,7 @@ using Monocle;
 namespace Celeste.Mod.XaphanHelper.Entities
 {
     [Tracked(true)]
-    public class Beam : Entity
+    public class Beam : Actor
     {
         private Player Player;
 
@@ -49,6 +49,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public bool waving;
 
         public int damage;
+
+        public Vector2 Speed;
 
         public Beam(Player player, string beamType, string beamSound, Vector2 position, int wideOffset = 0, bool silent = false) : base(position)
         {
@@ -142,6 +144,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Direction = (float)Math.PI / 2f,
                 DirectionRange = (float)Math.PI * 2f
             };
+            Depth = 100;
         }
 
         public override void Added(Scene scene)
@@ -382,31 +385,39 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
+            if (CollideCheck<Drone>())
+            {
+                Depth = 100;
+            }
+            else
+            {
+                Depth = -9000;
+            }
+            foreach (WeaponCollider weaponCollider in Scene.Tracker.GetComponents<WeaponCollider>())
+            {
+                weaponCollider.Check(this);
+            }
             List<Entity> slopes = SceneAs<Level>().Tracker.GetEntities<Slope>().ToList();
             List<Entity> playerPlatforms = SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>().ToList();
             slopes.ForEach(entity => entity.Collidable = true);
             playerPlatforms.ForEach(entity => entity.Collidable = false);
             base.Update();
-            foreach (WeaponCollider weaponCollider in Scene.Tracker.GetComponents<WeaponCollider>())
-            {
-                weaponCollider.Check(this);
-            }
             float beamSpeed = (beamType == "PowerWave" || beamType == "PowerWaveIce") ? 200f : 300f;
             if (Direction.X > 0)
             {
-                Position.X += (beamSpeed + Player.Speed.X) * Engine.DeltaTime;
+                Speed.X = beamSpeed + Player.Speed.X;
             }
             else if (Direction.X < 0)
             {
-                Position.X -= (beamSpeed - Player.Speed.X) * Engine.DeltaTime;
+                Speed.X = -(beamSpeed - Player.Speed.X);
             }
             else if (Direction.Y > 0)
             {
-                Position.Y += beamSpeed * Engine.DeltaTime;
+                Speed.Y = beamSpeed;
             }
             else if (Direction.Y < 0)
             {
-                Position.Y -= beamSpeed * Engine.DeltaTime;
+                Speed.Y = -beamSpeed ;
             }
             if (wideOffset != 0 && !waving)
             {
@@ -498,13 +509,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (CollideCheck<DroneSwitch>())
+            if (beamType.Contains("Wave") && CollideCheck<DroneSwitch>())
             {
                 CollideDroneSwitch(Direction);
-            }
-            if (CollideCheck<Solid>() && !CollideCheck<PlayerBlocker>())
-            {
-                CollideSolid(Direction);
             }
             if (Left > SceneAs<Level>().Bounds.Right || Right < SceneAs<Level>().Bounds.Left || Top > SceneAs<Level>().Bounds.Bottom || Bottom < SceneAs<Level>().Bounds.Top)
             {
@@ -514,8 +521,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 SceneAs<Level>().Particles.Emit(P_Ice, Direction.Y == 0 ? (Direction.X < 0 ? CenterRight : CenterLeft) : (Direction.Y == -1 ? BottomCenter : TopCenter) + Vector2.One);
             }
+            Collider MainCollider = Collider;
+            if (beamType.Contains("Wave"))
+            {
+                Collider = null;
+            }
+            MoveH(Speed.X * Engine.DeltaTime, onCollideSolid);
+            MoveV(Speed.Y * Engine.DeltaTime, onCollideSolid);
+            if (beamType.Contains("Wave"))
+            {
+                Collider = MainCollider;
+            }
             slopes.ForEach(entity => entity.Collidable = false);
             playerPlatforms.ForEach(entity => entity.Collidable = true);
+        }
+
+        private void onCollideSolid(CollisionData data)
+        {
+            CollideSolid(data.Direction);
         }
 
         public void CollideSolid(Vector2 dir)
@@ -577,6 +600,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            foreach (DroneSwitch droneSwitch in Scene.Tracker.GetEntities<DroneSwitch>())
+            {
+                if (CollideCheck(droneSwitch, Position + dir) && droneSwitch.type == "Beam")
+                {
+                    string Direction = null;
+                    if (dir == new Vector2(-1, 0))
+                    {
+                        Direction = "Left";
+                    }
+                    else if (dir == new Vector2(1, 0))
+                    {
+                        Direction = "Right";
+                    }
+                    else if (dir == new Vector2(0, -1))
+                    {
+                        Direction = "Down";
+                    }
+                    droneSwitch.Triggered(Direction);
+                }
+            }
             if (XaphanModule.useMetroidGameplay)
             {
                 foreach (BubbleDoor bubbleDoor in Scene.Tracker.GetEntities<BubbleDoor>())
@@ -612,6 +655,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 RemoveSelf();
             }
+        }
+
+        public void CollideImmune(Vector2 dir)
+        {
+            Collidable = false;
+            Audio.Play("event:/game/xaphan/impact_immune", Position);
+            CollideSolid(dir);
         }
 
         public void CollideDroneSwitch(Vector2 dir)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.XaphanHelper.Colliders;
@@ -8,7 +9,8 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
-    public class Missile : Entity
+    [Tracked(true)]
+    public class Missile : Actor
     {
         private Player Player;
 
@@ -37,6 +39,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public Vector2 startPosition;
 
         public int damage;
+
+        public Vector2 Speed;
+
+        private float Rotation;
 
         public Missile(Player player, Vector2 position, bool superMissile, bool fromDrone = false) : base(position)
         {
@@ -240,6 +246,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 SpeedMax = 20f,
                 SpeedMultiplier = 0.01f,
             };
+            Depth = 100;
         }
 
         public override void Added(Scene scene)
@@ -251,53 +258,66 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
+            if (CollideCheck<Drone>())
+            {
+                Depth = 100;
+            }
+            else
+            {
+                Depth = -9000;
+            }
+            if (Collidable)
+            {
+                foreach (WeaponCollider weaponCollider in Scene.Tracker.GetComponents<WeaponCollider>())
+                {
+                    weaponCollider.Check(this);
+                }
+            }
             List<Entity> slopes = SceneAs<Level>().Tracker.GetEntities<Slope>().ToList();
             List<Entity> playerPlatforms = SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>().ToList();
             slopes.ForEach(entity => entity.Collidable = true);
             playerPlatforms.ForEach(entity => entity.Collidable = false);
             base.Update();
-            foreach (WeaponCollider weaponCollider in Scene.Tracker.GetComponents<WeaponCollider>())
+            if (Collidable)
             {
-                weaponCollider.Check(this);
+                float multX = Math.Abs(Position.X - startPosition.X) / 5;
+                float multY = Math.Abs(Position.Y - startPosition.Y) / 5;
+                if (Direction.X > 0)
+                {
+                    Speed.X += 900f * Engine.DeltaTime * Math.Min(Math.Max(multX, 1f), 2f);
+                }
+                else if (Direction.X < 0)
+                {
+                    Speed.X -= 900f * Engine.DeltaTime * Math.Min(Math.Max(multX, 1f), 2f);
+                }
+                else if (Direction.Y > 0)
+                {
+                    Speed.Y += 900f * Engine.DeltaTime * Math.Min(Math.Max(multY, 1f), 2f);
+                }
+                else if (Direction.Y < 0)
+                {
+                    Speed.Y -= 900f * Engine.DeltaTime * Math.Min(Math.Max(multY, 1f), 2f);
+                }
+                if (Left > SceneAs<Level>().Bounds.Right || Right < SceneAs<Level>().Bounds.Left || Top > SceneAs<Level>().Bounds.Bottom || Bottom < SceneAs<Level>().Bounds.Top)
+                {
+                    RemoveSelf();
+                }
+                if (SceneAs<Level>().OnRawInterval(0.01f) && (Position.X <= startPosition.X - 25f || Position.X >= startPosition.X + 25f || Position.Y <= startPosition.Y - 25f || Position.Y >= startPosition.Y + 25f))
+                {
+                    Vector2 position = Direction.Y == 0 ? (Direction.X < 0 ? CenterRight + new Vector2(5f, 0f) : CenterLeft - new Vector2(5f, 0f)) : (Direction.Y == -1 ? BottomCenter + new Vector2(0f, 5f) : TopCenter - new Vector2(0f, 5f));
+                    SceneAs<Level>().Particles.Emit(P_Trail, position);
+                    SceneAs<Level>().Particles.Emit(P_Trail_B, position);
+                }
             }
-            float multX = Math.Abs(Position.X - startPosition.X) / 25;
-            float multY = Math.Abs(Position.Y - startPosition.Y) / 25;
-            if (Direction.X > 0)
-            {
-                Position.X += 300f * Engine.DeltaTime * Math.Min(Math.Max(multX, 1f), 2f);
-            }
-            else if (Direction.X < 0)
-            {
-                Position.X -= 300f * Engine.DeltaTime * Math.Min(Math.Max(multX, 1f), 2f);
-            }
-            else if (Direction.Y > 0)
-            {
-                Position.Y += 300f * Engine.DeltaTime * Math.Min(Math.Max(multY, 1f), 2f);
-            }
-            else if (Direction.Y < 0)
-            {
-                Position.Y -= 300f * Engine.DeltaTime * Math.Min(Math.Max(multY, 1f), 2f);
-            }
-            if (CollideCheck<DroneSwitch>())
-            {
-                CollideDroneSwitch(Direction);
-            }
-            if (CollideCheck<Solid>())
-            {
-                CollideSolid(Direction);
-            }
-            if (Left > SceneAs<Level>().Bounds.Right || Right < SceneAs<Level>().Bounds.Left || Top > SceneAs<Level>().Bounds.Bottom || Bottom < SceneAs<Level>().Bounds.Top)
-            {
-                RemoveSelf();
-            }
-            if (SceneAs<Level>().OnRawInterval(0.01f) && (Position.X <= startPosition.X - 25f || Position.X >= startPosition.X + 25f || Position.Y <= startPosition.Y - 25f || Position.Y >= startPosition.Y + 25f))
-            {
-                Vector2 position = Direction.Y == 0 ? (Direction.X < 0 ? CenterRight + new Vector2(5f, 0f) : CenterLeft - new Vector2(5f, 0f)) : (Direction.Y == -1 ? BottomCenter + new Vector2(0f, 5f) : TopCenter - new Vector2(0f, 5f));
-                SceneAs<Level>().Particles.Emit(P_Trail, position);
-                SceneAs<Level>().Particles.Emit(P_Trail_B, position);
-            }
+            MoveH(Speed.X * Engine.DeltaTime, onCollideSolid);
+            MoveV(Speed.Y * Engine.DeltaTime, onCollideSolid);
             slopes.ForEach(entity => entity.Collidable = false);
             playerPlatforms.ForEach(entity => entity.Collidable = true);
+        }
+
+        private void onCollideSolid(CollisionData data)
+        {
+            CollideSolid(data.Direction);
         }
 
         public void CollideSolid(Vector2 dir)
@@ -362,6 +382,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            foreach (DroneSwitch droneSwitch in Scene.Tracker.GetEntities<DroneSwitch>())
+            {
+                if (CollideCheck(droneSwitch, Position + dir) && (droneSwitch.type == "Beam" || droneSwitch.type == "Missile" || (SuperMissile && droneSwitch.type == "SuperMissile")))
+                {
+                    string Direction = null;
+                    if (dir == new Vector2(-1, 0))
+                    {
+                        Direction = "Left";
+                    }
+                    else if (dir == new Vector2(1, 0))
+                    {
+                        Direction = "Right";
+                    }
+                    else if (dir == new Vector2(0, -1))
+                    {
+                        Direction = "Down";
+                    }
+                    droneSwitch.Triggered(Direction);
+                }
+            }
             if (XaphanModule.useMetroidGameplay)
             {
                 foreach (BubbleDoor bubbleDoor in Scene.Tracker.GetEntities<BubbleDoor>())
@@ -406,28 +446,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
             RemoveSelf();
         }
 
-        public void CollideDroneSwitch(Vector2 dir)
+        public void CollideImmune(Vector2 dir)
         {
-            string Direction = null;
-            if (dir == new Vector2(-1, 0))
+            Collidable = false;
+            Audio.Play("event:/game/xaphan/impact_immune", Position);
+            Add(new Coroutine(BounceRoutine(dir)));
+        }
+
+        private IEnumerator BounceRoutine(Vector2 dir)
+        {
+            Speed = new Vector2(0, dir.Y == 0 ? -125f : 125f);
+            Rotation = missileSprite.Rotation;
+            missileSprite.CenterOrigin();
+            missileSprite.Position = new Vector2(Width / 2, Height / 2);
+            float RotationVelocity = 20f;
+            int bounceDirection = dir.X < 0 ? 1 : -1;
+            while (true)
             {
-                Direction = "Left";
-            }
-            else if (dir == new Vector2(1, 0))
-            {
-                Direction = "Right";
-            }
-            else if (dir == new Vector2(0, -1))
-            {
-                Direction = "Down";
-            }
-            foreach (Entity entity in Scene.Tracker.GetEntities<DroneSwitch>())
-            {
-                DroneSwitch droneSwitch = (DroneSwitch)entity;
-                if (CollideCheck(droneSwitch) && (droneSwitch.type == "Beam" || droneSwitch.type == "Missile" || (SuperMissile && droneSwitch.type == "SuperMissile")))
+                Rotation -= MathHelper.ToRadians(RotationVelocity);
+                missileSprite.Rotation = Rotation;
+                Speed.Y += 8f;
+                if (dir.Y == 0 && Math.Abs(Speed.X) <= 30f)
                 {
-                    droneSwitch.Triggered(Direction);
+                    Speed.X += 5f * bounceDirection;
                 }
+                yield return null;
             }
         }
     }
