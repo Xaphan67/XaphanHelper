@@ -14,9 +14,11 @@ namespace Celeste.Mod.XaphanHelper.Colliders
 
         public Collider Collider;
 
-        public WeaponCollider() : base(active: false, visible: false)
+        public WeaponCollider(Action<Beam> onCollideBeam, Action<Missile> onCollideMissile, Collider collider = null) : base(active: false, visible: false)
         {
-
+            OnCollideBeam = onCollideBeam;
+            OnCollideMissile = onCollideMissile;
+            Collider = collider;
         }
 
         public bool Check(Beam beam)

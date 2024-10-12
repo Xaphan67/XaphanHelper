@@ -54,11 +54,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         public Enemy(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Add(pc = new PlayerCollider(OnCollidePlayer));
-            Add(bc = new WeaponCollider
-            {
-                OnCollideBeam = HitByBeam,
-                OnCollideMissile = HitByMissile
-            });
+            Add(bc = new WeaponCollider(HitByBeam, HitByMissile));
         }
 
         public void BeforeUpdate()

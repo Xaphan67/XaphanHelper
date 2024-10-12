@@ -25,11 +25,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collider = new Hitbox(14f, 14f);
                 Offset = offset;
                 Crate = crate;
-                Add(WeaponCollider = new WeaponCollider
-                {
-                    OnCollideBeam = Crate.HitByBeam,
-                    OnCollideMissile = Crate.HitByMissile
-                });
+                Add(WeaponCollider = new WeaponCollider(Crate.HitByBeam, Crate.HitByMissile));
             }
 
             public override void Update()
