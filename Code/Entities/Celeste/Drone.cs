@@ -215,7 +215,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 XaphanModule.ModSaveData.fakePlayerPosition.Add(self.Session.Area.LevelSet, new());
             }
-            if (XaphanModule.ModSaveData.startAsDrone[self.Session.Area.LevelSet] && playerIntro != Player.IntroTypes.Transition)
+            if (XaphanModule.ModSaveData.startAsDrone[self.Session.Area.LevelSet] && playerIntro != Player.IntroTypes.Transition && (self.Session.Area.LevelSet == "Xaphan/0" ? !self.Session.Level.Contains("Intro") : true))
             {
                 Player player = self.Tracker.GetEntity<Player>();
                 if (player != null)
