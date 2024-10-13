@@ -186,7 +186,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!Visible || Hidden)
             {
-                Collidable = false;
+                Collidable = AlwaysCollidable;
                 if (InView() && !Hidden)
                 {
                     Visible = true;
