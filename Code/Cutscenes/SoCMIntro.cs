@@ -125,7 +125,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return level.ZoomTo(new Vector2(240f, 135f), 2f, 0f);
             level.Add(message = new IntroText("Xaphan_0_0_intro_vignette_A", "Middle", Engine.Height / 2, Color.Red));
             message.Show = true;
-            float timer = 2f;
+            float timer = 2.2f;
             while (timer > 0f)
             {
                 yield return null;
@@ -144,7 +144,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return level.ZoomTo(new Vector2(167f, 45f), 2f, 0f);
             level.Add(message = new IntroText("Xaphan_0_0_intro_vignette_B", "Middle", Engine.Height / 2, Color.Red));
             message.Show = true;
-            timer = 2f;
+            timer = 2.2f;
             while (timer > 0f)
             {
                 yield return null;
@@ -161,7 +161,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             DrawBlackBg = true;
             level.Add(message = new IntroText("Xaphan_0_0_intro_vignette_C", "Middle", Engine.Height / 2, Color.Red));
             message.Show = true;
-            timer = 2f;
+            timer = 2.2f;
             while (timer > 0f)
             {
                 yield return null;
@@ -179,7 +179,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return level.ZoomTo(new Vector2(160f, 92f), 5f, 0f);
             level.Add(message = new IntroText("Xaphan_0_0_intro_vignette_D", "Middle", Engine.Height / 2, Color.Red));
             message.Show = true;
-            timer = 2f;
+            timer = 2.2f;
             while (timer > 0f)
             {
                 yield return null;
