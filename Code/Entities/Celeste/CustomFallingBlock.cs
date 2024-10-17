@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -84,7 +83,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void OnStaticMoverTrigger(StaticMover sm)
         {
-            Triggered = true;
+            if (sm.Entity is not MagneticCeiling || (sm.Entity is MagneticCeiling && !magneticCeilingsNoTrigger))
+            {
+                Triggered = true;
+            }
         }
 
         private bool PlayerFallCheck()
