@@ -73,6 +73,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new StaticMover
             {
                 OnShake = OnShake,
+                OnMove = OnMove,
                 SolidChecker = IsRiding,
                 JumpThruChecker = IsRiding
             });
@@ -215,6 +216,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void OnCollide(CollisionData data)
         {
             Explode();
+        }
+
+        private void OnMove(Vector2 amount)
+        {
+            if (!explode)
+            {
+                Position += amount;
+            }
         }
 
         protected override void OnSquish(CollisionData data)
