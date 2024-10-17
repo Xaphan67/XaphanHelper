@@ -14,6 +14,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private static MethodInfo Spring_BounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private FieldInfo Player_launchApproachX = typeof(Player).GetField("launchApproachX", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo Player_dashCooldownTimer = typeof(Player).GetField("dashCooldownTimer", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private Sprite Sprite;
 
         private string Directory;
@@ -34,12 +38,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public ParticleType P_Steam;
 
+        private float BounceForce;
+
+        private bool RefillJump;
+
+        private float DashCooldown;
+
 
         public ExplosiveBoulder(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Collider = new Circle(12f);
             Directory = data.Attr("directory");
             Gravity = data.Bool("gravity");
+            BounceForce = data.Float("bounceForce", 280f);
+            RefillJump = data.Bool("refillJump", false);
+            DashCooldown = data.Float("dashCooldown", 0.2f);
             if (string.IsNullOrEmpty(Directory))
             {
                 Directory = "objects/XaphanHelper/ExplosiveBoulder";
@@ -110,13 +123,60 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    Vector2 vector2 = player.ExplodeLaunch(Position, false);
+                    Vector2 vector2 = ExplodeLaunch(player, Position, false);
                     SceneAs<Level>().DirectionalShake(vector2, 0.15f);
                     SceneAs<Level>().Displacement.AddBurst(Center, 0.3f, 8f, 32f, 0.8f);
                     SceneAs<Level>().Particles.Emit(Bumper.P_Launch, 12, Center + vector2 * 12f, Vector2.One * 3f, vector2.Angle());
                     Explode();
                 }
             }
+        }
+
+        public Vector2 ExplodeLaunch(Player player, Vector2 from, bool snapUp = true, bool sidesOnly = false)
+        {
+            Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+            Celeste.Freeze(0.1f);
+            Player_launchApproachX.SetValue(player, null);
+            Vector2 vector = (player.Center - from).SafeNormalize(-Vector2.UnitY);
+            float num = Vector2.Dot(vector, Vector2.UnitY);
+            if (snapUp && num <= -0.7f)
+            {
+                vector.X = 0f;
+                vector.Y = -1f;
+            }
+            else if (num <= 0.65f && num >= -0.55f)
+            {
+                vector.Y = 0f;
+                vector.X = Math.Sign(vector.X);
+            }
+
+            if (sidesOnly && vector.X != 0f)
+            {
+                vector.Y = 0f;
+                vector.X = Math.Sign(vector.X);
+            }
+
+            player.Speed = BounceForce * vector;
+            if (player.Speed.Y <= 50f)
+            {
+                player.Speed.Y = Math.Min(-150f, player.Speed.Y);
+                player.AutoJump = true;
+            }
+
+            SlashFx.Burst(player.Center, player.Speed.Angle());
+            if (!player.Inventory.NoRefills)
+            {
+                if (!RefillJump)
+                {
+                    XaphanModule.refillJumps = false;
+                }
+                player.RefillDash();
+            }
+
+            player.RefillStamina();
+            Player_dashCooldownTimer.SetValue(player, DashCooldown);
+            player.StateMachine.State = 7;
+            return vector;
         }
 
         private void onSpring(Spring spring)

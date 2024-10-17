@@ -268,7 +268,11 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private bool modRefillDash(On.Celeste.Player.orig_RefillDash orig, Player self)
         {
-            RefillJumpBuffer();
+            if (XaphanModule.refillJumps)
+            {
+                RefillJumpBuffer();
+            }
+            XaphanModule.refillJumps = true;
             return orig(self);
         }
 

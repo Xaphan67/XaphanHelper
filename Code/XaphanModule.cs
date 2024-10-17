@@ -131,6 +131,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool NoDroneSpawnSound;
 
+        public static bool refillJumps;
+
         public enum Upgrades
         {
             // Celeste Upgrades
