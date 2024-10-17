@@ -44,6 +44,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float DashCooldown;
 
+        private Vector2 imageOffset;
+
 
         public ExplosiveBoulder(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -68,6 +70,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Play("idle" + (Calc.Random.Next(2) == 1 ? "A" : "B"));
             onCollide = OnCollide;
             Add(new Coroutine(GravityRoutine()));
+            Add(new StaticMover
+            {
+                OnShake = OnShake,
+                SolidChecker = IsRiding,
+                JumpThruChecker = IsRiding
+            });
             P_Explode = new ParticleType
             {
                 Color = Calc.HexToColor("F8C820"),
@@ -87,6 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 LifeMin = 1f,
                 LifeMax = 2f,
             };
+            AllowPushing = false;
             Depth = -8499;
         }
 
@@ -213,6 +222,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Explode();
         }
 
+        private void OnShake(Vector2 amount)
+        {
+            imageOffset += amount;
+        }
+
         public void HitSpinner(Entity spinner)
         {
             Explode();
@@ -291,8 +305,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Render()
         {
+            Vector2 position = Sprite.Position;
+            Sprite.Position += imageOffset;
             Sprite.DrawOutline();
             base.Render();
+            Sprite.Position = position;
         }
     }
 }
