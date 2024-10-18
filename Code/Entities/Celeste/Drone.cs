@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Cutscenes;
+using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
@@ -1569,6 +1570,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             }
                         }
                     }
+                }
+                foreach (LightManager manager in SceneAs<Level>().Tracker.GetEntities<LightManager>())
+                {
+                    manager.TemporaryModeTimer = 0f;
+                    if (manager.ForceModeRoutine.Active)
+                    {
+                        manager.ForceModeRoutine.Cancel();
+                        manager.TemporaryMode = XaphanModuleSession.LightModes.None;
+                    }
+                    XaphanModule.ModSession.LightMode = manager.RespawnMode;
+                    manager.SetMainMode(manager.RespawnMode);
                 }
                 level.Reload();
             });
