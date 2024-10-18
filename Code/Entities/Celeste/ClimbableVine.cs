@@ -79,7 +79,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     vine.Collidable = true;
                 }
-                else if (((self.Right <= vine.Left || self.Left >= vine.Right) && self.Bottom >= vine.Top + 1 && self.Top <= vine.Bottom) &&  Input.Grab.Check && self.Holding == null && vine.noCollideDelay <= 0f)
+                else if (((self.Right <= vine.Left || self.Left >= vine.Right) && self.Bottom >= vine.Top + 1 && self.Top <= vine.Bottom &&  Input.Grab.Check && self.Holding == null && vine.noCollideDelay <= 0f) && !XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     if (Input.Jump.Pressed)
                     {
