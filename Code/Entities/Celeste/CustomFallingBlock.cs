@@ -264,11 +264,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private static float JITBarrier(float v)
-        {
-            return v;
-        }
-
         private void LandParticles()
         {
             for (int i = 2; i <= Width; i += 4)
