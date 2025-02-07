@@ -177,13 +177,22 @@
 
 #Collectables
 #注意：下列文本使用 Graphics/Atlases/Gameplay/collectables/XaphanHelper/CustomFollower/collectText/ 中的字体
-	XaphanHelper_Collect_EnergyTank= 体力
-	XaphanHelper_Collect_Missiles= 导弹
-	XaphanHelper_Collect_SuperMissiles= 超导
-	XaphanHelper_Collect_FireRateModule= 光束冷却
-	XaphanHelper_Collect_Time_One= 秒
-	XaphanHelper_Collect_Time= 秒
-	
+  # <>中的代码会在游戏内解码为实际的对应图片，修改时请注意
+  #
+    # 体力
+	XaphanHelper_Collect_EnergyTank= <S_CH/008><S_CH/009>
+	# 导弹
+	XaphanHelper_Collect_Missiles= <S_CH/003><S_CH/002>
+	# 超导
+	XaphanHelper_Collect_SuperMissiles= <S_CH/001><S_CH/003>
+	# 光束冷却
+	XaphanHelper_Collect_FireRateModule= <S_CH/004><S_CH/005><S_CH/006><S_CH/007>
+	# 秒
+	XaphanHelper_Collect_Time_One= <S_CH/000>
+	XaphanHelper_Collect_Time= <S_CH/000>
+  #
+  # 不直接使用中文路径是因为banana网站讨厌它
+
 	XaphanHelper_get_EnergyTank_Desc= 每个能量罐将增加5点体力上限
 	XaphanHelper_get_FireRateModule_Desc= 每个射速模块将减少光束冷却的15%
 

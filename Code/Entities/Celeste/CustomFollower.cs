@@ -39,24 +39,37 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 for (int i = 0; i < text.Length; i++)
                 {
                     Sprite sprite = new(GFX.Game, "collectables/XaphanHelper/CustomFollower/collectText/");
-                    if (text[i] == ' ')
-                    {
+                    // start
+                    if (text[i] == ' ') {
                         sprite.Add("start", "_", 0.08f, 0, 0, 0);
                     }
-                    else
-                    {
+                    else {
                         sprite.Add("start", sprite.Width == 7 ? "startLarger" : (sprite.Width == 6 ? "startLarge" : "start"), 0.08f);
                     }
-                    sprite.Add("char", text[i] == ' ' ? "_" : text[i].ToString(), 1f);
+                    // char
+                    if (text[i] == '<') {
+                        i++;
+                        string cipher = null; // put font on a safe path by encrypt and decode it for translators
+                        for (; i < text.Length; i++) {
+                            if (text[i] == '>') {
+                                break;
+                            }
+                            cipher += text[i];
+                        }
+                        sprite.Add("char", cipher, 1f);
+                    }
+                    else {
+                        sprite.Add("char", text[i] == ' ' ? "_" : text[i].ToString(), 1f);
+                    }
+                    // end
                     if (text[i] != ' ')
                     {
                         sprite.Add("end", sprite.Width == 7 ? "endLarger" : (sprite.Width == 6 ? "endLarge" : "end"), 0.08f);
                     }
                     sprite.Play("start");
                     sprites[i] = sprite;
-
                 }
-                textWidth = sprites.Sum((Sprite sprite) => sprite.Width - 1) + 1;
+                textWidth = sprites.Sum((Sprite sprite) => sprite == null ? 0 : sprite.Width - 1) + 1;
                 Add(light = new VertexLight(Color.White, 1f, 16, 24));
                 Add(bloom = new BloomPoint(1f, 12f));
                 Depth = -2000100;
@@ -72,13 +85,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 float lastX = (float)Math.Round(-textWidth / 2f, MidpointRounding.AwayFromZero);
                 for (int i = 0; i < text.Length; i++)
                 {
-                    sprites[i].X = lastX;
-                    lastX = sprites[i].X + sprites[i].Width - 1;
-                    Add(sprites[i]);
+                    if (sprites[i] is not Sprite sprite) { continue; } // Ignore null
+                    sprite.X = lastX;
+                    lastX = sprite.X + sprite.Width - 1;
+                    Add(sprite);
                 }
                 Sprite[] array = sprites;
                 foreach (Sprite sprite in array)
                 {
+                    if (sprite == null) { continue; }
                     sprite.OnLastFrame = delegate
                     {
                         if (sprite.CurrentAnimationID == "start")
@@ -129,6 +144,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Sprite[] array = sprites;
                 foreach (Sprite sprite in array)
                 {
+                    if (sprite == null) { continue; }
                     if (Scene.OnInterval(0.05f))
                     {
                         if (sprite.Color == particleType.Color2 * opacity)
