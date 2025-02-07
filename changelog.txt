@@ -1,3 +1,7 @@
+Version 1.0.72 :
+- Fixed Gamebanana shenanigans with Simplified Chinese characters
+- Removed a debug log
+
 Version 1.0.71 :
 - Interacting with Elevators and Warp Stations now immediately set the horizontal player speed to 0 to avoid cases where the player can fall off those entities and potentialy crash the game
 - Entities attached to Break Blocks will not no longer appear after the block is broken if its Respawn attribute is set to Never
