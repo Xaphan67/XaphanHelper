@@ -262,7 +262,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void OnPlayer(Player player)
         {
-            Logger.Log(LogLevel.Info, "Xh", "Refill collide with player");
             Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
             int maxMissileCount = 10;
             int maxSuperMissileCount = 5;
