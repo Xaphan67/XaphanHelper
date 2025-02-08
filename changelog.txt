@@ -1,3 +1,6 @@
+version 1.0.73 :
+- Fixed a bug that could sometimes cause one boss in SoCM to kill the player instead of being hit
+
 Version 1.0.72 :
 - Fixed Gamebanana shenanigans with Simplified Chinese characters
 - Removed a debug log

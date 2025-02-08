@@ -649,21 +649,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         player.Die((player.Position - Position).SafeNormalize());
                     }
                 }
-                else 
+                else if (player.StateMachine.State != 7 && player.StateMachine.State != 22 && !IsSlashingBomb)
                 {
-                    if (player.StateMachine.State != Player.StAttract && player.StateMachine.State != Player.StLaunch && !IsSlashingBomb && Facing == Facings.Left ? player.Center.X <= Center.X - 8f : player.Center.X >= Center.X + 8f)
+                    IsSlashingBomb = true;
+                    if (Routine.Active)
                     {
-                        IsSlashingBomb = true;
-                        if (Routine.Active)
-                        {
-                            Routine.Cancel();
-                        }
-                        Add(Routine = new Coroutine(SlashRoutine(null, player)));
+                        Routine.Cancel();
                     }
-                    else if (player.StateMachine.State != Player.StDash && player.StateMachine.State != Player.StAttract && player.StateMachine.State != Player.StLaunch)
-                    {
-                        player.Die((player.Position - Position).SafeNormalize());
-                    }
+                    Add(Routine = new Coroutine(SlashRoutine(null, player)));
                 }
             }
         }
