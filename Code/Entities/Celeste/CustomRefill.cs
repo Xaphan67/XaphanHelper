@@ -38,7 +38,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private ParticleType p_glow;
 
-        private float respawnTimer;
+        public float respawnTimer;
 
         public float respawnTime;
 

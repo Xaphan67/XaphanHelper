@@ -96,7 +96,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             if (refill != null)
             {
-                refill.Collidable = false;
+                refill.Collidable = (!Collidable && refill.respawnTimer <= 0);
                 UpdateY();
             }
             else if (sine != null)
