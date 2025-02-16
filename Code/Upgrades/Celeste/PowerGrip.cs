@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -94,7 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         private bool PlayerOnClimbBoundsCheck(On.Celeste.Player.orig_ClimbBoundsCheck orig, Player self, int dir)
         {
             BagDisplay bagDisplay = GetDisplay(self.SceneAs<Level>(), "bag");
-            if (Active(self.SceneAs<Level>()) && !self.SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && (bagDisplay != null ? (self.OnGround() ? !XaphanModule.ModSettings.UseBagItemSlot.Check : true) : true))
+            if (Active(self.SceneAs<Level>()) && !self.SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && !PowerGripBlocker.Check(self.SceneAs<Level>(), self) && (bagDisplay != null ? (self.OnGround() ? !XaphanModule.ModSettings.UseBagItemSlot.Check : true) : true))
             {
                 BagDisplay display = self.SceneAs<Level>().Tracker.GetEntity<BagDisplay>();
                 List<Entity> conveyors = self.SceneAs<Level>().Tracker.GetEntities<Conveyor>();
@@ -130,7 +131,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private bool modJumpButtonCheck(bool actualValue, Player self, int moveX)
         {
-            if (Active(self.SceneAs<Level>()) && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (Active(self.SceneAs<Level>()) && !XaphanModule.PlayerIsControllingRemoteDrone() && !PowerGripBlocker.Check(self.SceneAs<Level>(), self))
             {
                 return actualValue;
             }
