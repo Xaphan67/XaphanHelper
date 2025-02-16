@@ -101,7 +101,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 if (!XaphanModule.useMetroidGameplay)
                 {
-                    player.Die(new Vector2(0f, -1f));
+                    onHitPlayer(player);
                 }
                 else
                 {
@@ -120,6 +120,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     }
                 }
             }
+        }
+
+        public virtual void onHitPlayer(Player player)
+        {
+            player.Die(new Vector2(0f, -1f));
         }
 
         private IEnumerator ImmuneToBeamSequence()

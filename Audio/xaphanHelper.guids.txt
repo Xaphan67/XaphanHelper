@@ -576,6 +576,7 @@
 {15ee171d-a571-4f88-ac1a-2210a9cc4940} event:/game/xaphan/zip_mover_end
 {42a8bf1e-4d0f-450c-9dbe-9bc319a2f62f} event:/game/xaphan/zip_mover_impact
 {ed2dc90f-5028-4598-9cf0-a30c99795626} event:/game/xaphan/zip_mover_start
+{d2456f2f-d6e1-4e5c-867c-3307f35e7d9f} event:/game/xaphan/fireflea_hit
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
