@@ -147,7 +147,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnRelease(Vector2 force)
         {
-            Add(ExplodeRoutine = new Coroutine(Explode()));
+            if (!ExplodeRoutine.Active)
+            {
+                Add(ExplodeRoutine = new Coroutine(Explode()));
+            }
             RemoveTag(Tags.Persistent);
             bombSpriteDisplay.RemoveTag(Tags.Persistent);
             if (force.X != 0f && force.Y == 0f)
