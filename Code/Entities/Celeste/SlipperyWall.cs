@@ -3,7 +3,6 @@ using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
-using static Celeste.Tentacles;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
