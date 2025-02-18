@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace Celeste.Mod.XaphanHelper
 {
@@ -66,6 +67,26 @@ namespace Celeste.Mod.XaphanHelper
         public static bool HasEntity(this LevelData levelData, string entityName)
         {
             return levelData.GetEntityData(entityName) != null;
+        }
+
+        public static Color GetGradientColor(Color firstColor, Color lastColor, float percent)
+        {
+            float interval_R = (lastColor.R - firstColor.R) / 100f;
+            float interval_G = (lastColor.G - firstColor.G) / 100f;
+            float interval_B = (lastColor.B - firstColor.B) / 100f;
+
+            float current_R = firstColor.R;
+            float current_G = firstColor.G;
+            float current_B = firstColor.B;
+
+            for (int i = 1; i <= percent; i++)
+            {
+                current_R += interval_R;
+                current_G += interval_G;
+                current_B += interval_B;
+            }
+            Color color = new((int)current_R, (int)current_G, (int)current_B);
+            return color;
         }
     }
 }

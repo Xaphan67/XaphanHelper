@@ -114,6 +114,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string color;
 
+        private string poisonedColor;
+
         private float outsideTransparency;
 
         private float insideTransparency;
@@ -143,6 +145,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private string appearFlags;
 
         private string removeFlags;
+
+        private string purifyFlags;
 
         private int origLevelBottom;
 
@@ -188,6 +192,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool VariaPreventDying;
 
+        private bool poisoned;
+
+        private float GradientTimer = 1f;
+
+        private bool purified;
+
+        private bool invertPurifyFlags;
+
         public Liquid(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
@@ -196,7 +208,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             liquidType = data.Attr("liquidType", "acid");
             lowPosition = data.Int("lowPosition");
             delay = data.Float("frameDelay");
+            poisoned = data.Bool("poisoned", false);
             color = data.Attr("color");
+            poisonedColor = (poisoned && liquidType == "water") ? data.Attr("poisonedColor", "4c9a42") : color;
             outsideTransparency = data.Float("transparency");
             insideTransparency = data.Float("insideTransparency", outsideTransparency);
             foreground = data.Bool("foreground");
@@ -208,6 +222,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             riseEndFlag = data.Attr("riseEndFlag");
             appearFlags = data.Attr("appearFlags");
             removeFlags = data.Attr("removeFlags");
+            purifyFlags = data.Attr("purifyFlags");
+            invertPurifyFlags = data.Bool("invertPurifyFlags");
             riseSound = data.Bool("riseSound");
             directory = data.Attr("directory");
             customSurfaceHeight = data.Int("surfaceHeight", 0);
@@ -670,6 +686,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            Add(new Coroutine(PoisonedRoutine()));
             if (!string.IsNullOrEmpty(appearFlags))
             {
                 string[] flags = appearFlags.Split(',');
@@ -694,7 +711,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Utils.GetGradientColor(Calc.HexToColor(color), Calc.HexToColor(poisonedColor), GradientTimer) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
             origLevelBottom = SceneAs<Level>().Bounds.Bottom;
             if (liquidType == "lava")
             {
@@ -727,6 +744,84 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         groupLeader = false;
                     }
                 }
+            }
+            purified = CheckIfPurified();
+        }
+
+        private bool CheckIfPurified()
+        {
+            string[] flags = purifyFlags.Split(',');
+            bool purified = true;
+            foreach (string flag in flags)
+            {
+                if (invertPurifyFlags ? SceneAs<Level>().Session.GetFlag(flag) : !SceneAs<Level>().Session.GetFlag(flag))
+                {
+                    purified = false;
+                    break;
+                }
+            }
+            return purified;
+        }
+
+        public IEnumerator PoisonedRoutine()
+        {
+            if (!string.IsNullOrEmpty(purifyFlags))
+            {
+                bool skip = false;
+                if (purified)
+                {
+                    GradientTimer = 0f;
+                }
+                else
+                {
+                    while (!CheckIfPurified())
+                    {
+                        yield return null;
+                    }
+                    while (GradientTimer > 0f)
+                    {
+                        GradientTimer -= Engine.DeltaTime;
+                        yield return null;
+                        if (GradientTimer <= 0.5f)
+                        {
+                            purified = true;
+                        }
+                        if (SceneAs<Level>().Transitioning || !CheckIfPurified())
+                        {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    if (!skip)
+                    {
+                        GradientTimer = 0f;
+                    }
+                }
+
+                while (CheckIfPurified())
+                {
+                    yield return null;
+                }
+                skip = false;
+                while (GradientTimer < 1f)
+                {
+                    GradientTimer += Engine.DeltaTime;
+                    yield return null;
+                    if (GradientTimer >= 0.5f)
+                    {
+                        purified = false;
+                    }
+                    if (SceneAs<Level>().Transitioning || CheckIfPurified())
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (!skip)
+                {
+                    GradientTimer = 1f;
+                }
+                Add(new Coroutine(PoisonedRoutine()));
             }
         }
 
@@ -956,7 +1051,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * currentTransparency;
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Utils.GetGradientColor(Calc.HexToColor(color), Calc.HexToColor(poisonedColor), GradientTimer * 100) * currentTransparency;
             if ((liquidType == "lava" && GravityJacket.determineIfInLava() && !GravityJacket.Active(SceneAs<Level>())) || (liquidType.Contains("acid") && GravityJacket.determineIfInAcid()))
             {
                 FlashingRed = true;
@@ -1320,6 +1415,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             Add(new Coroutine(drone.Destroy()));
                         }
+                    }
+                    else if (poisoned && !purified)
+                    {
+                        player.Die(new Vector2(0f, -1f));
                     }
                 }
                 if (liquidType == "lava")
