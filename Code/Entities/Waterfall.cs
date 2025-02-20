@@ -213,7 +213,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (player != null)
             {
-                if (!PlayerInside(player))
+                if (!PlayerInside())
                 {
                     currentTransparency = outsideTransparency;
                 }
@@ -232,7 +232,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (player != null)
                 {
-                    if (!PlayerInside(player))
+                    if (!PlayerInside())
                     {
                         currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
                     }
@@ -244,15 +244,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        public bool PlayerInside(Player player)
+        public bool PlayerInside()
         {
-            foreach (WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<WaterfallSection>())
+            foreach (Player player in SceneAs<Level>().Tracker.GetEntities<Player>())
             {
-                if (waterfall.Waterfall == this)
+                foreach (WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<WaterfallSection>())
                 {
-                    if (waterfall.CollideCheck(player))
+                    if (waterfall.Waterfall == this)
                     {
-                        return true;
+                        if (waterfall.CollideCheck(player))
+                        {
+                            return true;
+                        }
                     }
                 }
             }

@@ -288,6 +288,13 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                         return true;
                     }
                 }
+                foreach (Waterfall.WaterfallSection waterfall in level.Tracker.GetEntities<Waterfall.WaterfallSection>())
+                {
+                    if (waterfall.Waterfall.PlayerInside())
+                    {
+                        return true;
+                    }
+                }
             }
             return false;
         }

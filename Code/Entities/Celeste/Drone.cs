@@ -984,6 +984,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            foreach (Waterfall.WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<Waterfall.WaterfallSection>())
+            {
+                if (!dead && Hold.IsHeld)
+                {
+                    if (waterfall.CollideCheck<Drone>())
+                    {
+                        SceneAs<Level>().Displacement.AddBurst(Position, 0.3f, 0f, 80f);
+                        SceneAs<Level>().Shake();
+                        Input.Rumble(RumbleStrength.Strong, RumbleLength.Long);
+                        Audio.Play("event:/game/xaphan/drone_destroy", Position);
+                        DroneDebris.Burst(Position, Calc.HexToColor("DEAC75"), 12);
+                        RemoveSelf();
+                    }
+                }
+            }
             if (FakePlayer != null && !FakePlayer.Dead)
             {
                 foreach (PlayerPlatform playerPlatform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
