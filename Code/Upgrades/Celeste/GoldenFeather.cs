@@ -52,7 +52,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                     Player player = self.Tracker.GetEntity<Player>();
                     if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && !player.OnGround() && player.Stamina > 20 && player.Speed.Y > 0 && Input.Grab.Pressed && player.StateMachine.State == 0 && player.Holding == null)
                     {
-                        if (!inLiquid(self) && !UseFeatherCoroutine.Active)
+                        if (!inLiquid(self, player) && !UseFeatherCoroutine.Active)
                         {
                             UseFeatherCoroutine = new Coroutine(routine(player, self));
                         }
@@ -69,11 +69,18 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
         }
 
-        public static bool inLiquid(Level level)
+        public static bool inLiquid(Level level, Player player)
         {
             foreach (Liquid liquid in level.Tracker.GetEntities<Liquid>())
             {
                 if (liquid.PlayerInside())
+                {
+                    return true;
+                }
+            }
+            foreach (Waterfall.WaterfallSection waterfall in level.Tracker.GetEntities<Waterfall.WaterfallSection>())
+            {
+                if (waterfall.CollideCheck(player))
                 {
                     return true;
                 }

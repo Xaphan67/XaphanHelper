@@ -83,7 +83,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            if (((Hold.IsHeld && Hold.Holder.OnGround()) || CollideCheck<Liquid>() || (hasBeenHolded && !Hold.IsHeld)) && !destroyed)
+            if (((Hold.IsHeld && Hold.Holder.OnGround()) || CollideCheck<Liquid>() || CollideCheck<Waterfall.WaterfallSection>() || (hasBeenHolded && !Hold.IsHeld)) && !destroyed)
             {
                 Destroy();
             }
