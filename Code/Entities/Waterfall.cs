@@ -10,6 +10,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Waterfall")]
     class Waterfall : Entity
     {
+        [Tracked(true)]
         public class WaterfallSection : Entity
         {
             private int Index;

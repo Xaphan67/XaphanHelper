@@ -386,6 +386,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            foreach (Waterfall.WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<Waterfall.WaterfallSection>())
+            {
+                if (CollideCheck(waterfall))
+                {
+                    if (!disapear)
+                    {
+                        disapear = true;
+                        Add(new Coroutine(Disapear()));
+                    }
+                }
+            }
             if (Hold.IsHeld)
             {
                 if (player.Facing == Facings.Right)
