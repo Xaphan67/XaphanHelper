@@ -252,7 +252,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (waterfall.Waterfall == this)
                     {
-                        if (waterfall.CollideCheck(player))
+                        if (waterfall.CollideCheck(player) && player.Left <= waterfall.Right - 4 && player.Right >= waterfall.Left + 4)
                         {
                             return true;
                         }
