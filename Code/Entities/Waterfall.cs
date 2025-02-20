@@ -20,7 +20,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private float colliderHeight;
 
-            private Waterfall Waterfall;
+            public Waterfall Waterfall;
 
             private Sprite sectionSprite;
 
@@ -71,7 +71,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public override void Added(Scene scene)
             {
                 base.Added(scene);
-                sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer) * 0.65f/*(PlayerCompletelyInside() ? insideTransparency : outsideTransparency)*/;
+                sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer) * Waterfall.currentTransparency;
             }
 
             public override void Update()
@@ -109,8 +109,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     plateform.RestoreCollisionForPlayer();
                 }
-                P_Splash.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * 0.85f;
-                sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * 0.65f /*currentTransparency*/;
+                P_Splash.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * (Waterfall.currentTransparency + 0.2f);
+                sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * Waterfall.currentTransparency;
                 double checkIndex = Index / 8f;
                 double result = checkIndex - Math.Truncate(checkIndex);
                 float height = Calc.Random.Next(4);
@@ -150,6 +150,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string poisonedColor;
 
+        private float outsideTransparency;
+
+        private float insideTransparency;
+
+        private float currentTransparency;
+
         private string purifyFlags;
 
         private bool poisoned;
@@ -171,8 +177,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 color = "669CEE";
             }
             poisonedColor = poisoned ? data.Attr("poisonedColor", "4c9a42") : color;
+            outsideTransparency = data.Float("transparency", 0.65f);
+            insideTransparency = data.Float("insideTransparency", outsideTransparency);
             purifyFlags = data.Attr("purifyFlags");
             invertPurifyFlags = data.Bool("invertPurifyFlags");
+            if (outsideTransparency <= 0f)
+            {
+                outsideTransparency = 0.65f;
+            }
+            if (outsideTransparency >= 1f)
+            {
+                outsideTransparency = 1f;
+            }
+            if (insideTransparency <= 0f || insideTransparency >= outsideTransparency)
+            {
+                insideTransparency = outsideTransparency;
+            }
             Depth = -1;
         }
 
@@ -185,6 +205,58 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 scene.Add(new WaterfallSection(Position + Vector2.UnitX * i, this, i));
             }
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (player != null)
+            {
+                if (!PlayerInside(player))
+                {
+                    currentTransparency = outsideTransparency;
+                }
+                else
+                {
+                    currentTransparency = insideTransparency;
+                }
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (!SceneAs<Level>().Transitioning)
+            {
+                if (player != null)
+                {
+                    if (!PlayerInside(player))
+                    {
+                        currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
+                    }
+                    else
+                    {
+                        currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                    }
+                }
+            }
+        }
+
+        public bool PlayerInside(Player player)
+        {
+            foreach (WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<WaterfallSection>())
+            {
+                if (waterfall.Waterfall == this)
+                {
+                    if (waterfall.CollideCheck(player))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private bool CheckIfPurified()
