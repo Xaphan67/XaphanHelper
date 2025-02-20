@@ -93,7 +93,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private void OnCollide(Player player)
             {
-                if (Waterfall.poisoned && !Waterfall.purified)
+                if ((Waterfall.poisoned && !Waterfall.purified) || XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     player.Die(new Vector2(0f, -1f));
                 }
