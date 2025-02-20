@@ -42,6 +42,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     float div = Math.DivRem(Index, (int)sectionSprite.Width, out remainder);
                     DrawSpriteIndex = remainder;
                 }
+                Add(new PlayerCollider(OnCollide));
                 Depth = Waterfall.Depth;
             }
 
@@ -87,6 +88,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     plateform.RestoreCollisionForPlayer();
                 }
                 sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * 0.65f /*currentTransparency*/;
+            }
+
+            private void OnCollide(Player player)
+            {
+                if (Waterfall.poisoned && !Waterfall.purified)
+                {
+                    player.Die(new Vector2(0f, -1f));
+                }
             }
 
             public override void Render()
