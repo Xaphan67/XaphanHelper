@@ -558,6 +558,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool ShouldDash;
 
+        private bool ShouldLeap;
+
         private SoundSource laserSfx;
 
         private int FleeDir;
@@ -565,6 +567,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool KilledPlayer;
 
         private Vector2 PlayerPos;
+
+        private bool CanAttract;
 
         [Tracked(true)]
         public Genesis(EntityData data, Vector2 offset) : base(data.Position + offset)
@@ -612,9 +616,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (Health > 0)
             {
-                if (!IsStun)
+                if (!IsStun && InvincibilityDelay <= 0)
                 {
-                    if (player.StateMachine.State == Player.StDash || player.DashAttacking)
+                    if ((player.StateMachine.State == Player.StDash || player.DashAttacking) && !MidAir)
                     {
                         if (Routine.Active)
                         {
@@ -631,6 +635,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         if (Health > 4 && !Sprite.FlipY)
                         {
+                            if (Health % 2 != 0 && (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? true : Health <= 11) && Health != 5)
+                            {
+                                ShouldLeap = true;
+                            }
                             Add(Routine = new Coroutine(IdleRoutine()));
                         }
                         else
@@ -639,7 +647,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             Add(Routine = new Coroutine(FallRoutine(player)));
                         }
                         IsStun = true;
-                        if (!HitRoutine.Active)
+                        if (!HitRoutine.Active && CanAttract)
                         {
                             Add(HitRoutine = new Coroutine(AttractRoutine(player)));
                         }
@@ -656,7 +664,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Routine.Cancel();
                     }
-                    Add(Routine = new Coroutine(SlashRoutine(null, player)));
+                    Add(Routine = new Coroutine(SlashRoutine(null, player, true)));
                 }
             }
         }
@@ -755,6 +763,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             bc.Collider.Width = IsStun ? 25 : 10;
             bc.Collider.Position = new Vector2(Facing == Facings.Right ? (IsStun ? 19 : 34) : 4, !Sprite.FlipY ? 4 : 6);
             Collidable = !MidAir && SceneAs<Level>().Session.GetFlag("Genesis_Start");
+            CanAttract = Collidable && !IsStun;
             BeamOrigin = Center + Sprite.Position + new Vector2(Facing == Facings.Right ? 16 : -16, !Sprite.FlipY ? -4 : 9);
             MoveH(Speed.X * Engine.DeltaTime, onCollideH);
             MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
@@ -894,6 +903,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator LeapRoutine()
         {
+            ShouldLeap = false;
             Sprite.Position = new Vector2(0, -8f);
             Sprite.Play("leapUp");
             Speed.X = Facing == Facings.Right ? -100f : 100f;
@@ -1148,8 +1158,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return IdleRoutine(true);
         }
 
-        public IEnumerator SlashRoutine(Bomb bomb, Player player)
+        public IEnumerator SlashRoutine(Bomb bomb, Player player, bool killPlayer = false)
         {
+            if (killPlayer)
+            {
+                player.Die((player.Position - Position).SafeNormalize());
+            }
             Sprite.Position = new Vector2(-4f, Sprite.FlipY ? 0f : -16f);
             Speed.X = 0f;
             foreach (GenesisBeam beam in SceneAs<Level>().Tracker.GetEntities<GenesisBeam>())
@@ -1208,12 +1222,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     timer = Health >= 13 ? 0.3f : Health >= 5f ? 0.2f : Health >= 1f ? 0.1f : 1f;
                 }
-                while (timer > 0f && (InvincibilityDelay <= 0 || InvincibilityDelay > 0.25f))
+                while (timer > 0f)
                 {
                     timer -= Engine.DeltaTime;
                     yield return null;
+                    if (InvincibilityDelay > 0 && timer > 0.2f)
+                    {
+                        timer = 0.2f;
+                    }
                 }
-                if (InvincibilityDelay > 0 && !ShouldDisengage && Health <= 8)
+                if ((InvincibilityDelay > 0 && !ShouldDisengage && Health <= 8) || ShouldLeap)
                 {
                     yield return LeapRoutine();
                 }
