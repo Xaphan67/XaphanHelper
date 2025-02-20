@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.Entities;
+using FMOD;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -23,6 +24,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private Sprite sectionSprite;
 
+            private ParticleType P_Splash;
+
             public WaterfallSection(Vector2 position, Waterfall waterfall, int index) : base(position)
             {
                 Tag = Tags.TransitionUpdate;
@@ -44,6 +47,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     DrawSpriteIndex = remainder;
                 }
                 Add(new PlayerCollider(OnCollide));
+                P_Splash = new ParticleType
+                {
+                    Source = GFX.Game["particles/feather"],
+                    Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer),
+                    FadeMode = ParticleType.FadeModes.Late,
+                    Acceleration = new Vector2(0f, 20f),
+                    Size = 5f / 6f,
+                    SizeRange = 1f / 3f,
+                    ScaleOut = true,
+                    SpeedMin = 30f,
+                    SpeedMax = 24f,
+                    SpeedMultiplier = 0.98f,
+                    Direction = -(float)Math.PI / 2f,
+                    DirectionRange = 0.6981317f,
+                    RotationMode = ParticleType.RotationModes.Random,
+                    LifeMin = 0.35f,
+                    LifeMax = 0.2f
+                };
                 Depth = Waterfall.Depth;
             }
 
@@ -71,9 +92,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>(Position + Vector2.UnitY))
+                    if (!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>())
                     {
-                        while ((!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>(Position + Vector2.UnitY)) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top && Collider.Height < Waterfall.Height)
+                        while ((!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>()) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top && Collider.Height < Waterfall.Height)
                         {
                             Collider.Height += 1;
                             colliderHeight = Collider.Height;
@@ -88,7 +109,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     plateform.RestoreCollisionForPlayer();
                 }
+                P_Splash.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * 0.85f;
                 sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * 0.65f /*currentTransparency*/;
+                double checkIndex = Index / 8f;
+                double result = checkIndex - Math.Truncate(checkIndex);
+                float height = Calc.Random.Next(4);
+                if (result == 0.5f)
+                {
+                    (Scene as Level).ParticlesFG.Emit(P_Splash, 1, new Vector2(X, Y + Collider.Height + height), Vector2.UnitX * 4f, new Vector2(0f, -1f).Angle());
+                }
             }
 
             private void OnCollide(Player player)
@@ -103,7 +132,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 int section = 0;
                 bool collideSolid = Scene.CollideCheck<Solid>(new Vector2(Position.X, Position.Y + Height));
-                for (int i = 0; i < Math.Truncate(Collider.Height + (collideSolid ? 4 : 0)) ; i++)
+                bool collideLiquid = Scene.CollideCheck<Liquid>(new Vector2(Position.X, Position.Y + Height + 1));
+                for (int i = 0; i < Math.Truncate(Collider.Height + (collideSolid ? 4 : collideLiquid ? 1 : 0)) ; i++)
                 {
                     sectionSprite.RenderPosition = Position + Vector2.UnitY * i;
                     sectionSprite.DrawSubrect(Vector2.Zero, new Rectangle(DrawSpriteIndex, section, 1, 1));
