@@ -1,4 +1,5 @@
 local utils = require("utils")
+local drawableSprite = require("structs.drawable_sprite")
 
 local Liquid = {}
 
@@ -25,6 +26,16 @@ Liquid.fieldInformation = {
     },
     color = {
         fieldType = "color"
+    },
+    transparency = {
+        fieldType = "number",
+        minimumValue = 0.01,
+        maximumValue = 1
+    },
+    insideTransparency = {
+        fieldType = "number",
+        minimumValue = 0.01,
+        maximumValue = 1
     },
     riseDistance = {
         fieldType = "integer",
@@ -81,37 +92,66 @@ Liquid.placements = {
     }
 }
 
-local function getEntityColor(entity)
-    local defaults = {
-        acid = "88C098",
-        acid_b = "88C098",
-        lava = "F85818",
-        quicksand = "C8B078",
-        water = "669CEE"
-    }
+function Liquid.sprite(room, entity)
+    local sprites = {}
 
-    local rawColor = nil
-    if not entity.color or entity.color == "" then
-        rawColor = defaults[entity.liquidType or "acid"] or "FFFFFF"
-    else
-        rawColor = entity.color or "FFFFFF"
+    local directory = entity.directory or "objects/XaphanHelper/liquid"
+    local liquidType = entity.liquidType or "acid"
+    local surfaceHeight = entity.surfaceHeight or 0
+
+    if surfaceHeight == 0 then
+        if liquidType == "acid" or liquidType == "acid_b" then
+            surfaceHeight = 24
+        elseif liquidType == "lava" then
+            surfaceHeight = 8
+        elseif liquidType == "quicksand" or liquidType == "water" then
+            surfaceHeight = 16
+        end
     end
 
+    local width = entity.width
+    local height = entity.height
+
+    local sprite = nil
+    for i = 0, height / 8 do
+        for j = 0, width / 8 - 1 do
+            sprite = drawableSprite.fromTexture(directory .. "/" .. liquidType .. "/liquid00", entity)
+            local spriteWidth = sprite.meta.width
+            local spriteHeightMinusSurface = sprite.meta.height - surfaceHeight
+            if i < surfaceHeight / 8 then
+                sprite:useRelativeQuad((j * 8) % spriteWidth, i * 8, 8, 8)
+            else
+                local pos = i * 8 - surfaceHeight
+                sprite:useRelativeQuad((j * 8) % spriteWidth, surfaceHeight + pos % spriteHeightMinusSurface, 8, 8)
+            end
+            local color = getSpriteColor(entity)
+            sprite:setColor(color)
+            sprite:addPosition(j * 8, i * 8 - 8)
+            if sprite then
+                table.insert(sprites, sprite)
+            end
+        end
+    end
+
+    return sprites
+end
+
+function getSpriteColor(entity)
+    local color = getEntityColor(entity)
+    local transparency = entity.transparency or 0.65
+    local insideTransparency = entity.insideTransparency or 0.65
+    local showTransparency = transparency
+    if insideTransparency < transparency then
+        showTransparency = insideTransparency
+    end
+    return {color[1], color[2], color[3], showTransparency}
+end
+
+function getEntityColor(entity)
+    local rawColor = entity.color or "FFFFFF"
     local color = utils.getColor(rawColor)
 
     return color
-end
-
-Liquid.fillColor = function(room, entity)
-    local color = getEntityColor(entity)
-
-    return {color[1] * 0.3, color[2] * 0.3, color[3] * 0.3, 0.6}
-end
-
-Liquid.borderColor = function(room, entity)
-    local color = getEntityColor(entity)
-
-    return {color[1] * 0.8, color[2] * 0.8, color[3] * 0.8, 0.8}
 end
 
 return Liquid
