@@ -1,5 +1,6 @@
 Version 1.0.75 :
 - Improved rendering of Liquids in Loenn
+- Added small light sources around Custom Crumble Blocks
 - Updated the Genesis boss AI in The Secret of Celeste Mountain
 - Fixed a bug causing the Explosion routine of bombs and mega bombs to start each time the bomb was thrown, potentially causing a crash
 - Fixed a bug that prevented the Genesis boss in The Secret of Celeste Mountain to kill the player when inside its hitbox without dashing

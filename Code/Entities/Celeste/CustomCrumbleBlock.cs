@@ -15,6 +15,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private List<Image> images;
 
+        private List<VertexLight> lights;
+
         private List<OutlinePoint> outline;
 
         private List<Coroutine> falls;
@@ -47,15 +49,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool Destroyed;
 
+        public bool light;
+
         private HashSet<CustomCrumbleBlock> groupedCustomCrumbleBlocks = new();
 
         public CustomCrumbleBlock(EntityData data, Vector2 offset) : this(data.Position, offset, data.Width, data.Height, data.Float("respawnTime", 2f), data.Float("crumbleDelay", 0.4f), data.Bool("oneUse", false), data.Bool("triggerAdjacents", false),
-            data.Int("rotation"), data.Attr("texture"))
+            data.Int("rotation"), data.Attr("texture"), data.Bool("light", true))
         {
 
         }
 
-        public CustomCrumbleBlock(Vector2 position, Vector2 offset, int width, int height, float respawnTime, float crumbleDelay, bool oneUse, bool triggerAdjacents, int rotation = 0, string texture = null, float lightOccludeValue = 0.8f) : base(position + offset, width, height, safe: false)
+        public CustomCrumbleBlock(Vector2 position, Vector2 offset, int width, int height, float respawnTime, float crumbleDelay, bool oneUse, bool triggerAdjacents, int rotation = 0, string texture = null, bool light = true, float lightOccludeValue = 0.8f) : base(position + offset, width, height, safe: false)
         {
             EnableAssistModeChecks = false;
             this.respawnTime = respawnTime;
@@ -63,6 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.oneUse = oneUse;
             this.triggerAdjacents = triggerAdjacents;
             this.texture = texture;
+            this.light = light;
             if (string.IsNullOrEmpty(texture))
             {
                 this.texture = "objects/crumbleBlock/default";
@@ -108,6 +113,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 outlineFader.RemoveOnComplete = false;
             }
             images = new List<Image>();
+            lights = new List<VertexLight>();
             falls = new List<Coroutine>();
             fallOrder = new List<int>();
             MTexture mTexture = GFX.Game[texture];
@@ -131,6 +137,33 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     Add(image);
                     images.Add(image);
+                    if (light)
+                    {
+                        if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X + i, (int)Position.Y - 8 + j, 8, 8)))
+                        {
+                            VertexLight light = new VertexLight(new Vector2(4 + i, -4f + j), Color.White, 1f, 8, 12);
+                            Add(light);
+                            lights.Add(light);
+                        }
+                        if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X + 8 + i, (int)Position.Y + j, 8, 8)))
+                        {
+                            VertexLight light = new VertexLight(new Vector2(12 + i, 4f + j), Color.White, 1f, 8, 12);
+                            Add(light);
+                            lights.Add(light);
+                        }
+                        if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X + i, (int)Position.Y + 8 + j, 8, 8)))
+                        {
+                            VertexLight light = new VertexLight(new Vector2(4 + i, 12f + j), Color.White, 1f, 8, 12);
+                            Add(light);
+                            lights.Add(light);
+                        }
+                        if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X - 8 + i, (int)Position.Y + j, 8, 8)))
+                        {
+                            VertexLight light = new VertexLight(new Vector2(-4 + i, 4f + j), Color.White, 1f, 8, 12);
+                            Add(light);
+                            lights.Add(light);
+                        }
+                    }
                     if (previousTexturePosition != -1)
                     {
                         secondPreviousTexturePosition = previousTexturePosition;
@@ -215,6 +248,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     outlineFader.Replace(OutlineFade(1f));
                 }
                 occluder.Visible = false;
+                foreach (VertexLight light in lights)
+                {
+                    light.Visible = false;
+                }
                 Collidable = false;
                 Destroyed = true;
                 DisableStaticMovers();
@@ -230,6 +267,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (!oneUse)
                 {
+                    int currentDepth = Depth;
                     Depth = 1000;
                     respawnTimer = respawnTime;
                     while (respawnTimer > 0)
@@ -241,6 +279,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         yield return null;
                     }
+                    Depth = currentDepth;
                 }
                 else
                 {
@@ -250,6 +289,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 outlineFader.Replace(OutlineFade(0f));
                 occluder.Visible = true;
+                foreach (VertexLight light in lights)
+                {
+                    light.Visible = true;
+                }
                 Collidable = true;
                 Destroyed = false;
                 EnableStaticMovers();
@@ -263,7 +306,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
-                Depth = 0;
             }
         }
 
