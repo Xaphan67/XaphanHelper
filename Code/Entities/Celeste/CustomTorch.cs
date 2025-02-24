@@ -193,7 +193,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onLastFrame(string s)
         {
-            if (SceneAs<Level>().Session.GetFlag(flag))
+            if (SceneAs<Level>().Session.GetFlag(FlagName))
             {
                 TorchSprite.Play("on");
             }
