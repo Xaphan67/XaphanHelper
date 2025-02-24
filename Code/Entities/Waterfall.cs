@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 using Celeste.Mod.Entities;
-using FMOD;
+using Celeste.Mod.Helpers;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -20,6 +24,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private float colliderHeight;
 
+            private int verticalOffset;
+
             public Waterfall Waterfall;
 
             private Sprite sectionSprite;
@@ -29,7 +35,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public WaterfallSection(Vector2 position, Waterfall waterfall, int index) : base(position)
             {
                 Tag = Tags.TransitionUpdate;
-                Collider = new Hitbox(1, waterfall.Height, 0f, 0f);
                 Waterfall = waterfall;
                 Index = index;
                 Add(sectionSprite = new Sprite(GFX.Game, "objects/XaphanHelper/Waterfall/"));
@@ -46,7 +51,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     float div = Math.DivRem(Index, (int)sectionSprite.Width, out remainder);
                     DrawSpriteIndex = remainder;
                 }
-                Add(new PlayerCollider(OnCollide));
                 P_Splash = new ParticleType
                 {
                     Source = GFX.Game["particles/feather"],
@@ -72,6 +76,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 base.Added(scene);
                 sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer) * Waterfall.currentTransparency;
+                Collider = new Hitbox(1, 1, 0f, 0f);
+                while (CollideCheck<Solid>())
+                {
+                    Collider.Position.Y += 1f;
+                    verticalOffset += 1;
+                }
+                if (verticalOffset >= Waterfall.Height)
+                {
+                    RemoveSelf();
+                }
             }
 
             public override void Update()
@@ -81,8 +95,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     plateform.Collidable = false;
                 }
-                base.Update();  
-                if ((CollideCheck<Solid>() || CollideCheck<Liquid>()) && !CollideCheck<PlayerPlatform>())
+                base.Update();
+                if ((CollideCheck<Solid>(Position + Vector2.UnitY) || CollideCheck<Liquid>(Position + Vector2.UnitY)) && !CollideCheck<PlayerPlatform>())
                 {
                     while (CollideCheck<Solid>() || CollideCheck<Liquid>())
                     {
@@ -94,7 +108,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>())
                     {
-                        while ((!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>()) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top && Collider.Height < Waterfall.Height)
+                        while ((!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>()) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top && Collider.Height < Waterfall.Height - verticalOffset)
                         {
                             Collider.Height += 1;
                             colliderHeight = Collider.Height;
@@ -114,35 +128,39 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 double checkIndex = Index / 8f;
                 double result = checkIndex - Math.Truncate(checkIndex);
                 float height = Calc.Random.Next(4);
-                if (result == 0.5f)
+                if (result == 0.5f && CullHelper.IsRectangleVisible(X, Y, Width, Height))
                 {
-                    (Scene as Level).ParticlesFG.Emit(P_Splash, 1, new Vector2(X, Y + Collider.Height + height), Vector2.UnitX * 4f, new Vector2(0f, -1f).Angle());
-                }
-            }
-
-            private void OnCollide(Player player)
-            {
-                if ((Waterfall.poisoned && !Waterfall.purified) || XaphanModule.PlayerIsControllingRemoteDrone())
-                {
-                    player.Die(new Vector2(0f, -1f));
+                    Vector2 position = new Vector2(X, Y + Collider.Height + height + verticalOffset);
+                    if (SceneAs<Level>().IsInBounds(position))
+                    {
+                        SceneAs<Level>().Particles.Emit(P_Splash, 1, position, Vector2.UnitX * 4f, new Vector2(0f, -1f).Angle());
+                    }
                 }
             }
 
             public override void Render()
             {
                 int section = 0;
-                bool collideSolid = Scene.CollideCheck<Solid>(new Vector2(Position.X, Position.Y + Height));
-                bool collideLiquid = Scene.CollideCheck<Liquid>(new Vector2(Position.X, Position.Y + Height + 1));
-                for (int i = 0; i < Math.Truncate(Collider.Height + (collideSolid ? 4 : collideLiquid ? 1 : 0)) ; i++)
+                bool collideSolid = Scene.CollideCheck<Solid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
+                bool collideLiquid = Scene.CollideCheck<Liquid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
+                for (int i = 0; i < Math.Truncate(Collider.Height + (collideSolid ? 4 : collideLiquid ? 1 : 0) + verticalOffset); i++)
                 {
                     sectionSprite.RenderPosition = Position + Vector2.UnitY * i;
-                    sectionSprite.DrawSubrect(Vector2.Zero, new Rectangle(DrawSpriteIndex, section, 1, 1));
+                    if (CullHelper.IsRectangleVisible(sectionSprite.RenderPosition.X, sectionSprite.RenderPosition.Y, 1, 1))
+                    {
+                        sectionSprite.DrawSubrect(Vector2.Zero, new Rectangle(DrawSpriteIndex, section, 1, 1));
+                    }
                     section += 1;
                     if (section > 15)
                     {
                         section = 0;
                     }
                 }
+            }
+
+            public override void DebugRender(Camera camera)
+            {
+                
             }
         }
 
@@ -166,10 +184,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool invertPurifyFlags;
 
+        private static ILHook hookPlayerOrigWallJump = null;
+
+        private CustomParticleSystem Particles;
+
+        private bool PlayerEntered;
+
+        private bool PlayerStartFall;
+
+        private FieldInfo PlayerVarJumpTimer = typeof(Player).GetField("varJumpTimer", BindingFlags.Instance | BindingFlags.NonPublic);
+
         public Waterfall(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
             Collider = new Hitbox(data.Width, data.Height, 0f, 0f);
+            Add(new PlayerCollider(OnCollide));
             poisoned = data.Bool("poisoned", false);
             color = data.Attr("color");
             if (string.IsNullOrEmpty(color))
@@ -196,9 +225,65 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -1;
         }
 
+        public static void Load()
+        {
+            IL.Celeste.Player.BeforeUpTransition += modVarJumpTimer;
+            IL.Celeste.Player.HiccupJump += modVarJumpTimer;
+            IL.Celeste.Player.Jump += modVarJumpTimer;
+            IL.Celeste.Player.SuperJump += modVarJumpTimer;
+            IL.Celeste.Player.SuperWallJump += modVarJumpTimer;
+            IL.Celeste.Player.Bounce += modVarJumpTimer;
+            IL.Celeste.Player.SuperBounce += modVarJumpTimer;
+            IL.Celeste.Player.SideBounce += modVarJumpTimer;
+            IL.Celeste.Player.Rebound += modVarJumpTimer;
+            IL.Celeste.Player.StarFlyUpdate += modVarJumpTimer;
+            IL.Celeste.Player.FinishFlingBird += modVarJumpTimer;
+
+            hookPlayerOrigWallJump = new ILHook(typeof(Player).GetMethod("orig_WallJump", BindingFlags.NonPublic | BindingFlags.Instance), modVarJumpTimer);
+        }
+
+        public static void Unload()
+        {
+            IL.Celeste.Player.BeforeUpTransition -= modVarJumpTimer;
+            IL.Celeste.Player.HiccupJump -= modVarJumpTimer;
+            IL.Celeste.Player.Jump -= modVarJumpTimer;
+            IL.Celeste.Player.SuperJump -= modVarJumpTimer;
+            IL.Celeste.Player.SuperWallJump -= modVarJumpTimer;
+            IL.Celeste.Player.Bounce -= modVarJumpTimer;
+            IL.Celeste.Player.SuperBounce -= modVarJumpTimer;
+            IL.Celeste.Player.SideBounce -= modVarJumpTimer;
+            IL.Celeste.Player.Rebound -= modVarJumpTimer;
+            IL.Celeste.Player.StarFlyUpdate -= modVarJumpTimer;
+            IL.Celeste.Player.FinishFlingBird -= modVarJumpTimer;
+
+            hookPlayerOrigWallJump?.Dispose();
+            hookPlayerOrigWallJump = null;
+        }
+
+        private static void modVarJumpTimer(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+
+            while (cursor.TryGotoNext(instr => instr.MatchStfld<Player>("varJumpTimer")))
+            {
+                cursor.EmitDelegate<Func<float, float>>(orig => orig * (determineIfInWaterfall() ? 0.6f : 1f));
+                cursor.Index++;
+            }
+        }
+
+        private void OnCollide(Player player)
+        {
+            if (PlayerInside() && ((poisoned && !purified) || XaphanModule.PlayerIsControllingRemoteDrone()))
+            {
+                player.Die(new Vector2(0f, -1f));
+            }
+        }
+
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            SceneAs<Level>().Add(Particles = new CustomParticleSystem(Depth, 1000));
+            SceneAs<Level>().Particles.AddTag(Tags.TransitionUpdate);
             Add(new Coroutine(PoisonedRoutine()));
             purified = CheckIfPurified();
             for (int i = 0; i < Width; i++)
@@ -235,10 +320,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (!PlayerInside())
                     {
                         currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
+                        if (PlayerEntered)
+                        {
+                            PlayerEntered = PlayerStartFall = false;
+                        }
                     }
                     else
                     {
                         currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                        if (!PlayerStartFall)
+                        {
+                            PlayerEntered = true;
+                            PlayerVarJumpTimer.SetValue(player, 0);
+                            if (player.Speed.Y >= 0)
+                            {
+                                PlayerStartFall = true;
+                            }
+                        }
                     }
                 }
             }
@@ -337,6 +435,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 Add(new Coroutine(PoisonedRoutine()));
             }
+        }
+
+        public static bool determineIfInWaterfall()
+        {
+            if (Engine.Scene is Level)
+            {
+                Level level = (Level)Engine.Scene;
+                foreach (WaterfallSection waterfall in level.Tracker.GetEntities<WaterfallSection>())
+                {
+                    if (waterfall.Waterfall.PlayerInside())
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public override void Removed(Scene scene)
+        {
+            base.Removed(scene);
+            Particles.RemoveSelf();
         }
     }
 }
