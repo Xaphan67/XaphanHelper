@@ -361,23 +361,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void OnTalkComponentUpdate(On.Celeste.TalkComponent.orig_Update orig, TalkComponent self)
         {
-            if (!XaphanModule.PlayerIsControllingRemoteDrone() && !ShouldGetTalkerStatus)
-            {
-                self.Enabled = TalkersStatus;
-                ShouldGetTalkerStatus = true;
-            }
             if (!XaphanModule.PlayerIsControllingRemoteDrone())
             {
+                if (self.UI != null && !self.UI.Visible && !self.SceneAs<Level>().Transitioning)
+                {
+                    self.UI.Visible = true;
+                }
                 orig(self);
             }
-            else
+            else if (self.UI != null)
             {
-                if (ShouldGetTalkerStatus)
+                Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
+                if (drone.enabled && self.UI.Visible)
                 {
-                    TalkersStatus = self.Enabled;
-                    ShouldGetTalkerStatus = false;
+                    self.UI.Visible = false;
                 }
-                self.Enabled = false;
             }
         }
 

@@ -5,6 +5,7 @@ Version 1.0.75 :
 - Fixed a bug causing the Explosion routine of bombs and mega bombs to start each time the bomb was thrown, potentially causing a crash
 - Fixed a bug that prevented the Genesis boss in The Secret of Celeste Mountain to kill the player when inside its hitbox without dashing
 - Fixed a bug preventing Custom Torches sprite to correctly start their lit animation when starting unlit
+- Fixed a bug preventing some talker components to be enabled correctly when the player destroy the Remote Drone
 
 Version 1.0.74 :
 - Fixed a bug that could prevent a refill inside a Bouncy Bubble to be used when the player dash out of a Red Booster while inside the Bouncy Bubble
