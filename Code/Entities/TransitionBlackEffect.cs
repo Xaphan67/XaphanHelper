@@ -73,15 +73,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void OnTalkComponentTalkComponentUIUpdate(On.Celeste.TalkComponent.TalkComponentUI.orig_Update orig, TalkComponent.TalkComponentUI self)
         {
-            if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+            if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && self.SceneAs<Level>().Transitioning)
             {
                 if (self.SceneAs<Level>().Tracker.GetEntities<TransitionBlackEffect>().Count() != 0)
                 {
-                    self.Visible = false;
+                    self.Handler.Enabled = false;
                 }
                 else
                 {
-                    self.Visible = true;
+                    self.Handler.Enabled = true;
                 }
             }
             orig(self);
