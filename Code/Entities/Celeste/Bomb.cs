@@ -49,7 +49,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool explode;
 
-        private bool disapear;
+        public bool disapear;
 
         private Player player;
 

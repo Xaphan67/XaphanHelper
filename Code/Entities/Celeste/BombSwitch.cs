@@ -192,6 +192,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 while (!bomb.explode && !bomb.Hold.IsHeld)
                 {
                     yield return null;
+                    if (bomb.disapear)
+                    {
+                        bombInside = triggered = false;
+                        yield break;
+                    }
                 }
                 if (!bomb.Hold.IsHeld)
                 {

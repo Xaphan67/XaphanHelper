@@ -1,5 +1,6 @@
 Version 1.0.76 :
-- Fixed an bug alowing the player to interact with Challenge Motes in boss rooms in SoCM before the boss was defeated in normal mode
+- Fixed a bug alowing the player to interact with Challenge Motes in boss rooms in SoCM before the boss was defeated in normal mode
+- Fixed a bug that made Bomb Switches unresponsive if a Bomb was sloted inside but started to disapear before it exploded
 
 Version 1.0.75 :
 - Improved rendering of Liquids in Loenn
