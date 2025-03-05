@@ -47,6 +47,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool AllowsRemoteDrone;
 
+        private bool Activated;
+
         public bool SpaceJumpCollected()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
@@ -120,8 +122,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level = SceneAs<Level>();
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             ChapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
-            Add(talk = new TalkComponent(new Rectangle(-12, 8, 24, 8), new Vector2(0f, -12f), Interact));
-            talk.Enabled = false;
             Visible = false;
         }
 
@@ -160,6 +160,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (!level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                 {
+                    if (!Activated)
+                    {
+                        Activated = true;
+                        Add(talk = new TalkComponent(new Rectangle(-12, 8, 24, 8), new Vector2(0f, -12f), Interact));
+                    }
                     Visible = true;
                     talk.Enabled = !BerryRoutine.Active;
                     talk.PlayerMustBeFacing = false;
@@ -206,7 +211,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             BerryAppeared = false;
                         }
                     }
-                    Visible = talk.Enabled = false;
+                    Visible = false;
+                    if (talk != null)
+                    {
+                        talk.Enabled = false;
+                    }
                     Started = true;
                     ManageUpgrades(level, false);
                 }

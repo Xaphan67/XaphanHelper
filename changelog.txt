@@ -1,3 +1,6 @@
+Version 1.0.76 :
+- Fixed an bug alowing the player to interact with Challenge Motes in boss rooms in SoCM before the boss was defeated in normal mode
+
 Version 1.0.75 :
 - Improved rendering of Liquids in Loenn
 - Added small light sources around Custom Crumble Blocks
