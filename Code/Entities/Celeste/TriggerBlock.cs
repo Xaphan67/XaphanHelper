@@ -38,6 +38,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public TriggerBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
+            Tag = Tags.TransitionUpdate;
             start = Position;
             fillTile = data.Char("tiletype", '3');
             flag = data.Attr("flag");
@@ -94,12 +95,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (at < 1f)
             {
                 yield return null;
-                at = Calc.Approach(at, 1f, moveSpeed * Engine.DeltaTime);
+                at = Calc.Approach(at, 1f, (SceneAs<Level>().Transitioning ? 9999 : moveSpeed) * Engine.DeltaTime);
                 percent = at;
                 Vector2 to = Vector2.Lerp(start, target, percent);
                 MoveTo(to);
             }
-            StartShaking(0.1f);
+            if (!SceneAs<Level>().Transitioning)
+            {
+                StartShaking(0.1f);
+            }
             while (SceneAs<Level>().Session.GetFlag(flag))
             {
                 yield return null;
