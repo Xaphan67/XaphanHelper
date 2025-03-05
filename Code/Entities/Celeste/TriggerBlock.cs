@@ -36,6 +36,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float returnSpeed;
 
+        private SoundSource sfx;
+
         public TriggerBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
             Tag = Tags.TransitionUpdate;
@@ -60,6 +62,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     target = Position + Vector2.UnitY * (Height - 16);
                     break;
             }
+            Add(sfx = new SoundSource());
         }
 
         public override void Added(Scene scene)
@@ -94,14 +97,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
             float at = percent;
             while (at < 1f)
             {
+                if (!sfx.Playing && !SceneAs<Level>().Transitioning)
+                {
+                    sfx.Play("event:/game/03_resort/platform_vert_down_loop");
+                }
+                if (moveSpeed > returnSpeed)
+                {
+                    sfx.Param("ducking", 1);
+                }
                 yield return null;
                 at = Calc.Approach(at, 1f, (SceneAs<Level>().Transitioning ? 9999 : moveSpeed) * Engine.DeltaTime);
                 percent = at;
                 Vector2 to = Vector2.Lerp(start, target, percent);
                 MoveTo(to);
             }
+            sfx.Stop();
             if (!SceneAs<Level>().Transitioning)
             {
+                Audio.Play("event:/game/03_resort/platform_vert_start", Position);
                 StartShaking(0.1f);
             }
             while (SceneAs<Level>().Session.GetFlag(flag))
@@ -111,12 +124,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             at = 0f;
             while (at < 1f && !SceneAs<Level>().Session.GetFlag(flag))
             {
+                if (!sfx.Playing)
+                {
+                    sfx.Play("event:/game/03_resort/platform_vert_down_loop");
+                }
+                if (returnSpeed > moveSpeed)
+                {
+                    sfx.Param("ducking", 1);
+                }
                 yield return null;
                 at = Calc.Approach(at, 1f, returnSpeed * Engine.DeltaTime);
                 percent = 1f - at;
                 Vector2 to = Vector2.Lerp(target, start, at);
                 MoveTo(to);
             }
+            sfx.Stop();
+            Audio.Play("event:/game/03_resort/platform_vert_end", Position);
         }
     }
 }
