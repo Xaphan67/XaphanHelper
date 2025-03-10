@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -61,7 +62,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Offset = new Vector2(3f, 0f);
             }
             Position = Emitter.Position + Offset;
-            color = Type == "Must Dash" ? Color.Orange : (Type == "No Dash" ? Color.CadetBlue : Color.IndianRed);
+            switch (Type)
+            {
+                case "Must Dash":
+                    color = Color.Orange;
+                    break;
+                case "No Dash":
+                    color = Color.CadetBlue;
+                    break;
+                case "No Start Dash":
+                    color = Color.MediumPurple;
+                    break;
+                default:
+                    color = Color.IndianRed;
+                    break;
+            }
+            if (!string.IsNullOrEmpty(Emitter.laserColor))
+            {
+                color = Calc.HexToColor(Emitter.laserColor);
+            }
             Color darker = Calc.HexToColor("798EB0");
             borderColor = new Color(darker.R / 255f * (color.R / 255f), darker.G / 255f * (color.G / 255f), darker.B / 255f * (color.B / 255f), 1f);
             Add(pc = new PlayerCollider(OnCollide));
@@ -312,23 +331,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if ((XaphanModule.useUpgrades ? !ScrewAttackManager.isScrewAttacking : true) && canKillPlayer)
             {
-                if (Type == "Kill")
+                switch (Type)
                 {
-                    KillPlayer(player);
-                }
-                else if (Type == "Must Dash")
-                {
-                    if (!player.DashAttacking)
-                    {
+                    case "Must Dash":
+                        if (!player.DashAttacking)
+                        {
+                            KillPlayer(player);
+                        }
+                        break;
+                    case "No Dash":
+                        if (player.StateMachine.State == Player.StDash || player.StateMachine.State == Player.StDreamDash)
+                        {
+                            KillPlayer(player);
+                        }
+                        break;
+                    case "No Start Dash":
+                        if (player.StartedDashing)
+                        {
+                            KillPlayer(player);
+                        }
+                        break;
+                    default:
                         KillPlayer(player);
-                    }
-                }
-                else if (Type == "No Dash")
-                {
-                    if (player.StateMachine.State == Player.StDash || player.StateMachine.State == Player.StDreamDash)
-                    {
-                        KillPlayer(player);
-                    }
+                        break;
                 }
             }
         }
@@ -381,7 +406,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Render();
             if (Collider != null && Emitter != null)
             {
-                Draw.Rect(Collider, (Type == "Must Dash" ? Color.Orange : (Type == "No Dash" ? Color.CadetBlue : Color.IndianRed)) * laserAlpha);
+                Draw.Rect(Collider, color * laserAlpha);
                 if (Emitter.side == "Left" || Emitter.side == "Right")
                 {
                     Draw.Rect(Collider.AbsoluteX, Collider.AbsoluteY - 1, Width, 1, borderColor * laserAlpha);

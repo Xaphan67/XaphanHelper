@@ -463,11 +463,12 @@ entities.XaphanHelper/LaserDetector.attributes.description.directory=The directo
 entities.XaphanHelper/LaserEmitter.placements.name.LaserEmitter=Laser Emitter
 entities.XaphanHelper/LaserEmitter.attributes.description.flag=The flag that must be set for the laser to be active. If empty, the laser will always be active.
 entities.XaphanHelper/LaserEmitter.attributes.description.side=The direction the emitter will shoot the laser.
-entities.XaphanHelper/LaserEmitter.attributes.description.type=Kill: Kill the player when they touch the laser. If your map use upgrades, the player can dash trough it if they use the Screw Attack upgrade.\nNo Dash: Kill the player if they dash trough the laser.\nMust Dash: Kill the player if they do not dash trough the laser.
+entities.XaphanHelper/LaserEmitter.attributes.description.type=Kill: Kill the player when they touch the laser. If your map use upgrades, the player can dash trough it if they use the Screw Attack upgrade.\nNo Dash: Kill the player if they dash trough the laser.\nNo Start Dash: Kill the player if they start dashing while on top of the laser.\nMust Dash: Kill the player if they do not dash trough the laser.
 entities.XaphanHelper/LaserEmitter.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 entities.XaphanHelper/LaserEmitter.attributes.description.inverted=If true, the flag must not be set for the laser to be active. (No effect if flag is empty)
 entities.XaphanHelper/LaserEmitter.attributes.description.base=If true, add a base to the laser emitter.
 entities.XaphanHelper/LaserEmitter.attributes.description.noBeam=If true, this laser emitter will not shoot any laser.
+entities.XaphanHelper/LaserEmitter.attributes.description.laserColor=Hexadecimal code for the color of the laser. Leave empty to use default color.
 
 # Liquid
 entities.XaphanHelper/Liquid.placements.name.Liquid=Liquid

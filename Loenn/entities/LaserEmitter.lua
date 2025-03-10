@@ -12,8 +12,12 @@ LaserEmitter.fieldInformation = {
         editable = false
     },
     type = {
-        options = {"Kill", "Must Dash", "No Dash"},
+        options = {"Kill", "Must Dash", "No Dash", "No Start Dash"},
         editable = false
+    },
+    laserColor = {
+        fieldType = "color",
+        allowEmpty = true
     }
 }
 LaserEmitter.placements = {
@@ -24,6 +28,7 @@ LaserEmitter.placements = {
         side = "Right",
         type = "Kill",
         directory = "objects/XaphanHelper/LaserEmitter",
+        laserColor = "",
         inverted = false,
         base = true,
         noBeam = false

@@ -82,6 +82,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private LaserBeam Beam;
 
+        public string laserColor;
+
         private StaticMover staticMover;
 
         private bool Base;
@@ -93,6 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Tag = Tags.TransitionUpdate;
             side = data.Attr("side");
             type = data.Attr("type", "Kill");
+            laserColor = data.Attr("laserColor", "");
             flag = data.Attr("flag");
             forceInactiveFlag = data.Attr("forceInactiveFlag");
             Base = data.Bool("base", false);
