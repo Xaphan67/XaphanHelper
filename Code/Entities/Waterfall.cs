@@ -32,6 +32,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private ParticleType P_Splash;
 
+            private bool collideSolid;
+
+            private bool collideLiquid;
+
             public WaterfallSection(Vector2 position, Waterfall waterfall, int index) : base(position)
             {
                 Tag = Tags.TransitionUpdate;
@@ -96,9 +100,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     plateform.Collidable = false;
                 }
                 base.Update();
-                if ((CollideCheck<Solid>(Position + Vector2.UnitY) || CollideCheck<Liquid>(Position + Vector2.UnitY)) && !CollideCheck<PlayerPlatform>())
+                if ((CollideCheck<Solid>(Position + Vector2.UnitY) || CollideCheck<Liquid>(Position + Vector2.UnitY) || CollideCheck<WaterWheel>(Position + Vector2.UnitY)) && !CollideCheck<PlayerPlatform>())
                 {
-                    while (CollideCheck<Solid>() || CollideCheck<Liquid>())
+                    while (CollideCheck<Solid>() || CollideCheck<Liquid>() || CollideCheck<WaterWheel>())
                     {
                         Collider.Height -= 1;
                         colliderHeight = Collider.Height;
@@ -106,9 +110,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>())
+                    if (!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>() && !CollideCheck<WaterWheel>())
                     {
-                        while ((!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>()) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top && Collider.Height < Waterfall.Height - verticalOffset)
+                        while ((!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>() && !CollideCheck<WaterWheel>()) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top && Collider.Height < Waterfall.Height - verticalOffset)
                         {
                             Collider.Height += 1;
                             colliderHeight = Collider.Height;
@@ -128,7 +132,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 double checkIndex = Index / 8f;
                 double result = checkIndex - Math.Truncate(checkIndex);
                 float height = Calc.Random.Next(4);
-                if (result == 0.5f && CullHelper.IsRectangleVisible(X, Y, Width, Height))
+                if ((CollideCheck<WaterWheel>(Position + Vector2.UnitY) ? (result == 0.25f || result == 0.75f) : result == 0.5f) && CullHelper.IsRectangleVisible(X, Y, Width, Height))
                 {
                     Vector2 position = new Vector2(X, Y + Collider.Height + height + verticalOffset);
                     if (SceneAs<Level>().IsInBounds(position))
@@ -136,13 +140,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         SceneAs<Level>().Particles.Emit(P_Splash, 1, position, Vector2.UnitX * 4f, new Vector2(0f, -1f).Angle());
                     }
                 }
+                collideSolid = CollideCheck<Solid>(Position + Vector2.UnitY);
+                collideLiquid = CollideCheck<Solid>(Position + Vector2.UnitY);
             }
 
             public override void Render()
             {
                 int section = 0;
-                bool collideSolid = Scene.CollideCheck<Solid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
-                bool collideLiquid = Scene.CollideCheck<Liquid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
+                //bool collideSolid = Scene.CollideCheck<Solid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
+                //bool collideLiquid = Scene.CollideCheck<Liquid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
                 for (int i = 0; i < Math.Truncate(Collider.Height + (collideSolid ? 4 : collideLiquid ? 1 : 0) + verticalOffset); i++)
                 {
                     sectionSprite.RenderPosition = Position + Vector2.UnitY * i;
