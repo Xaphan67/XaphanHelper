@@ -769,7 +769,7 @@ namespace Celeste.Mod.XaphanHelper
             LaserDetectorManager.Load();
             PushBlock.Load();
             FakePlayer.Load();
-            PlayerDeadAction.Load();
+            UnloadLevel.Load();
             DroneSwitch.Load();
             TransitionBlackEffect.Load();
             WorkRobot.Load();
@@ -893,7 +893,7 @@ namespace Celeste.Mod.XaphanHelper
             LaserDetectorManager.Unload();
             PushBlock.Unload();
             FakePlayer.Unload();
-            PlayerDeadAction.Unload();
+            UnloadLevel.Unload();
             DroneSwitch.Unload();
             TransitionBlackEffect.Unload();
             WorkRobot.Unload();
