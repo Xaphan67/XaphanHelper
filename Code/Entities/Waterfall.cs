@@ -90,16 +90,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     RemoveSelf();
                 }
+                AdjustColliderSize();
             }
 
-            public override void Update()
+            public void AdjustColliderSize()
             {
-                base.Update();
                 foreach (PlayerPlatform plateform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
                 {
                     plateform.Collidable = false;
                 }
-                base.Update();
                 if ((CollideCheck<Solid>(Position + Vector2.UnitY) || CollideCheck<Liquid>(Position + Vector2.UnitY) || CollideCheck<WaterWheel>(Position + Vector2.UnitY)) && !CollideCheck<PlayerPlatform>())
                 {
                     while (CollideCheck<Solid>() || CollideCheck<Liquid>() || CollideCheck<WaterWheel>())
@@ -127,6 +126,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     plateform.RestoreCollisionForPlayer();
                 }
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                AdjustColliderSize();
                 P_Splash.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * (Waterfall.currentTransparency + 0.2f);
                 sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * Waterfall.currentTransparency;
                 double checkIndex = Index / 8f;
@@ -182,11 +187,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string purifyFlags;
 
-        private bool poisoned;
-
         private float GradientTimer = 1f;
 
-        private bool purified;
+        public bool purified;
 
         private bool invertPurifyFlags;
 
@@ -205,13 +208,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Tag = Tags.TransitionUpdate;
             Collider = new Hitbox(data.Width, data.Height, 0f, 0f);
             Add(new PlayerCollider(OnCollide));
-            poisoned = data.Bool("poisoned", false);
             color = data.Attr("color");
             if (string.IsNullOrEmpty(color))
             {
                 color = "669CEE";
             }
-            poisonedColor = poisoned ? data.Attr("poisonedColor", "4c9a42") : color;
+            poisonedColor = data.Attr("poisonedColor", "4c9a42");
             outsideTransparency = data.Float("transparency", 0.65f);
             insideTransparency = data.Float("insideTransparency", outsideTransparency);
             purifyFlags = data.Attr("purifyFlags");
@@ -228,7 +230,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 insideTransparency = outsideTransparency;
             }
-            Depth = -1;
+            Depth = -9999;
         }
 
         public static void Load()
@@ -279,7 +281,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnCollide(Player player)
         {
-            if (PlayerInside() && ((poisoned && !purified) || XaphanModule.PlayerIsControllingRemoteDrone()))
+            if (PlayerInside() && ((!string.IsNullOrEmpty(purifyFlags) && !purified) || XaphanModule.PlayerIsControllingRemoteDrone()))
             {
                 player.Die(new Vector2(0f, -1f));
             }
@@ -292,6 +294,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SceneAs<Level>().Particles.AddTag(Tags.TransitionUpdate);
             Add(new Coroutine(PoisonedRoutine()));
             purified = CheckIfPurified();
+            if (purified)
+            {
+                GradientTimer = 0f;
+            }
             for (int i = 0; i < Width; i++)
             {
                 scene.Add(new WaterfallSection(Position + Vector2.UnitX * i, this, i));
@@ -368,6 +374,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool CheckIfPurified()
         {
+            if (string.IsNullOrEmpty(purifyFlags))
+            {
+                return true;
+            }
             string[] flags = purifyFlags.Split(',');
             bool purified = true;
             foreach (string flag in flags)

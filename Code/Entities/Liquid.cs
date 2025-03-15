@@ -192,8 +192,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool VariaPreventDying;
 
-        private bool poisoned;
-
         private float GradientTimer = 1f;
 
         private bool purified;
@@ -208,9 +206,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             liquidType = data.Attr("liquidType", "acid");
             lowPosition = data.Int("lowPosition");
             delay = data.Float("frameDelay");
-            poisoned = data.Bool("poisoned", false);
             color = data.Attr("color");
-            poisonedColor = (poisoned && liquidType == "water") ? data.Attr("poisonedColor", "4c9a42") : color;
+            poisonedColor = data.Attr("poisonedColor", "4c9a42");
             outsideTransparency = data.Float("transparency");
             insideTransparency = data.Float("insideTransparency", outsideTransparency);
             foreground = data.Bool("foreground");
@@ -686,7 +683,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Add(new Coroutine(PoisonedRoutine()));
             if (!string.IsNullOrEmpty(appearFlags))
             {
                 string[] flags = appearFlags.Split(',');
@@ -711,7 +707,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Utils.GetGradientColor(Calc.HexToColor(color), Calc.HexToColor(poisonedColor), GradientTimer) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
             origLevelBottom = SceneAs<Level>().Bounds.Bottom;
             if (liquidType == "lava")
             {
@@ -745,48 +740,115 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            purified = CheckIfPurified();
         }
 
         private bool CheckIfPurified()
         {
-            string[] flags = purifyFlags.Split(',');
             bool purified = true;
-            foreach (string flag in flags)
+            if (!CheckIfCollideWaterfall())
             {
-                if (invertPurifyFlags ? SceneAs<Level>().Session.GetFlag(flag) : !SceneAs<Level>().Session.GetFlag(flag))
+                if (string.IsNullOrEmpty(purifyFlags))
                 {
-                    purified = false;
-                    break;
+                    return true;
                 }
+                string[] flags = purifyFlags.Split(',');
+                foreach (string flag in flags)
+                {
+                    if (invertPurifyFlags ? SceneAs<Level>().Session.GetFlag(flag) : !SceneAs<Level>().Session.GetFlag(flag))
+                    {
+                        purified = false;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                purified = GetWaterfallPurifiedInfo();
             }
             return purified;
         }
 
+        private bool CheckIfCollideWaterfall()
+        {
+            foreach (Waterfall.WaterfallSection section in SceneAs<Level>().Tracker.GetEntities<Waterfall.WaterfallSection>())
+            {
+                if (CollideCheck(section, Position - Vector2.UnitY))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool GetWaterfallPurifiedInfo()
+        {
+            int TotalSections = 0;
+            int PurifiedSections = 0;
+            foreach (Waterfall.WaterfallSection section in SceneAs<Level>().Tracker.GetEntities<Waterfall.WaterfallSection>())
+            {
+                if (CollideCheck(section, Position - Vector2.UnitY))
+                {
+                    if (section.Waterfall.purified)
+                    {
+                        PurifiedSections++;
+                    }
+                    TotalSections++;
+                }
+            }
+            return PurifiedSections >= (TotalSections - PurifiedSections);
+        }
+
         public IEnumerator PoisonedRoutine()
         {
-            if (!string.IsNullOrEmpty(purifyFlags))
+            while (true)
             {
-                bool skip = false;
-                if (purified)
+                if (!string.IsNullOrEmpty(purifyFlags) || CheckIfCollideWaterfall())
                 {
-                    GradientTimer = 0f;
-                }
-                else
-                {
-                    while (!CheckIfPurified())
+                    bool skip = false;
+                    if (purified)
+                    {
+                        GradientTimer = 0f;
+                    }
+                    else
+                    {
+                        while (!CheckIfPurified())
+                        {
+                            yield return null;
+                        }
+                        while (GradientTimer > 0f)
+                        {
+                            GradientTimer -= Engine.DeltaTime;
+                            yield return null;
+                            if (GradientTimer <= 0.5f)
+                            {
+                                purified = true;
+                            }
+                            if (SceneAs<Level>().Transitioning || !CheckIfPurified())
+                            {
+                                skip = true;
+                                break;
+                            }
+                        }
+                        if (!skip)
+                        {
+                            GradientTimer = 0f;
+                        }
+                    }
+
+                    while (CheckIfPurified())
                     {
                         yield return null;
                     }
-                    while (GradientTimer > 0f)
+                    skip = false;
+                    while (GradientTimer < 1f)
                     {
-                        GradientTimer -= Engine.DeltaTime;
+                        GradientTimer += Engine.DeltaTime;
                         yield return null;
-                        if (GradientTimer <= 0.5f)
+                        if (GradientTimer >= 0.5f)
                         {
-                            purified = true;
+                            purified = false;
                         }
-                        if (SceneAs<Level>().Transitioning || !CheckIfPurified())
+                        if (SceneAs<Level>().Transitioning || CheckIfPurified())
                         {
                             skip = true;
                             break;
@@ -794,39 +856,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     if (!skip)
                     {
-                        GradientTimer = 0f;
+                        GradientTimer = 1f;
                     }
                 }
-
-                while (CheckIfPurified())
-                {
-                    yield return null;
-                }
-                skip = false;
-                while (GradientTimer < 1f)
-                {
-                    GradientTimer += Engine.DeltaTime;
-                    yield return null;
-                    if (GradientTimer >= 0.5f)
-                    {
-                        purified = false;
-                    }
-                    if (SceneAs<Level>().Transitioning || CheckIfPurified())
-                    {
-                        skip = true;
-                        break;
-                    }
-                }
-                if (!skip)
-                {
-                    GradientTimer = 1f;
-                }
-                Add(new Coroutine(PoisonedRoutine()));
+                yield return null;
             }
         }
 
         public override void Awake(Scene scene)
         {
+            Add(new Coroutine(PoisonedRoutine()));
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Utils.GetGradientColor(Calc.HexToColor(color), Calc.HexToColor(poisonedColor), GradientTimer) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
+            purified = CheckIfPurified();
+            if (purified)
+            {
+                GradientTimer = 0f;
+            }
             base.Awake(scene);
             if (!groupLeader)
             {
@@ -1416,7 +1461,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             Add(new Coroutine(drone.Destroy()));
                         }
                     }
-                    else if (poisoned && !purified)
+                    else if ((!string.IsNullOrEmpty(purifyFlags) && !purified) || (CheckIfCollideWaterfall() && !GetWaterfallPurifiedInfo()))
                     {
                         player.Die(new Vector2(0f, -1f));
                     }

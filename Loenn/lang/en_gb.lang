@@ -497,10 +497,9 @@ entities.XaphanHelper/Liquid.attributes.description.group=Id of the group this l
 entities.XaphanHelper/Liquid.attributes.description.canDrown=If true, the player will die if they stay inside the liquid for longer than the time specified in Air Timer.
 entities.XaphanHelper/Liquid.attributes.description.airTimer=Time (in seconds) that the player can stay in the liquid before dying, if Can Drown is true and Visual Only is false.
 entities.XaphanHelper/Liquid.attributes.description.variaPreventDying= If true, the player can walk in the liquid even if it is set to Lava or Acid, if the player have the Varia Jacket upgrade.
-entities.XaphanHelper/Liquid.attributes.description.poisoned= If true, the liquid will kill the player if all flags in Purify Flags are not set.\nOnly if Liquid Type is set to water.
 entities.XaphanHelper/Liquid.attributes.description.poisonedColor= Hexadecimal code for the color of the liquid when it is poisoned.\nWhen the liquid is purified, it will change to its normal color.
-entities.XaphanHelper/Liquid.attributes.description.purifyFlags= The flags that must be set for the liquid to not be poisoned anymore. Only if Poisoned is true. Flags must be separated by a comma (,).
-entities.XaphanHelper/Liquid.attributes.description.invertPurifyFlags= If true, flags specified in Purify Flags must not be set for the liquid to not be poisoned anymore.
+entities.XaphanHelper/Liquid.attributes.description.purifyFlags= Only if Liquid Type is set to Water.\nThe liquid will be poisoned and kill the player as long as all these flags are not set. Flags must be separated by a comma (,).
+entities.XaphanHelper/Liquid.attributes.description.invertPurifyFlags= If true, flags specified in Purify Flags must be set for the liquid to be poisoned.
 
 # MagneticCeiling
 entities.XaphanHelper/MagneticCeiling.placements.name.MagneticCeiling=Magnetic Ceiling
