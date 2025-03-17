@@ -198,6 +198,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool invertPurifyFlags;
 
+        private string PurifiedFlag;
+
         public Liquid(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
@@ -208,6 +210,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             delay = data.Float("frameDelay");
             color = data.Attr("color");
             poisonedColor = data.Attr("poisonedColor", "4c9a42");
+            PurifiedFlag = data.Attr("purifiedFlag");
             outsideTransparency = data.Float("transparency");
             insideTransparency = data.Float("insideTransparency", outsideTransparency);
             foreground = data.Bool("foreground");
@@ -800,6 +803,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator PoisonedRoutine()
         {
+            string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+            int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             while (true)
             {
                 if (!string.IsNullOrEmpty(purifyFlags) || CheckIfCollideWaterfall())
@@ -822,6 +827,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             if (GradientTimer <= 0.5f)
                             {
                                 purified = true;
+                                if (!string.IsNullOrEmpty(PurifiedFlag))
+                                {
+                                    SceneAs<Level>().Session.SetFlag(PurifiedFlag, true);
+                                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + PurifiedFlag))
+                                    {
+                                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + PurifiedFlag);
+                                    }
+                                }
                             }
                             if (SceneAs<Level>().Transitioning || !CheckIfPurified())
                             {
@@ -847,6 +860,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         if (GradientTimer >= 0.5f)
                         {
                             purified = false;
+                            if (!string.IsNullOrEmpty(PurifiedFlag))
+                            {
+                                if (FlagRegiseredInSaveData())
+                                {
+                                    SceneAs<Level>().Session.SetFlag(PurifiedFlag, false);
+                                    XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + PurifiedFlag);
+                                }
+                            }
                         }
                         if (SceneAs<Level>().Transitioning || CheckIfPurified())
                         {
@@ -1237,6 +1258,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     player.Die(Vector2.Zero);
                 }
             }
+        }
+
+        public bool FlagRegiseredInSaveData()
+        {
+            Session session = SceneAs<Level>().Session;
+            string Prefix = session.Area.LevelSet;
+            int chapterIndex = session.Area.ChapterIndex;
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_test");
         }
 
         public void PlaySplashIn(Vector2 position)

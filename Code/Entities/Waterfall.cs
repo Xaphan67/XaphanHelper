@@ -4,7 +4,6 @@ using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.Helpers;
 using Microsoft.Xna.Framework;
-using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -230,7 +229,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 insideTransparency = outsideTransparency;
             }
-            Depth = -9999;
+            Depth = -1;
         }
 
         public static void Load()

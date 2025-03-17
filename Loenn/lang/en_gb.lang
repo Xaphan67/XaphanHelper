@@ -500,6 +500,7 @@ entities.XaphanHelper/Liquid.attributes.description.variaPreventDying= If true, 
 entities.XaphanHelper/Liquid.attributes.description.poisonedColor= Hexadecimal code for the color of the liquid when it is poisoned.\nWhen the liquid is purified, it will change to its normal color.
 entities.XaphanHelper/Liquid.attributes.description.purifyFlags= Only if Liquid Type is set to Water.\nThe liquid will be poisoned and kill the player as long as all these flags are not set. Flags must be separated by a comma (,).
 entities.XaphanHelper/Liquid.attributes.description.invertPurifyFlags= If true, flags specified in Purify Flags must be set for the liquid to be poisoned.
+entities.XaphanHelper/Liquid.attributes.description.purifiedFlag= The flag that will be set as long as the liquid is purified.\nThis flag is automatically registered in the player save file when set.
 
 # MagneticCeiling
 entities.XaphanHelper/MagneticCeiling.placements.name.MagneticCeiling=Magnetic Ceiling
