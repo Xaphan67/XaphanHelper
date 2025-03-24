@@ -1,9 +1,11 @@
 Version 1.0.76 :
 - Added "Laser Color" attribute to Laser Emitters
+- Added "Silent" attribute to Flag Temple Gates
 - Added a new type for Laser Emiters : No Start Dash (Kill the player if they attempt to dash while inside the laser)
 - The level will no longer be reloaded when other mods change or add a Death Action
 - Fixed a bug alowing the player to interact with Challenge Motes in boss rooms in SoCM before the boss was defeated in normal mode
 - Fixed a bug that made Bomb Switches unresponsive if a Bomb was sloted inside but started to disapear before it exploded
+- Fixed a bug that could prevent Liquids to use the correct color
 
 Version 1.0.75 :
 - Improved rendering of Liquids in Loenn

@@ -6,7 +6,7 @@ local FlagTempleGate = {}
 FlagTempleGate.name = "XaphanHelper/FlagTempleGate"
 FlagTempleGate.depth = -9000
 FlagTempleGate.fieldOrder = {
-    "x", "y", "flag", "spriteName", "horizontal", "attachRight", "startOpen", "openOnHeartCollection"
+    "x", "y", "flag", "spriteName", "horizontal", "attachRight", "startOpen", "openOnHeartCollection", "silent"
 }
 FlagTempleGate.ignoredFields = {
     "_name", "_id", "width", "height"
@@ -27,7 +27,8 @@ FlagTempleGate.placements = {
         spriteName = "default",
         openOnHeartCollection = false,
         horizontal = false,
-        attachRight = false
+        attachRight = false,
+        silent = false
     }
 }
 

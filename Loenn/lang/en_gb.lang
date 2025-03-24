@@ -316,6 +316,7 @@ entities.XaphanHelper/FlagTempleGate.attributes.description.openOnHeartCollectio
 entities.XaphanHelper/FlagTempleGate.attributes.description.startOpen=If true, the gate will be open when the player enter the room, and will close when the flag is true.
 entities.XaphanHelper/FlagTempleGate.attributes.description.horizontal=If true, the gate will be horizontal instead of vertical.
 entities.XaphanHelper/FlagTempleGate.attributes.description.attachRight=If true, the gate will be attached to the right. (only if Horizontal is true)
+entities.XaphanHelper/FlagTempleGate.attributes.description.silent=If true, the gate will not emit any sound when it open or close.
 
 # HeatController
 entities.XaphanHelper/HeatController.placements.name.HeatController=Heat Controller

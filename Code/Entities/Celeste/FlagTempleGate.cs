@@ -35,6 +35,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool openOnHeartCollection;
 
+        private bool silent;
+
         public FlagTempleGate(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, true)
         {
             horizontal = data.Bool("horizontal", false);
@@ -43,6 +45,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             startOpen = data.Bool("startOpen", false);
             openOnHeartCollection = data.Bool("openOnHeartCollection");
             spriteName = data.Attr("spriteName", "default");
+            silent = data.Bool("silent", false);
             closedHeight = data.Height;
             Add(sprite = GFX.SpriteBank.Create("templegate_" + spriteName));
             if (horizontal)
@@ -94,7 +97,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public void Open()
         {
             Collidable = false;
-            Audio.Play("event:/game/05_mirror_temple/gate_main_open", Position);
+            if (!silent)
+            {
+                Audio.Play("event:/game/05_mirror_temple/gate_main_open", Position);
+            }
             drawHeightMoveSpeed = 200f;
             drawHeight = horizontal ? Width : Height;
             shaker.ShakeFor(0.2f, removeOnFinish: false);
@@ -106,7 +112,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public void Close()
         {
             Collidable = true;
-            Audio.Play("event:/game/05_mirror_temple/gate_main_close", Position);
+            if (!silent)
+            {
+                Audio.Play("event:/game/05_mirror_temple/gate_main_close", Position);
+            }
             drawHeightMoveSpeed = 300f;
             drawHeight = Math.Max(4f, horizontal ? Width : Height);
             shaker.ShakeFor(0.2f, removeOnFinish: false);
