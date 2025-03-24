@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
@@ -8,6 +9,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
+using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {
@@ -225,6 +227,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 jumpBuffer--;
                 // be sure that the sound played is not the dream jump one.
                 playerDreamJump.SetValue(self, false);
+                self.Add(new Coroutine(SpeedRingsRoutine(self)));
                 return 1f;
             }
 
@@ -237,6 +240,14 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
 
             return 0f;
+        }
+
+        private IEnumerator SpeedRingsRoutine(Player player)
+        {
+            player.SceneAs<Level>().Add(Engine.Pooler.Create<SpeedRing>().Init(player.Center + Vector2.UnitY, player.Speed.Angle(), Color.White));
+            yield return 0.01;
+            player.SceneAs<Level>().Add(Engine.Pooler.Create<SpeedRing>().Init(player.Center + Vector2.UnitY, player.Speed.Angle(), Color.White));
+            player.SceneAs<Level>().Add(Engine.Pooler.Create<SpeedRing>().Init(player.Center + Vector2.UnitY, player.Speed.Angle(), Color.White));
         }
 
         private void modDreamDashEnd(On.Celeste.Player.orig_DreamDashEnd orig, Player self)
