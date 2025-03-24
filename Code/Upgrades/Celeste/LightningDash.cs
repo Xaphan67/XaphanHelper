@@ -176,12 +176,12 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                             {
                                 yield return null;
                                 self.Hair.Color = Calc.HexToColor("F2EB6D");
-                                level.CameraOffset = new Vector2(60f, 0f);
+                                level.CameraOffset.X = 60f;
                                 self.Facing = Facings.Right;
                             }
                             level.DirectionalShake(aim, 0.2f);
                             sound.stop(STOP_MODE.IMMEDIATE);
-                            level.CameraOffset = new Vector2(0f, 0f);
+                            level.CameraOffset.X = 0f;
                             sound = Audio.Play("event:/game/xaphan/shinespark_end");
                             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                             level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
@@ -194,12 +194,12 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                             {
                                 yield return null;
                                 self.Hair.Color = Calc.HexToColor("F2EB6D");
-                                level.CameraOffset = new Vector2(-60f, 0f);
+                                level.CameraOffset.X = -60f;
                                 self.Facing = Facings.Left;
                             }
                             level.DirectionalShake(aim, 0.2f);
                             sound.stop(STOP_MODE.IMMEDIATE);
-                            level.CameraOffset = new Vector2(0f, 0f);
+                            level.CameraOffset.X = 0f;
                             sound = Audio.Play("event:/game/xaphan/shinespark_end");
                             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                             level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
