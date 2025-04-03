@@ -125,6 +125,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     plateform.RestoreCollisionForPlayer();
                 }
+                foreach (Spikes spikes in SceneAs<Level>().Tracker.GetEntities<Spikes>())
+                {
+                    if (CollideCheck(spikes))
+                    {
+                        spikes.Depth = Depth - 1;
+                    }
+                    else if (spikes.Depth == Depth - 1)
+                    {
+                        spikes.Depth = -1;
+                    }
+                }
             }
 
             public override void Update()
