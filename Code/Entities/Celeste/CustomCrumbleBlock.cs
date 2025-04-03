@@ -74,6 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             this.rotation = rotation;
             Add(occluder = new LightOcclude(lightOccludeValue));
+            Depth = -2;
         }
 
         private void addRange(HashSet<CustomCrumbleBlock> set, IEnumerable<CustomCrumbleBlock> elements)
