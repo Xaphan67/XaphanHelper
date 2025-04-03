@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Entities;
+﻿using System.Collections.Generic;
+using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
 
@@ -25,10 +26,20 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         {
             base.OnEnter(player);
             Level level = Scene as Level;
+            List<LightManager> lights = new List<LightManager>();
             foreach (LightManager manager in level.Tracker.GetEntities<LightManager>())
             {
                 manager.MainMode = manager.RespawnMode = (XaphanModuleSession.LightModes)mode;
+                if (mode == Modes.None)
+                {
+                    lights.Add(manager);
+                }
             }
+            foreach (LightManager manager in lights)
+            {
+                manager.RemoveSelf();
+            }
+            lights.Clear();
             XaphanModuleSession.LightModes lightMode = XaphanModuleSession.LightModes.None;
             lightMode = (XaphanModuleSession.LightModes)mode;
         }
