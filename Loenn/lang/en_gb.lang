@@ -376,6 +376,7 @@ entities.XaphanHelper/InGameMapRoomAdjustController.attributes.description.remov
 entities.XaphanHelper/InGameMapRoomAdjustController.attributes.description.removeEntrance9=Hide this entrance on the map.
 entities.XaphanHelper/InGameMapRoomAdjustController.attributes.description.ignoreIcons=If true, icons used in this room will not move if the room is moved via this controller.
 entities.XaphanHelper/InGameMapRoomAdjustController.attributes.description.hiddenTiles=Coordinates of tiles that won't be displayed when the player unlock this chapter map or if 'revealUnexploredRooms' is set in the InGameMapController.\n(Format: X-Y, separated by a comma. Example: 0-0,0-1,2-3 (0-0 is top left tile))
+entities.XaphanHelper/InGameMapRoomAdjustController.attributes.description.display=Determine where this controller will take effect.\nAlways: Affect the area map and the world map.\nArea map only: Affect the area map only.\nWorld map only: Affect the world map only.
 
 # InGameMapRoomController
 entities.XaphanHelper/InGameMapRoomController.placements.name.InGameMapRoomController=In-Game Map Room Controller

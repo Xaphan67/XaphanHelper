@@ -637,7 +637,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         RoomAdjustControllerData.Add(new InGameMapRoomAdjustControllerData(level.Name, entity.Int("positionX"), entity.Int("positionY"), entity.Int("sizeX"), entity.Int("sizeX"), entity.Attr("hiddenTiles"), entity.Bool("removeEntrance0"),
                             entity.Bool("removeEntrance1"), entity.Bool("removeEntrance2"), entity.Bool("removeEntrance3"), entity.Bool("removeEntrance4"), entity.Bool("removeEntrance5"), entity.Bool("removeEntrance6"),
-                            entity.Bool("removeEntrance7"), entity.Bool("removeEntrance8"), entity.Bool("removeEntrance9"), entity.Bool("ignoreIcons")));
+                            entity.Bool("removeEntrance7"), entity.Bool("removeEntrance8"), entity.Bool("removeEntrance9"), entity.Bool("ignoreIcons"), entity.Attr("display", "Always")));
                     }
                 }
             }
@@ -2589,7 +2589,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             foreach (InGameMapRoomAdjustControllerData roomAdjustControllerData in RoomAdjustControllerData)
             {
-                if (roomAdjustControllerData.Room == room)
+                if (roomAdjustControllerData.Room == room && (mode == "worldmap" ? roomAdjustControllerData.Display != "Area map only" : roomAdjustControllerData.Display != "World map only"))
                 {
                     return true;
                 }

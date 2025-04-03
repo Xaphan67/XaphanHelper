@@ -3,7 +3,7 @@ local InGameMapRoomAdjustController = {}
 InGameMapRoomAdjustController.name = "XaphanHelper/InGameMapRoomAdjustController"
 InGameMapRoomAdjustController.depth = -100000
 InGameMapRoomAdjustController.fieldOrder = {
-    "x", "y", "positionX", "positionY", "sizeX", "sizeY", "hiddenTiles", "ignoreIcons", "removeEntrance0", "removeEntrance1", "removeEntrance2", "removeEntrance3", "removeEntrance4", "removeEntrance5",
+    "x", "y", "positionX", "positionY", "sizeX", "sizeY", "hiddenTiles", "display", "ignoreIcons", "removeEntrance0", "removeEntrance1", "removeEntrance2", "removeEntrance3", "removeEntrance4", "removeEntrance5",
     "removeEntrance6", "removeEntrance7", "removeEntrance8", "removeEntrance9"
 }
 InGameMapRoomAdjustController.fieldInformation = {
@@ -18,6 +18,10 @@ InGameMapRoomAdjustController.fieldInformation = {
     },
     sizeY = {
         fieldType = "integer",
+    },
+    display = {
+        options = {"Always", "Area map only", "World map only"},
+        editable = false
     }
 }
 InGameMapRoomAdjustController.placements = {
@@ -38,7 +42,8 @@ InGameMapRoomAdjustController.placements = {
         removeEntrance7 = false,
         removeEntrance8 = false,
         removeEntrance9 = false,
-        ignoreIcons = false
+        ignoreIcons = false,
+        display = "Always"
     }
 }
 

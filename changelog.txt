@@ -2,6 +2,7 @@ Version 1.0.76 :
 - Added "Laser Color" attribute to Laser Emitters
 - Added "Silent" attribute to Flag Temple Gates
 - Added a new type for Laser Emiters : No Start Dash (Kill the player if they attempt to dash while inside the laser)
+- Added "Display" attribute to In Game Map Room Adjust Controllers
 - The level will no longer be reloaded when other mods change or add a Death Action
 - Using the Lightning Dash ability no longer affect the vertical camera offset
 - Using the Space Jump ability now display a visual effect
