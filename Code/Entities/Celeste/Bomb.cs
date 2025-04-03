@@ -116,23 +116,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void OnPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self)
         {
-            if (self.Holding.Entity == null)
+            if (self.Holding != null)
             {
-                return;
-            }
-            if (self.Holding.Entity.GetType() != typeof(Bomb) || (self.Holding.Entity.GetType() == typeof(Bomb) && XaphanModule.ModSettings.UseBagItemSlot.Check))
-            {
-                orig(self);
-            }
-            else
-            {
-                if ((float)PlayerMinHoldTimer.GetValue(self) <= 0f)
+                if (self.Holding.Entity == null)
                 {
-                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
-                    self.Holding.Release(Vector2.UnitX * (float)self.Facing);
-                    self.Play("event:/char/madeline/crystaltheo_throw");
-                    self.Sprite.Play("throw");
-                    self.Holding = null;
+                    return;
+                }
+                if (self.Holding.Entity.GetType() != typeof(Bomb) || (self.Holding.Entity.GetType() == typeof(Bomb) && XaphanModule.ModSettings.UseBagItemSlot.Check))
+                {
+                    orig(self);
+                }
+                else
+                {
+                    if ((float)PlayerMinHoldTimer.GetValue(self) <= 0f)
+                    {
+                        Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                        self.Holding.Release(Vector2.UnitX * (float)self.Facing);
+                        self.Play("event:/char/madeline/crystaltheo_throw");
+                        self.Sprite.Play("throw");
+                        self.Holding = null;
+                    }
                 }
             }
         }
