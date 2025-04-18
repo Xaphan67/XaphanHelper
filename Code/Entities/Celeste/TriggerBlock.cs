@@ -36,6 +36,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float returnSpeed;
 
+        private float stopDuration;
+
         private SoundSource sfx;
 
         public TriggerBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
@@ -47,6 +49,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             direction = data.Enum("direction", Direction.Left);
             moveSpeed = data.Float("moveSpeed", 3f);
             returnSpeed = data.Float("returnSpeed", 0.25f);
+            stopDuration = data.Float("stopDuration", 0f);
             switch (direction)
             {
                 case Direction.Left:
@@ -117,8 +120,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Audio.Play("event:/game/03_resort/platform_vert_start", Position);
                 StartShaking(0.1f);
             }
-            while (SceneAs<Level>().Session.GetFlag(flag))
+            float maxTimer = stopDuration;
+            while (SceneAs<Level>().Session.GetFlag(flag) || maxTimer > 0)
             {
+                bool useTimer = false;
+                if (maxTimer > 0)
+                {
+                    useTimer = true;
+                    maxTimer -= Engine.DeltaTime;
+                }
+                if (maxTimer <= 0 && useTimer)
+                {
+                    SceneAs<Level>().Session.SetFlag(flag, false);
+                }
                 yield return null;
             }
             at = 0f;
