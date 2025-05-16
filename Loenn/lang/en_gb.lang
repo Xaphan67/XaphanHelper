@@ -713,6 +713,22 @@ triggers.XaphanHelper/MultiMusicTrigger.attributes.description.trackBoth=The mus
 triggers.XaphanHelper/MultiMusicTrigger.attributes.description.trackNone=The music event that play when the player enter this trigger and both flags in Flag A AND Flag B are NOT set.
 triggers.XaphanHelper/MultiMusicTrigger.attributes.description.removeWhenOutside=If true, the trigger is removed if the player spawn or move outside of it.
 
+# PoemTrigger
+triggers.XaphanHelper/PoemTrigger.placements.name.PoemTrigger=Poem trigger
+triggers.XaphanHelper/PoemTrigger.attributes.description.triggerSound=Sound event that play when the player enter the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.changeMusic=If true, the current music will stop while the triggerSound play when the player enter the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.newMusic=Only if changeMusic is set.\nThe music event that play after the player enter the trigger. Leave blank to use the same music as the one that played before the player entered the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.flag=The flag that will be set when the player enter the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.endChapter=If true, the chapter will end when the player enter the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.registerInSaveData=If true, the flag will be registered in the player Save file and will be set forever.
+triggers.XaphanHelper/PoemTrigger.attributes.description.onlyOnce=If true, the trigger can only be activated once.
+triggers.XaphanHelper/PoemTrigger.attributes.description.poemName= Dialog ID of the poem that is displayed when the player enter the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.poemColor= Color of the name of the poem that is displayed when the player enter the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.poemParticlesColor= Colors of the particles displayed when the player enter the trigger.
+triggers.XaphanHelper/PoemTrigger.attributes.description.poemSprite= The full path to the sprite that is displayed behind the poem, relative to Atlases/Gui/.
+triggers.XaphanHelper/PoemTrigger.attributes.description.poemSpriteAnimationSpeed=Delay between each frame of the animation of the sprite that is displayed behind the poem.
+triggers.XaphanHelper/PoemTrigger.attributes.description.poemSpriteAnimationPause= The number of frames to wait between each loop of the sprite that is displayed behind the poem.
+
 # ResetFlagsTrigger
 triggers.XaphanHelper/ResetFlagsTrigger.placements.name.ResetFlagsTrigger=Reset Flags
 triggers.XaphanHelper/ResetFlagsTrigger.attributes.description.setTrueFlags=The flags that will be set when entering the trigger, separated by a comma (,).
@@ -777,7 +793,7 @@ triggers.XaphanHelper/UpgradeTrigger.placements.name.UpgradeTrigger=Upgrade
 triggers.XaphanHelper/UpgradeTrigger.attributes.description.upgrade=The upgrade that will be granted to the player.\nBinoculars: Allows the player to use binoculars to preview the room at any time.\nBombs: Allows the player to set bombs that can destroy some walls.\nClimbingKit: Allows the player to climb walls. (requires PowerGrip)\nDashBoots: Allows the player to dash.\nDroneTeleport: Allows the player to teleport to the location of the drone. (requires RemoteDrone)\nEtherealDash: Allows the player to dash trough Ethereal Blocks.\nGoldenFeather: Allows the player to use a feather to glide and ride wind currents.\nGravityJacket: Allows the player to move freely in water and lava. (Liquid entity only)\nHoverJet: Allows the remote drone to stop their falling speed and float for a short time. (requires RemoteDrone)\nJumpBoost: Allows the remote drone to jump higher. (requires RemoteDrone)\nIceBeam: Allows the remote drone beam to freeze some entities. (requires RemoteDrone)\nLightningDash: Allows the player to horizontally dash in the opposite direction of the wall they are grabbing until they hit a solid wall or entity.\nLongBeam: Allows the remote drone beam to reach futher targets. (requires RemoteDrone)\nMegaBombs: Allows the player to set powerfull bombs that can destroy some walls and activate some blocks.\nMissilesModule: Allows the remote drone to shoot missiles (requires RemoteDrone)\nPortableStation: Allows the player to teleport to any unlocked Warp Station from anywhere.\nPowerGrip: Allows the player to grab.\nRemoteDrone: Allows the player to control a small drone.\nScrewAttack: Allows the player to destroy some walls, increases it's horizontal speed and allows it to go trough some obstacles without dying while jumping.\nSpaceJump: Allows the player to jump again once in mid-air.\nSpiderMagnet: Allows the player to grab magnetic ceilings.\nSuperMissilesModule: Allows the remote drone to shoot super missiles (requires RemoteDrone)\nVariaJacket: Allows the player to survive in heated rooms and in lava. (Liquid entity only).\nWaveBeam: Allows the remote drone beam to go trough solids. (requires RemoteDrone)
 triggers.XaphanHelper/UpgradeTrigger.attributes.description.disable=If true, disable the specified upgrade if the player has it.
 
-# -- Effects -- 
+# -- Effects --
 
 # Glow
 style.effects.XaphanHelper/Glow.name=Glow
