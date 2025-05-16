@@ -26,7 +26,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public WaterWheel(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
-            Collider = new Circle(12f);
             flag = data.Attr("flag");
             directory = data.Attr("directory", "objects/XaphanHelper/WaterWheel");
             if (string.IsNullOrEmpty(directory))
@@ -34,10 +33,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 directory = "objects/XaphanHelper/WaterWheel";
             }
             Add(wheelSprite = new Sprite(GFX.Game, directory + "/"));
-            wheelSprite.Origin = Vector2.One * 12f;
             wheelSprite.AddLoop("wheel", "wheel", 0f, 0);
             wheelSprite.Play("wheel");
             middle = GFX.Game[directory + "/middle"];
+            float spriteWidth = wheelSprite.Width / 2;
+            wheelSprite.Origin = Vector2.One * spriteWidth;
+            Collider = new Circle(spriteWidth);
         }
 
         public override void Update()
