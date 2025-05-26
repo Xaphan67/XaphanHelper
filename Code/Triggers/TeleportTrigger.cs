@@ -46,6 +46,15 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             cameraY = data.Int("cameraY");
         }
 
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            if (SceneAs<Level>().Session.GetFlag(flag))
+            {
+                RemoveSelf();
+            }
+        }
+
         public override void OnStay(Player player)
         {
             base.OnStay(player);
