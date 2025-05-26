@@ -78,6 +78,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(tiles);
             Add(new LightOcclude());
             Add(new TileInterceptor(tiles, highPriority: false));
+            if (SceneAs<Level>().Session.GetFlag(flag))
+            {
+                Add(SequenceRoutine = new Coroutine(Sequence(true)));
+            }
         }
 
         public override void OnShake(Vector2 amount)
@@ -95,12 +99,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private IEnumerator Sequence()
+        private IEnumerator Sequence(bool startOpen = false)
         {
             float at = percent;
             while (at < 1f)
             {
-                if (!sfx.Playing && !SceneAs<Level>().Transitioning)
+                if (!sfx.Playing && !SceneAs<Level>().Transitioning && !startOpen)
                 {
                     sfx.Play("event:/game/03_resort/platform_vert_down_loop");
                 }
@@ -109,13 +113,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     sfx.Param("ducking", 1);
                 }
                 yield return null;
-                at = Calc.Approach(at, 1f, (SceneAs<Level>().Transitioning ? 9999 : moveSpeed) * Engine.DeltaTime);
+                at = Calc.Approach(at, 1f, ((SceneAs<Level>().Transitioning || startOpen) ? 9999 : moveSpeed) * Engine.DeltaTime);
                 percent = at;
                 Vector2 to = Vector2.Lerp(start, target, percent);
                 MoveTo(to);
             }
             sfx.Stop();
-            if (!SceneAs<Level>().Transitioning)
+            if (!SceneAs<Level>().Transitioning && !startOpen)
             {
                 Audio.Play("event:/game/03_resort/platform_vert_start", Position);
                 StartShaking(0.1f);
