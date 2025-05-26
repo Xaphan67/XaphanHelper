@@ -38,6 +38,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public WaterfallSection(Vector2 position, Waterfall waterfall, int index) : base(position)
             {
                 Tag = Tags.TransitionUpdate;
+                Add(new PlayerCollider(OnCollide));
                 Waterfall = waterfall;
                 Index = index;
                 Add(sectionSprite = new Sprite(GFX.Game, "objects/XaphanHelper/Waterfall/"));
@@ -73,6 +74,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     LifeMax = 0.2f
                 };
                 Depth = Waterfall.Depth;
+            }
+
+            private void OnCollide(Player player)
+            {
+                if (XaphanModule.PlayerIsControllingRemoteDrone())
+                {
+                    Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+                    if (drone != null && !drone.dead && player != drone.FakePlayer)
+                    {
+                        Add(new Coroutine(drone.Destroy()));
+                    }
+                }
             }
 
             public override void Added(Scene scene)
@@ -291,7 +304,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnCollide(Player player)
         {
-            if (PlayerInside() && ((!string.IsNullOrEmpty(purifyFlags) && !purified) || XaphanModule.PlayerIsControllingRemoteDrone()))
+            if (PlayerInside() && !string.IsNullOrEmpty(purifyFlags) && !purified)
             {
                 player.Die(new Vector2(0f, -1f));
             }
