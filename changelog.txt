@@ -1,5 +1,6 @@
 Version 1.0.77 :
 - Added Poem Trigger
+- Removed "Persistent" attribute from Drone Switches. Replaced by the new "Only Once" attribute
 
 Version 1.0.76 :
 - Added "Laser Color" attribute to Laser Emitters

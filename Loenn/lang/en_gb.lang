@@ -241,10 +241,9 @@ entities.XaphanHelper/DroneGate.attributes.description.forceInactiveFlag=When th
 entities.XaphanHelper/DroneSwitch.placements.name.DroneSwitch=Drone Switch
 entities.XaphanHelper/DroneSwitch.attributes.description.side=The side the switch will face.
 entities.XaphanHelper/DroneSwitch.attributes.description.flag=The flag that will be set/unset when the drone shoot this switch.
-entities.XaphanHelper/DroneSwitch.attributes.description.persistent=Once turned on, it will stay activated even if the drone is destroyed.
 entities.XaphanHelper/DroneSwitch.attributes.description.registerInSaveData=If true, the flag will be registered in the player Save file and will be set forever when the drone shoot the switch.\nIf the drone shoot it again, it will be removed from the player save file.
 entities.XaphanHelper/DroneSwitch.attributes.description.saveDataOnlyAfterCheckpoint=If true, the flag will be registered in the player Save file and will be set forever only after the drone get to a checkpoint in the current room or exit the room.\n(Register In Save Data must be set to true)
-
+entities.XaphanHelper/DroneSwitch.attributes.description.onlyOnce=If true, prevent the switch to be shoot more than once.
 
 # Elevator
 entities.XaphanHelper/Elevator.placements.name.Elevator=Elevator

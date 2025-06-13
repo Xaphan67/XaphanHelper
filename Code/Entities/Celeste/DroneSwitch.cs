@@ -24,7 +24,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Vector2? startSpawnPoint;
 
-        public bool persistent;
+        public bool onlyOnce;
+
+        private bool active = true;
 
         public bool flagState;
 
@@ -59,13 +61,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 type = "Beam";
             }
-            persistent = data.Bool("persistent");
+            onlyOnce = data.Bool("onlyOnce");
             registerInSaveData = data.Bool("registerInSaveData");
             saveDataOnlyAfterCheckpoint = data.Bool("saveDataOnlyAfterCheckpoint");
             Add(buttonSprite = new Sprite(GFX.Game, "objects/XaphanHelper/DroneSwitch/"));
             buttonSprite.Add("idle", "button" + (type != "Beam" ? type : ""), 0.2f, 0);
             buttonSprite.AddLoop("active", "button" + (type != "Beam" ? type : ""), 0.2f);
             buttonSprite.Add("blink", "blink");
+            buttonSprite.Add("inactive", "blink", 0f, 0);
             buttonSprite.Origin = new Vector2(buttonSprite.Width / 2, buttonSprite.Height / 2);
             buttonSprite.Position = new Vector2(4f, 4f);
             staticMover = new StaticMover();
@@ -178,13 +181,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_" + (flagState ? "true" : "false"), true);
                 }
             }
-            if (!SceneAs<Level>().Session.GetFlag(flag))
+            if (onlyOnce)
             {
-                buttonSprite.Play("idle");
+                if (SceneAs<Level>().Session.GetFlag(flag))
+                {
+                    buttonSprite.Play("inactive");
+                    active = false;
+                }
             }
-            else
+            if (active)
             {
-                buttonSprite.Play("active");
+                if (!SceneAs<Level>().Session.GetFlag(flag))
+                {
+                    buttonSprite.Play("idle");
+                }
+                else
+                {
+                    buttonSprite.Play("active");
+                }
             }
             if (tutorial)
             {
@@ -254,7 +268,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void Triggered(string dir)
         {
-            if (cooldown <= 0)
+            if (cooldown <= 0 && active)
             {
                 if (dir != null && dir == side)
                 {
@@ -306,13 +320,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 yield return 0.1f;
             }
-            if (!SceneAs<Level>().Session.GetFlag(flag))
+            if (onlyOnce)
             {
-                buttonSprite.Play("idle");
+                buttonSprite.Play("inactive");
+                active = false;
             }
             else
             {
-                buttonSprite.Play("active");
+                if (!SceneAs<Level>().Session.GetFlag(flag))
+                {
+                    buttonSprite.Play("idle");
+                }
+                else
+                {
+                    buttonSprite.Play("active");
+                }
             }
         }
 
