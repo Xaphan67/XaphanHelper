@@ -189,13 +189,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 if (self.Holding == null)
                 {
-                    if (XaphanModule.ModSettings.UseBagItemSlot.Check && !self.Ducking)
+                    if (XaphanModule.ModSettings.UseBagItemSlot.Check && !self.Ducking && Input.Aim.Value.Y <= 0)
                     {
                         foreach (Holdable component in self.Scene.Tracker.GetComponents<Holdable>())
                         {
-                            if (component.Check(self) && (bool)Player_Pickup.Invoke(self, new object[] { component }))
+                            if (component.Entity.GetType() == typeof(Bomb) || component.Entity.GetType() == typeof(MegaBomb) || component.Entity.GetType() == typeof(Drone))
                             {
-                                return 8;
+                                if (component.Check(self) && (bool)Player_Pickup.Invoke(self, new object[] { component }))
+                                {
+                                    return 8;
+                                }
                             }
                         }
                     }
@@ -208,7 +211,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             if (XaphanModule.useUpgrades)
             {
-                if (!XaphanModule.ModSettings.UseBagItemSlot.Check)
+                if (!XaphanModule.ModSettings.UseBagItemSlot.Check || (XaphanModule.ModSettings.UseBagItemSlot.Check && Input.Aim.Value.Y > 0))
                 {
                     orig(self);
                 }

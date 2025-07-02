@@ -123,7 +123,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             float leniency = 0.5f;
             while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedBomb)
             {
-                while ((player.Speed.X != 0 || player.Dead || !player.OnGround()) && leniency > 0)
+                while ((player.Speed != Vector2.Zero || player.Dead || !player.OnGround()) && leniency > 0)
                 {
                     leniency -= Engine.DeltaTime;
                     yield return null;
@@ -134,7 +134,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 }
                 if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb && !GravityJacket.determineIfInLiquid())
                 {
-                    delay = 0.35f;
+                    delay = 0.45f;
                     cooldown = true;
                     level.Add(new Bomb(player.Position, player));
                     usedBomb = true;

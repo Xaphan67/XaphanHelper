@@ -157,9 +157,12 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                             XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
                         }
                         XaphanModule.ModSaveData.PreGoldenTimer = level.Session.Time;
-                        foreach (EntityID entity in XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet])
+                        if (XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet))
                         {
-                            XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                            foreach (EntityID entity in XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet])
+                            {
+                                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
+                            }
                         }
                         foreach (string flag in level.Session.Flags)
                         {
@@ -182,7 +185,10 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                                 XaphanModule.ModSaveData.PreGoldenGlobalFlags.Add(flag);
                             }
                         }
-                        XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Clear();
+                        if (XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet))
+                        {
+                            XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Clear();
+                        }
                         level.Session.Time = 0;
                         foreach (string flag in level.Session.Flags)
                         {

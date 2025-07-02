@@ -1,6 +1,10 @@
 Version 1.0.77 :
 - Added Poem Trigger
 - Removed "Persistent" attribute from Drone Switches. Replaced by the new "Only Once" attribute
+- Pressing the Use Bag Ability button now only attempt to spawn and grab Bombs, Mega Bombs and the Remote Drone
+- Pressing the Use Bag Ability button should no longer prevent neutral drops of any Holdable entities if it is bound the same button as the Down button
+- Increased the delay between two Bombs from 0.35s to 0.45s to prevent spawning issues
+- Fixed a bug preventing the player to neutral drop Bombs
 
 Version 1.0.76 :
 - Added "Laser Color" attribute to Laser Emitters

@@ -119,7 +119,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 {
                     yield break;
                 }
-                if (player.Scene != null && player.OnGround() && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb)
+                if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb && !GravityJacket.determineIfInLiquid())
                 {
                     cooldown = true;
                     level.Add(new MegaBomb(player.Position, player));
