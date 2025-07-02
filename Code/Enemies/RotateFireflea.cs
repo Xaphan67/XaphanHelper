@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Enemies
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/RotateFireflea")]
     public class RotateFireflea : RotateEnemy
     {
@@ -23,8 +23,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private int Bounced;
 
+        private int Group;
+
         public RotateFireflea(EntityData data, Vector2 offset) : base(data, offset)
         {
+            Group = data.Int("group", -1);
             Collider = new Hitbox(8f, 8f, -4f, -4f);
             pc.Collider = new Hitbox(8f, 8f, -4f, -4f);
             Add(new PlayerCollider(OnBounce, new Hitbox(12f, 3f, -6f, -4f)));
@@ -45,6 +48,21 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 Body.Scale = Vector2.One * (1f + f * 0.3f);
             }));
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (Group != -1)
+            {
+                foreach (RotateFireflea fireflea in SceneAs<Level>().Tracker.GetEntities<RotateFireflea>())
+                {
+                    if (fireflea.Group == Group && fireflea != this)
+                    {
+                        fireflea.Moving = Moving;
+                    }
+                }
+            }
         }
 
         public override void onHitPlayer(Player player)
