@@ -772,7 +772,7 @@ namespace Celeste.Mod.XaphanHelper
             UnloadLevel.Load();
             DroneSwitch.Load();
             TransitionBlackEffect.Load();
-            WorkRobot.Load();
+            SpringCollider.Load();
             BreakBlock.Load();
             CustomRefill.Load();
             MergedChaptersGoldenStrawberry.Load();
@@ -896,7 +896,7 @@ namespace Celeste.Mod.XaphanHelper
             UnloadLevel.Unload();
             DroneSwitch.Unload();
             TransitionBlackEffect.Unload();
-            WorkRobot.Unload();
+            SpringCollider.Unload();
             BreakBlock.Unload();
             CustomRefill.Unload();
             MergedChaptersGoldenStrawberry.Unload();

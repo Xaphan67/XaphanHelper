@@ -3,8 +3,10 @@ using System.Collections;
 using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
+using Celeste.Mod.XaphanHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
+using static Celeste.Spring;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -82,29 +84,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             sprite.Play("walk");
             Depth = -1;
             Add(new SpringCollider(OnSpring, Collider));
-        }
-
-        public static void Load()
-        {
-            On.Monocle.Entity.Update += OnEntityUpdate;
-        }
-
-        public static void Unload()
-        {
-            On.Monocle.Entity.Update -= OnEntityUpdate;
-        }
-
-        private static void OnEntityUpdate(On.Monocle.Entity.orig_Update orig, Entity self)
-        {
-            orig(self);
-            if (self is Spring)
-            {
-                Spring spring = self as Spring;
-                foreach (SpringCollider springCollider in spring.Scene.Tracker.GetComponents<SpringCollider>())
-                {
-                    springCollider.Check(spring);
-                }
-            }
         }
 
         public override void Added(Scene scene)

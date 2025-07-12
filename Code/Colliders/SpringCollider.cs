@@ -1,4 +1,5 @@
 ﻿using System;
+using Celeste.Mod.XaphanHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -15,6 +16,23 @@ namespace Celeste.Mod.XaphanHelper.Colliders
         {
             OnCollide = onCollide;
             Collider = collider;
+        }
+
+        public static void Load()
+        {
+            On.Celeste.Spring.ctor_Vector2_Orientations_bool += onSpringCtor;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Spring.ctor_Vector2_Orientations_bool -= onSpringCtor;
+        }
+
+        private static void onSpringCtor(On.Celeste.Spring.orig_ctor_Vector2_Orientations_bool orig, Spring self, Vector2 position, Spring.Orientations orientation, bool playerCanUse)
+        {
+            orig(self, position, orientation, playerCanUse);
+            SpringColliderChecker checker = new SpringColliderChecker();
+            self.Add(checker);
         }
 
         public bool Check(Spring spring)
