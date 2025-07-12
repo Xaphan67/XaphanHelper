@@ -18,6 +18,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool immediate;
 
+        public static bool AtEndOfTransition;
+
         private static FieldInfo LevelTransition = typeof(Level).GetField("transition", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public TransitionBlackEffect(bool immediate = false) : base()
@@ -33,7 +35,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.Level.TransitionRoutine += OnLevelTransitionRoutine;
             On.Celeste.TalkComponent.TalkComponentUI.Update += OnTalkComponentTalkComponentUIUpdate;
             On.Celeste.TalkComponent.TalkComponentUI.ctor += OnTalkComponentTalkComponentUICtor;
-            On.Celeste.Booster.ctor_Vector2_bool += OnBoosterCtor;
             On.Celeste.Booster.Update += OnBoosterUpdate;
         }
 
@@ -42,9 +43,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.Level.TransitionRoutine -= OnLevelTransitionRoutine;
             On.Celeste.TalkComponent.TalkComponentUI.Update -= OnTalkComponentTalkComponentUIUpdate;
             On.Celeste.TalkComponent.TalkComponentUI.ctor -= OnTalkComponentTalkComponentUICtor;
-            On.Celeste.Booster.ctor_Vector2_bool -= OnBoosterCtor;
             On.Celeste.Booster.Update -= OnBoosterUpdate;
-
         }
 
         private static IEnumerator OnLevelTransitionRoutine(On.Celeste.Level.orig_TransitionRoutine orig, Level self, LevelData next, Vector2 direction)
@@ -91,6 +90,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
+                if (!self.TagCheck(Tags.TransitionUpdate))
+                {
+                    self.AddTag(Tags.TransitionUpdate);
+                }
                 if (self.SceneAs<Level>().Transitioning && self.BoostingPlayer)
                 {
                     self.Depth = -89992;
@@ -102,17 +105,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             orig(self);
         }
-
-        private static void OnBoosterCtor(On.Celeste.Booster.orig_ctor_Vector2_bool orig, Booster self, Vector2 position, bool red)
-        {
-            orig(self, position, red);
-            if (SaveData.Instance.CurrentSession_Safe.Area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0))
-            {
-                self.AddTag(Tags.TransitionUpdate);
-            }
-        }
-
-        public static bool AtEndOfTransition;
 
         private static IEnumerator TranstionRoutine(Level level)
         {
