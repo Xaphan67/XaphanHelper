@@ -4033,17 +4033,19 @@ namespace Celeste.Mod.XaphanHelper
                             ModSaveData.SavedTime[self.Session.Area.LevelSet] = self.Session.Time;
                         }
                     }
-                }
+                }                
+            }
 
-                if (useMergeChaptersController && MergedChaptersGoldenStrawberry.Grabbed && !self.Session.GrabbedGolden)
-                {
-                    EntityData entityData = new();
-                    entityData.Position = player.Position;
-                    entityData.ID = MergedChaptersGoldenStrawberry.ID;
-                    entityData.Name = "goldenBerry";
-                    Strawberry strawberry = new(gid: new EntityID(MergedChaptersGoldenStrawberry.StartRoom, entityData.ID), data: entityData, offset: Vector2.Zero);
-                    player.SceneAs<Level>().Add(strawberry);
-                }
+            // Spawn a Golden Strawberry when entering a new chapter if one was collected in another chapter of a merged campaign
+
+            if (useMergeChaptersController && MergedChaptersGoldenStrawberry.Grabbed && !self.Session.GrabbedGolden && self.Session.Area.Mode == AreaMode.Normal)
+            {
+                EntityData entityData = new();
+                entityData.Position = player.Position;
+                entityData.ID = MergedChaptersGoldenStrawberry.ID;
+                entityData.Name = "goldenBerry";
+                Strawberry strawberry = new(gid: new EntityID(MergedChaptersGoldenStrawberry.StartRoom, entityData.ID), data: entityData, offset: Vector2.Zero);
+                player.SceneAs<Level>().Add(strawberry);
             }
 
             // Change chapter starting room if player used a warp or elevator

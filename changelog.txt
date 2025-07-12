@@ -5,6 +5,7 @@ Version 1.0.77 :
 - Pressing the Use Bag Ability button should no longer prevent neutral drops of any Holdable entities if it is bound the same button as the Down button
 - Increased the delay between two Bombs from 0.35s to 0.45s to prevent spawning issues
 - Improved hook methods for custom entities interacting with springs
+- Fixed a bug preventing Golden Strawberries to carry from chapter to chapter when using a Merge Chapter Controller with its mode set to "Classic"
 - Fixed a bug preventing the player to neutral drop Bombs
 
 Version 1.0.76 :
