@@ -216,7 +216,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                             }
                         }
                     }
-                    if (XaphanModule.useMetroidGameplay)
+                    if (!XaphanModule.useMetroidGameplay)
                     {
                         foreach (Enemy enemy in Scene.Tracker.GetEntities<Enemy>())
                         {
