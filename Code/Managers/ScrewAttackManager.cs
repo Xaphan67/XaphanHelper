@@ -165,7 +165,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 PlayerSprite.FlipX = player.Facing == Facings.Left;
                 PlayerHairSprite.FlipX = player.Facing == Facings.Left;
                 ScrewAttackSprite.FlipX = player.Facing == Facings.Left;
-                if (((player.fastJump && player.Speed.Y < 0f) || StartedScrewAttack) && player.StateMachine.State == 0 && !player.DashAttacking && !player.OnGround() && player.Holding == null && !SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && (GravityJacket.determineIfInLiquid() ? GravityJacket.Active(SceneAs<Level>()) : true) && Math.Abs(player.Speed.X) >= 90 && !CannotScrewAttack)
+                if (((player.fastJump && player.Speed.Y < 0f) || StartedScrewAttack) && player.StateMachine.State == 0 && !player.DashAttacking && !player.OnGround() && player.Holding == null && !SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && (GravityJacket.determineIfInLiquid() ? GravityJacket.Active(SceneAs<Level>()) : true) && !player.Sprite.CurrentAnimationID.Contains("slide") && Math.Abs(player.Speed.X) >= 90 && !CannotScrewAttack)
                 {
                     if (!screwAttackSfx.Playing && !SceneAs<Level>().Frozen)
                     {
