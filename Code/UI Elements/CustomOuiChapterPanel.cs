@@ -483,7 +483,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 checkpoints.Clear();
                 checkpoints.Add(new Option
                 {
-                    Label = Dialog.Clean("overworld_start"),
+                    Label = AreaData.GetStartName(Area),
                     BgColor = Calc.HexToColor("eabe26"),
                     Icon = GFX.Gui["areaselect/startpoint"],
                     CheckpointLevelName = null,
