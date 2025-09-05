@@ -265,28 +265,22 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         public static void onStrawberryUpdate(On.Celeste.Strawberry.orig_Update orig, Strawberry self)
         {
-            if (XaphanModule.useMergeChaptersController && self.Golden && self.Follower.Leader == null)
+            if (XaphanModule.useMergeChaptersController && self.Golden && self.Follower.Leader == null && self.GetType().ToString() == "Celeste.Strawberry")
             {
                 if (PlayerHasGolden(self.SceneAs<Level>()))
                 {
                     self.RemoveSelf();
-                }
-                else
-                {
-                    orig(self);
+                    return;
                 }
             }
-            else
-            {
-                orig(self);
-            }
+            orig(self);
         }
 
         private static bool PlayerHasGolden(Scene scene)
         {
             foreach (Strawberry item in scene.Entities.FindAll<Strawberry>())
             {
-                if (item.Golden && item.Follower.Leader != null)
+                if (item.Golden && item.Follower.Leader != null && item.GetType().ToString() == "Celeste.Strawberry")
                 {
                     return true;
                 }
