@@ -153,7 +153,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.LevelExit.Begin += OnLevelExitBegin;
             On.Celeste.ChangeRespawnTrigger.OnEnter += onChangeRespawnTriggerOnEnter;
             On.Celeste.CameraTargetTrigger.OnLeave += onCameratargetTriggerOnLeave;
-            On.Celeste.CameraOffsetTrigger.OnEnter += onCameraOffsetTriggerOnEnter;
             On.Celeste.Strawberry.OnPlayer += onStrawberryOnPlayer;
             On.Celeste.CameraAdvanceTargetTrigger.OnLeave += onCameraTargetTriggerOnLeave;
         }
@@ -166,21 +165,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 return;
             }
             orig(self, player);
-        }
-
-        private static void onCameraOffsetTriggerOnEnter(On.Celeste.CameraOffsetTrigger.orig_OnEnter orig, CameraOffsetTrigger self, Player player)
-        {
-            if (player.Scene is Level level && XaphanModule.ModSaveData.startAsDrone.ContainsKey(level.Session.Area.LevelSet))
-            {
-                if (!XaphanModule.ModSaveData.startAsDrone[level.Session.Area.LevelSet])
-                {
-                    orig(self, player);
-                }
-            }
-            else
-            {
-                orig(self, player);
-            }
         }
 
         private static void OnLevelExitBegin(On.Celeste.LevelExit.orig_Begin orig, LevelExit self)
@@ -352,7 +336,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.LevelExit.Begin -= OnLevelExitBegin;
             On.Celeste.ChangeRespawnTrigger.OnEnter -= onChangeRespawnTriggerOnEnter;
             On.Celeste.CameraTargetTrigger.OnLeave -= onCameratargetTriggerOnLeave;
-            On.Celeste.CameraOffsetTrigger.OnEnter -= onCameraOffsetTriggerOnEnter;
             On.Celeste.Strawberry.OnPlayer -= onStrawberryOnPlayer;
             On.Celeste.CameraAdvanceTargetTrigger.OnLeave -= onCameraTargetTriggerOnLeave;
         }
