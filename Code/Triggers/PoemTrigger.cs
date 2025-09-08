@@ -14,8 +14,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         private string triggerSound;
 
-        private string oldMusic;
-
         private string newMusic;
 
         public string flag;
@@ -155,12 +153,8 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 if (!string.IsNullOrEmpty(newMusic))
                 {
                     session.Audio.Music.Event = SFX.EventnameByHandle(newMusic);
+                    session.Audio.Apply(forceSixteenthNoteHack: false);
                 }
-                else
-                {
-                    session.Audio.Music.Event = SFX.EventnameByHandle(oldMusic);
-                }
-                session.Audio.Apply(forceSixteenthNoteHack: false);
             }
             if (!endChapter)
             {
