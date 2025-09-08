@@ -13,6 +13,7 @@ Version 1.0.77 :
 - Grabbing a Golden Strawberry in campaigns using a Merge Chapters Controller should no longer despawn other types of deathless strawberries (ie: Sliver strawberries)
 - Fixed a bug preventing Golden Strawberries to carry from chapter to chapter when using a Merge Chapter Controller with its mode set to "Classic"
 - Fixed a bug preventing the player to neutral drop Bombs
+- Fixed a crash that could happen if the player and the Remote Drone died at the same time
 
 Version 1.0.76 :
 - Added "Laser Color" attribute to Laser Emitters

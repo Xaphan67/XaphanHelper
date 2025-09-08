@@ -1587,9 +1587,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
-                if (SceneAs<Level>().Tracker.GetEntities<LightManager>().Count > 0)
+                if (level.Tracker.GetEntities<LightManager>().Count > 0)
                 {
-                    foreach (LightManager manager in SceneAs<Level>().Tracker.GetEntities<LightManager>())
+                    foreach (LightManager manager in level.Tracker.GetEntities<LightManager>())
                     {
                         manager.TemporaryModeTimer = 0f;
                         if (manager.ForceModeRoutine.Active)
