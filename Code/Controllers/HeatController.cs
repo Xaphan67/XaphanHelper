@@ -1,11 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Cil;
 
 namespace Celeste.Mod.XaphanHelper.Controllers
 {
@@ -27,12 +25,15 @@ namespace Celeste.Mod.XaphanHelper.Controllers
 
         public string inactiveFlag;
 
+        private bool resetDuration;
+
         public HeatController(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Flashing = false;
             maxDuration = data.Float("maxDuration", 3f);
             heatEffect = data.Bool("heatEffect");
             inactiveFlag = data.Attr("inactiveFlag");
+            resetDuration = data.Bool("resetDuration", false);
         }
 
         public void RenderDisplacement()
@@ -73,7 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                 grid = new bool[SceneAs<Level>().Bounds.Width / 8, SceneAs<Level>().Bounds.Height / 8];
                 Add(new DisplacementRenderHook(RenderDisplacement));
             }
-            SceneAs<Level>().Add(new HeatManager(maxDuration, inactiveFlag));
+            SceneAs<Level>().Add(new HeatManager(maxDuration, inactiveFlag, resetDuration));
             if (heatEffect)
             {
                 int i = 0;

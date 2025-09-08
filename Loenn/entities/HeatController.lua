@@ -12,7 +12,8 @@ HeatController.placements = {
     data = {
         maxDuration = 3.00,
         heatEffect = false,
-        inactiveFlag = ""
+        inactiveFlag = "",
+        resetDuration = false
     }
 }
 

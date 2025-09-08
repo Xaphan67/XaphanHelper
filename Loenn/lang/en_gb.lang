@@ -323,6 +323,7 @@ entities.XaphanHelper/HeatController.placements.name.HeatController=Heat Control
 entities.XaphanHelper/HeatController.attributes.description.maxDuration=Duration (in seconds) before the player die due to overheating.
 entities.XaphanHelper/HeatController.attributes.description.heatEffect=If true, add a heat effect to the room.
 entities.XaphanHelper/HeatController.attributes.description.inactiveFlag=While this flag is set, the controller will have no effect (the Heat Effect will still be shown if it's set).
+entities.XaphanHelper/HeatController.attributes.description.resetDuration= If true, imediately reset the duration to 0 instead of slowly decreasing it when the flag in Inactive Flag is true, allowing the player to have full duration immediately once it is set back to false.
 
 # InGameMapController
 entities.XaphanHelper/InGameMapController.placements.name.InGameMapController=In-Game Map Controller

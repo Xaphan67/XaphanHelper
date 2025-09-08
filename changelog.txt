@@ -2,6 +2,7 @@ Version 1.0.77 :
 - Added Poem Trigger
 - Added "Only Once" attribute to Upgrade Trigger
 - Added "Render BG" attribute to Flag Swap Block
+- Added "Reset Duration" attribute to Heat Controller
 - Added an option to hide Stamina and/or Oxygen indicators
 - Upgrade Triggers can now enable or disable all upgrades at once with the new "All" choice in the upgrade list
 - Removed "Persistent" attribute from Drone Switches. Replaced by the new "Only Once" attribute

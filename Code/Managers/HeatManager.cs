@@ -23,11 +23,14 @@ namespace Celeste.Mod.XaphanHelper.Managers
 
         public static EventInstance damageSfx;
 
-        public HeatManager(float maxDuration, string inactiveFlag)
+        private bool resetDuration;
+
+        public HeatManager(float maxDuration, string inactiveFlag, bool resetDuration)
         {
             Tag = Tags.TransitionUpdate;
             this.maxDuration = maxDuration;
             this.inactiveFlag = inactiveFlag;
+            this.resetDuration = resetDuration;
             Depth = -20000;
         }
 
@@ -95,7 +98,14 @@ namespace Celeste.Mod.XaphanHelper.Managers
             else
             {
                 StopSfx();
-                heat -= Engine.DeltaTime;
+                if (resetDuration)
+                {
+                    heat = 0;
+                }
+                else
+                {
+                    heat -= Engine.DeltaTime;
+                }
             }
         }
 
