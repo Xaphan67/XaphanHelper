@@ -155,6 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.CameraTargetTrigger.OnLeave += onCameratargetTriggerOnLeave;
             On.Celeste.CameraOffsetTrigger.OnEnter += onCameraOffsetTriggerOnEnter;
             On.Celeste.Strawberry.OnPlayer += onStrawberryOnPlayer;
+            On.Celeste.CameraAdvanceTargetTrigger.OnLeave += onCameraTargetTriggerOnLeave;
         }
 
         private static void onStrawberryOnPlayer(On.Celeste.Strawberry.orig_OnPlayer orig, Strawberry self, Player player)
@@ -331,6 +332,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private static void onCameraTargetTriggerOnLeave(On.Celeste.CameraAdvanceTargetTrigger.orig_OnLeave orig, CameraAdvanceTargetTrigger self, Player player)
+        {
+            if (self.Scene != null)
+            {
+                orig(self, player);
+            }
+        }
+
         public static void Unload()
         {
             On.Celeste.TalkComponent.Update -= OnTalkComponentUpdate;
@@ -345,6 +354,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.CameraTargetTrigger.OnLeave -= onCameratargetTriggerOnLeave;
             On.Celeste.CameraOffsetTrigger.OnEnter -= onCameraOffsetTriggerOnEnter;
             On.Celeste.Strawberry.OnPlayer -= onStrawberryOnPlayer;
+            On.Celeste.CameraAdvanceTargetTrigger.OnLeave -= onCameraTargetTriggerOnLeave;
         }
 
         private static void OnHoldableUpdate(On.Celeste.Holdable.orig_Update orig, Holdable self)

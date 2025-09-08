@@ -14,6 +14,7 @@ Version 1.0.77 :
 - Fixed a bug preventing Golden Strawberries to carry from chapter to chapter when using a Merge Chapter Controller with its mode set to "Classic"
 - Fixed a bug preventing the player to neutral drop Bombs
 - Fixed a crash that could happen if the player and the Remote Drone died at the same time
+- Fixed a crash happening when the Remote Drone was destroyed or died inside of a Camera Advance Target Trigger
 
 Version 1.0.76 :
 - Added "Laser Color" attribute to Laser Emitters
