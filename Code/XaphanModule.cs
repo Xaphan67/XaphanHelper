@@ -13,7 +13,6 @@ using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Data;
 using Celeste.Mod.XaphanHelper.Effects;
-using Celeste.Mod.XaphanHelper.Enemies;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Hooks;
 using Celeste.Mod.XaphanHelper.Managers;
@@ -478,6 +477,21 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
             return false;
+        }
+
+        public static bool CampaignHasInterludeCheck()
+        {
+            bool hasInterlude = false;
+            int maxChapters = SaveData.Instance.LevelSetStats.Areas.Count;
+            for (int i = 0; i < maxChapters; i++)
+            {
+                if (AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i)].Interlude)
+                {
+                    hasInterlude = true;
+                    break;
+                }
+            }
+            return hasInterlude;
         }
 
         public static bool useIngameMap;
@@ -3631,14 +3645,18 @@ namespace Celeste.Mod.XaphanHelper
             Player player = self.Tracker.GetEntity<Player>();
             AreaKey area = self.Session.Area;
             MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
-
             if (useMergeChaptersController && MergeChaptersControllerMode == "Classic")
             {
+                int cuurentChapterIndex = self.Session.Area.ChapterIndex;
+                if (!CampaignHasInterludeCheck())
+                {
+                    cuurentChapterIndex -= 1;
+                }
                 if (self.Session.Level == MapData.StartLevel().Name)
                 {
-                    if (!ModSaveData.Checkpoints.Contains(self.Session.Area.LevelSet + "|" + self.Session.Area.ChapterIndex) && area.ID != SaveData.Instance.LevelSetStats.AreaOffset)
+                    if (!ModSaveData.Checkpoints.Contains(self.Session.Area.LevelSet + "|" + cuurentChapterIndex) && area.ID != SaveData.Instance.LevelSetStats.AreaOffset)
                     {
-                        ModSaveData.Checkpoints.Add(self.Session.Area.LevelSet + "|" + self.Session.Area.ChapterIndex);
+                        ModSaveData.Checkpoints.Add(self.Session.Area.LevelSet + "|" + cuurentChapterIndex);
                         self.AutoSave();
                     }
                 }
@@ -3777,21 +3795,11 @@ namespace Celeste.Mod.XaphanHelper
                     CanLoadPlayer = true;
                     if (!self.Session.GetFlag("XaphanHelper_Loaded_Player") && !ModSaveData.LoadedPlayer && !self.Paused)
                     {
-                        bool hasInterlude = false;
-                        int maxChapters = SaveData.Instance.LevelSetStats.Areas.Count;
-                        for (int i = 0; i < maxChapters; i++)
-                        {
-                            if (AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i)].Interlude)
-                            {
-                                hasInterlude = true;
-                                break;
-                            }
-                        }
                         MapData destinationMapData;
                         bool loadAtStartOfCampaign = false;
                         if (ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet) && ModSaveData.SavedRoom.ContainsKey(self.Session.Area.LevelSet))
                         {
-                            int chapter = (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet]) - (hasInterlude ? 0 : 1);
+                            int chapter = (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet]) - (CampaignHasInterludeCheck() ? 0 : 1);
                             destinationMapData = AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + chapter].Mode[0].MapData;
                             if (destinationMapData.Get(ModSaveData.SavedRoom[self.Session.Area.LevelSet]) == null)
                             {
@@ -3851,7 +3859,7 @@ namespace Celeste.Mod.XaphanHelper
                         }
                         else
                         {
-                            LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet] - (hasInterlude ? 0 : 1))))
+                            LevelEnter.Go(new Session(new AreaKey(SaveData.Instance.LevelSetStats.AreaOffset + (ModSaveData.SavedChapter[self.Session.Area.LevelSet] == -1 ? 0 : ModSaveData.SavedChapter[self.Session.Area.LevelSet] - (CampaignHasInterludeCheck() ? 0 : 1))))
                             {
                                 Time = ModSaveData.SavedTime.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedTime[self.Session.Area.LevelSet] : 0L,
                                 DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(self.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet] : new HashSet<EntityID>(),
