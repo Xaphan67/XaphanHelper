@@ -3299,6 +3299,7 @@ namespace Celeste.Mod.XaphanHelper
                     Commands.Cmd_Remove_Upgrades();
                     Commands.Cmd_Reset_Collectables_Upgrades();
 
+                    ModSaveData.startAsDrone.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedRoom.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedChapter.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedSpawn.Remove(level.Session.Area.LevelSet);
