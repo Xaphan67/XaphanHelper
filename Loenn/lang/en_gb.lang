@@ -306,6 +306,7 @@ entities.XaphanHelper/FlagSwapBlock.attributes.description.flag=The flag that mu
 entities.XaphanHelper/FlagSwapBlock.attributes.description.toggle=If true, the swap block will not return to the starting position on it's own, and will do so only when the player dash again.
 entities.XaphanHelper/FlagSwapBlock.attributes.description.particleColor1=Hexadecimal code of the first color of particles emited when the block move from one side to the other.
 entities.XaphanHelper/FlagSwapBlock.attributes.description.particleColor2=Hexadecimal code of the second color of particles emited when the block move from one side to the other.
+entities.XaphanHelper/FlagSwapBlock.attributes.description.renderBG=If true, render the background behind the block path.
 
 # FlagTempleGate
 entities.XaphanHelper/FlagTempleGate.placements.name.FlagTempleGate=Flag Temple Gate

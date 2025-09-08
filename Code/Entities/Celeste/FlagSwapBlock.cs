@@ -29,7 +29,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 this.block = block;
                 flag = block.flag;
                 Depth = 8999;
-                pathTexture = GFX.Game[block.directory + "/path" + ((block.start.X == block.end.X) ? "V" : "H")];
+                pathTexture = block.renderBG ? GFX.Game[block.directory + "/path" + ((block.start.X == block.end.X) ? "V" : "H")] : new();
                 timer = Calc.Random.NextFloat();
             }
 
@@ -49,12 +49,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public override void Render()
             {
-                for (int i = block.moveRect.Left; i < block.moveRect.Right; i += pathTexture.Width)
+                if (block.renderBG)
                 {
-                    for (int j = block.moveRect.Top; j < block.moveRect.Bottom; j += pathTexture.Height)
+                    for (int i = block.moveRect.Left; i < block.moveRect.Right; i += pathTexture.Width)
                     {
-                        pathTexture.GetSubtexture(0, 0, Math.Min(pathTexture.Width, block.moveRect.Right - i), Math.Min(pathTexture.Height, block.moveRect.Bottom - j), clipTexture);
-                        clipTexture.DrawCentered(new Vector2(i + clipTexture.Width / 2, j + clipTexture.Height / 2), Color.White);
+                        for (int j = block.moveRect.Top; j < block.moveRect.Bottom; j += pathTexture.Height)
+                        {
+                            pathTexture.GetSubtexture(0, 0, Math.Min(pathTexture.Width, block.moveRect.Right - i), Math.Min(pathTexture.Height, block.moveRect.Bottom - j), clipTexture);
+                            clipTexture.DrawCentered(new Vector2(i + clipTexture.Width / 2, j + clipTexture.Height / 2), Color.White);
+                        }
                     }
                 }
                 if (isActive)
@@ -127,6 +130,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool toggle;
 
+        private bool renderBG;
+
         public FlagSwapBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
             directory = data.Attr("directory", "objects/swapblock");
@@ -136,6 +141,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             flag = data.Attr("flag");
             toggle = data.Bool("toggle");
+            renderBG = data.Bool("renderBG", true);
             P_Move = new ParticleType
             {
                 Size = 1f,

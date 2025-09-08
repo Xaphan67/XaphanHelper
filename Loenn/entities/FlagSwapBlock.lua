@@ -51,7 +51,8 @@ FlagSwapBlock.placements = {
         flag = "",
         toggle = false,
         particleColor1 = "FBF236",
-        particleColor2 = "6ABE30"
+        particleColor2 = "6ABE30",
+        renderBG = true
     }
 }
 
@@ -112,8 +113,9 @@ function FlagSwapBlock.sprite(room, entity)
     local sprites = {}
 
     local directory = entity.directory or "objects/swapblock"
+    local renderBG = entity.renderBG or false
 
-    addTrailSprites(sprites, entity, directory .. "/target", true)
+    addTrailSprites(sprites, entity, directory .. "/target", renderBG)
     addBlockSprites(sprites, entity, directory .. "/blockRed", directory .. "/midBlockRed00")
 
     return sprites
