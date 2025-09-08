@@ -83,7 +83,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public void SetYPosition()
         {
             Position.Y = 26f;
-            if (XaphanModule.useUpgrades && PowerGrip.isActive && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 1)
+            if (XaphanModule.useUpgrades && PowerGrip.isActive && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 1 && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 3)
             {
                 Position.Y = 80f;
             }
@@ -156,7 +156,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Render()
         {
             base.Render();
-            if ((SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMOxygenIndicator : XaphanModule.ModSettings.OxygenIndicator) != 1)
+            if ((SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMOxygenIndicator : XaphanModule.ModSettings.OxygenIndicator) != 1
+                && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMOxygenIndicator : XaphanModule.ModSettings.OxygenIndicator) != 3)
             {
                 Draw.Rect(Position + new Vector2(2), width, 42f, Color.Black * 0.85f * Opacity);
                 string name = Dialog.Clean("Xaphanhelper_UI_Breath");

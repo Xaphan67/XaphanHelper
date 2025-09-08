@@ -56,8 +56,9 @@ namespace Celeste.Mod.XaphanHelper
             {
                 0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
                 1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
-                _ => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
-            }, 0, 2, StaminaIndicator).Change(delegate (int i)
+                2 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_None"),
+            }, 0, 3, StaminaIndicator).Change(delegate (int i)
             {
                 StaminaIndicator = i;
             }));
@@ -71,8 +72,9 @@ namespace Celeste.Mod.XaphanHelper
             {
                 0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
                 1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
-                _ => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
-            }, 0, 2, OxygenIndicator).Change(delegate (int i)
+                2 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_None"),
+            }, 0, 3, OxygenIndicator).Change(delegate (int i)
             {
                 OxygenIndicator = i;
             }));

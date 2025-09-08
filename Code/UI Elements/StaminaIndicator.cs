@@ -76,7 +76,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Render()
         {
             base.Render();
-            if (Visible && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 0)
+            if (Visible && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 0
+                && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 3)
             {
                 Player player = Scene.Tracker.GetEntity<Player>();
                 ScrewAttackManager manager = SceneAs<Level>().Tracker.GetEntity<ScrewAttackManager>();

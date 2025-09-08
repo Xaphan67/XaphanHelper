@@ -372,8 +372,9 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
                 1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
-                _ => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
-            }, 0, 2, XaphanModule.ModSettings.SoCMStaminaIndicator).Change(delegate (int i)
+                2 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_None"),
+            }, 0, 3, XaphanModule.ModSettings.SoCMStaminaIndicator).Change(delegate (int i)
             {
                 XaphanModule.ModSettings.SoCMStaminaIndicator = i;
             }));
@@ -381,8 +382,9 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
                 1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
-                _ => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
-            }, 0, 2, XaphanModule.ModSettings.SoCMOxygenIndicator).Change(delegate (int i)
+                2 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_None"),
+            }, 0, 3, XaphanModule.ModSettings.SoCMOxygenIndicator).Change(delegate (int i)
             {
                 XaphanModule.ModSettings.SoCMOxygenIndicator = i;
             }));

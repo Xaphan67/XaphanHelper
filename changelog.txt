@@ -2,6 +2,7 @@ Version 1.0.77 :
 - Added Poem Trigger
 - Added "Only Once" attribute to Upgrade Trigger
 - Added "Render BG" attribute to Flag Swap Block
+- Added an option to hide Stamina and/or Oxygen indicators
 - Upgrade Triggers can now enable or disable all upgrades at once with the new "All" choice in the upgrade list
 - Removed "Persistent" attribute from Drone Switches. Replaced by the new "Only Once" attribute
 - Pressing the Use Bag Ability button now only attempt to spawn and grab Bombs, Mega Bombs and the Remote Drone
