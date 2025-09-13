@@ -315,6 +315,8 @@
 	XaphanHelper_UI_Equipment_Desc= 已获得的装备信息
 	XaphanHelper_UI_Adventure= 冒险
 	XaphanHelper_UI_Adventure_Desc= 与故事相关的事件和物品信息
+	XaphanHelper_UI_Logs= 日志
+	XaphanHelper_UI_Logs_Desc= 先前观看的日志
 	XaphanHelper_UI_Discovered= 已发现的信息
 	XaphanHelper_UI_Entries= 词条
 	XaphanHelper_UI_Informations= 信息

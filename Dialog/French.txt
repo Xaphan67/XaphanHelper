@@ -292,6 +292,8 @@
 	XaphanHelper_UI_Equipment_Desc= Informations sur l'équipement obtenu
 	XaphanHelper_UI_Adventure= Aventure
 	XaphanHelper_UI_Adventure_Desc= Informations sur les évènements et objets relatifs à l'histoire
+	XaphanHelper_UI_Logs= Journaux
+	XaphanHelper_UI_Logs_Desc= Journaux précédement regardés
 	XaphanHelper_UI_Discovered= Découvert
 	XaphanHelper_UI_Entries= ENTREES
 	XaphanHelper_UI_Informations= INFORMATIONS

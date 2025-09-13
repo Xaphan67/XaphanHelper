@@ -176,7 +176,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             public string Name;
 
-            public string Text;
+            public List<string> Text;
 
             public string Picture;
 
@@ -190,11 +190,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private int alphaStatus = 0;
 
-            private float scale = 0.65f;
+            private float scale = 0.6f;
 
             private Coroutine readRoutine = new();
 
-            public EntryDisplay(Level level, Vector2 position, int id, string entryID, string flag, string name, int categoryID, string text, string picture, bool noDialog = false) : base(position)
+            public EntryDisplay(Level level, Vector2 position, int id, string entryID, string flag, string name, int categoryID, List<string> text, string picture, bool noDialog = false) : base(position)
             {
                 Tag = Tags.HUD;
                 ID = id;
@@ -317,6 +317,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             public SoundSource textSfx;
 
+            private bool waitForKeyPress;
+
+            public int CurrentPage = 0;
+
+            private int TotalPages = 1;
+
+            private float timer;
+
             public EntryInfo(Vector2 position) : base(position)
             {
                 Tag = Tags.HUD;
@@ -337,6 +345,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         Text = FancyText.Parse(Dialog.Clean(category.Description), 850, 4);
                         Picture = null;
                         Sprite = null;
+                        CurrentPage = 0;
+                        waitForKeyPress = false;
                         if (TextRoutine.Active)
                         {
                             TextRoutine.Cancel();
@@ -351,11 +361,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         if (display.Selected)
                         {
+                            if (currentDisplayID != display.ID)
+                            {
+                                CurrentPage = 0;
+                                waitForKeyPress = false;
+                            }
                             currentDisplayID = display.ID;
                             if (!display.Name.Contains("?"))
                             {
                                 Name = display.Name;
-                                Text = FancyText.Parse(Dialog.Get(display.Text.Trim()), 1390, 5);
+                                TotalPages = display.Text.Count;
+                                Text = FancyText.Parse(Dialog.Get(display.Text[CurrentPage].Trim()).Replace("{n}", ""), 1390, 5);
                                 Picture = display.Picture;
                                 Sprite = new Sprite(GFX.Gui, Picture);
                                 Sprite.AddLoop("picture", "", 0.05f);
@@ -390,6 +406,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     TextRoutine.Update();
                 }
+                if (waitForKeyPress)
+                {
+                    timer += Engine.DeltaTime;
+                }
             }
 
             private IEnumerator DisplayTextRoutine()
@@ -416,6 +436,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 textSfx.Param("end", 1f);
                 while (currentDisplayID == previousDisplayID)
                 {
+                    if (Text.Count > 1 && CurrentPage < TotalPages - 1)
+                    {
+                        waitForKeyPress = true;
+                        while (!Input.MenuConfirm.Pressed)
+                        {
+                            yield return null;
+                        }
+                        Audio.Play("event:/ui/main/button_lowkey");
+                        waitForKeyPress = false;
+                        CurrentPage++;
+                        yield break;
+                    }
                     yield return null;
                 }
             }
@@ -439,6 +471,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         Text.DrawJustifyPerLine(Position + Vector2.UnitY * 25f - Vector2.UnitY * (Picture == null && showEntryInfo ? 60f : 0), new Vector2(0.5f, 0f), Vector2.One * scale, 1f);
                     }
+                    if (waitForKeyPress)
+                    {
+                        GFX.Gui["textboxbutton"].DrawCentered(Position + new Vector2(480f, 275f + ((timer % 1f < 0.25f) ? 6 : 0)));
+                    }
                 }
             }
         }
@@ -449,9 +485,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private EntryInfo Info;
 
-        public LorebookDisplay(Level level)
+        private bool ShowLogsTab;
+
+        public LorebookDisplay(Level level, bool showLogsTab)
         {
             this.level = level;
+            this.ShowLogsTab = showLogsTab;
             Tag = Tags.HUD;
             Depth = -10001;
         }
@@ -465,9 +504,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public IEnumerator GenerateLorebookDisplay()
         {
-            Scene.Add(new CategoryDisplay(level, new Vector2(355f, 245f), 0, "XaphanHelper_UI_Locations", LorebookEntriesData.FindAll(entry => entry.CategoryID == 0), "XaphanHelper_UI_Locations_Desc"));
-            Scene.Add(new CategoryDisplay(level, new Vector2(760f, 245f), 1, "XaphanHelper_UI_Equipment", LorebookEntriesData.FindAll(entry => entry.CategoryID == 1), "XaphanHelper_UI_Equipment_Desc"));
-            Scene.Add(new CategoryDisplay(level, new Vector2(1165f, 245f), 2, "XaphanHelper_UI_Adventure", LorebookEntriesData.FindAll(entry => entry.CategoryID == 2), "XaphanHelper_UI_Adventure_Desc"));
+            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLogsTab ? 154f : 355f, 245f), 0, "XaphanHelper_UI_Locations", LorebookEntriesData.FindAll(entry => entry.CategoryID == 0), "XaphanHelper_UI_Locations_Desc"));
+            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLogsTab ? 558f : 760f, 245f), 1, "XaphanHelper_UI_Equipment", LorebookEntriesData.FindAll(entry => entry.CategoryID == 1), "XaphanHelper_UI_Equipment_Desc"));
+            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLogsTab ? 962f : 1165f, 245f), 2, "XaphanHelper_UI_Adventure", LorebookEntriesData.FindAll(entry => entry.CategoryID == 2), "XaphanHelper_UI_Adventure_Desc"));
+            
+            if (ShowLogsTab)
+            {
+                Scene.Add(new CategoryDisplay(level, new Vector2(1366f, 245f), 3, "XaphanHelper_UI_Logs", LorebookEntriesData.FindAll(entry => entry.CategoryID == 3), "XaphanHelper_UI_Logs_Desc"));
+            }
 
             GenerateEntryList(0);
 
@@ -584,6 +628,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             string SectionName;
             Vector2 SectionPosition;
             int SectionMaxItems;
+            float AdjustWidth = ShowLogsTab ? 805f : 605f;
 
             SectionName = Dialog.Clean("XaphanHelper_UI_Categories");
             SectionPosition = new Vector2(960f, 225f);
@@ -591,11 +636,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             ActiveFont.DrawOutline(SectionName, Position + SectionPosition, new Vector2(0.5f, 0.5f), Vector2.One * 1f, Color.Yellow, 2f, Color.Black);
             SectionTitleLenght = ActiveFont.Measure(SectionName).X;
             SectionTitleHeight = ActiveFont.Measure(SectionName).Y;
-            Draw.Rect(Position + SectionPosition + new Vector2(SectionTitleLenght / 2 + 10, -4), 605f - (SectionTitleLenght / 2 + 10) + 15, 8f, Color.White);
-            Draw.Rect(Position + SectionPosition + new Vector2(-605f - 15, -4), 605f - (SectionTitleLenght / 2 + 10) + 15, 8f, Color.White);
-            Draw.Rect(Position + SectionPosition + new Vector2(SectionTitleLenght / 2 + 10 + 605f - (SectionTitleLenght / 2 + 10) + 5, -4), 10f, SectionMaxItems * 155f + SectionTitleHeight / 2 + 4, Color.White);
-            Draw.Rect(Position + SectionPosition + new Vector2(-605f - 15, -4), 10f, SectionMaxItems * 155f + SectionTitleHeight / 2 + 4, Color.White);
-            Draw.Rect(Position + SectionPosition + new Vector2(-605f - 15, SectionMaxItems * 155f + SectionTitleHeight / 2 - 8), 1240f, 8f, Color.White);
+            Draw.Rect(Position + SectionPosition + new Vector2(SectionTitleLenght / 2 + 10, -4), AdjustWidth - (SectionTitleLenght / 2 + 10) + 15, 8f, Color.White);
+            Draw.Rect(Position + SectionPosition + new Vector2(-AdjustWidth - 15, -4), AdjustWidth - (SectionTitleLenght / 2 + 10) + 15, 8f, Color.White);
+            Draw.Rect(Position + SectionPosition + new Vector2(SectionTitleLenght / 2 + 10 + AdjustWidth - (SectionTitleLenght / 2 + 10) + 5, -4), 10f, SectionMaxItems * 155f + SectionTitleHeight / 2 + 4, Color.White);
+            Draw.Rect(Position + SectionPosition + new Vector2(-AdjustWidth - 15, -4), 10f, SectionMaxItems * 155f + SectionTitleHeight / 2 + 4, Color.White);
+            Draw.Rect(Position + SectionPosition + new Vector2(-AdjustWidth - 15, SectionMaxItems * 155f + SectionTitleHeight / 2 - 8), AdjustWidth * 2f + 30f, 8f, Color.White);
 
             SectionName = Dialog.Clean("XaphanHelper_UI_Entries");
             SectionPosition = new Vector2(430f, 460f);
