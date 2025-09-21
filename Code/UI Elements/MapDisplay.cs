@@ -319,7 +319,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int ExtraUnexploredRoomsCount = 0;
 
-        public string SubAreaName;
+        public int SubAreaIndex;
 
         public static bool ForceRevealUnexploredRooms;
 
@@ -331,8 +331,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public MarkerSelector markerSelector;
 
-        public MapDisplay(Level level, string mode, int chapter = -1, bool noGrid = false, bool noIndicator = false)
+        public MapScreen mapScreen;
+
+        public MapDisplay(Level level, string mode, int chapter = -1, bool noGrid = false, bool noIndicator = false, MapScreen mapScreen = null)
         {
+            this.mapScreen = mapScreen;
             NoGrid = noGrid;
             ScreenTilesX = 320;
             ScreenTilesY = 184;
@@ -2372,7 +2375,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             MapPosition = new Vector2(Grid.Width / 2 + Grid.X, Grid.Height / 2 + Grid.Y) + Offset;
         }
 
-        public void getMapColors(string room)
+        public int getRoomSubAreaIndex(string room)
         {
             int SubAreaIndex = 0;
             foreach (InGameMapRoomControllerData roomControllerData in RoomControllerData)
@@ -2383,6 +2386,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     break;
                 }
             }
+            return SubAreaIndex;
+        }
+
+        public void getMapColors(string room)
+        {
+            int SubAreaIndex = getRoomSubAreaIndex(room);
             foreach (InGameMapSubAreaControllerData subAreaControllerData in SubAreaControllerData)
             {
                 if (subAreaControllerData.SubAreaIndex == SubAreaIndex)
@@ -3130,6 +3139,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 ImagePath += language;
                             Image Image = new(GFX.Gui[ImagePath]);
                             Image.Color = Calc.HexToColor(string.IsNullOrEmpty(image.Color) ? "FFFFFF" : image.Color);
+                            if (mapScreen != null && getRoomSubAreaIndex(image.Room) != mapScreen.SubAreaIndex && XaphanModule.ModSaveData.ProgressMode[Prefix] == 1)
+                            {
+                                Image.Color = Calc.HexToColor("666666");
+                            }
                             Image.Position = RoomPosition;
                             Image.Render();
                         }
@@ -3143,6 +3156,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     ImagePath += language;
                                 Image Image = new(GFX.Gui[ImagePath]);
                                 Image.Color = Calc.HexToColor(string.IsNullOrEmpty(image.Color) ? "FFFFFF" : image.Color);
+                                if (mapScreen != null && getRoomSubAreaIndex(image.Room) != mapScreen.SubAreaIndex && XaphanModule.ModSaveData.ProgressMode[Prefix] == 1)
+                                {
+                                    Image.Color = Calc.HexToColor("666666");
+                                }
                                 Image.Position = RoomPosition;
                                 Image.Render();
                             }
@@ -3218,6 +3235,20 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+
+                // Make other sub-areas tiles darker in Sub-Area Progress mode (only if the room is using a TilesController)
+
+                foreach (InGameMapTilesData tile in TilesImage)
+                {
+                    if (roomUseTilesController(tile.Room))
+                    {
+                        Vector2 RoomPosition = CalcRoomPosition(RoomData[tile.Room].Position + (roomIsAdjusted(tile.Room) ? GetAdjustedPosition(tile.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                        if (mapScreen != null && mapScreen.SubAreaIndex != getRoomSubAreaIndex(tile.Room) && XaphanModule.ModSaveData.ProgressMode[Prefix] == 1)
+                        {
+                            Draw.Rect(RoomPosition + tile.Position, 40, 40, Color.Black * 0.6f);
                         }
                     }
                 }

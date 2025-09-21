@@ -233,6 +233,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public string Title;
 
+        public int SubAreaIndex;
+
         public string SubArea;
 
         public BigTitle BigTitle;
@@ -1022,7 +1024,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private IEnumerator MapRoutine(Level level)
         {
             Player player = Scene.Tracker.GetEntity<Player>();
-            mapDisplay = new MapDisplay(level, "map");
+            mapDisplay = new MapDisplay(level, "map", mapScreen: this);
             Scene.Add(mapDisplay);
             yield return mapDisplay.GenerateMap();
             if (mapDisplay.InGameMapControllerData.ShowProgress != "Never")
@@ -1034,6 +1036,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 level.Add(MapProgressDisplay = new MapProgressDisplay(new Vector2(mapDisplay.Grid.X + 18f, mapDisplay.Grid.Y), level, mapDisplay.InGameMapControllerData, mapDisplay.SubAreaControllerData, mapDisplay.RoomControllerData, mapDisplay.TilesControllerData, mapDisplay.EntitiesData, mapDisplay.chapterIndex, mapDisplay.currentRoom));
             }
             Title = GetSpecifiedMapName();
+            SubAreaIndex = GetSubAreaIndex();
             SubArea = GetSubAreaName();
             Scene.Add(BigTitle = new BigTitle(Title, new Vector2(960, string.IsNullOrEmpty(SubArea) ? 80 : 60)));
             if (!string.IsNullOrEmpty(SubArea))
@@ -1585,9 +1588,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             return mapName;
         }
 
-        public string GetSubAreaName()
+        public int GetSubAreaIndex()
         {
-            string subAreaName = "";
             int CurrentSubAreaIndex = 0;
             foreach (InGameMapRoomControllerData inGameMapRoomControllerData in mapDisplay.RoomControllerData)
             {
@@ -1597,9 +1599,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     break;
                 }
             }
+            return CurrentSubAreaIndex;
+        }
+
+        public string GetSubAreaName()
+        {
+            string subAreaName = "";
             foreach (InGameMapSubAreaControllerData inGameMapSubAreaControllerData in mapDisplay.SubAreaControllerData)
             {
-                if (inGameMapSubAreaControllerData.SubAreaIndex == CurrentSubAreaIndex)
+                if (inGameMapSubAreaControllerData.SubAreaIndex == SubAreaIndex)
                 {
                     subAreaName = inGameMapSubAreaControllerData.SubAreaName;
                     break;
