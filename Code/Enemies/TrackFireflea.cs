@@ -99,6 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         private IEnumerator Bounce(Player player)
         {
             scaleWiggler.Start();
+            XaphanModule.refillJumps = false;
             player.Bounce((int)(Y - 4f));
             Bounced++;
             if (MoveAfterBounce)

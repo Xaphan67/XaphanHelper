@@ -2,6 +2,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.XaphanHelper.Enemies
 {
@@ -85,6 +86,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         private IEnumerator Bounce(Player player)
         {
             scaleWiggler.Start();
+            XaphanModule.refillJumps = false;
             player.Bounce((int)(Y - 4f));
             Bounced++;
             if (Bounced == MaxBounces && MaxBounces > 0)
