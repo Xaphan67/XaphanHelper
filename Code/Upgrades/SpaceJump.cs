@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using Celeste.Mod.XaphanHelper.Enemies;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -213,10 +214,10 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 return initialJumpGraceTimer;
             }
 
-            // VineHead and Puffer fix
+            // VineHead, Puffer and Firefleas fix
             //if (self.Speed.Y <= 0 && (self.Speed.X <= -160f || self.Speed.X >= 160f) && self.StateMachine.State != Player.StDash)
             Actor actor = self.CollideFirst<Actor>(self.BottomCenter + Vector2.UnitY * (self.Speed.Y < 0 ? 21f : 7f));
-            if ((self.Speed.Y <= 0 && (self.Speed.X <= -160f || self.Speed.X >= 160f) && self.StateMachine.State != Player.StDash) || (actor != null && (actor.GetType() == typeof(VineHead) || actor.GetType() == typeof(Puffer))))
+            if ((self.Speed.Y <= 0 && (self.Speed.X <= -160f || self.Speed.X >= 160f) && self.StateMachine.State != Player.StDash) || (actor != null && (actor.GetType() == typeof(VineHead) || actor.GetType() == typeof(Puffer) || actor.GetType() == typeof(TrackFireflea) || actor.GetType() == typeof(RotateFireflea))))
             {
                 return 0f;
             }
