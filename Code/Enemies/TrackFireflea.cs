@@ -69,7 +69,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 Add(sprite);
             }
-            Add(Light = new VertexLight(Vector2.Zero, Color.White, 1f, 24, 2));
+            Add(Light = new VertexLight(Vector2.Zero, Color.White, 1f, 24, 32));
             Add(scaleWiggler = Wiggler.Create(0.5f, 4f, delegate (float f)
             {
                 Body.Scale = Vector2.One * (1f + f * 0.3f);
