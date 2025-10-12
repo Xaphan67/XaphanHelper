@@ -13,11 +13,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public float Angle;
 
-        private Vector2[] Nodes;
+        public Vector2[] Nodes;
 
-        private int CurrentEndNode;
+        public int CurrentEndNode;
 
-        private Vector2 Offset;
+        public Vector2 Offset;
 
         private Vector2 StartPosition;
 
@@ -33,6 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public TrackEnemy(EntityData data, Vector2 offset) : base(data, offset)
         {
+            Tag = Tags.TransitionUpdate;
             StartPosition = Start = data.Position + offset;
             End = data.Nodes[0] + offset;
             Offset = offset;
@@ -82,6 +83,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                         Percent = 0f;
                         Start = Nodes[CurrentEndNode] + Offset;
                         End = Nodes[CurrentEndNode + 1] + Offset;
+                        OnTrackNode();
                         CurrentEndNode++;
                     }
                     else
@@ -97,6 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                         Percent = 1f;
                         Start = Nodes[CurrentEndNode - 1] + Offset;
                         End = Nodes[CurrentEndNode] + Offset;
+                        OnTrackNode();
                         CurrentEndNode--;
                     }
                     else if (CurrentEndNode == 0)
@@ -104,6 +107,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                         Percent = 1f;
                         Start = StartPosition;
                         End = Nodes[0] + Offset;
+                        OnTrackNode();
                         CurrentEndNode--;
                     }
                     else
@@ -125,6 +129,10 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         }
 
         public virtual void OnTrackEnd()
+        {
+        }
+
+        public virtual void OnTrackNode()
         {
         }
     }

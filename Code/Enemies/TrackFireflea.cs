@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System;
+using System.Collections;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Enemies
@@ -12,7 +13,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
     {
         private Wiggler scaleWiggler;
 
+        private MTexture lineSprite;
+
         private Sprite Body;
+
+        private Sprite Outline;
 
         public VertexLight Light;
 
@@ -32,6 +37,12 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private int Group;
 
+        private float timer = 0f;
+
+        private float alpha = 0f;
+
+        private float outlineAlpha = 0f;
+
         public TrackFireflea(EntityData data, Vector2 offset) : base(data, offset)
         {
             Group = data.Int("group", -1);
@@ -48,20 +59,32 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Body.Play("body");
             Body.CenterOrigin();
             sprites.Add(Body);
+            Outline = new Sprite(GFX.Game, "enemies/Xaphan/Fireflea/");
+            Outline.AddLoop("outline", "outline", 0f);
+            Outline.Play("outline");
+            Outline.CenterOrigin();
+            Add(Outline);
+            lineSprite = GFX.Game["util/XaphanHelper/line"];
             foreach (Sprite sprite in sprites)
             {
                 Add(sprite);
             }
-            Add(Light = new VertexLight(Vector2.Zero, Color.White, 1f, 16, 24));
+            Add(Light = new VertexLight(Vector2.Zero, Color.White, 1f, 24, 2));
             Add(scaleWiggler = Wiggler.Create(0.5f, 4f, delegate (float f)
             {
                 Body.Scale = Vector2.One * (1f + f * 0.3f);
             }));
+            timer = Calc.Random.NextFloat();
         }
 
         public override void Update()
         {
             base.Update();
+            alpha = Calc.Approach(alpha, 0.5f * (0.5f + ((float)Math.Sin(timer) + 1f) * 0.5f), Engine.DeltaTime / 2);
+            outlineAlpha = Calc.Approach(outlineAlpha, 0.75f, Engine.DeltaTime);
+            Outline.Position = End - Position;
+            Outline.Color = Color.White * outlineAlpha;
+            Outline.Visible = MoveAfterBounce && (Position != End);
             if (MoveAfterBounce && ForcePause)
             {
                 WaitTime = 1f;
@@ -77,6 +100,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     }
                 }
             }
+            timer += Engine.DeltaTime * 4f;
         }
 
         public override void onHitPlayer(Player player)
@@ -144,7 +168,21 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public override void OnTrackEnd()
         {
-            
+
+        }
+
+        public override void OnTrackNode()
+        {
+            alpha = outlineAlpha = 0f;
+        }
+
+        public override void Render()
+        {
+            if (MoveAfterBounce)
+            {
+                Draw.SineTextureH(lineSprite, End, Vector2.Zero, new Vector2(Vector2.Distance(Position, End) / 128f, 1.5f), Calc.Angle(Position, End) + (float)Math.PI, Color.Gray * alpha, SpriteEffects.None, timer, 1f, 1, 0.08f);
+            }
+            base.Render();
         }
     }
 }
