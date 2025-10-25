@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Celeste.Mod.XaphanHelper.Enemies;
 using Celeste.Mod.XaphanHelper.Entities;
@@ -15,6 +16,8 @@ namespace Celeste.Mod.XaphanHelper.Managers
     [Tracked(true)]
     public class ScrewAttackManager : Entity
     {
+        private FieldInfo PlayerFastJump = typeof(Player).GetField("fastJump", BindingFlags.Instance | BindingFlags.NonPublic);
+
         public Sprite PlayerSprite;
 
         private Sprite PlayerHairSprite;
@@ -162,10 +165,10 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 }
                 PlayerSprite.Color = player.Sprite.Color;
                 Position = player.Position + new Vector2(0f, -4f);
-                PlayerSprite.FlipX = player.Facing == Facings.Left ? true : false;
-                PlayerHairSprite.FlipX = player.Facing == Facings.Left ? true : false;
-                ScrewAttackSprite.FlipX = player.Facing == Facings.Left ? true : false;
-                if (((player.Sprite.CurrentAnimationID.Contains("jumpFast") || StartedScrewAttack) && player.StateMachine.State == 0 && !player.DashAttacking && !player.OnGround() && player.Holding == null && !SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && (GravityJacket.determineIfInLiquid() ? GravityJacket.Active(SceneAs<Level>()) : true)) && !player.Sprite.CurrentAnimationID.Contains("slide") && Math.Abs(player.Speed.X) >= 90 && !CannotScrewAttack)
+                PlayerSprite.FlipX = player.Facing == Facings.Left;
+                PlayerHairSprite.FlipX = player.Facing == Facings.Left;
+                ScrewAttackSprite.FlipX = player.Facing == Facings.Left;
+                if (((((bool)PlayerFastJump.GetValue(player) && player.Speed.Y < 0f) || StartedScrewAttack) && player.StateMachine.State == 0 && !player.DashAttacking && !player.OnGround() && player.Holding == null && !SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && (GravityJacket.determineIfInLiquid() ? GravityJacket.Active(SceneAs<Level>()) : true)) && Math.Abs(player.Speed.X) >= 90 && !CannotScrewAttack)
                 {
                     if (!screwAttackSfx.Playing && !SceneAs<Level>().Frozen)
                     {

@@ -19,6 +19,7 @@ Version 1.0.77 :
 - Fixed a bug preventing the player to neutral drop Bombs
 - Fixed a bug that caused campaigns using a Merge Chapters Controller with its mode set to "Classic" to unlock wrong starting checkpoints if the campaign did not have an interlude
 - Fixed a bug that caused the player to get stuck in Drone form if selecting the Restart Campaign option in campaigns using a Merge Chapters Controller while controling the drone
+- Fixed a bug that prevented the Screw Attack ability to work correctly with SkinMod Helper Plus super/hyper animations
 - Fixed a crash that could happen if the player and the Remote Drone died at the same time
 - Fixed a crash happening when the Remote Drone was destroyed or died inside of a Camera Advance Target Trigger
 
