@@ -1565,7 +1565,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     level.Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_true", false);
                     level.Session.SetFlag("Ch" + chapterIndex + "_" + droneSwitch.flag + "_false", false);
-                    if (!droneSwitch.onlyOnce && !droneSwitch.FlagRegiseredInSaveData() && droneSwitch.startSpawnPoint == level.Session.RespawnPoint)
+                    if ((!droneSwitch.onlyOnce && !droneSwitch.FlagRegiseredInSaveData() && droneSwitch.startSpawnPoint == level.Session.RespawnPoint) || (droneSwitch.onlyOnce && droneSwitch.resetOnDeath))
                     {
                         if ((droneSwitch.registerInSaveData && droneSwitch.saveDataOnlyAfterCheckpoint) || !droneSwitch.registerInSaveData)
                         {

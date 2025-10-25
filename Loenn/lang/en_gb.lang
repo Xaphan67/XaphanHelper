@@ -244,6 +244,7 @@ entities.XaphanHelper/DroneSwitch.attributes.description.flag=The flag that will
 entities.XaphanHelper/DroneSwitch.attributes.description.registerInSaveData=If true, the flag will be registered in the player Save file and will be set forever when the drone shoot the switch.\nIf the drone shoot it again, it will be removed from the player save file.
 entities.XaphanHelper/DroneSwitch.attributes.description.saveDataOnlyAfterCheckpoint=If true, the flag will be registered in the player Save file and will be set forever only after the drone get to a checkpoint in the current room or exit the room.\n(Register In Save Data must be set to true)
 entities.XaphanHelper/DroneSwitch.attributes.description.onlyOnce=If true, prevent the switch to be shoot more than once.
+entities.XaphanHelper/DroneSwitch.attributes.description.resetOnDeath=If true, allow the switch to be hit again after the player die. No effect if Only Once is not set.
 
 # Elevator
 entities.XaphanHelper/Elevator.placements.name.Elevator=Elevator
@@ -542,6 +543,7 @@ entities.XaphanHelper/Slope.attributes.description.canJumpThrough=If true, the p
 entities.XaphanHelper/Slope.attributes.description.affectPlayerSpeed=If true, reduces the player's speed when going up the slope and increases it when going down.
 entities.XaphanHelper/Slope.attributes.description.flag=If this flag is set, the slope will use the directory and texture set in Flag Custom Directory and FlagTexture when entering the room.
 entities.XaphanHelper/Slope.attributes.description.renderMethod=Change the way the game draw the slope.\nDepending on your tileset, one method may be better than the other.\n(Effect only visible in game)
+entities.XaphanHelper/Slope.attributes.description.preventRefillOnSliding=If true, prevent the player to gain back their Dash or jumps\n(when using the Space Jump ability) while the player slide on the slope.\nNo effect if Force Slide is false.
 
 
 # TeleportStrawberry
