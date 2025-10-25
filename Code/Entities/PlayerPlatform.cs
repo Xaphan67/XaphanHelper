@@ -43,7 +43,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool CollidableForPlayer;
 
-        public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, bool forceSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false) : base(position, width, 4, true)
+        private bool PreventRefillOnSliding;
+
+        public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, bool forceSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false, bool preventRefillOnSliding = false) : base(position, width, 4, true)
         {
             AllowStaticMovers = false;
             Gentle = gentle;
@@ -59,12 +61,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             AffectPlayerSpeed = affectPlayerSpeed;
             StickyDash = stickyDash;
             CanJumpThrough = canJumpThrough;
+            PreventRefillOnSliding = preventRefillOnSliding;
         }
 
         public static void Load()
         {
             On.Celeste.Solid.MoveVExact += OnSolidMoveVExact;
             On.Celeste.Solid.Update += OnSolidUpdate;
+            On.Celeste.Player.RefillDash += OnPlayerRefillDash;
             On.Monocle.Sprite.Play += PlayerSpritePlayHook;
         }
 
@@ -72,6 +76,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             On.Celeste.Solid.MoveVExact -= OnSolidMoveVExact;
             On.Celeste.Solid.Update -= OnSolidUpdate;
+            On.Celeste.Player.RefillDash -= OnPlayerRefillDash;
             On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
         }
 
@@ -151,6 +156,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             orig(self);
+        }
+
+        private static bool OnPlayerRefillDash(On.Celeste.Player.orig_RefillDash orig, Player self)
+        {
+            foreach (PlayerPlatform platform in self.Scene.Tracker.GetEntities<PlayerPlatform>())
+            {
+                if (platform.InView())
+                {
+                    if (platform.GetPlayerRider() == self && platform.ForceSlide && platform.Sliding && platform.PreventRefillOnSliding)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return orig(self);
         }
 
         private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
