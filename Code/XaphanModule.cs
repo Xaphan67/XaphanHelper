@@ -2395,6 +2395,8 @@ namespace Celeste.Mod.XaphanHelper
 
             // Get upgrades info from the Upgrade Controller
 
+            bool upgradesAreTemporary = UpgradeController.Bool("upgradesAreTemporary");
+
             bool setPowerGrip = UpgradeController.Bool("onlyAllowPowerGrip") || UpgradeController.Bool("startWithPowerGrip");
             bool setClimbingKit = UpgradeController.Bool("onlyAllowClimbingKit") || UpgradeController.Bool("startWithClimbingKit");
             bool setSpiderMagnet = UpgradeController.Bool("onlyAllowSpiderMagnet") || UpgradeController.Bool("startWithSpiderMagnet");
@@ -2453,7 +2455,7 @@ namespace Celeste.Mod.XaphanHelper
 
             // Give specified upgrades
 
-            if (hasStartingUpgrades)
+            if (hasStartingUpgrades || upgradesAreTemporary)
             {
                 if (setPowerGrip || level.Session.GetFlag("Upgrade_PowerGrip"))
                 {
