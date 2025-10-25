@@ -37,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public override void Render()
             {
                 Vector2 position = (Scene as Level).Camera.Position;
-                Draw.Rect(position.X - 10f, position.Y - 10f, 340f, 200f, Color.Black * alpha);
+                Draw.Rect(position.X - 10f, position.Y - 10f, (Scene as Level).Camera.Viewport.Width + 20f, (Scene as Level).Camera.Viewport.Height + 20f, Color.Black * alpha);
             }
         }
 

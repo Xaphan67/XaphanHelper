@@ -14,6 +14,7 @@ Version 1.0.77 :
 - Improved hook methods for custom entities interacting with springs
 - The "BEGIN" text on campaigns using a Merge Chapters Controller can now be customised the same way as normal campaigns
 - Grabbing a Golden Strawberry in campaigns using a Merge Chapters Controller should no longer despawn other types of deathless strawberries (ie: Sliver strawberries)
+- Custom Collectables and Upgrade Collectables flash effects (when collected) should now scale to the current viewport size
 - Fixed a bug preventing Golden Strawberries to carry from chapter to chapter when using a Merge Chapter Controller with its mode set to "Classic"
 - Fixed a bug preventing the player to neutral drop Bombs
 - Fixed a bug that caused campaigns using a Merge Chapters Controller with its mode set to "Classic" to unlock wrong starting checkpoints if the campaign did not have an interlude
