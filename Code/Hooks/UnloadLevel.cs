@@ -20,7 +20,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             Player player = self.Tracker.GetEntity<Player>();
             if (self.Session.Area.LevelSet != "Celeste" && (player == null || player.Dead))
             {
-                if ((self.Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.Tracker.GetEntities<DroneSwitch>().Count > 0 || self.Tracker.GetEntities<Detonator>().Count > 0 || self.Tracker.GetEntity<LightManager>() != null) && !self.Session.GrabbedGolden)
+                if ((self.Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.Tracker.GetEntities<DroneSwitch>().Count > 0 || self.Tracker.GetEntities<Detonator>().Count > 0 || self.Tracker.GetEntities<BombSwitch>().Count > 0 || self.Tracker.GetEntity<LightManager>() != null) && !self.Session.GrabbedGolden)
                 {
                     int chapterIndex = self.Session.Area.ChapterIndex;
                     foreach (FlagDashSwitch flagSwitch in self.Tracker.GetEntities<FlagDashSwitch>())
@@ -37,6 +37,15 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         if (!detonator.FlagRegiseredInSaveData())
                         {
                             self.Session.SetFlag(detonator.flag, false);
+                        }
+                    }
+                    foreach (BombSwitch bombSwitch in self.Tracker.GetEntities<BombSwitch>())
+                    {
+                        self.Session.SetFlag("Ch" + chapterIndex + "_" + bombSwitch.flag + "_true", false);
+                        self.Session.SetFlag("Ch" + chapterIndex + "_" + bombSwitch.flag + "_false", false);
+                        if (!bombSwitch.FlagRegiseredInSaveData() && bombSwitch.startSpawnPoint == self.Session.RespawnPoint)
+                        {
+                            self.Session.SetFlag(bombSwitch.flag, bombSwitch.flagState);
                         }
                     }
                     foreach (LightManager manager in self.Tracker.GetEntities<LightManager>())

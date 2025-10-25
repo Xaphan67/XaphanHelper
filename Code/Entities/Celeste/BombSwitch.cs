@@ -34,7 +34,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float flagTime;
 
-        private bool FlagRegiseredInSaveData()
+        public bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;
