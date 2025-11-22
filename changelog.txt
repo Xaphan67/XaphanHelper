@@ -1,3 +1,7 @@
+Version 1.0.78 :
+- Added "No Reset On Death Flag" attribute to Drone Switches
+- Fixed a crash that could happen if the player died at the same time its dash was refilled
+
 Version 1.0.77 :
 - Added Poem Trigger
 - Added "Only Once" attribute to Upgrade Trigger
