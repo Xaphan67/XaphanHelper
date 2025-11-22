@@ -20,7 +20,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             Player player = self.Tracker.GetEntity<Player>();
             if (self.Session.Area.LevelSet != "Celeste" && (player == null || player.Dead))
             {
-                if ((self.Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.Tracker.GetEntities<DroneSwitch>().Count > 0 || self.Tracker.GetEntities<Detonator>().Count > 0 || self.Tracker.GetEntities<BombSwitch>().Count > 0 || self.Tracker.GetEntity<LightManager>() != null) && !self.Session.GrabbedGolden)
+                if ((self.Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.Tracker.GetEntities<Detonator>().Count > 0 || self.Tracker.GetEntities<BombSwitch>().Count > 0 || self.Tracker.GetEntity<LightManager>() != null) && !self.Session.GrabbedGolden)
                 {
                     int chapterIndex = self.Session.Area.ChapterIndex;
                     foreach (FlagDashSwitch flagSwitch in self.Tracker.GetEntities<FlagDashSwitch>())

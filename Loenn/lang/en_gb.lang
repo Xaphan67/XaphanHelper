@@ -245,6 +245,7 @@ entities.XaphanHelper/DroneSwitch.attributes.description.registerInSaveData=If t
 entities.XaphanHelper/DroneSwitch.attributes.description.saveDataOnlyAfterCheckpoint=If true, the flag will be registered in the player Save file and will be set forever only after the drone get to a checkpoint in the current room or exit the room.\n(Register In Save Data must be set to true)
 entities.XaphanHelper/DroneSwitch.attributes.description.onlyOnce=If true, prevent the switch to be shoot more than once.
 entities.XaphanHelper/DroneSwitch.attributes.description.resetOnDeath=If true, allow the switch to be hit again after the player die. No effect if Only Once is not set.
+entities.XaphanHelper/DroneSwitch.attributes.description.noResetOnDeathFlag= The flag that will prevent the switch to be reset when the player die. No effect if Reset On Death is not set.
 
 # Elevator
 entities.XaphanHelper/Elevator.placements.name.Elevator=Elevator

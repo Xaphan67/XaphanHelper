@@ -28,6 +28,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool resetOnDeath;
 
+        public string noResetOnDeathFlag;
+
         private bool active = true;
 
         public bool flagState;
@@ -65,6 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             onlyOnce = data.Bool("onlyOnce");
             resetOnDeath = data.Bool("resetOnDeath");
+            noResetOnDeathFlag = data.Attr("noResetOnDeathFlag");
             registerInSaveData = data.Bool("registerInSaveData");
             saveDataOnlyAfterCheckpoint = data.Bool("saveDataOnlyAfterCheckpoint");
             Add(buttonSprite = new Sprite(GFX.Game, "objects/XaphanHelper/DroneSwitch/"));
