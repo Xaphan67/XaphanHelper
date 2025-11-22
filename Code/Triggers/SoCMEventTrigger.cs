@@ -10,18 +10,21 @@ namespace Celeste.Mod.XaphanHelper.Triggers
     {
         private bool triggered;
 
+        private bool canMultiTrigger;
+
         public string Event;
 
         public SoCMEventTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
             Tag = Tags.TransitionUpdate;
             Event = data.Attr("event");
+            canMultiTrigger = data.Bool("canMultiTrigger");
         }
 
         public override void OnEnter(Player player)
         {
             base.OnEnter(player);
-            if (triggered)
+            if (triggered && !canMultiTrigger)
             {
                 return;
             }
@@ -37,6 +40,9 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                     break;
                 case "Ch2 - Boss":
                     Scene.Add(new E02_Boss(player, level));
+                    break;
+                case "Ch3 - Water Source":
+                    Scene.Add(new E03_WaterSource(player, level));
                     break;
                 case "Ch4 - Boss":
                     Scene.Add(new E04_Boss(player, level));
