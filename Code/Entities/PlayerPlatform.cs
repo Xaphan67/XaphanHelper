@@ -160,13 +160,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static bool OnPlayerRefillDash(On.Celeste.Player.orig_RefillDash orig, Player self)
         {
-            foreach (PlayerPlatform platform in self.Scene.Tracker.GetEntities<PlayerPlatform>())
+            if (self.Scene != null)
             {
-                if (platform.InView())
+                foreach (PlayerPlatform platform in self.Scene.Tracker.GetEntities<PlayerPlatform>())
                 {
-                    if (platform.GetPlayerRider() == self && platform.ForceSlide && platform.Sliding && platform.PreventRefillOnSliding)
+                    if (platform.InView())
                     {
-                        return false;
+                        if (platform.GetPlayerRider() == self && platform.ForceSlide && platform.Sliding && platform.PreventRefillOnSliding)
+                        {
+                            return false;
+                        }
                     }
                 }
             }
