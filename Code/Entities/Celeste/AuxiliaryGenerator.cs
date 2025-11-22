@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -9,68 +10,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/AuxiliaryGenerator")]
     public class AuxiliaryGenerator : Entity
     {
-        public class GeneratorMessage : Entity
-        {
-            private string Text;
-
-            private Vector2 TextSize;
-
-            private float height;
-
-            public bool drawText;
-
-            public GeneratorMessage(Vector2 position, string text) : base(position)
-            {
-                Tag = (Tags.HUD | Tags.Persistent);
-                Text = text;
-                TextSize = ActiveFont.Measure(Dialog.Clean(text));
-            }
-
-            public override void Added(Scene scene)
-            {
-                base.Added(scene);
-                Add(new Coroutine(OpenRoutine()));
-            }
-
-            public IEnumerator OpenRoutine()
-            {
-                while (height < TextSize.Y + 75)
-                {
-                    height += Engine.DeltaTime * 1200;
-                    yield return null;
-                }
-                drawText = true;
-            }
-
-            public void Close()
-            {
-                Add(new Coroutine(CloseRoutine()));
-            }
-
-            public IEnumerator CloseRoutine()
-            {
-                drawText = false;
-                while (height > 1)
-                {
-                    height -= Engine.DeltaTime * 1200;
-                    yield return null;
-                }
-                RemoveSelf();
-            }
-
-            public override void Render()
-            {
-                Draw.Rect(Engine.Width / 2 - TextSize.X / 2 - 50, (Engine.Height / 2 - TextSize.Y / 2 - 125) + ((TextSize.Y + 200) / 2) - height / 2, TextSize.X + 100, height, Color.Black);
-                if (drawText)
-                {
-                    ActiveFont.Draw(Dialog.Clean(Text), new Vector2(Engine.Width / 2 - TextSize.X / 2, Engine.Height / 2 - TextSize.Y / 2), new Vector2(0f, 0.5f), Vector2.One * 1f, Calc.HexToColor("AA00AA"));
-                }
-            }
-        }
-
         Sprite Sprite;
 
-        private GeneratorMessage message;
+        private Message message;
 
         private TalkComponent talk;
 
@@ -162,8 +104,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return 0.5f;
             Sprite.Play("turnOn");
             yield return 0.3f;
-            Audio.Play("event:/game/xaphan/cell_unlock", Position);
-            SceneAs<Level>().Add(message = new GeneratorMessage(Vector2.Zero, "Xaphan_Ch5_Generator"));
+            SceneAs<Level>().Add(message = new Message(Vector2.Zero, "event:/game/xaphan/cell_unlock", "Xaphan_Ch5_Generator"));
             while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed)
             {
                 yield return null;
