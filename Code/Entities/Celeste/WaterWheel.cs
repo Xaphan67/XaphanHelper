@@ -9,19 +9,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/WaterWheel")]
     public class WaterWheel : Entity
     {
-        Sprite wheelSprite;
+        private Sprite wheelSprite;
 
-        MTexture middle;
+        private MTexture middle;
 
-        string flag;
+        public string flag;
 
-        string directory;
+        private string directory;
 
-        bool turnLeft;
+        private bool turnLeft;
 
-        float rotationDegree;
+        private float rotationDegree;
 
-        float acceleration;
+        public float acceleration;
 
         public WaterWheel(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
