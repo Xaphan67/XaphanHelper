@@ -31,7 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Group = data.Int("group", -1);
             Collider = new Hitbox(8f, 8f, -4f, -4f);
             pc.Collider = new Hitbox(8f, 8f, -4f, -4f);
-            bc.Collider = new Circle(12f);
+            bc.Collider = new Circle(8f);
             Add(new PlayerCollider(OnBounce, new Hitbox(12f, 3f, -6f, -4f)));
             MaxBounces = data.Int("maxBounces", 0);
             HitSound = "event:/game/xaphan/fireflea_hit";
