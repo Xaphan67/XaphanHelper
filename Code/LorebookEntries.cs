@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Data;
 
 namespace Celeste.Mod.XaphanHelper
@@ -439,77 +440,80 @@ namespace Celeste.Mod.XaphanHelper
                 subCategoryID: "advc3"
             ));
 
-            // Logs
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 5))
+            {
+                // Logs
 
-            list.Add(new LorebookData(
-                entryID: "log1",
-                categoryID: 3,
-                picture: null,
-                flag: null
-            ));
+                list.Add(new LorebookData(
+                    entryID: "log1",
+                    categoryID: 3,
+                    picture: null,
+                    flag: null
+                ));
 
-            list.Add(new LorebookData(
-                entryID: "lambert-1",
-                categoryID: 3,
-                picture: "lorebook/Xaphan/Logs/lambert",
-                flag: "V-Lore-00_10651",
-                subCategoryID: "log1",
-                pages: 3
-            ));
+                list.Add(new LorebookData(
+                    entryID: "lambert-1",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Logs/lambert",
+                    flag: "V-Lore-00_10651",
+                    subCategoryID: "log1",
+                    pages: 3
+                ));
 
-            list.Add(new LorebookData(
-                entryID: "lambert-2",
-                categoryID: 3,
-                picture: "lorebook/Xaphan/Logs/lambert",
-                flag: "V-Lore-01_1354",
-                subCategoryID: "log2",
-                pages: 6
-            ));
+                list.Add(new LorebookData(
+                    entryID: "lambert-2",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Logs/lambert",
+                    flag: "V-Lore-01_1354",
+                    subCategoryID: "log2",
+                    pages: 6
+                ));
 
-            list.Add(new LorebookData(
-                entryID: "lambert-3",
-                categoryID: 3,
-                picture: "lorebook/Xaphan/Logs/lambert",
-                flag: "W-Lore-00_46",
-                subCategoryID: "log2",
-                pages: 3
-            ));
+                list.Add(new LorebookData(
+                    entryID: "lambert-3",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Logs/lambert",
+                    flag: "W-Lore-00_46",
+                    subCategoryID: "log2",
+                    pages: 3
+                ));
 
-            list.Add(new LorebookData(
-                entryID: "lambert-4",
-                categoryID: 3,
-                picture: "lorebook/Xaphan/Logs/lambert",
-                flag: "V-Lore-02_3201",
-                subCategoryID: "log2",
-                pages: 4
-            ));
+                list.Add(new LorebookData(
+                    entryID: "lambert-4",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Logs/lambert",
+                    flag: "V-Lore-02_3201",
+                    subCategoryID: "log2",
+                    pages: 4
+                ));
 
-            list.Add(new LorebookData(
-                entryID: "lambert-5",
-                categoryID: 3,
-                picture: "lorebook/Xaphan/Logs/lambert",
-                flag: "X-Lore-00_4190",
-                subCategoryID: "log2",
-                pages: 4
-            ));
+                list.Add(new LorebookData(
+                    entryID: "lambert-5",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Logs/lambert",
+                    flag: "X-Lore-00_4190",
+                    subCategoryID: "log2",
+                    pages: 4
+                ));
 
-            list.Add(new LorebookData(
-                entryID: "lambert-6",
-                categoryID: 3,
-                picture: "lorebook/Xaphan/Logs/lambert",
-                flag: "Y-Lore-00_7211",
-                subCategoryID: "log2",
-                pages: 6
-            ));
+                list.Add(new LorebookData(
+                    entryID: "lambert-6",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Logs/lambert",
+                    flag: "Y-Lore-00_7211",
+                    subCategoryID: "log2",
+                    pages: 6
+                ));
 
-            list.Add(new LorebookData(
-                entryID: "lambert-7",
-                categoryID: 3,
-                picture: "lorebook/Xaphan/Logs/lambert",
-                flag: "W-Lore-01_6348",
-                subCategoryID: "log2",
-                pages: 6
-            ));
+                list.Add(new LorebookData(
+                    entryID: "lambert-7",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Logs/lambert",
+                    flag: "W-Lore-01_6348",
+                    subCategoryID: "log2",
+                    pages: 6
+                ));
+            }
 
             return list;
         }
