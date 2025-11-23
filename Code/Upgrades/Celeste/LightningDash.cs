@@ -157,14 +157,14 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private IEnumerator modDashCoroutine(On.Celeste.Player.orig_DashCoroutine orig, Player self)
         {
-            IEnumerator coroutine = orig.Invoke(self);
+            IEnumerator coroutine = orig(self).SafeEnumerate();
             while (coroutine.MoveNext())
             {
                 object o = coroutine.Current;
                 Level level = self.SceneAs<Level>();
                 Vector2 aim = Input.GetAimVector();
                 EventInstance sound;
-                if (o != null && o.GetType() == typeof(float))
+                if (o != null && o is float)
                 {
                     if (Active(level) && !self.OnGround() && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
                     {

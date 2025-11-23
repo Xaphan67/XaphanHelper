@@ -1,6 +1,9 @@
 Version 1.0.78 :
 - Added "No Reset On Death Flag" attribute to Drone Switches
 - The Lightning Dash ability now stop automatically if the player get stuck in place while using it
+- Fixed an issue preventing the Lightning Dash ability to work when the Dash Coroutine was hooked by other mods
+- Ficxed a bug displaying wrong lorebook entries unlocks in The Secret Of Celeste Mountain
+- Fixed a bug sometimes preventing the player to use the Bombs and Mega Bombs abilities
 - Fixed a crash that could happen if the player died at the same time its dash was refilled
 
 Version 1.0.77 :
