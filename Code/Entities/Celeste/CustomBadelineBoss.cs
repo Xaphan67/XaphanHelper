@@ -208,6 +208,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 });
             }
             light.Position = ((Sprite != null) ? Sprite : NormalSprite).Position + new Vector2(0f, -10f);
+            Add(new PostUpdateHook(() => {
+                if (Sprite is { } sprite)
+                {
+                    sprite.Scale.X = facing;
+                    sprite.Scale.Y = 1f;
+                    sprite.Scale *= 1f + scaleWiggler.Value * 0.2f;
+                }
+            }));
         }
 
         public override void Awake(Scene scene)
@@ -307,12 +315,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Render()
         {
-            if (Sprite != null)
-            {
-                Sprite.Scale.X = facing;
-                Sprite.Scale.Y = 1f;
-                Sprite.Scale *= 1f + scaleWiggler.Value * 0.2f;
-            }
             if (NormalSprite != null)
             {
                 Vector2 position = NormalSprite.Position;

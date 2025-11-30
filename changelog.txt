@@ -1,6 +1,7 @@
 Version 1.0.78 :
 - Added "No Reset On Death Flag" attribute to Drone Switches
 - The Lightning Dash ability now stop automatically if the player get stuck in place while using it
+- Fixed a possible desynchronisation with TASes when using a Custom Badeline Boss
 - Fixed an issue preventing the Lightning Dash ability to work when the Dash Coroutine was hooked by other mods
 - Fixed a bug displaying wrong lorebook entries unlocks in The Secret Of Celeste Mountain
 - Fixed a bug preventing the In-Game map marker selector bounds to match the visual map borders
