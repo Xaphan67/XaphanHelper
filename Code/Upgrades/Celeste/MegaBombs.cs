@@ -1,17 +1,13 @@
 ﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
-using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {
     class MegaBombs : Upgrade
     {
-        float delay = 0;
-
-        bool cooldown;
-
         Coroutine UseBombCoroutine = new();
 
         public static bool isActive;
@@ -41,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private bool onHoldableCheck(On.Celeste.Holdable.orig_Check orig, Holdable self, Player player)
         {
-            if (self.Entity.GetType() == typeof(MegaBomb))
+            if (self.Entity is MegaBomb)
             {
                 MegaBomb bomb = (MegaBomb)self.Entity;
                 if (!bomb.WasThrown && Input.GrabCheck)
@@ -79,19 +75,20 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 if (isActive)
                 {
                     Player player = self.Tracker.GetEntity<Player>();
+                    UpgradesComponent component = null;
                     if (player != null)
                     {
+                        component = player.Get<UpgradesComponent>();
                         canUse = player.Holding != null ? true : self.Tracker.GetEntity<MegaBomb>() == null && player.OnGround() && !GravityJacket.determineIfInWater();
                     }
-                    if (!cooldown && self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
+                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater() && player != null && component != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "bag");
                         if (bagDisplay != null)
                         {
                             int totalBombs = self.Tracker.CountEntities<MegaBomb>();
-                            if (bagDisplay.currentSelection == 2 && delay <= 0f && totalBombs == 0)
+                            if (bagDisplay.currentSelection == 2 && component.MegaBombsCooldown <= 0f && totalBombs == 0)
                             {
-                                delay = 0.35f;
                                 UseBombCoroutine = new Coroutine(UseBomb(player, self));
                             }
                         }
@@ -108,6 +105,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             bool usedBomb = false;
             float leniency = 0.5f;
+            UpgradesComponent component = player.Get<UpgradesComponent>();
             while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedBomb)
             {
                 while ((player.Speed.X != 0 || player.Dead || !player.OnGround()) && leniency > 0)
@@ -121,19 +119,17 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 }
                 if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb && !GravityJacket.determineIfInLiquid())
                 {
-                    cooldown = true;
                     level.Add(new MegaBomb(player.Position, player));
                     usedBomb = true;
-                    while (delay > 0f)
+                    component.MegaBombsCooldown = 0.35f;
+                    while (component.MegaBombsCooldown > 0f)
                     {
-                        delay -= Engine.DeltaTime;
                         yield return null;
                     }
                 }
                 yield return null;
             }
-            delay = 0f;
-            cooldown = false;
+            component.MegaBombsCooldown = 0f;
         }
     }
 }

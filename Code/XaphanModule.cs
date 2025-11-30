@@ -755,6 +755,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Mod.UI.OuiMapSearch.Enter += modOuiMapSeatchEnter;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave += modOuiMapSeatchLeave;
+            Upgrade.LoadComponent();
             SaveUpdater.Load();
             MetroidGameplayController.Load();
             ScrewAttackManager.Load();
@@ -879,6 +880,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Mod.UI.OuiMapSearch.Enter -= modOuiMapSeatchEnter;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave -= modOuiMapSeatchLeave;
+            Upgrade.UnloadComponent();
             SaveUpdater.Unload();
             MetroidGameplayController.Unload();
             ScrewAttackManager.Unload();

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -9,10 +9,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 {
     class Bombs : Upgrade
     {
-        float delay = 0;
-
-        bool cooldown;
-
         Coroutine UseBombCoroutine = new();
 
         public static bool isActive;
@@ -43,7 +39,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private bool onHoldableCheck(On.Celeste.Holdable.orig_Check orig, Holdable self, Player player)
         {
-            if (self.Entity.GetType() == typeof(Bomb))
+            if (self.Entity is Bomb)
             {
                 Bomb bomb = (Bomb)self.Entity;
                 if (!bomb.WasThrown && Input.GrabCheck)
@@ -58,9 +54,9 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             if (UseBombCoroutine.Active)
             {
+                UpgradesComponent component = self.Components.Get<UpgradesComponent>();
                 UseBombCoroutine.Cancel();
-                delay = 0f;
-                cooldown = false;
+                component.BombsCooldown = 0f;
             }
             return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
@@ -93,17 +89,19 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 if (isActive)
                 {
                     Player player = self.Tracker.GetEntity<Player>();
+                    UpgradesComponent component = null;
                     if (player != null)
                     {
+                        component = player.Get<UpgradesComponent>();
                         canUse = player.Holding != null ? true : self.Tracker.GetEntities<Bomb>().Count <= 4 && player.OnGround() && !GravityJacket.determineIfInWater();
                     }
-                    if (!cooldown && self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
+                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater() && player != null && component != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "bag");
                         if (bagDisplay != null)
                         {
                             int totalBombs = self.Tracker.CountEntities<Bomb>();
-                            if (bagDisplay.currentSelection == 1 && delay <= 0f && totalBombs <= 4)
+                            if (bagDisplay.currentSelection == 1 && component.BombsCooldown <= 0f && totalBombs <= 4)
                             {
                                 UseBombCoroutine = new Coroutine(UseBomb(player, self));
                             }
@@ -121,6 +119,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             bool usedBomb = false;
             float leniency = 0.5f;
+            UpgradesComponent component = player.Get<UpgradesComponent>();
             while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedBomb)
             {
                 while ((player.Speed != Vector2.Zero || player.Dead || !player.OnGround()) && leniency > 0)
@@ -134,20 +133,17 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 }
                 if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb && !GravityJacket.determineIfInLiquid())
                 {
-                    delay = 0.45f;
-                    cooldown = true;
                     level.Add(new Bomb(player.Position, player));
                     usedBomb = true;
-                    while (delay > 0f)
+                    component.BombsCooldown = 0.45f;
+                    while (component.BombsCooldown > 0f)
                     {
-                        delay -= Engine.DeltaTime;
                         yield return null;
                     }
                 }
                 yield return null;
             }
-            delay = 0f;
-            cooldown = false;
+            component.BombsCooldown = 0f;
         }
     }
 }
