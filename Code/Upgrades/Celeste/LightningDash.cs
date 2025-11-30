@@ -163,7 +163,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 object o = coroutine.Current;
                 Level level = self.SceneAs<Level>();
                 Vector2 aim = Input.GetAimVector();
-                EventInstance sound;
+                EventInstance sound = null;
                 if (o != null && o is float)
                 {
                     if (Active(level) && !self.OnGround() && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
@@ -183,9 +183,9 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                                 level.CameraOffset.X = 60f;
                                 self.Facing = Facings.Right;
                             }
-                            EndLightningDash(level, previousPlayerPos, currentPlayerPos, aim, sound);
+                            EndLightningDash(level, aim, sound);
                         }
-                        if (self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left && aim.Y == 0)
+                        else if (self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left && aim.Y == 0)
                         {
                             level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
                             sound = Audio.Play("event:/game/xaphan/shinespark_start");
@@ -198,7 +198,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                                 level.CameraOffset.X = -60f;
                                 self.Facing = Facings.Left;
                             }
-                            EndLightningDash(level, previousPlayerPos, currentPlayerPos, aim, sound);
+                            EndLightningDash(level, aim, sound);
                         }
                     }
                     yield return o;
@@ -211,15 +211,15 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             yield break;
         }
 
-        private void EndLightningDash(Level level, Vector2 previousPlayerPos, Vector2 currentPlayerPos, Vector2 aim, EventInstance sound)
+        private void EndLightningDash(Level level, Vector2 aim, EventInstance sound)
         {
-            sound.stop(STOP_MODE.IMMEDIATE);
-            if (previousPlayerPos != currentPlayerPos)
+            if (sound != null)
             {
-                level.DirectionalShake(aim, 0.2f);
-                sound = Audio.Play("event:/game/xaphan/shinespark_end");
-                Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                sound.stop(STOP_MODE.IMMEDIATE);
             }
+            level.DirectionalShake(aim, 0.2f);
+            sound = Audio.Play("event:/game/xaphan/shinespark_end");
+            Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
             level.CameraOffset.X = 0f;
             level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
         }
