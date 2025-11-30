@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Data;
-using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -39,7 +38,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             public bool Focused;
 
-            public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition, MapDisplay mapDisplay) : base(position)
+            public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition, MapDisplay mapDisplay) : base(position + playerPosition * 40f)
             {
                 Tag = Tags.HUD;
                 CurrentRoom = currentRoom;
@@ -47,28 +46,27 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 this.mapDisplay = mapDisplay;
                 Add(MiddleSprite = new Sprite(GFX.Gui, "maps/"));
                 MiddleSprite.AddLoop("select", "select", 0.08f);
-                MiddleSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f;
                 MiddleSprite.Play("select");
                 Add(TopSprite = new Sprite(GFX.Gui, "maps/"));
                 TopSprite.AddLoop("arrow", "arrow", 0.08f);
-                TopSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f - Vector2.UnitY * 40f + Vector2.One * 20f;
+                TopSprite.Position = Vector2.UnitY * -40f + Vector2.One * 20f;
                 TopSprite.CenterOrigin();
                 TopSprite.Play("arrow");
                 Add(BottomSprite = new Sprite(GFX.Gui, "maps/"));
                 BottomSprite.AddLoop("arrow", "arrow", 0.08f);
-                BottomSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f + Vector2.UnitY * 40f + Vector2.One * 20f;
+                BottomSprite.Position = Vector2.UnitY * 40f + Vector2.One * 20f;
                 BottomSprite.CenterOrigin();
                 BottomSprite.Rotation = (float)Math.PI;
                 BottomSprite.Play("arrow");
                 Add(LeftSprite = new Sprite(GFX.Gui, "maps/"));
                 LeftSprite.AddLoop("arrow", "arrow", 0.08f);
-                LeftSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f - Vector2.UnitX * 40f + Vector2.One * 20f;
+                LeftSprite.Position = Vector2.UnitX * -40f + Vector2.One * 20f;
                 LeftSprite.CenterOrigin();
                 LeftSprite.Rotation = -(float)Math.PI / 2;
                 LeftSprite.Play("arrow");
                 Add(RightSprite = new Sprite(GFX.Gui, "maps/"));
                 RightSprite.AddLoop("arrow", "arrow", 0.08f);
-                RightSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f + Vector2.UnitX * 40f + Vector2.One * 20f;
+                RightSprite.Position = Vector2.UnitX * 40f + Vector2.One * 20f;
                 RightSprite.CenterOrigin();
                 RightSprite.Rotation = (float)Math.PI / 2;
                 RightSprite.Play("arrow");
