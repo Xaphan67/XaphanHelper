@@ -67,7 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void Load()
         {
             On.Celeste.Solid.MoveVExact += OnSolidMoveVExact;
-            On.Celeste.Solid.Update += OnSolidUpdate;
+            On.Celeste.Level.Update += OnLevelUpdate;
             On.Celeste.Player.RefillDash += OnPlayerRefillDash;
             On.Monocle.Sprite.Play += PlayerSpritePlayHook;
         }
@@ -75,7 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public static void Unload()
         {
             On.Celeste.Solid.MoveVExact -= OnSolidMoveVExact;
-            On.Celeste.Solid.Update -= OnSolidUpdate;
+            On.Celeste.Level.Update -= OnLevelUpdate;
             On.Celeste.Player.RefillDash -= OnPlayerRefillDash;
             On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
         }
@@ -143,9 +143,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private static void OnSolidUpdate(On.Celeste.Solid.orig_Update orig, Solid self)
+        private static void OnLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)
         {
-            foreach (PlayerPlatform platform in self.Scene.Tracker.GetEntities<PlayerPlatform>())
+            foreach (PlayerPlatform platform in self.Tracker.GetEntities<PlayerPlatform>())
             {
                 if (platform.InView())
                 {
