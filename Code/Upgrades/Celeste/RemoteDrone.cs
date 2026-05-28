@@ -88,7 +88,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             bool usedDrone = false;
             float leniency = 0.5f;
-            while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedDrone)
+            while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedDrone && Input.Aim != Vector2.UnitY && !Input.MenuDown.Check)
             {
                 while ((player.Speed.X != 0 || player.Dead || !player.OnGround()) &&  leniency > 0)
                 {
@@ -101,7 +101,9 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 }
                 if (player.Scene != null && player.OnGround() && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb)
                 {
-                    level.Add(new Drone(player.Position, player));
+                    Drone drone = new Drone(player.Position, player);
+                    level.Add(drone);
+                    Drone.Hold.Pickup(player);
                     usedDrone = true;
                 }
                 yield return null;

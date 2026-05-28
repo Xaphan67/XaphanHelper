@@ -90,6 +90,49 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = 0;
         }
 
+        public static void Load()
+        {
+            On.Celeste.Player.Throw += OnPlayerThrow;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Player.Throw -= OnPlayerThrow;
+        }
+
+        private static void OnPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self)
+        {
+            if (self.Holding != null)
+            {
+                if (self.Holding.Entity == null)
+                {
+                    return;
+                }
+                if (self.Holding.Entity.GetType() != typeof(MegaBomb) || (self.Holding.Entity.GetType() == typeof(MegaBomb) && XaphanModule.ModSettings.UseBagItemSlot.Check))
+                {
+                    orig(self);
+                }
+                else
+                {
+                    if ((float)PlayerMinHoldTimer.GetValue(self) <= 0f)
+                    {
+                        if (!XaphanModule.ModSettings.UseBagItemSlot.Check && Input.Aim.Value.Y == 1)
+                        {
+                            self.Drop();
+                        }
+                        else
+                        {
+                            Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                            self.Holding.Release(Vector2.UnitX * (float)self.Facing);
+                            self.Play("event:/char/madeline/crystaltheo_throw");
+                            self.Sprite.Play("throw");
+                            self.Holding = null;
+                        }
+                    }
+                }
+            }
+        }
+
         private void OnPickup()
         {
             Speed = Vector2.Zero;

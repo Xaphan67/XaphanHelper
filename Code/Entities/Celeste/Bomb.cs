@@ -130,11 +130,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if ((float)PlayerMinHoldTimer.GetValue(self) <= 0f)
                     {
-                        Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
-                        self.Holding.Release(Vector2.UnitX * (float)self.Facing);
-                        self.Play("event:/char/madeline/crystaltheo_throw");
-                        self.Sprite.Play("throw");
-                        self.Holding = null;
+                        if (!XaphanModule.ModSettings.UseBagItemSlot.Check && Input.Aim.Value.Y == 1)
+                        {
+                            self.Drop();
+                        }
+                        else
+                        {
+                            Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                            self.Holding.Release(Vector2.UnitX * (float)self.Facing);
+                            self.Play("event:/char/madeline/crystaltheo_throw");
+                            self.Sprite.Play("throw");
+                            self.Holding = null;
+                        }
                     }
                 }
             }

@@ -253,15 +253,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void OnPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self)
         {
-            if (self.Holding != Hold)
+            if (self.Holding != null)
             {
-                orig(self);
-            }
-            else
-            {
-                if ((bool)PlayerOnGround.GetValue(self) && self.OnSafeGround)
+                if (self.Holding.Entity == null)
+                {
+                    return;
+                }
+                if (self.Holding.Entity.GetType() != typeof(Drone) || (self.Holding.Entity.GetType() == typeof(Drone) && XaphanModule.ModSettings.UseBagItemSlot.Check))
                 {
                     orig(self);
+                }
+                else
+                {
+                    if ((bool)PlayerOnGround.GetValue(self) && self.OnSafeGround)
+                    {
+                        Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                        self.Holding.Release(Vector2.UnitX * (float)self.Facing);
+                        self.Play("event:/char/madeline/crystaltheo_throw");
+                        self.Sprite.Play("throw");
+                        self.Holding = null;
+                    }
                 }
             }
         }

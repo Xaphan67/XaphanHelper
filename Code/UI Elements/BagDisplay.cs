@@ -209,14 +209,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private static void modPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self)
         {
-            if (XaphanModule.useUpgrades)
-            {
-                if (!XaphanModule.ModSettings.UseBagItemSlot.Check || (XaphanModule.ModSettings.UseBagItemSlot.Check && Input.Aim.Value.Y > 0))
-                {
-                    orig(self);
-                }
-            }
-            else
+            if (!XaphanModule.useUpgrades || (XaphanModule.useUpgrades && (self.Holding.Entity.GetType() != typeof(Bomb) && self.Holding.Entity.GetType() != typeof(MegaBomb) && self.Holding.Entity.GetType() != typeof(Drone))))
             {
                 orig(self);
             }

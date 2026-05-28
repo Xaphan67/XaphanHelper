@@ -770,7 +770,7 @@ namespace Celeste.Mod.XaphanHelper
             CountdownDisplay.Load();
             Liquid.Load();
             MagneticCeiling.Load();
-            Drone.Load();
+            //Drone.Load();
             FlagDashSwitch.Load();
             TimedDashSwitch.Load();
             BagDisplay.Load();
@@ -809,6 +809,8 @@ namespace Celeste.Mod.XaphanHelper
             DebugBlocker.Load();
             CustomPufferSpringCollider.Load();
             Bomb.Load();
+            MegaBomb.Load();
+            Drone.Load();
             LevelShake.Load();
             Waterfall.Load();
         }
@@ -895,7 +897,7 @@ namespace Celeste.Mod.XaphanHelper
             CountdownDisplay.Unload();
             Liquid.Unload();
             MagneticCeiling.Unload();
-            Drone.Unload();
+            //Drone.Unload();
             FlagDashSwitch.Unload();
             TimedDashSwitch.Unload();
             BagDisplay.Unload();
@@ -934,6 +936,8 @@ namespace Celeste.Mod.XaphanHelper
             DebugBlocker.Unload();
             CustomPufferSpringCollider.Unload();
             Bomb.Unload();
+            MegaBomb.Unload();
+            Drone.Unload();
             LevelShake.Unload();
             Waterfall.Unload();
         }
