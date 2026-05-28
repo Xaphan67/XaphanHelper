@@ -1,3 +1,7 @@
+Version 1.0.79 :
+- Neutral droping Bombs and Mega Bombs should now work the same way as other holdables entities
+- Improved Slopes collision check performances
+
 Version 1.0.78 :
 - Added "No Reset On Death Flag" attribute to Drone Switches
 - The Lightning Dash ability now stop automatically if the player get stuck in place while using it
