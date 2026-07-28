@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
+using static Celeste.Tentacles;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -144,6 +145,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + i * 8), 4 + (Gentle ? 18 : 11), 2));
                             }
                         }
+                        if (TilesBottom.Contains("Vertical"))
+                        {
+                            colliderList.Add(new Hitbox(4, 1, SlopeHeight * (Gentle ? 16 : 8), SlopeHeight * 8));
+                            colliderList.Add(new Hitbox(Gentle ? 6 : 5, 1, SlopeHeight * (Gentle ? 16 : 8), 1 + SlopeHeight * 8));
+                            colliderList.Add(new Hitbox(Gentle ? 8 : 6, 1, SlopeHeight * (Gentle ? 16 : 8), 2 + SlopeHeight * 8));
+                            if (!Gentle)
+                            {
+                                colliderList.Add(new Hitbox(7, 1, SlopeHeight * 8, 3 + SlopeHeight * 8));
+                            }
+                            if (!CanJumpThrough)
+                            {
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 1 + SlopeHeight * 8), 4 + (Gentle ? 6 : 5), 2));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 3 + SlopeHeight * 8), 4 + (Gentle ? 10 : 7), 2));
+                            }
+                        }
                         Collider = colliderList;
                     }
                     else
@@ -172,6 +188,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 10f - i * 16 : 13f - i * 8), 3 + i * 8), 4 + (Gentle ? 10 : 7), 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 6f - i * 16 : 11f - i * 8), 5 + i * 8), 4 + (Gentle ? 14 : 9), 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 2f - i * 16 : 9f - i * 8), 7 + i * 8), 4 + (Gentle ? 18 : 11), 2));
+                            }
+                        }
+                        if (TilesBottom.Contains("Vertical"))
+                        {
+                            colliderList.Add(new Hitbox(4, 1, (Gentle ? 20f - SlopeHeight * 16 : 20f - SlopeHeight * 8), SlopeHeight * 8));
+                            colliderList.Add(new Hitbox(Gentle ? 6 : 5, 1, (Gentle ? 18f - SlopeHeight * 16 : 19f - SlopeHeight * 8), 1 + SlopeHeight * 8));
+                            colliderList.Add(new Hitbox(Gentle ? 8 : 6, 1, (Gentle ? 16f - SlopeHeight * 16 : 18f - SlopeHeight * 8), 2 + SlopeHeight * 8));
+                            if (!Gentle)
+                            {
+                                colliderList.Add(new Hitbox(7, 1, 17f - SlopeHeight * 8, 3 + SlopeHeight * 8));
+                            }
+                            if (!CanJumpThrough)
+                            {
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 1 + SlopeHeight * 8), 4 + (Gentle ? 6 : 5), 2));
+                                lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 3 + SlopeHeight * 8), 4 + (Gentle ? 10 : 7), 2));
                             }
                         }
                         Collider = colliderList;
@@ -765,7 +796,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (!VisualOnly)
             {
-                SceneAs<Level>().Add(new PlayerPlatform(Position + new Vector2(Side == "Right" ? ((Gentle ? -(SlopeHeight - 1) * 16 : -(SlopeHeight - 1) * 8) + 8) * (UpsideDown ? -1 : 1) : 0 + 0, (8 * (SlopeHeight - 1) + 4)) * (UpsideDown ? -1 : 1), Gentle ? 8 + 16 * SlopeHeight : 8 + 8 * SlopeHeight, Gentle, Side, SoundIndex, SlopeHeight, CanSlide, ForceSlide, Top, AffectPlayerSpeed, UpsideDown, StickyDash, CanJumpThrough, PreventRefillOnSliding));
+                SceneAs<Level>().Add(new PlayerPlatform(Position + new Vector2(Side == "Right" ? ((Gentle ? -(SlopeHeight - 1) * 16 : -(SlopeHeight - 1) * 8) + 8) * (UpsideDown ? -1 : 1) : 0 + 0, 4 + (8 * (SlopeHeight - 1) + 4)) * (UpsideDown ? -1 : 1), Gentle ? 8 + 16 * SlopeHeight : 8 + 8 * SlopeHeight, Gentle, Side, SoundIndex, SlopeHeight, CanSlide, ForceSlide, Top, AffectPlayerSpeed, UpsideDown, StickyDash, CanJumpThrough, PreventRefillOnSliding));
                 if (!UpsideDown)
                 {
                     SceneAs<Level>().Add(new FakePlayerPlatform(Position + new Vector2(Side == "Right" ? ((Gentle ? -(SlopeHeight - 1) * 16 : -(SlopeHeight - 1) * 8) + 8) * (UpsideDown ? -1 : 1) : 0 + 0, (8 * (SlopeHeight - 1) + 4)) * (UpsideDown ? -1 : 1), Gentle ? 8 + 16 * SlopeHeight : 8 + 8 * SlopeHeight, Gentle, Side, SoundIndex, SlopeHeight, Top, UpsideDown, StickyDash, CanJumpThrough));
