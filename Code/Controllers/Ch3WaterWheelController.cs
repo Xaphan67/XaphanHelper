@@ -8,32 +8,36 @@ namespace Celeste.Mod.XaphanHelper.Controllers
     [CustomEntity("XaphanHelper/Ch3WaterWheelController")]
     class Ch3WaterWheelController : Entity
     {
-        private string flag;
-
         public Ch3WaterWheelController(EntityData data, Vector2 position) : base(data.Position + position)
         {
-            flag = data.Attr("flag");
         }
 
         public override void Added(Scene scene)
         {
             base.Added(scene);
             Session session = SceneAs<Level>().Session;
-            if (session.Level == "M-06" && session.GetFlag(flag) && !session.GetFlag("M-06_Trigwall_1") && !session.GetFlag("Ch3_M-06_Trigwall_1"))
+            if (
+                (session.Level == "M-06" && session.GetFlag("M-05_Trigwall_2") && !session.GetFlag("M-06_Trigwall_1") && !session.GetFlag("Ch3_M-06_Trigwall_1")) ||
+                (session.Level == "M-53-B" && session.GetFlag("M-40_Trigwall_1") && session.GetFlag("M-48_Trigwall_1") && !session.GetFlag("M-53_Trigwall_1") && !session.GetFlag("Ch3_M-53_Trigwall_1"))
+                )
             {
-                Add(new Coroutine(OpenWallsRoutine()));
+                Add(new Coroutine(OpenWallsRoutine(session.Level)));
             }
         }
 
-        public IEnumerator OpenWallsRoutine()
+        public IEnumerator OpenWallsRoutine(string room)
         {
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (player != null)
             {
                 player.StateMachine.State = Player.StDummy;
                 yield return 1f;
-                SceneAs<Level>().Session.SetFlag("M-06_Trigwall_1", true);
-                XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch3_M-06_Trigwall_1");
+                if (room.Contains("-B"))
+                {
+                    room = room.Substring(0, 4);
+                }
+                SceneAs<Level>().Session.SetFlag(room + "_Trigwall_1", true);
+                XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch3_" + room + "_Trigwall_1");
             }
             SceneAs<Level>().CanRetry = true;
         }

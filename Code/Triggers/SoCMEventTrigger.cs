@@ -44,6 +44,9 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 case "Ch3 - Water Source":
                     Scene.Add(new E03_WaterSource(player, level));
                     break;
+                case "Ch3 - Bog Path Open":
+                    Scene.Add(new E03_BogPathOpen(player, level));
+                    break;
                 case "Ch4 - Boss":
                     Scene.Add(new E04_Boss(player, level));
                     break;

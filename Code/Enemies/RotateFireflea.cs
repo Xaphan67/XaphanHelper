@@ -2,7 +2,6 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.XaphanHelper.Enemies
 {
@@ -26,8 +25,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private int Group;
 
-        public RotateFireflea(EntityData data, Vector2 offset) : base(data, offset)
+        public EntityID eid;
+
+        public RotateFireflea(EntityData data, Vector2 offset, EntityID eid) : base(data, offset)
         {
+            this.eid = eid;
             Group = data.Int("group", -1);
             Collider = new Hitbox(8f, 8f, -4f, -4f);
             pc.Collider = new Hitbox(8f, 8f, -4f, -4f);

@@ -25,6 +25,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public WaterWheel(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
+            Tag = Tags.TransitionUpdate;
             flag = data.Attr("flag");
             directory = data.Attr("directory", "objects/XaphanHelper/WaterWheel");
             if (string.IsNullOrEmpty(directory))
@@ -40,6 +41,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Collider = new Circle(spriteWidth);
         }
 
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+
+            if (SceneAs<Level>().Session.GetFlag(flag))
+            {
+                acceleration = 175f;
+            }
+        }
+
         public override void Update()
         {
             base.Update();
@@ -53,7 +64,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         CollideWaterfallLeft = true;
                     }
-                    else if(section.Left > (Left + Collider.Width / 2))
+                    else if (section.Left > (Left + Collider.Width / 2))
                     {
                         CollideWaterfallRight = true;
                     }

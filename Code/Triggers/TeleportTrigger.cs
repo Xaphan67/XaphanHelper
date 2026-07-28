@@ -5,6 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Triggers
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/TeleportTrigger")]
     class TeleportTrigger : Trigger
     {

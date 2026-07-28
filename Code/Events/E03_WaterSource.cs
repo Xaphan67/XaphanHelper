@@ -32,18 +32,14 @@ namespace Celeste.Mod.XaphanHelper.Events
             string Prefix = level.Session.Area.LevelSet;
             int chapterIndex = level.Session.Area.ChapterIndex;
 
-            if (waterwheel.acceleration != 0 && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
+            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
             {
-                while (!player.OnSafeGround)
+                while (waterwheel.acceleration < 100 || !level.Session.GetFlag(flag) || !player.OnSafeGround)
                 {
                     yield return null;
                 }
                 player.StateMachine.State = 11;
-                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
-                {
-                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
-                    level.Session.SetFlag(flag);
-                }
+                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
                 int remainingSources = 3;
                 foreach (string savedFlag in XaphanModule.ModSaveData.SavedFlags)
                 {
@@ -60,7 +56,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 {
                     level.Add(message = new Message(Vector2.Zero, "event:/game/xaphan/push_block_start_move", "Xaphan_Ch3_AllWaterSource"));
                 }
-                while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed)
+                while (!message.drawText || (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed))
                 {
                     yield return null;
                 }

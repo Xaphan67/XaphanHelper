@@ -65,14 +65,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public override void Render()
         {
-            Draw.Rect(Engine.Width / 2 - TextSize.X / 2 - 50, (Engine.Height / 2 - TextSize.Y / 2 - 130) + ((TextSize.Y + 200) / 2) - height / 2, TextSize.X + 100, height, Color.Black);
-            if (drawText)
+            if (!SceneAs<Level>().Paused)
             {
-                float offset = string.IsNullOrEmpty(OptText) ? 0 : TextSize.Y / 2;
-                ActiveFont.Draw(Dialog.Clean(Text), new Vector2(Engine.Width / 2, Engine.Height / 2 - TextSize.Y / 2 - offset), new Vector2(0.5f, 0.5f), Vector2.One * 1f, Calc.HexToColor("AA00AA"));
-                if (!string.IsNullOrEmpty(OptText))
+                Draw.Rect(Engine.Width / 2 - TextSize.X / 2 - 50, (Engine.Height / 2 - TextSize.Y / 2 - 130) + ((TextSize.Y + 200) / 2) - height / 2, TextSize.X + 100, height, Color.Black);
+                if (drawText)
                 {
-                    ActiveFont.Draw(OptNumber.ToString() + " " + Dialog.Clean(OptText), new Vector2(Engine.Width / 2, Engine.Height / 2 - TextSize.Y / 2 + offset), new Vector2(0.5f, 0.5f), Vector2.One * 1f, Calc.HexToColor("AA00AA"));
+                    float offset = string.IsNullOrEmpty(OptText) ? 0 : TextSize.Y / 2;
+                    ActiveFont.Draw(Dialog.Clean(Text), new Vector2(Engine.Width / 2, Engine.Height / 2 - TextSize.Y / 2 - offset), new Vector2(0.5f, 0.5f), Vector2.One * 1f, Calc.HexToColor("AA00AA"));
+                    if (!string.IsNullOrEmpty(OptText))
+                    {
+                        ActiveFont.Draw(OptNumber.ToString() + " " + Dialog.Clean(OptText), new Vector2(Engine.Width / 2, Engine.Height / 2 - TextSize.Y / 2 + offset), new Vector2(0.5f, 0.5f), Vector2.One * 1f, Calc.HexToColor("AA00AA"));
+                    }
                 }
             }
         }
