@@ -625,6 +625,14 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
             });
+            DecalRegistry.AddPropertyHandler("XaphanHelper_randomSwap", (Decal decal, XmlAttributeCollection attrs) =>
+            {
+                if (attrs["offPath"] != null && attrs["onPath"] != null)
+                {
+                    List<MTexture> textures = attrs["textures"].Value.Split(',').Select(path => GFX.Game[path]).ToList();
+                    decal.Add(decal.Image = new RandomSwapImage(textures));
+                }
+            });
             DecalRegistry.AddPropertyHandler("XaphanHelper_randomFlagSwap", (Decal decal, XmlAttributeCollection attrs) =>
             {
                 if (attrs["flag"] != null && attrs["offPath"] != null && attrs["onPath"] != null)
@@ -2547,6 +2555,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     ModSettings.DashBoots = true;
                     level.Session.SetFlag("Upgrade_DashBoots", true);
+                    //level.Session.Inventory = new PlayerInventory(2);
                 }
                 if (setSpaceJump || level.Session.GetFlag("Upgrade_SpaceJump"))
                 {
@@ -2666,6 +2675,7 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         ModSettings.DashBoots = true;
                         level.Session.SetFlag("Upgrade_DashBoots", true);
+                        //level.Session.Inventory = new PlayerInventory(2);
                     }
                     if (HoverJetCollected(level))
                     {
