@@ -5,7 +5,7 @@ namespace Celeste.Mod.XaphanHelper.Components
 {
     public class RandomSwapImage : Component
     {
-        private List<MTexture> list;
+        private List<MTexture> list = new();
         private MTexture currentTexture;
         public RandomSwapImage(List<MTexture> list) : base(active: true, visible: true)
         {
