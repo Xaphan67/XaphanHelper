@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.SymbolStore;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -55,7 +56,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.startLit = startLit;
             this.flag = flag;
             this.sprite = sprite;
-            if (offFrames != null)
+            if (!string.IsNullOrEmpty(offFrames))
             {
                 this.offFrames = Array.ConvertAll(offFrames.Split(','), int.Parse);
             }
@@ -63,7 +64,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 this.offFrames = [0];
             }
-            if (turnOnFrames != null)
+            if (!string.IsNullOrEmpty(turnOnFrames))
             {
                 this.turnOnFrames = Array.ConvertAll(turnOnFrames.Split(','), int.Parse);
             }
@@ -71,7 +72,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 this.turnOnFrames = [1, 2];
             }
-            if (onFrames != null)
+            if (!string.IsNullOrEmpty(onFrames))
             {
                 this.onFrames = Array.ConvertAll(onFrames.Split(','), int.Parse);
             }
