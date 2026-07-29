@@ -229,6 +229,9 @@ entities.XaphanHelper/CustomTorch.attributes.description.startFade=Radius value 
 entities.XaphanHelper/CustomTorch.attributes.description.endFade=Radius value where the light will end.
 entities.XaphanHelper/CustomTorch.attributes.description.sound=Sound event that play when the torch is activated (if Play Lit Sound is set).
 entities.XaphanHelper/CustomTorch.attributes.description.noParticles=If true, no particles will be emited when the torch is activated or deactivated.
+entities.XaphanHelper/CustomTorch.attributes.description.offFrames=List of frames indexes (separated by a comma) to play when the torch is deactivated.
+entities.XaphanHelper/CustomTorch.attributes.description.turnOnFrames=List of frames indexes (separated by a comma) to play when the torch is activating.
+entities.XaphanHelper/CustomTorch.attributes.description.onFrames=List of frames indexes (separated by a comma) to play when the torch is activated.
 
 # DroneGate
 entities.XaphanHelper/DroneGate.placements.name.DroneGate=Drone Gate

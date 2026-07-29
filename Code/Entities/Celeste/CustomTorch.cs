@@ -43,12 +43,42 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool noParticles;
 
-        public CustomTorch(Vector2 position, Vector2 offset, string color, bool playLitSound, bool startLit, string sprite, string flag, float alpha, int startFade, int endFade, string sound, bool noParticles) : base(position + offset)
+        private int[] offFrames;
+
+        private int[] turnOnFrames;
+
+        private int[] onFrames;
+
+        public CustomTorch(Vector2 position, Vector2 offset, string color, bool playLitSound, bool startLit, string sprite, string flag, float alpha, int startFade, int endFade, string sound, bool noParticles, string offFrames = null, string turnOnFrames = null, string onFrames = null) : base(position + offset)
         {
             this.playLitSound = playLitSound;
             this.startLit = startLit;
             this.flag = flag;
             this.sprite = sprite;
+            if (offFrames != null)
+            {
+                this.offFrames = Array.ConvertAll(offFrames.Split(','), int.Parse);
+            }
+            else
+            {
+                this.offFrames = [0];
+            }
+            if (turnOnFrames != null)
+            {
+                this.turnOnFrames = Array.ConvertAll(turnOnFrames.Split(','), int.Parse);
+            }
+            else
+            {
+                this.turnOnFrames = [1, 2];
+            }
+            if (onFrames != null)
+            {
+                this.onFrames = Array.ConvertAll(onFrames.Split(','), int.Parse);
+            }
+            else
+            {
+                this.onFrames = [3, 4, 5, 6, 7];
+            }
             this.alpha = alpha;
             this.noParticles = noParticles;
             if (alpha < 0)
@@ -98,9 +128,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (!string.IsNullOrEmpty(sprite))
             {
                 Add(TorchSprite = new Sprite(GFX.Game, sprite));
-                TorchSprite.AddLoop("off", "", 0.1f, 0);
-                TorchSprite.AddLoop("turnOn", "", 0.08f, 1, 2);
-                TorchSprite.AddLoop("on", "", 0.08f, 3, 4, 5, 6, 7);
+                TorchSprite.AddLoop("off", "", 0.1f, this.offFrames);
+                TorchSprite.AddLoop("turnOn", "", 0.08f, this.turnOnFrames);
+                TorchSprite.AddLoop("on", "", 0.08f, this.onFrames);
                 TorchSprite.CenterOrigin();
                 TorchSprite.Position = TorchSprite.Position + new Vector2(8, 8);
                 TorchSprite.Play("off");
@@ -112,7 +142,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         }
 
         public CustomTorch(EntityData data, Vector2 position, EntityID ID) : this(data.Position, position, data.Attr("color", "ffa500"), data.Bool("playLitSound"), data.Bool("startLit"), data.Attr("sprite"),
-            data.Attr("flag"), data.Float("alpha", 1f), data.Int("startFade", 48), data.Int("endFade", 64), data.Attr("sound", "event:/game/05_mirror_temple/torch_activate"), data.Bool("noParticles"))
+            data.Attr("flag"), data.Float("alpha", 1f), data.Int("startFade", 48), data.Int("endFade", 64), data.Attr("sound", "event:/game/05_mirror_temple/torch_activate"), data.Bool("noParticles"),
+            data.Attr("offFrames", null), data.Attr("turnOnFrames", null), data.Attr("onFrames", null))
         {
             eid = ID;
         }
