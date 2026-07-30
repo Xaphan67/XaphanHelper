@@ -168,7 +168,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 {
                     gemController.PlayerPose = "";
                 };
-                Image white = new(GFX.Game["collectables/heartgem/white00"]);
+                Image white = new(GFX.Game["objects/Xaphan/heart_bwhite"]);
                 white.CenterOrigin();
                 white.Scale = Vector2.Zero;
                 white.Color = Color.White * 0.7f;
