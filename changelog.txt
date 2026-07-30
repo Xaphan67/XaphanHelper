@@ -1,5 +1,6 @@
 Version 1.0.80 :
 - Added "Off Frames", "Turn On Frames" and "On Frames" attributes to Custom Torches
+- Fixed gems sounds when inserted in their slot being incorrect in The Secret Of Celeste Mountain
 
 Version 1.0.79 :
 - Neutral droping Bombs and Mega Bombs should now work the same way as other holdables entities

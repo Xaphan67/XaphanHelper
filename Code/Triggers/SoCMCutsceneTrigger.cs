@@ -5,6 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Triggers
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/SoCMCutsceneTrigger")]
     class SoCMCutsceneTrigger : Trigger
     {
@@ -103,6 +104,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                                         Scene.Add(new CS00_GemRoomC(player));
                                     }
                                 }
+                            }
+                            break;
+                        case "Ch0 - Gem Room D":
+                            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Gem_Room_D"))
+                            {
+                                Scene.Add(new CS00_GemRoomD(player));
                             }
                             break;
                         case "Ch1 - Start":

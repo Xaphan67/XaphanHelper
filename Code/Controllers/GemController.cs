@@ -6,68 +6,51 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Controllers
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/GemController")]
     class GemController : Entity
     {
-        public bool Ch1GemCollected()
+        public string PlayerPose = "";
+
+        public bool AllGemCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected");
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected");
         }
-
-        public bool Ch1Gem2Collected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected");
-        }
-
-        public bool Ch2GemCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected");
-        }
-
-        public bool Ch3GemCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected");
-        }
-
-        public bool Ch4GemCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected");
-        }
-
-        public bool Ch5GemCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected");
-        }
-
-        public bool EndAreaOpened;
-
-        private bool triggered;
 
         public GemController(EntityData data, Vector2 position) : base(data.Position + position)
         {
 
         }
 
-        public override void Update()
+        public static void Load()
         {
-            base.Update();
-            if (SceneAs<Level>().Session.GetFlag("CS_Ch0_Gem_Room_Activeate_Gems") && !triggered)
+            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
+        }
+
+        public static void Unload()
+        {
+            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+        }
+
+        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
+        {
+            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
-                triggered = true;
-                Add(new Coroutine(ActivateGems()));
-            }
-            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_End_Area_Open"))
-            {
-                SceneAs<Level>().Session.SetFlag("Open_End_Area", true);
-            }
-            else if (Ch1GemCollected() && Ch1Gem2Collected() && Ch2GemCollected() && Ch3GemCollected() && Ch4GemCollected() && Ch5GemCollected())
-            {
-                if (!EndAreaOpened)
+                foreach (GemController controller in level.Tracker.GetEntities<GemController>())
                 {
-                    EndAreaOpened = true;
-                    Add(new Coroutine(OpenEndArea()));
+                    if (!string.IsNullOrEmpty(controller.PlayerPose))
+                    {
+                        id = controller.PlayerPose;
+                        break;
+                    }
                 }
             }
+            orig(self, id, restart, randomizeFrame);
         }
 
         public IEnumerator ActivateGems()
@@ -85,14 +68,19 @@ namespace Celeste.Mod.XaphanHelper.Controllers
 
         public IEnumerator OpenEndArea()
         {
-            float timer = 1.5f;
-            while (timer > 0f)
-            {
-                yield return null;
-                timer -= Engine.DeltaTime;
-            }
             SceneAs<Level>().Session.SetFlag("Open_End_Area", true);
             XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_End_Area_Open");
+            for (int i = 0; i <= 2; i ++)
+            {
+                yield return 0.1f;
+                foreach (EndBlock block in SceneAs<Level>().Tracker.GetEntities<EndBlock>())
+                {
+                    if (block.index == i)
+                    {
+                        block.Break();
+                    }
+                }
+            }
         }
     }
 }

@@ -821,6 +821,7 @@ namespace Celeste.Mod.XaphanHelper
             Drone.Load();
             LevelShake.Load();
             Waterfall.Load();
+            GemController.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -948,6 +949,7 @@ namespace Celeste.Mod.XaphanHelper
             Drone.Unload();
             LevelShake.Unload();
             Waterfall.Unload();
+            GemController.Unload();
         }
 
         private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)
@@ -2469,6 +2471,8 @@ namespace Celeste.Mod.XaphanHelper
 
             // Give specified upgrades
 
+            string prefix = level.Session.Area.LevelSet;
+
             if (hasStartingUpgrades || upgradesAreTemporary)
             {
                 if (setPowerGrip || level.Session.GetFlag("Upgrade_PowerGrip"))
@@ -2555,7 +2559,10 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     ModSettings.DashBoots = true;
                     level.Session.SetFlag("Upgrade_DashBoots", true);
-                    //level.Session.Inventory = new PlayerInventory(2);
+                    if (ModSaveData.SavedFlags.Contains(prefix + "_Double_Dash_Unlocked") || level.Session.GetFlag("Double_Dash_Unlocked"))
+                    {
+                        level.Session.Inventory = new PlayerInventory(2);
+                    }
                 }
                 if (setSpaceJump || level.Session.GetFlag("Upgrade_SpaceJump"))
                 {
@@ -2675,7 +2682,10 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         ModSettings.DashBoots = true;
                         level.Session.SetFlag("Upgrade_DashBoots", true);
-                        //level.Session.Inventory = new PlayerInventory(2);
+                        if (ModSaveData.SavedFlags.Contains(prefix + "_Double_Dash_Unlocked") || level.Session.GetFlag("Double_Dash_Unlocked"))
+                        {
+                            level.Session.Inventory = new PlayerInventory(2);
+                        }
                     }
                     if (HoverJetCollected(level))
                     {

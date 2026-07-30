@@ -16,9 +16,20 @@ namespace Celeste.Mod.XaphanHelper.NPCs
         public bool playerHasCollectedOneGem()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected") ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected") ||
                 XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected") ||
                 XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected") ||
                 XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected") ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected");
+        }
+
+        public bool AllGemCollected()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected") &&
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected") &&
                 XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected");
         }
 
@@ -38,9 +49,9 @@ namespace Celeste.Mod.XaphanHelper.NPCs
             }
         }
 
-        public override void Added(Scene scene)
+        public override void Awake(Scene scene)
         {
-            base.Added(scene);
+            base.Awake(scene);
             if (mode == "start" && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
             {
                 RemoveSelf();
@@ -49,9 +60,25 @@ namespace Celeste.Mod.XaphanHelper.NPCs
             {
                 RemoveSelf();
             }
-            else if (mode == "gemRoomB" && !playerHasCollectedOneGem())
+            else if (mode == "gemRoomB" && (!playerHasCollectedOneGem() || AllGemCollected()))
             {
                 RemoveSelf();
+            }
+            else if (mode == "gemRoomC")
+            {
+                if (!AllGemCollected() || XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_End_Area_Open"))
+                {
+                    RemoveSelf();
+                }
+                else
+                {
+                    Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                    if (player != null && player.X > X)
+                    {
+                        X -= 104f;
+                        Sprite.Scale.X = 1f;
+                    }
+                }
             }
         }
 
