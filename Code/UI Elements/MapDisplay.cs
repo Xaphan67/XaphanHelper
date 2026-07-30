@@ -2773,6 +2773,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 XaphanModule.ModSaveData.VisitedRooms.Remove(room);
             }
+            if (!XaphanModule.ModSaveData.ProgressMode.ContainsKey(Prefix))
+            {
+                XaphanModule.ModSaveData.ProgressMode.Add(Prefix, 1);
+            }
             if (!HideIndicator)
             {
                 if (mode == "map" || mode == "worldmap")
