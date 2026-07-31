@@ -265,7 +265,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_g" + (playerRight ? "_flip" : ""));
             }
             yield return 1f;
-            Scene.Add(new TeleportCutscene(player, "A-15", new Vector2(0, 0), 0, 0, true, 0, "Fade"));
+            Scene.Add(new TeleportCutscene(player, "A-15", new Vector2(0, 0), 0, 0, true, 0, "Fade", 1.35f));
         }
     }
 }

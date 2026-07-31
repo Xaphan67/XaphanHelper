@@ -112,6 +112,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                                 Scene.Add(new CS00_GemRoomD(player));
                             }
                             break;
+                        case "Ch0 - Fall":
+                            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Fall"))
+                            {
+                                Scene.Add(new CS00_Fall(player));
+                            }
+                            break;
                         case "Ch1 - Start":
                             if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch1_Start"))
                             {

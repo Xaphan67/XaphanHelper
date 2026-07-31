@@ -34,7 +34,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             yield return gemController.OpenEndArea();    
             yield return 1f;
-            Scene.Add(new TeleportCutscene(player, "A-15", new Vector2(0, 0), 0, 0, true, 0, "Fade"));
+            Scene.Add(new TeleportCutscene(player, "A-15", new Vector2(0, 0), 0, 0, true, 0, "Fade", 1.35f));
         }
     }
 }
