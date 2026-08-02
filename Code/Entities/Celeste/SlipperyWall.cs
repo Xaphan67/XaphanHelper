@@ -14,7 +14,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private new bool Left;
 
-        private MTexture[] texture = new MTexture[4];
+        private MTexture[,] texture = new MTexture[2,4];
 
         private int Variation;
 
@@ -45,7 +45,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             staticMover.OnEnable = OnEnable;
             Add(staticMover);
             Add(new PowerGripBlocker(edge: false));
-            Variation = Calc.Random.Next(0, 4);
+            Variation = Calc.Random.Next(0, 3);
             Depth = -10999;
         }
 
@@ -99,10 +99,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Added(scene);
             MTexture mtexture = GFX.Game["objects/XaphanHelper/SlipperyWall/moss"];
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 2; i++)
             {
-                texture[i] = mtexture.GetSubtexture(new Rectangle(0, i * 8, 8, 8));
+                for (int j = 0; j < 4; j++)
+                {
+                    texture[i, j] = mtexture.GetSubtexture(new Rectangle(i * 8, j * 8, 8, 8));
+                }
             }
+            spriteOffset = new Vector2(Left ? 4f : -4f, 0);
         }
 
         public override void Update()
@@ -121,16 +125,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Render()
         {
             base.Render();
-            for (int i = 0; i < (Height - 4) / 8f; i++)
+            if (Height <= 12)
             {
-                int remainder;
-                Math.DivRem((int)Position.Y + i, 4, out remainder);
-                int result = remainder + Variation;
-                if (result > 3)
+                texture[0, 2].Draw(Position + Vector2.UnitX * (!Left ? 8 : 0) + spriteOffset, Vector2.Zero, Color.White, new Vector2(!Left ? -1 : 1, 1));
+            }
+            else
+            {
+                texture[0, 0].Draw(Position + Vector2.UnitX * (!Left ? 8 : 0) + spriteOffset, Vector2.Zero, Color.White, new Vector2(!Left ? -1 : 1, 1));
+                for (int i = 1; i < (Height - 4) / 8f - 1f; i++)
                 {
-                    result -= 4;
+                    int remainder;
+                    Math.DivRem((int)Position.Y + i, 4, out remainder);
+                    int result = remainder + Variation;
+                    if (result > 2)
+                    {
+                        result -= 3;
+                    }
+                    texture[1, result].Draw(Position + Vector2.UnitY * i * 8 + Vector2.UnitX * (!Left ? 8 : 0) + spriteOffset, Vector2.Zero, Color.White, new Vector2(!Left ? -1 : 1, 1));
                 }
-                texture[result].Draw(Position + Vector2.UnitY * i * 8 + Vector2.UnitX * (!Left ? 8 : 0) + spriteOffset, Vector2.Zero, Color.White, new Vector2(!Left ? -1 : 1, 1));
+                texture[0, 1].Draw(Position + Vector2.UnitY * (Height - 12) + Vector2.UnitX * (!Left ? 8 : 0) + spriteOffset, Vector2.Zero, Color.White, new Vector2(!Left ? -1 : 1, 1));
             }
         }
 
