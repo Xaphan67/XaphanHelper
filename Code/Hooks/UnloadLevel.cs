@@ -18,9 +18,14 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         private static void onLevelUnloadLevel(On.Celeste.Level.orig_UnloadLevel orig, Level self)
         {
             Player player = self.Tracker.GetEntity<Player>();
-            if (self.Session.Area.LevelSet != "Celeste" && (player == null || player.Dead))
+            Drone drone = null;
+            if (XaphanModule.PlayerIsControllingRemoteDrone())
             {
-                if ((self.Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.Tracker.GetEntities<Detonator>().Count > 0 || self.Tracker.GetEntities<BombSwitch>().Count > 0 || self.Tracker.GetEntity<LightManager>() != null) && !self.Session.GrabbedGolden)
+                drone = self.Tracker.GetEntity<Drone>();
+            }
+            if (self.Session.Area.LevelSet != "Celeste" && (player == null || player.Dead) || (drone != null && drone.dead))
+            {
+                if ((self.Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.Tracker.GetEntities<Detonator>().Count > 0 || self.Tracker.GetEntities<BombSwitch>().Count > 0 || self.Tracker.GetEntities<WaterWheel>().Count > 0 || self.Tracker.GetEntity<LightManager>() != null) && !self.Session.GrabbedGolden)
                 {
                     int chapterIndex = self.Session.Area.ChapterIndex;
                     foreach (FlagDashSwitch flagSwitch in self.Tracker.GetEntities<FlagDashSwitch>())
@@ -46,6 +51,14 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         if (!bombSwitch.FlagRegiseredInSaveData() && bombSwitch.startSpawnPoint == self.Session.RespawnPoint)
                         {
                             self.Session.SetFlag(bombSwitch.flag, bombSwitch.flagState);
+                        }
+                    }
+                    foreach (WaterWheel waterWheel in self.Tracker.GetEntities<WaterWheel>())
+                    {
+                        if (waterWheel.resetOnDeath && !string.IsNullOrEmpty(waterWheel.noResetOnDeathFlag) && !self.Session.GetFlag(waterWheel.noResetOnDeathFlag))
+                        {
+                            Logger.Log(LogLevel.Info, "XH", "Unset flag " + waterWheel.flag);
+                            self.Session.SetFlag(waterWheel.flag, false);
                         }
                     }
                     foreach (LightManager manager in self.Tracker.GetEntities<LightManager>())

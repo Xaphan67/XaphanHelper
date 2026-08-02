@@ -23,10 +23,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float acceleration;
 
+        public bool resetOnDeath;
+
+        public string noResetOnDeathFlag;
+
         public WaterWheel(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;
             flag = data.Attr("flag");
+            resetOnDeath = data.Bool("resetOnDeath");
+            noResetOnDeathFlag = data.Attr("noResetOnDeathFlag");
             directory = data.Attr("directory", "objects/XaphanHelper/WaterWheel");
             if (string.IsNullOrEmpty(directory))
             {
