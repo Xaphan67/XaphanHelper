@@ -3301,7 +3301,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public bool CheckSoCMVer()
         {
-            if (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 5))
+            if (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 1, 0))
             {
                 return true;
             }

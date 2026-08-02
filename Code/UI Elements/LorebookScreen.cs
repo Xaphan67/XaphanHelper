@@ -235,8 +235,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     currentTotalLambertLogs++;
                 }
             }
-            int maxCategories = (currentTotalLambertLogs > 0 && XaphanModule.SoCMVersion >= new Version(3, 0, 5)) ? 3 : 2;
-            Scene.Add(lorebookDisplay = new LorebookDisplay(level, currentTotalLambertLogs > 0 && XaphanModule.SoCMVersion >= new Version(3, 0, 5)));
+            int maxCategories = (currentTotalLambertLogs > 0 && XaphanModule.SoCMVersion >= new Version(3, 1, 0)) ? 3 : 2;
+            Scene.Add(lorebookDisplay = new LorebookDisplay(level, currentTotalLambertLogs > 0 && XaphanModule.SoCMVersion >= new Version(3, 1, 0)));
             yield return lorebookDisplay.GenerateLorebookDisplay();
             while (switchTimer > 0)
             {

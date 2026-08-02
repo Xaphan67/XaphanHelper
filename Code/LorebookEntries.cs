@@ -111,6 +111,17 @@ namespace Celeste.Mod.XaphanHelper
                 subCategoryID: "locc4"
             ));
 
+            if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
+            {
+                list.Add(new LorebookData(
+                    entryID: "loc3-2",
+                    categoryID: 0,
+                    picture: "lorebook/Xaphan/Locations/loc3-2",
+                    flag: "LorebookEntry_loc3-2",
+                    subCategoryID: "locc4"
+                ));
+            }
+
             list.Add(new LorebookData(
                 entryID: "locc5",
                 categoryID: 0,
@@ -236,6 +247,24 @@ namespace Celeste.Mod.XaphanHelper
                 flag: "Upgrade_SpaceJump",
                 subCategoryID: "eqpc2"
             ));
+
+            if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
+            {
+                list.Add(new LorebookData(
+                    entryID: "eqpc3",
+                    categoryID: 1,
+                    picture: null,
+                    flag: null
+                ));
+
+                list.Add(new LorebookData(
+                    entryID: "jac1",
+                    categoryID: 1,
+                    picture: "lorebook/Xaphan/Equipment/jac1",
+                    flag: "Upgrade_GravityJacket",
+                    subCategoryID: "eqpc3"
+                ));
+            }
 
             list.Add(new LorebookData(
                 entryID: "eqpc4",
@@ -440,7 +469,7 @@ namespace Celeste.Mod.XaphanHelper
                 subCategoryID: "advc3"
             ));
 
-            if (XaphanModule.SoCMVersion >= new Version(3, 0, 5))
+            if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
             {
                 // Logs
 
