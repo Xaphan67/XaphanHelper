@@ -178,6 +178,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                                 Scene.Add(new CS03_Start(player));
                             }
                             break;
+                        case "Ch3 - Bog Start":
+                            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch3_Bog_Start"))
+                            {
+                                Scene.Add(new CS03_Bog_Start(player));
+                            }
+                            break;
                         case "Ch4 - Start":
                             if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Start"))
                             {
