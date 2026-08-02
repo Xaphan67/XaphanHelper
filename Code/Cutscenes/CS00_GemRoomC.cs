@@ -210,7 +210,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 (Scene as Level).Flash(Color.White);
                 gemController.Remove(white);
                 gemController.Remove(glow);
-                level.Session.SetFlag("Ch-1_All_Gems_Active");
+                level.Session.SetFlag("Ch0_All_Gems_Active");
                 XaphanModule.ModSaveData.SavedFlags.Add("All_Gems_Active");
                 if (!XaphanModule.ModSettings.AutoSkipCutscenes)
                 {
