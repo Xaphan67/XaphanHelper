@@ -48,7 +48,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
-            yield return player.DummyWalkTo(Level.Bounds.Left + 44f, false, 2f);
+            yield return player.DummyWalkTo(Level.Bounds.Left + 44f, false, 2.5f);
             while (!player.OnSafeGround)
             {
                 yield return null;
