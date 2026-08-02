@@ -95,6 +95,21 @@ namespace Celeste.Mod.XaphanHelper
                     medals: 5,
                     hidden: true
                 ));
+
+                if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
+                {
+                    list.Add(new AchievementData(
+                        achievementID: "upg9",
+                        categoryID: 0,
+                        icon: "achievements/Xaphan/Upgrade9",
+                        flag: "Upgrade_GravityJacket",
+                        currentValue: session.GetFlag("Upgrade_GravityJacket") ? 1 : 0,
+                        maxValue: 1,
+                        medals: 5,
+                        hidden: true
+                    ));
+                }
+
                 list.Add(new AchievementData(
                     achievementID: "upgOpt1",
                     categoryID: 0,
@@ -630,6 +645,7 @@ namespace Celeste.Mod.XaphanHelper
                 maxValue: 1,
                 medals: 5
             ));
+
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
                 list.Add(new AchievementData(
@@ -642,6 +658,7 @@ namespace Celeste.Mod.XaphanHelper
                     medals: 5
                 ));
             }
+
             list.Add(new AchievementData(
                 achievementID: "map2-0",
                 categoryID: 2,
@@ -672,6 +689,7 @@ namespace Celeste.Mod.XaphanHelper
                 medals: 10,
                 reqID: "map2-2s"
             ));
+
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
                 list.Add(new AchievementData(
@@ -685,6 +703,7 @@ namespace Celeste.Mod.XaphanHelper
                     reqID: "map2-3s"
                 ));
             }
+
             list.Add(new AchievementData(
                 achievementID: "strwb2-0",
                 categoryID: 2,
@@ -715,6 +734,7 @@ namespace Celeste.Mod.XaphanHelper
                 medals: 10,
                 reqID: "map2-2s"
             ));
+
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
                 list.Add(new AchievementData(
@@ -728,6 +748,7 @@ namespace Celeste.Mod.XaphanHelper
                     reqID: "map2-3s"
                 ));
             }
+
             list.Add(new AchievementData(
                 achievementID: "map2",
                 categoryID: 2,
@@ -800,6 +821,20 @@ namespace Celeste.Mod.XaphanHelper
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
                 // Area 3
+                if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
+                {
+                    list.Add(new AchievementData(
+                        achievementID: "gem3-1",
+                        categoryID: 3,
+                        icon: "achievements/Xaphan/Gem3",
+                        flag: "XaphanHelper_StatFlag_GemCh3",
+                        currentValue: session.GetFlag("XaphanHelper_StatFlag_GemCh3") ? 1 : 0,
+                        maxValue: 1,
+                        medals: 5,
+                        hidden: true
+                    ));
+                }
+
                 list.Add(new AchievementData(
                     achievementID: "map3-0s",
                     categoryID: 3,
@@ -1007,7 +1042,6 @@ namespace Celeste.Mod.XaphanHelper
                     maxValue: StatsFlags.TotalStrawberries[4],
                     medals: 15
                 ));
-
                 list.Add(new AchievementData(
                     achievementID: "boss4-1",
                     categoryID: 4,
