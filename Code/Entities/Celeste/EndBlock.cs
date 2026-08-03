@@ -35,6 +35,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 sprite.Play("idle");
                 Collidable = true;
             }
+            else
+            {
+                foreach (BreakBlock breakblock in SceneAs<Level>().Entities.FindAll<BreakBlock>())
+                {
+                    if (breakblock.index == index)
+                    {
+                        breakblock.RemoveSelf();
+                    }
+                }
+                RemoveSelf();
+            }
         }
 
         public void Break()
