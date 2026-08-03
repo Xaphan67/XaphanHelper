@@ -173,7 +173,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -100;
         }
 
-        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "Max Dashes"), data.Bool("oneUse"), data.Float("respawnTime"), data.Int("airSections", 5))
+        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "One Dash"), data.Bool("oneUse"), data.Float("respawnTime"), data.Int("airSections", 5))
         {
 
         }
@@ -294,7 +294,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     airRegen = manager.currentMaxAir;
                 }
             }
-            if (((type.Contains("Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) || (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null || (type.Contains("Missiles") && drone != null) || (type.Contains("Oxygen") && manager != null && manager.air < manager.currentMaxAir && manager.air != -1) || (!type.Contains("Oxygen") && player.Stamina <= 20))
+            if ((((type == "One Dash" || type == "Two Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) || (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null || (type.Contains("Missiles") && drone != null) || (type.Contains("Oxygen") && manager != null && manager.air < manager.currentMaxAir && manager.air != -1) || (!type.Contains("Oxygen") && player.Stamina <= 20))
             {
                 Audio.Play(type == "Two Dashes" ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
@@ -319,15 +319,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             float num = player.Speed.Angle();
             level.ParticlesFG.Emit(p_shatter, 5, Position, Vector2.One * 4f, num - (float)Math.PI / 2f);
             level.ParticlesFG.Emit(p_shatter, 5, Position, Vector2.One * 4f, num + (float)Math.PI / 2f);
-            if (type.Contains("Dashes"))
+            if (type == "One Dash" || type == "Two Dashes")
             {
-                if (type == "Two Dashes")
+                if (type == "One Dash")
                 {
-                    player.Dashes = 2;
+
+                    player.Dashes+= 1;
                 }
                 else
                 {
-                    player.Dashes = player.MaxDashes;
+                    player.Dashes = 2;
                 }
                 SpaceJump.SetJumpBuffer(XaphanModule.ModSettings.SpaceJump - 1);
                 player.RefillStamina();
