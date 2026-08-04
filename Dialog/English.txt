@@ -293,8 +293,8 @@
 	XaphanHelper_UI_Equipment_Desc= Informations on equipment obtained
 	XaphanHelper_UI_Adventure= Adventure
 	XaphanHelper_UI_Adventure_Desc= Informations on story-related events and items
-	XaphanHelper_UI_Logs= Logs
-	XaphanHelper_UI_Logs_Desc= Previous logs watched
+	XaphanHelper_UI_Lore= Lore
+	XaphanHelper_UI_Lore_Desc= Lore elements discovered
 	XaphanHelper_UI_Discovered= Discovered
 	XaphanHelper_UI_Entries= ENTRIES
 	XaphanHelper_UI_Informations= INFORMATIONS

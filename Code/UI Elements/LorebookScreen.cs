@@ -228,15 +228,24 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Player player = Scene.Tracker.GetEntity<Player>();
             Scene.Add(BigTitle = new BigTitle(Title, new Vector2(960, 80), true));
             int currentTotalLambertLogs = 0;
+            int currentTotalNoteLogs = 0;
             foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
             {
-                if (flag.Contains("Xaphan/0") && (flag.Contains("V-Lore-00") || flag.Contains("V-Lore-01") || flag.Contains("V-Lore-02") || flag.Contains("W-Lore-00") || flag.Contains("W-Lore-01") || flag.Contains("X-Lore-00") || flag.Contains("Y-Lore-00")))
+                if (flag.Contains("Xaphan/0"))
                 {
-                    currentTotalLambertLogs++;
+                    if (flag.Contains("V-Lore-00") || flag.Contains("V-Lore-01") || flag.Contains("V-Lore-02") || flag.Contains("W-Lore-00") || flag.Contains("W-Lore-01") || flag.Contains("X-Lore-00") || flag.Contains("Y-Lore-00"))
+                    {
+                        currentTotalLambertLogs++;
+                    }
+                    else if (flag.Contains("A-15"))
+                    {
+                        currentTotalNoteLogs++;
+                    }
                 }
             }
-            int maxCategories = (currentTotalLambertLogs > 0 && XaphanModule.SoCMVersion >= new Version(3, 1, 0)) ? 3 : 2;
-            Scene.Add(lorebookDisplay = new LorebookDisplay(level, currentTotalLambertLogs > 0 && XaphanModule.SoCMVersion >= new Version(3, 1, 0)));
+
+            int maxCategories = ((currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)) ? 3 : 2;
+            Scene.Add(lorebookDisplay = new LorebookDisplay(level, (currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)));
             yield return lorebookDisplay.GenerateLorebookDisplay();
             while (switchTimer > 0)
             {

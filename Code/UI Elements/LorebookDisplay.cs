@@ -136,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     Draw.Rect(Position, width, height, Color.DarkGreen * 0.7f);
                 }
                 float paddingLeft = 0f;
-                if (readLogs < discoveredLogs && !Locked)
+                if (readLogs < discoveredLogs && !Locked && ID != 3)
                 {
                     float nameWidth = ActiveFont.Measure(Name).X;
                     paddingLeft = Sprite.Width;
@@ -219,7 +219,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (LorebookScreen.entrySelection == ID)
                 {
                     Selected = true;
-                    if (!readRoutine.Active && !XaphanModule.ModSaveData.LorebookEntriesRead.Contains(entryID) && !Name.Contains("?"))
+                    if (!readRoutine.Active && !XaphanModule.ModSaveData.LorebookEntriesRead.Contains(entryID) && !Name.Contains("?") && categoryID != 3)
                     {
                         Add(readRoutine = new Coroutine(MarkAsReaded()));
                     }
@@ -281,7 +281,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         Draw.Rect(Position, width, height, Color.Yellow * selectedAlpha);
                     }
                     float paddingLeft = 0f;
-                    if ((XaphanModule.ModSaveData.LorebookEntries.Contains(entryID) || SceneAs<Level>().Session.GetFlag(Flag)) && !XaphanModule.ModSaveData.LorebookEntriesRead.Contains(entryID))
+                    if ((XaphanModule.ModSaveData.LorebookEntries.Contains(entryID) || SceneAs<Level>().Session.GetFlag(Flag)) && !XaphanModule.ModSaveData.LorebookEntriesRead.Contains(entryID) && categoryID != 3)
                     {
                         Sprite.RenderPosition = Position + Vector2.UnitX * 12f;
                         Sprite.Render();
@@ -485,12 +485,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private EntryInfo Info;
 
-        private bool ShowLogsTab;
+        private bool ShowLoreTab;
 
-        public LorebookDisplay(Level level, bool showLogsTab)
+        public LorebookDisplay(Level level, bool ShowLoreTab)
         {
             this.level = level;
-            this.ShowLogsTab = showLogsTab;
+            this.ShowLoreTab = ShowLoreTab;
             Tag = Tags.HUD;
             Depth = -10001;
         }
@@ -504,13 +504,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public IEnumerator GenerateLorebookDisplay()
         {
-            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLogsTab ? 154f : 355f, 245f), 0, "XaphanHelper_UI_Locations", LorebookEntriesData.FindAll(entry => entry.CategoryID == 0), "XaphanHelper_UI_Locations_Desc"));
-            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLogsTab ? 558f : 760f, 245f), 1, "XaphanHelper_UI_Equipment", LorebookEntriesData.FindAll(entry => entry.CategoryID == 1), "XaphanHelper_UI_Equipment_Desc"));
-            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLogsTab ? 962f : 1165f, 245f), 2, "XaphanHelper_UI_Adventure", LorebookEntriesData.FindAll(entry => entry.CategoryID == 2), "XaphanHelper_UI_Adventure_Desc"));
+            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 154f : 355f, 245f), 0, "XaphanHelper_UI_Locations", LorebookEntriesData.FindAll(entry => entry.CategoryID == 0), "XaphanHelper_UI_Locations_Desc"));
+            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 558f : 760f, 245f), 1, "XaphanHelper_UI_Equipment", LorebookEntriesData.FindAll(entry => entry.CategoryID == 1), "XaphanHelper_UI_Equipment_Desc"));
+            Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 962f : 1165f, 245f), 2, "XaphanHelper_UI_Adventure", LorebookEntriesData.FindAll(entry => entry.CategoryID == 2), "XaphanHelper_UI_Adventure_Desc"));
             
-            if (ShowLogsTab)
+            if (ShowLoreTab)
             {
-                Scene.Add(new CategoryDisplay(level, new Vector2(1366f, 245f), 3, "XaphanHelper_UI_Logs", LorebookEntriesData.FindAll(entry => entry.CategoryID == 3), "XaphanHelper_UI_Logs_Desc"));
+                Scene.Add(new CategoryDisplay(level, new Vector2(1366f, 245f), 3, "XaphanHelper_UI_Lore", LorebookEntriesData.FindAll(entry => entry.CategoryID == 3), "XaphanHelper_UI_Lore_Desc"));
             }
 
             GenerateEntryList(0);
@@ -628,7 +628,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             string SectionName;
             Vector2 SectionPosition;
             int SectionMaxItems;
-            float AdjustWidth = ShowLogsTab ? 805f : 605f;
+            float AdjustWidth = ShowLoreTab ? 805f : 605f;
 
             SectionName = Dialog.Clean("XaphanHelper_UI_Categories");
             SectionPosition = new Vector2(960f, 225f);
