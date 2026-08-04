@@ -196,7 +196,7 @@ namespace Celeste.Mod.XaphanHelper
             int maxTotalMissiles = 0;
             int maxTotalSuperMissiles = 0;
 
-            for (int i = 1; i <= (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? 5 : 2); i++)
+            for (int i = (XaphanModule.SoCMVersion >= new Version(3, 1, 0) ? 0 : 1); i <= (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? 5 : 2); i++)
             {
                 currentTotalStrawberries += (StatsFlags.CurrentStrawberries[i] - (session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
                 currentTotalEnergyTanks += StatsFlags.CurrentEnergyTanks[i];

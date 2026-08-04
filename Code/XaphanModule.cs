@@ -1809,6 +1809,17 @@ namespace Celeste.Mod.XaphanHelper
                         }
                         row.Add(new OuiJournalPage.TextCell(text, TextJustify, 0.5f, TextColor));
                     }
+                    // Add strawberries count for SoCM prologue only
+                    else if (SoCMVersion >= new Version(3, 1, 0) && areaData.Name == "Xaphan/0/0-Prologue")
+                    {
+                        row.Add(null).Add(null);
+                        string text = "0";
+                        if (Visited && (areaData.Mode[0].TotalStrawberries > 0 || areaStats.TotalStrawberries > 0))
+                        {
+                            text = $"{areaStats.TotalStrawberries.ToString()}/{areaData.Mode[0].TotalStrawberries}";
+                        }
+                        row.Add(new OuiJournalPage.TextCell(text, TextJustify, 0.5f, TextColor));
+                    }
                     else
                     {
                         row.Add(null).Add(null).Add(null);
