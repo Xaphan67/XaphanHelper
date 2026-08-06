@@ -778,7 +778,6 @@ namespace Celeste.Mod.XaphanHelper
             CountdownDisplay.Load();
             Liquid.Load();
             MagneticCeiling.Load();
-            //Drone.Load();
             FlagDashSwitch.Load();
             TimedDashSwitch.Load();
             BagDisplay.Load();
@@ -822,6 +821,7 @@ namespace Celeste.Mod.XaphanHelper
             LevelShake.Load();
             Waterfall.Load();
             GemController.Load();
+            Stele.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -906,7 +906,6 @@ namespace Celeste.Mod.XaphanHelper
             CountdownDisplay.Unload();
             Liquid.Unload();
             MagneticCeiling.Unload();
-            //Drone.Unload();
             FlagDashSwitch.Unload();
             TimedDashSwitch.Unload();
             BagDisplay.Unload();
@@ -950,6 +949,7 @@ namespace Celeste.Mod.XaphanHelper
             LevelShake.Unload();
             Waterfall.Unload();
             GemController.Unload();
+            Stele.Unload();
         }
 
         private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)
