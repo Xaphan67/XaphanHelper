@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
 using static Celeste.Mod.XaphanHelper.UI_Elements.StatusDisplay;
@@ -44,7 +47,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int SelectedRow;
 
-        public int SelectedSide;
+        private List<UpgradeDisplay> avaiableDisplays = new List<UpgradeDisplay>();
 
         public StatusScreen(Level level, bool fromMap)
         {
@@ -55,7 +58,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Add(mapWiggle = Wiggler.Create(0.4f, 4f));
             Add(closeWiggle = Wiggler.Create(0.4f, 4f));
             Add(actionWiggle = Wiggler.Create(0.4f, 4f));
-            SelectedSide = -1;
             Depth = -10001;
         }
 
@@ -259,43 +261,34 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Scene.Add(BigTitle = new BigTitle(Title, new Vector2(960, 80), true));
             Scene.Add(statusDisplay = new StatusDisplay(level, XaphanModule.useIngameMap));
             yield return statusDisplay.GennerateUpgradesDisplay();
-            int TopLeftDisplayRow = 11;
-            int TopRightDisplayRow = 11;
-            int BottomLeftDisplayRow = 0;
-            int BottomRightDisplayRow = 0;
-            foreach (UpgradeDisplay display in statusDisplay.LeftDisplays)
+            if (statusDisplay.Displays.Count > 0)
             {
-                if (display.row < TopLeftDisplayRow)
+                int firstRow = 9;
+                int firstCol = 9;
+                foreach (UpgradeDisplay display in statusDisplay.Displays)
                 {
-                    TopLeftDisplayRow = display.row;
+                    if (display.row < firstRow)
+                    {
+                        firstRow = display.row;
+                        if (firstRow == 0)
+                        {
+                            break;
+                        }
+                    }
                 }
-                if (display.row > BottomLeftDisplayRow)
+                foreach (UpgradeDisplay display in statusDisplay.Displays)
                 {
-                    BottomLeftDisplayRow = display.row;
+                    if (display.row == firstRow && display.col < firstCol)
+                    {
+                        firstCol = display.col;
+                        if (firstCol == 0)
+                        {
+                            break;
+                        }   
+                    }
                 }
-            }
-            foreach (UpgradeDisplay display in statusDisplay.RightDisplays)
-            {
-                if (display.row < TopRightDisplayRow)
-                {
-                    TopRightDisplayRow = display.row;
-                }
-                if (display.row > BottomRightDisplayRow)
-                {
-                    BottomRightDisplayRow = display.row;
-                }
-            }
-            if (statusDisplay.LeftDisplays.Count > 0)
-            {
-                SelectedSide = 0;
-                SelectedCol = statusDisplay.LeftDisplays[0].col;
-                SelectedRow = statusDisplay.LeftDisplays[0].row;
-            }
-            else if (statusDisplay.RightDisplays.Count > 0)
-            {
-                SelectedSide = 1;
-                SelectedCol = statusDisplay.RightDisplays[0].col;
-                SelectedRow = statusDisplay.RightDisplays[0].row;
+                SelectedRow = firstRow;
+                SelectedCol = firstCol;
             }
             while (switchTimer > 0)
             {
@@ -347,96 +340,256 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                 }
-                else if (SelectedSide != -1)
+                else
                 {
                     if (Input.MenuLeft.Pressed)
                     {
-                        int firstDisplayCol = 9;
-                        foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+                        if (SelectedCol >= 1)
                         {
-                            if (display.row == SelectedRow && display.col < firstDisplayCol)
+                            avaiableDisplays.Clear();
+                            foreach (UpgradeDisplay display in statusDisplay.Displays)
                             {
-                                firstDisplayCol = display.col;
+                                if (display.row == SelectedRow && display.col < SelectedCol)
+                                {
+                                    avaiableDisplays.Add(display);
+                                }
                             }
-                        }
-                        if (SelectedCol > firstDisplayCol)
-                        {
-                            SelectedCol--;
-                        }
-                        else if (SelectedCol == firstDisplayCol && SelectedSide == 1 && statusDisplay.LeftDisplays.Count > 0)
-                        {
-                            SelectedSide = 0;
-                            if (SelectedRow <= TopLeftDisplayRow)
+                            if (avaiableDisplays.Count > 0)
                             {
-                                SelectedRow = TopLeftDisplayRow;
-                            }
-                            else if (SelectedRow >= BottomLeftDisplayRow)
-                            {
-                                SelectedRow = BottomLeftDisplayRow;
+                                SelectedCol = avaiableDisplays.OrderByDescending(d => d.col).FirstOrDefault().col;
                             }
                             else
                             {
-                                SelectedRow = GetRowPosition(BottomLeftDisplayRow);
+                                avaiableDisplays.Clear();
+                                int range = 1;
+                                int rowCheck = SelectedRow + range;
+                                int loops = 1;
+                                while (avaiableDisplays.Count == 0 && range <= 10)
+                                {
+                                    if (rowCheck >= 0 && rowCheck <= 9)
+                                    {
+                                        foreach (UpgradeDisplay display in statusDisplay.Displays)
+                                        {
+                                            if (display.row == rowCheck && display.col < SelectedCol)
+                                            {
+                                                avaiableDisplays.Add(display);
+                                            }
+                                        }
+                                    }
+                                    if (avaiableDisplays.Count > 0)
+                                    {
+                                        break;
+                                    }
+                                    if (loops == 1)
+                                    {
+                                        rowCheck = SelectedRow - range;
+                                        loops++;
+                                    }
+                                    else
+                                    {
+                                        range++;
+                                        rowCheck = SelectedRow + range;
+                                        loops = 1;
+                                    }
+                                }
+                                if (avaiableDisplays.Count > 0)
+                                {
+                                    UpgradeDisplay display = avaiableDisplays.OrderBy(d => Math.Abs(d.col - SelectedCol)).FirstOrDefault();
+                                    SelectedRow = display.row;
+                                    SelectedCol = display.col;
+                                }
                             }
-                            SelectedCol = GetColPosition(9);
                         }
                     }
                     if (Input.MenuRight.Pressed)
                     {
-                        int lastDisplayCol = 0;
-                        foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+                        if (SelectedCol <= 8)
                         {
-                            if (display.row == SelectedRow && display.col > lastDisplayCol)
+                            avaiableDisplays.Clear();
+                            foreach (UpgradeDisplay display in statusDisplay.Displays)
                             {
-                                lastDisplayCol = display.col;
+                                if(display.row == SelectedRow && display.col > SelectedCol)
+                                {
+                                    avaiableDisplays.Add(display);
+                                }
                             }
-                        }
-                        if (SelectedCol < lastDisplayCol)
-                        {
-                            SelectedCol++;
-                        }
-                        else if (SelectedCol == lastDisplayCol && SelectedSide == 0 && statusDisplay.RightDisplays.Count > 0)
-                        {
-                            SelectedSide = 1;
-                            if (SelectedRow <= TopRightDisplayRow)
+                            if (avaiableDisplays.Count > 0)
                             {
-                                SelectedRow = TopRightDisplayRow;
-                            }
-                            else if (SelectedRow >= BottomRightDisplayRow)
-                            {
-                                SelectedRow = BottomRightDisplayRow;
+                                SelectedCol = avaiableDisplays.OrderBy(d => d.col).FirstOrDefault().col;
                             }
                             else
                             {
-                                SelectedRow = GetRowPosition(BottomRightDisplayRow);
+                                avaiableDisplays.Clear();
+                                int range = 1;
+                                int rowCheck = SelectedRow + range;
+                                int loops = 1;
+                                while (avaiableDisplays.Count == 0 && range <= 10)
+                                {
+                                    if (rowCheck >= 0 && rowCheck <= 9)
+                                    {
+                                        foreach (UpgradeDisplay display in statusDisplay.Displays)
+                                        {
+                                            if (display.row == rowCheck && display.col > SelectedCol)
+                                            {
+                                                avaiableDisplays.Add(display);
+                                            }
+                                        }
+                                    }
+                                    if (avaiableDisplays.Count > 0)
+                                    {
+                                        break;
+                                    }
+                                    if (loops == 1)
+                                    {
+                                        rowCheck = SelectedRow - range;
+                                        loops++;
+                                    }
+                                    else
+                                    {
+                                        range++;
+                                        rowCheck = SelectedRow + range;
+                                        loops = 1;
+                                    }
+                                }
+                                if (avaiableDisplays.Count > 0)
+                                {
+                                    UpgradeDisplay display = avaiableDisplays.OrderBy(d => Math.Abs(d.col - SelectedCol)).FirstOrDefault();
+                                    SelectedRow = display.row;
+                                    SelectedCol = display.col;
+                                }
                             }
-                            SelectedCol = 0;
                         }
                     }
                     if (Input.MenuUp.Pressed)
                     {
-                        if (SelectedRow > (SelectedSide == 0 ? TopLeftDisplayRow : TopRightDisplayRow))
+                        if (SelectedRow >= 1)
                         {
-                            bool foundDisplay = false;
-                            while (SelectedRow > (SelectedSide == 0 ? TopLeftDisplayRow : TopRightDisplayRow) && !foundDisplay)
+                            avaiableDisplays.Clear();
+                            foreach (UpgradeDisplay display in statusDisplay.Displays)
                             {
-                                SelectedRow--;
-                                foundDisplay = GetDisplay();
+                                if (display.col == SelectedCol && display.row < SelectedRow)
+                                {
+                                    avaiableDisplays.Add(display);
+                                }
                             }
-                            SelectedCol = GetColPosition(SelectedCol);
+                            if (avaiableDisplays.Count > 0)
+                            {
+                                SelectedRow = avaiableDisplays.OrderByDescending(d => d.row).FirstOrDefault().row;
+                            }
+                            else
+                            {
+                                avaiableDisplays.Clear();
+                                int rowCheck = SelectedRow - 1;
+                                while (rowCheck >= 0 && avaiableDisplays.Count == 0)
+                                {
+                                    foreach (UpgradeDisplay display in statusDisplay.Displays)
+                                    {
+                                        if (SelectedCol <= 4 ? display.col > 4 : display.col < 5)
+                                        {
+                                            continue;
+                                        }
+                                        if (display.row == rowCheck)
+                                        {
+                                            avaiableDisplays.Add(display);
+                                        }
+                                    }
+                                    rowCheck--;
+                                }
+                                if (avaiableDisplays.Count > 0)
+                                {
+                                    UpgradeDisplay display = avaiableDisplays.OrderBy(d => Math.Abs(d.col - SelectedCol)).FirstOrDefault();
+                                    SelectedRow = display.row;
+                                    SelectedCol = display.col;
+                                }
+                                else
+                                {
+                                    avaiableDisplays.Clear();
+                                    rowCheck = SelectedRow - 1;
+                                    while (rowCheck >= 0 && avaiableDisplays.Count == 0)
+                                    {
+                                        foreach (UpgradeDisplay display in statusDisplay.Displays)
+                                        {
+                                            if (display.row == rowCheck)
+                                            {
+                                                avaiableDisplays.Add(display);
+                                            }
+                                        }
+                                        rowCheck--;
+                                    }
+                                    if (avaiableDisplays.Count > 0)
+                                    {
+                                        UpgradeDisplay display = avaiableDisplays.OrderBy(d => Math.Abs(d.col - SelectedCol)).FirstOrDefault();
+                                        SelectedRow = display.row;
+                                        SelectedCol = display.col;
+                                    }
+                                }
+                            }
                         }
                     }
                     if (Input.MenuDown.Pressed)
                     {
-                        if (SelectedRow < (SelectedSide == 0 ? BottomLeftDisplayRow : BottomRightDisplayRow))
+                        if (SelectedRow <= 8)
                         {
-                            bool foundDisplay = false;
-                            while (SelectedRow < (SelectedSide == 0 ? BottomLeftDisplayRow : BottomRightDisplayRow) && !foundDisplay)
+                            avaiableDisplays.Clear();
+                            foreach (UpgradeDisplay display in statusDisplay.Displays)
                             {
-                                SelectedRow++;
-                                foundDisplay = GetDisplay();
+                                if (display.col == SelectedCol && display.row > SelectedRow)
+                                {
+                                    avaiableDisplays.Add(display);
+                                }
                             }
-                            SelectedCol = GetColPosition(SelectedCol);
+                            if (avaiableDisplays.Count > 0)
+                            {
+                                SelectedRow = avaiableDisplays.OrderBy(d => d.row).FirstOrDefault().row;
+                            }
+                            else
+                            {
+                                avaiableDisplays.Clear();
+                                int rowCheck = SelectedRow + 1;
+                                while (rowCheck <= 9 && avaiableDisplays.Count == 0)
+                                {
+                                    foreach (UpgradeDisplay display in statusDisplay.Displays)
+                                    {
+                                        if (SelectedCol <= 4 ? display.col > 4 : display.col < 5)
+                                        {
+                                            continue;
+                                        }
+                                        if (display.row == rowCheck)
+                                        {
+                                            avaiableDisplays.Add(display);
+                                        }
+                                    }
+                                    rowCheck++;
+                                }
+                                if (avaiableDisplays.Count > 0)
+                                {
+                                    UpgradeDisplay display = avaiableDisplays.OrderBy(d => Math.Abs(d.col - SelectedCol)).FirstOrDefault();
+                                    SelectedRow = display.row;
+                                    SelectedCol = display.col;
+                                }
+                                else
+                                {
+                                    avaiableDisplays.Clear();
+                                    rowCheck = SelectedRow + 1;
+                                    while (rowCheck <= 9 && avaiableDisplays.Count == 0)
+                                    {
+                                        foreach (UpgradeDisplay display in statusDisplay.Displays)
+                                        {
+                                            if (display.row == rowCheck)
+                                            {
+                                                avaiableDisplays.Add(display);
+                                            }
+                                        }
+                                        rowCheck++;
+                                    }
+                                    if (avaiableDisplays.Count > 0)
+                                    {
+                                        UpgradeDisplay display = avaiableDisplays.OrderBy(d => Math.Abs(d.col - SelectedCol)).FirstOrDefault();
+                                        SelectedRow = display.row;
+                                        SelectedCol = display.col;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -462,7 +615,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private bool GetDisplay()
         {
-            foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+            foreach (UpgradeDisplay display in statusDisplay.Displays)
             {
                 if (display.row == SelectedRow)
                 {
@@ -475,7 +628,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private int GetColPosition(int current)
         {
             int Col = -1;
-            foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+            foreach (UpgradeDisplay display in statusDisplay.Displays)
             {
                 if (display.row == SelectedRow && display.col == current)
                 {
@@ -489,7 +642,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (i > 0)
                     {
-                        foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+                        foreach (UpgradeDisplay display in statusDisplay.Displays)
                         {
                             if (display.row == SelectedRow && display.col == i)
                             {
@@ -506,7 +659,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (Col == -1)
                 {
                     int firstDisplayCol = 9;
-                    foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+                    foreach (UpgradeDisplay display in statusDisplay.Displays)
                     {
                         if (display.row == SelectedRow && display.col < firstDisplayCol)
                         {
@@ -522,7 +675,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private int GetRowPosition(int BottomDisplayRow)
         {
             int Row = -1;
-            foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+            foreach (UpgradeDisplay display in statusDisplay.Displays)
             {
                 if (display.row == SelectedRow)
                 {
@@ -538,7 +691,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (i < BottomDisplayRow)
                     {
-                        foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+                        foreach (UpgradeDisplay display in statusDisplay.Displays)
                         {
                             if (display.row == SelectedRow - i && ClosestAbove > i)
                             {
@@ -551,7 +704,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (i < BottomDisplayRow)
                     {
-                        foreach (UpgradeDisplay display in (SelectedSide == 0 ? statusDisplay.LeftDisplays : statusDisplay.RightDisplays))
+                        foreach (UpgradeDisplay display in statusDisplay.Displays)
                         {
                             if (display.row == SelectedRow + i && ClosestBelow > i)
                             {
@@ -618,7 +771,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         position.X -= num / 2 + 32;
                         ButtonUI.Render(position, label2, Input.Pause, scale, 1f, mapWiggle.Value * 0.05f);
                     }
-                    if (SelectedSide != -1 && statusDisplay.SelectedDisplay != null)
+                    if (statusDisplay != null && statusDisplay.SelectedDisplay != null)
                     {
                         position.X -= num2 / 2 + 32;
                         ButtonUI.Render(position, statusDisplay.SelectedDisplay.InactiveList.Contains(level.Session.Area.LevelSet) ? label3 : label4, Input.MenuConfirm, scale, 1f, actionWiggle.Value * 0.05f);
