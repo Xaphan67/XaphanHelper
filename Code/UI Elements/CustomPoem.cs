@@ -82,6 +82,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Coroutine LoopRoutine = new();
 
+        VirtualButton ButtonA = new();
+
+        VirtualButton ButtonB = new();
+
         public CustomPoem(string inputActionA, string textA, string inputActionB = null, string textB = null, string textC = null, string poemColorA = "FFFFFF", string poemColorB = "FFFFFF", string poemColorC = "FFFFFF", string poemParticleColor = "FFFFFF", string sprite = "", float spriteSpeed = 0.08f, float spriteWait = 0f, float spriteAlpha = 1f, object controlA = null, object controlB = null, bool select = false)
         {
             if (textA != null)
@@ -189,10 +193,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else if (controlA is ButtonBinding)
                 {
-                    VirtualButton Button = new();
                     ButtonBinding ControlA = (ButtonBinding)controlA;
-                    Button.Binding = ControlA.Binding;
-                    MTexture buttonATexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
+                    ButtonA.Binding = ControlA.Binding;
+                    MTexture buttonATexture = Input.GuiButton(ButtonA, "controls/keyboard/oemquestion");
                     buttonATextureWidth = buttonATexture.Width;
                 }
                 if (controlB is VirtualButton)
@@ -202,10 +205,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else if (controlB is ButtonBinding)
                 {
-                    VirtualButton Button = new();
                     ButtonBinding ControlB = (ButtonBinding)controlB;
-                    Button.Binding = ControlB.Binding;
-                    MTexture buttonBTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
+                    ButtonB.Binding = ControlB.Binding;
+                    MTexture buttonBTexture = Input.GuiButton(ButtonB, "controls/keyboard/oemquestion");
                     buttonBTextureWidth = buttonBTexture.Width;
                 }
                 string selectString = Dialog.Clean("XaphanHelper_Select");
@@ -277,10 +279,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else if (controlA is ButtonBinding)
                 {
-                    VirtualButton Button = new();
                     ButtonBinding ControlA = (ButtonBinding)controlA;
-                    Button.Binding = ControlA.Binding;
-                    MTexture buttonATexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
+                    ButtonA.Binding = ControlA.Binding;
+                    MTexture buttonATexture = Input.GuiButton(ButtonA, "controls/keyboard/oemquestion");
                     buttonATextureWidth = buttonATexture.Width;
                     buttonATexture.DrawCentered(new Vector2(InputAPosition, vector.Y), Color.White);
                 }
@@ -292,10 +293,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 else if (controlB is ButtonBinding)
                 {
-                    VirtualButton Button = new();
                     ButtonBinding ControlB = (ButtonBinding)controlB;
-                    Button.Binding = ControlB.Binding;
-                    MTexture buttonBTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
+                    ButtonB.Binding = ControlB.Binding;
+                    MTexture buttonBTexture = Input.GuiButton(ButtonB, "controls/keyboard/oemquestion");
                     buttonATextureWidth = buttonBTexture.Width;
                     buttonBTexture.DrawCentered(new Vector2(InputBPosition, vector.Y), Color.White);
                 }
