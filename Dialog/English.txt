@@ -265,8 +265,6 @@
 	Xaphanhelper_UI_Jacket= JACKET
 	Xaphanhelper_UI_Bag= BAG
 	Xaphanhelper_UI_Misc= MISC
-	Xaphanhelper_UI_Beam= BEAM:
-	Xaphanhelper_UI_Modules= MODULES:
 	Xaphanhelper_UI_Time= TIME
 	XaphanHelper_UI_Currently_In= Currently In:
 	XaphanHelper_UI_ReturnToMap_Rooms= Returning to Map will save your progress.{n}You will restart at your current spawn point.

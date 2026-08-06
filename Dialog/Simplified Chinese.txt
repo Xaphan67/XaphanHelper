@@ -287,8 +287,6 @@
 	Xaphanhelper_UI_Jacket= 衣服
 	Xaphanhelper_UI_Bag= 背包
 	Xaphanhelper_UI_Misc= 其他
-	Xaphanhelper_UI_Beam= 光束：
-	Xaphanhelper_UI_Modules= 模块：
 	Xaphanhelper_UI_Time= 倒计时
 	XaphanHelper_UI_Currently_In= 所在地：
 	XaphanHelper_UI_ReturnToMap_Rooms= 返回地图将保存你的进度。{n}你将从当前重生点继续游戏。

@@ -1,6 +1,8 @@
 Version 1.0.80 :
 - Added "Off Frames", "Turn On Frames" and "On Frames" attributes to Custom Torches
 - Fixed gems sounds when inserted in their slot being incorrect in The Secret Of Celeste Mountain
+- Redesigned the Status screen
+- Fixed a bug heavily slowing the game when the Status screen or Upgrade Screen stayed open for a long period of time
 - Fixed a crash when opening the In-game map
 
 Version 1.0.79 :

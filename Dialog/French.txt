@@ -264,8 +264,6 @@
 	Xaphanhelper_UI_Jacket= VESTE
 	Xaphanhelper_UI_Bag= SAC
 	Xaphanhelper_UI_Misc= DIVERS
-	Xaphanhelper_UI_Beam= RAYON :
-	Xaphanhelper_UI_Modules= MODULES :
 	Xaphanhelper_UI_Time= TEMPS
 	XaphanHelper_UI_Currently_In= Actuellement dans :
 	XaphanHelper_UI_ReturnToMap_Rooms= Retourner à la carte sauvegardera ta progression.{n}Tu repartira à ton point de départ actuel.
