@@ -184,7 +184,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             yield return 1.5f;
             Audio.Play("event:/game/06_reflection/supersecret_heartappear");
-            Entity dummy = new(Position + new Vector2(0, -56f))
+            Entity dummy = new(Position + new Vector2(0, -64f))
             {
                 Depth = 1
             };
