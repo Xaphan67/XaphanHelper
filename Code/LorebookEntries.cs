@@ -358,6 +358,24 @@ namespace Celeste.Mod.XaphanHelper
                 subCategoryID: "eqpc7"
             ));
 
+            if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
+            {
+                list.Add(new LorebookData(
+                    entryID: "eqpc8",
+                    categoryID: 1,
+                    picture: null,
+                    flag: null
+                ));
+
+                list.Add(new LorebookData(
+                    entryID: "oth1",
+                    categoryID: 1,
+                    picture: "lorebook/Xaphan/Equipment/oth1",
+                    flag: "Ch0_Semantograph",
+                    subCategoryID: "eqpc8"
+                ));
+            }
+
             // Adventure
 
             list.Add(new LorebookData(
@@ -376,12 +394,23 @@ namespace Celeste.Mod.XaphanHelper
             ));
 
             list.Add(new LorebookData(
-                entryID: "poi2-1",
+                entryID: "poi0-2",
                 categoryID: 2,
-                picture: "lorebook/Xaphan/Adventure/poi2-1",
-                flag: "LorebookEntry_poi2-1",
+                picture: "lorebook/Xaphan/Adventure/poi0-2",
+                flag: "LorebookEntry_poi0-2",
                 subCategoryID: "advc1"
             ));
+
+            if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
+            {
+                list.Add(new LorebookData(
+                    entryID: "poi2-1",
+                    categoryID: 2,
+                    picture: "lorebook/Xaphan/Adventure/poi2-1",
+                    flag: "LorebookEntry_poi2-1",
+                    subCategoryID: "advc1"
+                ));
+            }
 
             list.Add(new LorebookData(
                 entryID: "poi5-1",
