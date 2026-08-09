@@ -822,6 +822,7 @@ namespace Celeste.Mod.XaphanHelper
             Waterfall.Load();
             GemController.Load();
             Stele.Load();
+            AncientText.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -950,6 +951,7 @@ namespace Celeste.Mod.XaphanHelper
             Waterfall.Unload();
             GemController.Unload();
             Stele.Unload();
+            AncientText.Unload();
         }
 
         private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)

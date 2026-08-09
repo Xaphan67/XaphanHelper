@@ -32,16 +32,35 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Color color;
 
-        public CustomAbsorbOrb(Vector2 position, Entity into = null, Vector2? absorbTarget = null, string color = null)
+        private bool startAbsorb;
+
+        private bool fade;
+
+        public CustomAbsorbOrb(Vector2 position, Entity into = null, Vector2? absorbTarget = null, string color = null, float consumeDelay = 0.7f, bool randomiseConsumeDelay = true, string direction = "All", bool fade = true)
         {
             AbsorbInto = into;
             AbsorbTarget = absorbTarget;
             Position = position;
             Tag = Tags.FrozenUpdate;
             Depth = -2000000;
-            consumeDelay = 0.7f + Calc.Random.NextFloat() * 0.3f;
+            this.consumeDelay = consumeDelay + (randomiseConsumeDelay ? Calc.Random.NextFloat() * 0.3f : 0f);
+            if (!randomiseConsumeDelay)
+            {
+                startAbsorb = true;
+            }
+            this.fade = fade;
             burstSpeed = 80f + Calc.Random.NextFloat() * 40f;
-            burstDirection = Calc.AngleToVector(Calc.Random.NextFloat() * ((float)Math.PI * 2f), 1f);
+            if (direction == "Top")
+            {
+                burstDirection = Calc.AngleToVector((1 - Calc.Random.NextFloat(0.5f)) * ((float)Math.PI * 2f), 1f);
+            } else if (direction == "Bottom")
+            {
+                burstDirection = Calc.AngleToVector(Calc.Random.NextFloat(0.5f) * ((float)Math.PI * 2f), 1f);
+            }
+            else
+            {
+                burstDirection = Calc.AngleToVector(Calc.Random.NextFloat() * ((float)Math.PI * 2f), 1f);
+            }
             Add(sprite = new Image(GFX.Game["collectables/heartGem/orb"]));
             sprite.CenterOrigin();
             this.color = Calc.HexToColor(string.IsNullOrEmpty(color) ? "ffffff" : color);
@@ -82,15 +101,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 sprite.Scale = new Vector2(Math.Min(2f, 0.5f + burstSpeed * 0.02f), Math.Max(0.05f, 0.5f - burstSpeed * 0.004f));
                 sprite.Color = color * (alpha = Calc.Approach(alpha, 0f, Engine.DeltaTime));
             }
-            else if (consumeDelay > 0f)
+            else if (consumeDelay > 0f || startAbsorb)
             {
-                Position += burstDirection * burstSpeed * Engine.RawDeltaTime;
-                burstSpeed = Calc.Approach(burstSpeed, 0f, Engine.RawDeltaTime * 120f);
-                sprite.Rotation = burstDirection.Angle();
-                sprite.Scale = new Vector2(Math.Min(2f, 0.5f + burstSpeed * 0.02f), Math.Max(0.05f, 0.5f - burstSpeed * 0.004f));
-                consumeDelay -= Engine.RawDeltaTime;
+                if (!startAbsorb)
+                {
+                    Position += burstDirection * burstSpeed * Engine.RawDeltaTime;
+                    burstSpeed = Calc.Approach(burstSpeed, 0f, Engine.RawDeltaTime * 120f);
+                    sprite.Rotation = burstDirection.Angle();
+                    sprite.Scale = new Vector2(Math.Min(2f, 0.5f + burstSpeed * 0.02f), Math.Max(0.05f, 0.5f - burstSpeed * 0.004f));
+                    consumeDelay -= Engine.RawDeltaTime;
+                }
+                else
+                {
+                    sprite.Scale = Vector2.Zero;
+                }
                 if (consumeDelay <= 0f)
                 {
+                    startAbsorb = false;
                     Vector2 position = Position;
                     Vector2 vector2 = vector;
                     Vector2 vector3 = (position + vector2) / 2f;
@@ -119,8 +146,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 float num = Ease.CubeIn(percent);
                 Position = curve.GetPoint(num);
                 float num2 = Calc.YoYo(num) * curve.GetLengthParametric(10);
+                if (!fade && percent >= 0.98f)
+                {
+                    sprite.Visible = false;
+                }
                 sprite.Scale = new Vector2(Math.Min(2f, 0.5f + num2 * 0.02f), Math.Max(0.05f, 0.5f - num2 * 0.004f));
-                sprite.Color = color * (1f - num);
+                if (fade)
+                {
+                    sprite.Color = color * (1f - num);
+                }
                 sprite.Rotation = Calc.Angle(Position, curve.GetPoint(Ease.CubeIn(percent + 0.01f)));
             }
         }
