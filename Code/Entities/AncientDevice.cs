@@ -360,6 +360,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             player.Facing = index <= 1 ? Facings.Right  : Facings.Left;
             SceneAs<Level>().Add(symbolPrompt = new SelectSymbolPrompt(Vector2.Zero, currentSymbol == -1 ? 0 : currentSymbol));
             bool canceled = false;
+            yield return 0.3f;
             while (!Input.MenuConfirm.Pressed && !canceled)
             {
                 if (Input.MenuLeft.Pressed && symbolPrompt.Selection > 0)
@@ -377,6 +378,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return null;
             }
             symbolPrompt.ClosePrompt();
+            yield return 0.2f;
             if (canceled)
             {
                 Audio.Play("event:/ui/main/button_toggle_off");
