@@ -4,6 +4,7 @@ UpgradeController.name = "XaphanHelper/UpgradeController"
 UpgradeController.depth = -100000
 UpgradeController.fieldOrder = {
     "x", "y",
+    "baseStamina", "jacketPriority",
     "startWithPowerGrip", "goldenStartWithPowerGrip",
     "startWithClimbingKit", "goldenStartWithClimbingKit",
     "startWithSpiderMagnet", "goldenStartWithSpiderMagnet",
@@ -35,6 +36,7 @@ UpgradeController.placements = {
     name = "UpgradeController",
     data = {
         baseStamina = 110,
+        jacketPriority = "Gravity>Varia",
         showStaminaBar = false,
         startWithPowerGrip = false,
         startWithClimbingKit = false,

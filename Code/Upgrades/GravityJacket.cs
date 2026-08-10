@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
 using Mono.Cecil.Cil;
@@ -215,9 +216,23 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private IEnumerator modLookoutLookRoutine(On.Celeste.Lookout.orig_LookRoutine orig, Lookout self, Player player)
         {
-            if (Active(player.SceneAs<Level>()))
+            string id = "";
+            foreach (string name in XaphanModule.JacketPriorityNames)
             {
-                LookoutAnimPrefix.SetValue(self, "gravity_");
+                var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
+                if (data.Test != null && data.Test(self.SceneAs<Level>()))
+                {
+                    id = data.Id;
+                    break;
+                }
+            }
+            if (id.Contains("samus_"))
+            {
+                id = id.Substring(6);
+            }
+            if (!string.IsNullOrEmpty(id))
+            {
+                LookoutAnimPrefix.SetValue(self, id + "_");
             }
             IEnumerator origEnum = orig(self, player);
             while (origEnum.MoveNext()) yield return origEnum.Current;

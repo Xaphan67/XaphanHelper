@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Celeste.Mod.XaphanHelper.Enemies;
@@ -256,13 +257,14 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 if (XaphanModule.useUpgrades && (VariaJacket.Active(SceneAs<Level>()) || GravityJacket.Active(SceneAs<Level>())))
                 {
                     string id = "";
-                    if (GravityJacket.Active(SceneAs<Level>()))
+                    foreach (string name in XaphanModule.JacketPriorityNames)
                     {
-                        id = "gravity";
-                    }
-                    else if (VariaJacket.Active(SceneAs<Level>()))
-                    {
-                        id = "varia";
+                        var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
+                        if (data.Test != null && data.Test(SceneAs<Level>()))
+                        {
+                            id = data.Id;
+                            break;
+                        }
                     }
                     Effect fxColorGrading = GFX.FxColorGrading;
                     fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];

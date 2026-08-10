@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.XaphanHelper.Data;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
@@ -212,18 +213,21 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Update()
         {
             base.Update();
-            if (GravityJacket.Active(level))
+            string id = "normal";
+            foreach (string name in XaphanModule.JacketPriorityNames)
             {
-                PlayerSprite.Play("gravity");
+                var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
+                if (data.Test != null && data.Test(SceneAs<Level>()))
+                {
+                    id = data.Id;
+                    break;
+                }
             }
-            else if (VariaJacket.Active(level))
+            if (id.Contains("samus_"))
             {
-                PlayerSprite.Play("varia");
+                id = id.Substring(6);
             }
-            else
-            {
-                PlayerSprite.Play("normal");
-            }
+            PlayerSprite.Play(id);
             foreach (UpgradeDisplay display in Scene.Tracker.GetEntities<UpgradeDisplay>())
             {
                 if (display.Selected)

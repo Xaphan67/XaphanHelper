@@ -415,6 +415,19 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             useUpgrades = true;
                             DisableStatusScreen = entity.Bool("disableStatusScreen", false);
+                            foreach (string jacket in entity.Attr("jacketPriority", "Gravity>Varia").Split('>'))
+                            {
+                                if (jacket == "Gravity")
+                                {
+                                    JacketPriority.Add(new JacketPriorityData(jacket, level => GravityJacket.Active(level), !useMetroidGameplay ? "gravity" : "samus_gravity"));
+                                    JacketPriorityNames.Add(jacket);
+                                }
+                                else if (jacket == "Varia")
+                                {
+                                    JacketPriority.Add(new JacketPriorityData(jacket, level => VariaJacket.Active(level), !useMetroidGameplay ? "varia" : "samus_varia"));
+                                    JacketPriorityNames.Add(jacket);
+                                }
+                            }
                             break;
                         }
                     }
@@ -503,6 +516,10 @@ namespace Celeste.Mod.XaphanHelper
         public static bool useUpgrades;
 
         public static bool DisableStatusScreen;
+
+        public static HashSet<string> JacketPriorityNames = new();
+
+        public static HashSet<JacketPriorityData> JacketPriority = new();
 
         public static bool forceStartingUpgrades;
 
@@ -4775,13 +4792,14 @@ namespace Celeste.Mod.XaphanHelper
             if (useUpgrades && (VariaJacket.Active(self.SceneAs<Level>()) || GravityJacket.Active(self.SceneAs<Level>())))
             {
                 string id = "";
-                if (GravityJacket.Active(self.SceneAs<Level>()))
+                foreach (string name in JacketPriorityNames)
                 {
-                    id = !useMetroidGameplay ? "gravity" : "samus_gravity";
-                }
-                else if (VariaJacket.Active(self.SceneAs<Level>()))
-                {
-                    id = !useMetroidGameplay ? "varia" : "samus_varia";
+                    var data = JacketPriority.FirstOrDefault(n => n.Name == name);
+                    if (data.Test != null && data.Test(self.SceneAs<Level>()))
+                    {
+                        id = data.Id;
+                        break;
+                    }
                 }
                 Effect fxColorGrading = GFX.FxColorGrading;
                 fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];

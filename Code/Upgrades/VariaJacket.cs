@@ -24,27 +24,15 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public override void Load()
         {
-            On.Celeste.Lookout.LookRoutine += modLookoutLookRoutine;
         }
 
         public override void Unload()
         {
-            On.Celeste.Lookout.LookRoutine -= modLookoutLookRoutine;
         }
 
         public static bool Active(Level level)
         {
             return XaphanModule.ModSettings.VariaJacket && !(XaphanModule.Instance._SaveData as XaphanModuleSaveData).VariaJacketInactive.Contains(level.Session.Area.LevelSet);
-        }
-
-        private IEnumerator modLookoutLookRoutine(On.Celeste.Lookout.orig_LookRoutine orig, Lookout self, Player player)
-        {
-            if (Active(player.SceneAs<Level>()) && !GravityJacket.Active(player.SceneAs<Level>()))
-            {
-                LookoutAnimPrefix.SetValue(self, "varia_");
-            }
-            IEnumerator origEnum = orig(self, player);
-            while (origEnum.MoveNext()) yield return origEnum.Current;
         }
     }
 }
