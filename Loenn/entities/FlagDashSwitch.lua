@@ -5,7 +5,7 @@ local FlagDashSwitch = {}
 FlagDashSwitch.name = "XaphanHelper/FlagDashSwitch"
 FlagDashSwitch.depth = 0
 FlagDashSwitch.fieldOrder = {
-    "x", "y", "side", "spriteName", "particleColor1", "particleColor2", "flag", "forceInactiveFlag", "mode", "registerInSaveData", "saveDataOnlyAfterCheckpoint", "canSwapFlag", "inWall", "persistent"
+    "x", "y", "side", "spriteName", "particleColor1", "particleColor2", "flag", "forceInactiveFlag", "mode", "registerInSaveData", "saveDataOnlyAfterCheckpoint", "canSwapFlag", "inWall", "allowStaticMovers", "persistent"
 }
 FlagDashSwitch.fieldInformation = {
     side = {
@@ -40,7 +40,8 @@ FlagDashSwitch.placements = {
         particleColor2 = "D9FFB5",
         mode = "SetTrue",
         inWall = false,
-        forceInactiveFlag = ""
+        forceInactiveFlag = "",
+        allowStaticMovers = true
     }
 }
 

@@ -96,6 +96,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public FlagDashSwitch(EntityData data, Vector2 offset, EntityID eid) : base(data.Position + offset, data.Width, data.Height, safe: true)
         {
+            AllowStaticMovers = data.Bool("allowStaticMovers", true);
             Tag = Tags.TransitionUpdate;
             side = data.Enum<Sides>("side");
             persistent = data.Bool("persistent");
