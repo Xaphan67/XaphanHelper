@@ -1321,6 +1321,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Audio.Play("event:/ui/main/button_toggle_on");
             mapDisplay.markerSelector.Focused = false;
             Scene.Add(markerPrompt = new SelectMarkerPrompt(Vector2.Zero, 0));
+            yield return 0.3f;
             int type = 0;
             bool canceled = false;
             while (!Input.MenuConfirm.Pressed && !canceled)
@@ -1340,6 +1341,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 yield return null;
             }
             markerPrompt.ClosePrompt();
+            yield return 0.2f;
             if (canceled)
             {
                 Audio.Play("event:/ui/main/button_toggle_off");
