@@ -415,6 +415,8 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             useUpgrades = true;
                             DisableStatusScreen = entity.Bool("disableStatusScreen", false);
+                            JacketPriority.Clear();
+                            JacketPriorityNames.Clear();
                             foreach (string jacket in entity.Attr("jacketPriority", "Gravity>Varia").Split('>'))
                             {
                                 if (jacket == "Gravity")
