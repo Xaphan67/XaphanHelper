@@ -386,7 +386,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield break;
             }
             currentSymbol = symbolPrompt.Selection;
-            Audio.Play("event:/game/06_reflection/supersecret_dashflavour", "dash_direction", currentSymbol);
+            Audio.Play("event:/game/06_reflection/supersecret_dashflavour", "dash_direction", currentSymbol + 1);
             yield return 0.05f;
             symbolPrompt = null;
             if (currentSymbol != -1)
