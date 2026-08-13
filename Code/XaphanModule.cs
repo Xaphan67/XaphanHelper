@@ -2445,6 +2445,7 @@ namespace Celeste.Mod.XaphanHelper
 
             bool upgradesAreTemporary = UpgradeController.Bool("upgradesAreTemporary");
 
+            string doubleDashFlag = UpgradeController.Attr("doubleDashFlag");
             bool setPowerGrip = UpgradeController.Bool("onlyAllowPowerGrip") || UpgradeController.Bool("startWithPowerGrip");
             bool setClimbingKit = UpgradeController.Bool("onlyAllowClimbingKit") || UpgradeController.Bool("startWithClimbingKit");
             bool setSpiderMagnet = UpgradeController.Bool("onlyAllowSpiderMagnet") || UpgradeController.Bool("startWithSpiderMagnet");
@@ -2591,7 +2592,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     ModSettings.DashBoots = true;
                     level.Session.SetFlag("Upgrade_DashBoots", true);
-                    if (ModSaveData.SavedFlags.Contains(prefix + "_Double_Dash_Unlocked") || level.Session.GetFlag("Double_Dash_Unlocked"))
+                    if (!string.IsNullOrEmpty(doubleDashFlag) && (ModSaveData.SavedFlags.Contains(prefix + "_" + doubleDashFlag) || level.Session.GetFlag(doubleDashFlag)))
                     {
                         level.Session.Inventory = new PlayerInventory(2);
                     }
@@ -2714,7 +2715,7 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         ModSettings.DashBoots = true;
                         level.Session.SetFlag("Upgrade_DashBoots", true);
-                        if (ModSaveData.SavedFlags.Contains(prefix + "_Double_Dash_Unlocked") || level.Session.GetFlag("Double_Dash_Unlocked"))
+                        if (!string.IsNullOrEmpty(doubleDashFlag) && (ModSaveData.SavedFlags.Contains(prefix + "_" + doubleDashFlag) || level.Session.GetFlag(doubleDashFlag)))
                         {
                             level.Session.Inventory = new PlayerInventory(2);
                         }
