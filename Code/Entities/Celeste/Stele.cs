@@ -136,6 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 mainSprite.Play("activePurple");
                 yield return 1.3f;
                 XaphanModule.IgnoreShakeSettings = true;
+                SceneAs<Level>().CanRetry = false;
                 shakeSoundSource = Audio.Play("event:/game/xaphan/liquid_rise");
                 shake = true;
                 Add(appearRoutine = new Coroutine(AppearRoutine()));
@@ -146,6 +147,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     yield return 0.05f;
                 }
                 shakeSoundSource.stop(STOP_MODE.ALLOWFADEOUT);
+                SceneAs<Level>().CanRetry = true;
                 XaphanModule.IgnoreShakeSettings = false;               
             }
             else
