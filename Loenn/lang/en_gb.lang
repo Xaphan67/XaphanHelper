@@ -681,6 +681,7 @@ entities.XaphanHelper/UpgradeController.attributes.description.upgradesAreTempor
 entities.XaphanHelper/UpgradeController.attributes.description.disableStatusScreen=If true, the status screen cannot be opened.
 entities.XaphanHelper/UpgradeController.attributes.description.noResetUpgrades=If true, 'Golden Start With...' attributers will be ignored when collecting a Golden Strawberry.
 entities.XaphanHelper/UpgradeController.attributes.description.jacketPriority=Define wich Jacket upgrade visually override the other.\nExpected syntax: Gravity>Varia.\nAllowed values: Varia, Gravity. Anything else is ignored.
+entities.XaphanHelper/UpgradeController.attributes.description.doubleDashFlag=If this flag is set, the player will have 2 dashes instead of one with the Dash Boots upgrade.\n Only checked on room enter and respawn.
 
 # WarpStation
 entities.XaphanHelper/WarpStation.placements.name.WarpStation=Warp Station
