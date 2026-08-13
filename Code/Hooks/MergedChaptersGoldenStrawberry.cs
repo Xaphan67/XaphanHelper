@@ -248,18 +248,26 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static IEnumerator onStrawberryCollectRoutine(On.Celeste.Strawberry.orig_CollectRoutine orig, Strawberry self, int collectIndex)
         {
-            if (self.Golden && XaphanModule.useMergeChaptersController)
+            Level level = self.SceneAs<Level>();
+            if (level.Session.Area.Mode == AreaMode.Normal)
             {
-                string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
-                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
-                self.SceneAs<Level>().Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
-                XaphanModule.ModSaveData.PreGoldenTimer = 0;
-                MergeFlagsAndEntities(self.SceneAs<Level>());
+                if (self.Golden && XaphanModule.useMergeChaptersController)
+                {
+                    string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
+                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
+                    self.SceneAs<Level>().Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
+                    XaphanModule.ModSaveData.PreGoldenTimer = 0;
+                    MergeFlagsAndEntities(self.SceneAs<Level>());
+                }
+                yield return new SwapImmediately(orig(self, collectIndex));
+                if (self.Golden && XaphanModule.useMergeChaptersController)
+                {
+                    self.SceneAs<Level>().Session.DoNotLoad.Remove(new EntityID(StartRoom, ID));
+                }
             }
-            yield return new SwapImmediately(orig(self, collectIndex));
-            if (self.Golden && XaphanModule.useMergeChaptersController)
+            else
             {
-                self.SceneAs<Level>().Session.DoNotLoad.Remove(new EntityID(StartRoom, ID));
+                yield return new SwapImmediately(orig(self, collectIndex));
             }
         }
 

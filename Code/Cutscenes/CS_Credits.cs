@@ -281,7 +281,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
                 for (int i = 1; i <= (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? 5 : 2); i++)
                 {
-                    currentTotalStrawberries += (StatsFlags.CurrentStrawberries[i] - (level.Session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
+                    currentTotalStrawberries += StatsFlags.CurrentStrawberries[i];
                     currentTotalEnergyTanks += StatsFlags.CurrentEnergyTanks[i];
                     currentTotalFireRateModules += StatsFlags.CurrentFireRateModules[i];
                     currentTotalMissiles += StatsFlags.CurrentMissiles[i];

@@ -595,7 +595,7 @@ namespace Celeste.Mod.XaphanHelper
 
                         for (int i = 1; i <= 5; i++)
                         {
-                            currentTotalStrawberries += (CurrentStrawberries[i] - (self.Session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
+                            currentTotalStrawberries += CurrentStrawberries[i];
                             currentTotalEnergyTanks += CurrentEnergyTanks[i];
                             currentTotalFireRateModules += CurrentFireRateModules[i];
                             currentTotalMissiles += CurrentMissiles[i];
@@ -902,9 +902,12 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         strawberryCount = item.TotalStrawberries;
                     }
-                    if (GoldensBerries[chapterIndex, 0])
+                    for (int i = 0; i <= 2; i++)
                     {
-                        strawberryCount--;
+                        if (GoldensBerries[chapterIndex, i])
+                        {
+                            strawberryCount--;
+                        }
                     }
                     CurrentStrawberries[chapterIndex] = strawberryCount;
                     TotalStrawberries[chapterIndex] = AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset + chapterIndex - (!hasInterlude ? 1 : 0)].Mode[0].TotalStrawberries;
