@@ -407,7 +407,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     XaphanModule.ModSaveData.SavedFlags.Remove(oldFlag);
                 }
-                XaphanModule.ModSaveData.SavedFlags.Add("Symbol_" + index + ":" + currentSymbol);
+                XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Symbol_" + index + ":" + currentSymbol);
             }
             yield return 0.1f;
             player.StateMachine.State = 0;

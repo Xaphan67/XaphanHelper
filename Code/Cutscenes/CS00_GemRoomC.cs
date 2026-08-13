@@ -66,7 +66,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     bool playerRight = player.BottomCenter.X > gemController.BottomCenter.X;
                     level.Session.Inventory = new PlayerInventory(2);
                     level.Session.SetFlag("Ch-1_All_Gems_Active");
-                    XaphanModule.ModSaveData.SavedFlags.Add("All_Gems_Active");
+                    XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_All_Gems_Active");
                     XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Double_Dash_Unlocked");
                 }
             }
@@ -211,7 +211,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 gemController.Remove(white);
                 gemController.Remove(glow);
                 level.Session.SetFlag("Ch0_All_Gems_Active");
-                XaphanModule.ModSaveData.SavedFlags.Add("All_Gems_Active");
+                XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_All_Gems_Active");
                 if (!XaphanModule.ModSettings.AutoSkipCutscenes)
                 {
                     yield return 0.4f;

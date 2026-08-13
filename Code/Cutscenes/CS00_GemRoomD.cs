@@ -28,7 +28,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         public override void OnEnd(Level level)
         {
             level.Session.SetFlag("Ch0_All_Gems_Active");
-            XaphanModule.ModSaveData.SavedFlags.Add("All_Gems_Active");
+            XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_All_Gems_Active");
         }
 
         public IEnumerator Cutscene(Level level)
