@@ -416,39 +416,42 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            Player playerOnTop = GetPlayerOnTop();
-            if (playerOnTop != null)
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch0_AncientText_A-23"))
             {
-                if (speed < 0f)
+                Player playerOnTop = GetPlayerOnTop();
+                if (playerOnTop != null)
                 {
-                    speed = 0f;
+                    if (speed < 0f)
+                    {
+                        speed = 0f;
+                    }
+                    speed = Calc.Approach(speed, 70f, 200f * Engine.DeltaTime);
+                    MoveTowardsY(start + 2f, speed * Engine.DeltaTime);
+                    if (!playerWasOn)
+                    {
+                        Audio.Play("event:/game/05_mirror_temple/button_depress", Position);
+                    }
+                    if (Y == start + 2f)
+                    {
+                        talk.Enabled = true;
+                    }
                 }
-                speed = Calc.Approach(speed, 70f, 200f * Engine.DeltaTime);
-                MoveTowardsY(start + 2f, speed * Engine.DeltaTime);
-                if (!playerWasOn)
+                else 
                 {
-                    Audio.Play("event:/game/05_mirror_temple/button_depress", Position);
+                    if (speed > 0f)
+                    {
+                        speed = 0f;
+                    }
+                    speed = Calc.Approach(speed, -150f, 200f * Engine.DeltaTime);
+                    MoveTowardsY(start, (0f - speed) * Engine.DeltaTime);
+                    if (playerWasOn)
+                    {
+                        Audio.Play("event:/game/05_mirror_temple/button_return", Position);
+                    }
+                    talk.Enabled = false;
                 }
-                if (Y == start + 2f)
-                {
-                    talk.Enabled = true;
-                }
+                playerWasOn = (playerOnTop != null);
             }
-            else 
-            {
-                if (speed > 0f)
-                {
-                    speed = 0f;
-                }
-                speed = Calc.Approach(speed, -150f, 200f * Engine.DeltaTime);
-                MoveTowardsY(start, (0f - speed) * Engine.DeltaTime);
-                if (playerWasOn)
-                {
-                    Audio.Play("event:/game/05_mirror_temple/button_return", Position);
-                }
-                talk.Enabled = false;
-            }
-            playerWasOn = (playerOnTop != null);
         }
     }
 }
