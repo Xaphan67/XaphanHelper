@@ -661,7 +661,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (SelectedDisplay != null)
                 {
                     SectionPosition = new Vector2(Engine.Width / 2f, 900f);
-                    string UpgName = Dialog.Clean("XaphanHelper_get_" + SelectedDisplay.internalName + "_Name");
+                    string UpgName = SelectedDisplay.Name;
                     float UpgNameLenght = ActiveFont.Measure(UpgName).X;
                     ActiveFont.DrawOutline(UpgName, Position + SectionPosition, new Vector2(0.5f, 0.5f), Vector2.One * 1f, Color.Yellow, 2f, Color.Black);
                     Draw.Rect(Position + SectionPosition + new Vector2(UpgNameLenght / 2 + 10, -4), 805f - (UpgNameLenght / 2 + 10) + 15, 8f, Color.White);
