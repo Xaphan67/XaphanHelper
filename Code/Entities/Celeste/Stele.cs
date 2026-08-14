@@ -102,7 +102,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Awake(scene);
             semantograph = SceneAs<Level>().Entities.FindFirst<CustomCollectable>();
-            if (!SceneAs<Level>().Session.GetFlag("Ch0_Semantograph_appeared") || !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Semantograph_appeared"))
+            if (semantograph != null && !SceneAs<Level>().Session.GetFlag("Ch0_Semantograph_appeared") || !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Semantograph_appeared"))
             {
                 semantograph.Visible = semantograph.Collidable = false;
             }
@@ -131,7 +131,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             mainSprite.Play("interact");
             yield return 1.2f;
 
-            if (!SceneAs<Level>().Session.GetFlag("Ch0_Semantograph_appeared") || !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Semantograph_appeared"))
+            if ((!SceneAs<Level>().Session.GetFlag("Ch0_Semantograph_appeared") || !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Semantograph_appeared")) && semantograph != null)
             {
                 mainSprite.Play("activePurple");
                 yield return 1.3f;
