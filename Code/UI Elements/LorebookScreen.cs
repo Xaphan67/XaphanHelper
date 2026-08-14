@@ -229,6 +229,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Scene.Add(BigTitle = new BigTitle(Title, new Vector2(960, 80), true));
             int currentTotalLambertLogs = 0;
             int currentTotalNoteLogs = 0;
+            int currentTotalTextLogs = 0;
             foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
             {
                 if (flag.Contains("Xaphan/0"))
@@ -241,11 +242,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         currentTotalNoteLogs++;
                     }
+                    else if (flag.Contains("AncientText_A-23"))
+                    {
+                        currentTotalTextLogs++;
+                    }
                 }
             }
 
-            int maxCategories = ((currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)) ? 3 : 2;
-            Scene.Add(lorebookDisplay = new LorebookDisplay(level, (currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)));
+            int maxCategories = ((currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0 || currentTotalTextLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)) ? 3 : 2;
+            Scene.Add(lorebookDisplay = new LorebookDisplay(level, (currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0 || currentTotalTextLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)));
             yield return lorebookDisplay.GenerateLorebookDisplay();
             while (switchTimer > 0)
             {

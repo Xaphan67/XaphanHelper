@@ -194,7 +194,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private Coroutine readRoutine = new();
 
-            public EntryDisplay(Level level, Vector2 position, int id, string entryID, string flag, string name, int categoryID, List<string> text, string picture, bool noDialog = false) : base(position)
+            public bool Code;
+
+            public string DialogId;
+
+            public EntryDisplay(Level level, Vector2 position, int id, string entryID, string flag, string name, int categoryID, List<string> text, string picture, bool noDialog = false, bool code = false, string dialogID = null) : base(position)
             {
                 Tag = Tags.HUD;
                 ID = id;
@@ -210,6 +214,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Sprite.Play("new");
                 LorebookScreen = level.Tracker.GetEntity<LorebookScreen>();
                 Locked = Name.Contains("?") && !isSubCategory;
+                Code = code;
+                DialogId = dialogID;
                 Depth = -10001;
             }
 
@@ -371,7 +377,27 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 Name = display.Name;
                                 TotalPages = display.Text.Count;
-                                Text = FancyText.Parse(Dialog.Get(display.Text[CurrentPage].Trim()).Replace("{n}", ""), 1390, 5);
+                                string text = null;
+                                if (display.DialogId != null)
+                                {
+                                    text = Dialog.Get(display.DialogId).Replace("{n}{n}", "{n}");
+                                }
+                                else
+                                {
+                                    text = Dialog.Get(display.Text[CurrentPage].Trim()).Replace("{n}", "");
+                                }
+                                Text = FancyText.Parse(text, 1390, 5);
+                                if (display.Code)
+                                {
+                                    foreach (FancyText.Node node in Text.Nodes)
+                                    {
+                                        if (node.GetType() == typeof(FancyText.Char)) {
+                                            FancyText.Char letter = (FancyText.Char)node;
+                                            letter.Character = Utils.GetLetter((char)letter.Character);
+                                        }
+                                    }
+                                    Utils.RecalculateTextPositions(Text);
+                                }
                                 Picture = display.Picture;
                                 Sprite = new Sprite(GFX.Gui, Picture);
                                 Sprite.AddLoop("picture", "", 0.05f);
@@ -570,7 +596,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             categoryName = ConvertNameToHiddenName(entry.Name);
                         }
-                        Scene.Add(new EntryDisplay(level, new Vector2(155f, 481f + YPos), ID, entry.EntryID, entry.Flag, categoryName, categoryID, entry.Text, entry.Picture, !unlocked || lockedSubCategory));
+                        Scene.Add(new EntryDisplay(level, new Vector2(155f, 481f + YPos), ID, entry.EntryID, entry.Flag, categoryName, categoryID, entry.Text, entry.Picture, !unlocked || lockedSubCategory, entry.Code, entry.DialogId));
                         YPos += 50;
                         ID++;
                     }

@@ -587,6 +587,23 @@ namespace Celeste.Mod.XaphanHelper
                     subCategoryID: "log2",
                     pages: 5
                 ));
+
+                list.Add(new LorebookData(
+                    entryID: "log3",
+                    categoryID: 3,
+                    picture: null,
+                    flag: null
+                ));
+
+                list.Add(new LorebookData(
+                    entryID: "anct-0-1",
+                    categoryID: 3,
+                    picture: "lorebook/Xaphan/Equipment/oth1",
+                    flag: "AncientText_A-23",
+                    subCategoryID: "log3",
+                    code: true,
+                    dialogID: "Xaphan_Ch0_Text_A"
+                ));
             }
 
             return list;

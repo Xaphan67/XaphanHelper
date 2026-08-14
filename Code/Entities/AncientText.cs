@@ -114,7 +114,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     sprite.Position -= new Vector2(LinesLength[(int)sprite.Position.Y / 8] / 2, 0);
                     Add(sprite);
 
-                    Sprite reveal = new Sprite(GFX.Game, "objects/Xaphan/AncientText/letters/" + Decode(sprite.Path[sprite.Path.Length - 1]));
+                    Sprite reveal = new Sprite(GFX.Game, "objects/Xaphan/AncientText/letters/" + Utils.GetLetter(sprite.Path[sprite.Path.Length - 1]));
                     reveal.Add("letter", "", 0);
                     reveal.Position = sprite.Position;
                     reveal.Visible = false;
@@ -134,26 +134,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
-            private char Decode(char c)
-            {
-                char result = ' ';
-                if (char.IsLetter(c))
-                {
-                    bool upper = char.IsUpper(c);
-                    char baseChar = upper ? 'A' : 'a';
-                    int position = (c - baseChar - 10) % 26;
-                    if (position < 0)
-                    {
-                        position += 26;
-                    }
-                    result = (char)(baseChar + position);
-                }
-                else
-                {
-                    result = c;
-                }
-                return result;
-            }
+            
 
             public override void Update()
             {
