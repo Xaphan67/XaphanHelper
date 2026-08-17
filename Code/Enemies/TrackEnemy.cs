@@ -89,6 +89,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     else
                     {
                         Up = !Up;
+                        OnTrackEnd();
                         CurrentEndNode--;
                     }
                 }
@@ -113,6 +114,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     else
                     {
                         Up = !Up;
+                        OnTrackEnd();
                         CurrentEndNode++;
                     }
                 }

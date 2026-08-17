@@ -86,9 +86,9 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             base.Update();
             alpha = Calc.Approach(alpha, 0.5f * (0.5f + ((float)Math.Sin(timer) + 1f) * 0.5f), Engine.DeltaTime / 2);
             outlineAlpha = Calc.Approach(outlineAlpha, 0.75f, Engine.DeltaTime);
-            Outline.Position = End - Position;
+            Outline.Position = (Up ? End : Start) - Position;
             Outline.Color = Color.White * outlineAlpha;
-            Outline.Visible = MoveAfterBounce && (Position != End);
+            Outline.Visible = MoveAfterBounce && (Position != (Up ? End : Start) && !(DieOnBounceAtLastNode && !Up));
             if (MoveAfterBounce && ForcePause)
             {
                 WaitTime = 1f;
@@ -172,7 +172,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public override void OnTrackEnd()
         {
-
+            alpha = outlineAlpha = 0f;
         }
 
         public override void OnTrackNode()
@@ -182,9 +182,9 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public override void Render()
         {
-            if (MoveAfterBounce)
+            if (MoveAfterBounce && !(DieOnBounceAtLastNode && !Up))
             {
-                Draw.SineTextureH(lineSprite, End, Vector2.Zero, new Vector2(Vector2.Distance(Position, End) / 128f, 1.5f), Calc.Angle(Position, End) + (float)Math.PI, Color.Gray * alpha, SpriteEffects.None, timer, 1f, 1, 0.08f);
+                Draw.SineTextureH(lineSprite, Up ? End : Start, Vector2.Zero, new Vector2(Vector2.Distance(Position, Up ? End : Start) / 128f, 1.5f), Calc.Angle(Position, Up ? End : Start) + (float)Math.PI, Color.Gray * alpha, SpriteEffects.None, timer, 1f, 1, 0.08f);
             }
             base.Render();
         }
