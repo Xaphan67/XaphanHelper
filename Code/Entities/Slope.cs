@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using static Celeste.Tentacles;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
