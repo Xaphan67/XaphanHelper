@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.Helpers;
@@ -19,21 +20,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             private int Index;
 
-            private int DrawSpriteIndex;
+            public float colliderHeight;
 
-            private float colliderHeight;
+            public int verticalOffset;
 
-            private int verticalOffset;
+            public int DrawSpriteIndex;
 
             public Waterfall Waterfall;
 
-            private Sprite sectionSprite;
+            public Sprite sectionSprite;
 
-            private ParticleType P_Splash;
+            public bool collideSolid;
 
-            private bool collideSolid;
+            public bool collideLiquid;
 
-            private bool collideLiquid;
+            public int TileWidth => (int)sectionSprite.Width;
+
+            public int RenderHeight => (int)Math.Truncate(Collider.Height + (collideSolid ? 4 : collideLiquid ? 1 : 0) + verticalOffset);
+
+            public bool IsEdge;
+
+            public bool CanBatchWith(WaterfallSection other)
+            {
+                return !IsEdge && !other.IsEdge && RenderHeight == other.RenderHeight && Y == other.Y;
+            }
 
             public WaterfallSection(Vector2 position, Waterfall waterfall, int index) : base(position)
             {
@@ -44,7 +54,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(sectionSprite = new Sprite(GFX.Game, "objects/XaphanHelper/Waterfall/"));
                 sectionSprite.AddLoop("waterfall", "waterfall", 0.03f);
                 sectionSprite.AddLoop("edge", "edge", 0.03f);
-                sectionSprite.Play((Index == 0 || Index == (waterfall.Width - 1)) ? "edge" : "waterfall");
+                IsEdge = Index == 0 || Index == (waterfall.Width - 1);
+                sectionSprite.Play(IsEdge ? "edge" : "waterfall");
                 if (Index == 0 || Index == (waterfall.Width - 1))
                 {
                     DrawSpriteIndex = 0;
@@ -55,24 +66,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     float div = Math.DivRem(Index, (int)sectionSprite.Width, out remainder);
                     DrawSpriteIndex = remainder;
                 }
-                P_Splash = new ParticleType
-                {
-                    Source = GFX.Game["particles/feather"],
-                    Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer),
-                    FadeMode = ParticleType.FadeModes.Late,
-                    Acceleration = new Vector2(0f, 20f),
-                    Size = 5f / 6f,
-                    SizeRange = 1f / 3f,
-                    ScaleOut = true,
-                    SpeedMin = 30f,
-                    SpeedMax = 24f,
-                    SpeedMultiplier = 0.98f,
-                    Direction = -(float)Math.PI / 2f,
-                    DirectionRange = 0.6981317f,
-                    RotationMode = ParticleType.RotationModes.Random,
-                    LifeMin = 0.35f,
-                    LifeMax = 0.2f
-                };
                 Depth = Waterfall.Depth;
             }
 
@@ -91,7 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public override void Added(Scene scene)
             {
                 base.Added(scene);
-                sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer) * Waterfall.currentTransparency;
+                sectionSprite.Color = Waterfall.CurrentColor * Waterfall.currentTransparency;
                 Collider = new Hitbox(1, 1, 0f, 0f);
                 while (CollideCheck<Solid>())
                 {
@@ -101,62 +94,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (verticalOffset >= Waterfall.Height)
                 {
                     RemoveSelf();
+                    return;
                 }
-                AdjustColliderSize();
+                Waterfall.AdjustSectionCollider(this);
             }
 
-            public void AdjustColliderSize()
+            public override void Removed(Scene scene)
             {
-                foreach (PlayerPlatform plateform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
+                base.Removed(scene);
+                if (Waterfall.Sections != null && Index < Waterfall.Sections.Length)
                 {
-                    plateform.Collidable = false;
-                }
-                if ((CollideCheck<Solid>(Position + Vector2.UnitY) || CollideCheck<Liquid>(Position + Vector2.UnitY) || CollideCheck<WaterWheel>(Position + Vector2.UnitY)) && !CollideCheck<PlayerPlatform>())
-                {
-                    while (CollideCheck<Solid>() || CollideCheck<Liquid>() || CollideCheck<WaterWheel>())
-                    {
-                        Collider.Height -= 1;
-                        colliderHeight = Collider.Height;
-                    }
-                }
-                else
-                {
-                    if (!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>() && !CollideCheck<WaterWheel>())
-                    {
-                        while ((!CollideCheck<Solid>(Position + Vector2.UnitY) && !CollideCheck<Liquid>() && !CollideCheck<WaterWheel>()) && Collider.Height < SceneAs<Level>().Bounds.Bottom - Top && Collider.Height < Waterfall.Height - verticalOffset)
-                        {
-                            Collider.Height += 1;
-                            colliderHeight = Collider.Height;
-                        }
-                    }
-                }
-                if (CollideCheck<PlayerPlatform>())
-                {
-                    Collider.Height = colliderHeight;
-                }
-                foreach (PlayerPlatform plateform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
-                {
-                    plateform.RestoreCollisionForPlayer();
-                }
-                foreach (Spikes spikes in SceneAs<Level>().Tracker.GetEntities<Spikes>())
-                {
-                    if (CollideCheck(spikes))
-                    {
-                        spikes.Depth = Depth - 1;
-                    }
-                    else if (spikes.Depth == Depth - 1)
-                    {
-                        spikes.Depth = -1;
-                    }
+                    Waterfall.Sections[Index] = null;
                 }
             }
 
             public override void Update()
             {
                 base.Update();
-                AdjustColliderSize();
-                P_Splash.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * (Waterfall.currentTransparency + 0.2f);
-                sectionSprite.Color = Utils.GetGradientColor(Calc.HexToColor(Waterfall.color), Calc.HexToColor(Waterfall.poisonedColor), Waterfall.GradientTimer * 100) * Waterfall.currentTransparency;
+                sectionSprite.Color = Waterfall.CurrentColor * Waterfall.currentTransparency;
                 double checkIndex = Index / 8f;
                 double result = checkIndex - Math.Truncate(checkIndex);
                 float height = Calc.Random.Next(4);
@@ -165,37 +120,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Vector2 position = new Vector2(X, Y + Collider.Height + height + verticalOffset);
                     if (SceneAs<Level>().IsInBounds(position))
                     {
-                        SceneAs<Level>().Particles.Emit(P_Splash, 1, position, Vector2.UnitX * 4f, new Vector2(0f, -1f).Angle());
+                        SceneAs<Level>().Particles.Emit(Waterfall.P_Splash, 1, position, Vector2.UnitX * 4f, new Vector2(0f, -1f).Angle());
                     }
                 }
-                collideSolid = CollideCheck<Solid>(Position + Vector2.UnitY);
-                collideLiquid = CollideCheck<Solid>(Position + Vector2.UnitY);
             }
 
             public override void Render()
             {
-                int section = 0;
-                //bool collideSolid = Scene.CollideCheck<Solid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
-                //bool collideLiquid = Scene.CollideCheck<Liquid>(new Vector2(Position.X, Position.Y + Collider.Height + verticalOffset + 1));
-                for (int i = 0; i < Math.Truncate(Collider.Height + (collideSolid ? 4 : collideLiquid ? 1 : 0) + verticalOffset); i++)
-                {
-                    sectionSprite.RenderPosition = Position + Vector2.UnitY * i;
-                    if (CullHelper.IsRectangleVisible(sectionSprite.RenderPosition.X, sectionSprite.RenderPosition.Y, 1, 1))
-                    {
-                        sectionSprite.DrawSubrect(Vector2.Zero, new Rectangle(DrawSpriteIndex, section, 1, 1));
-                    }
-                    section += 1;
-                    if (section > 15)
-                    {
-                        section = 0;
-                    }
-                }
+
             }
 
             public override void DebugRender(Camera camera)
             {
-                
+
             }
+        }
+
+        private struct FloorEntry
+        {
+            public float Left, Right, Top, Bottom;
         }
 
         public string color;
@@ -223,6 +166,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool PlayerEntered;
 
         private bool PlayerStartFall;
+
+        public WaterfallSection[] Sections;
+
+        private Dictionary<Entity, FloorEntry> WatchedFloorEntities = new Dictionary<Entity, FloorEntry>();
+
+        public ParticleType P_Splash;
+
+        public Color CurrentColor;
+
+        private List<PlayerPlatform> CachedPlatforms = new List<PlayerPlatform>();
+
+        private List<Spikes> CachedSpikes = new List<Spikes>();
 
         private FieldInfo PlayerVarJumpTimer = typeof(Player).GetField("varJumpTimer", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -321,9 +276,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 GradientTimer = 0f;
             }
+            CurrentColor = Utils.GetGradientColor(Calc.HexToColor(color), Calc.HexToColor(poisonedColor), GradientTimer);
+            P_Splash = new ParticleType
+            {
+                Source = GFX.Game["particles/feather"],
+                Color = CurrentColor,
+                FadeMode = ParticleType.FadeModes.Late,
+                Acceleration = new Vector2(0f, 20f),
+                Size = 5f / 6f,
+                SizeRange = 1f / 3f,
+                ScaleOut = true,
+                SpeedMin = 30f,
+                SpeedMax = 24f,
+                SpeedMultiplier = 0.98f,
+                Direction = -(float)Math.PI / 2f,
+                DirectionRange = 0.6981317f,
+                RotationMode = ParticleType.RotationModes.Random,
+                LifeMin = 0.35f,
+                LifeMax = 0.2f
+            };
+            RefreshCaches();
+            Sections = new WaterfallSection[(int)Width];
             for (int i = 0; i < Width; i++)
             {
-                scene.Add(new WaterfallSection(Position + Vector2.UnitX * i, this, i));
+                WaterfallSection section = new WaterfallSection(Position + Vector2.UnitX * i, this, i);
+                Sections[i] = section;
+                scene.Add(section);
             }
         }
 
@@ -375,24 +353,171 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            CurrentColor = Utils.GetGradientColor(Calc.HexToColor(color), Calc.HexToColor(poisonedColor), GradientTimer * 100);
+            P_Splash.Color = CurrentColor * (currentTransparency + 0.2f);
+            RefreshCaches();
+            foreach (int index in DetectFloorChanges())
+            {
+                WaterfallSection section = Sections[index];
+                if (section != null)
+                {
+                    AdjustSectionCollider(section);
+                    section.collideSolid = section.CollideCheck<Solid>(section.Position + Vector2.UnitY);
+                    section.collideLiquid = section.CollideCheck<Liquid>(section.Position + Vector2.UnitY);
+                }
+            }
+        }
+
+        private void RefreshCaches()
+        {
+            CachedPlatforms.Clear();
+            foreach (PlayerPlatform platform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
+            {
+                CachedPlatforms.Add(platform);
+            }
+
+            CachedSpikes.Clear();
+            foreach (Spikes spikes in SceneAs<Level>().Tracker.GetEntities<Spikes>())
+            {
+                CachedSpikes.Add(spikes);
+            }
         }
 
         public bool PlayerInside()
         {
             foreach (Player player in SceneAs<Level>().Tracker.GetEntities<Player>())
             {
-                foreach (WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<WaterfallSection>())
+                foreach (WaterfallSection section in Sections)
                 {
-                    if (waterfall.Waterfall == this)
+                    if (section != null && section.CollideCheck(player) && player.Left <= section.Right - 4 && player.Right >= section.Left + 4)
                     {
-                        if (waterfall.CollideCheck(player) && player.Left <= waterfall.Right - 4 && player.Right >= waterfall.Left + 4)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
             return false;
+        }
+
+        public void AdjustSectionCollider(WaterfallSection section)
+        {
+            foreach (PlayerPlatform platform in CachedPlatforms)
+            {
+                platform.Collidable = false;
+            }
+
+            if ((section.CollideCheck<Solid>(section.Position + Vector2.UnitY) || section.CollideCheck<Liquid>(section.Position + Vector2.UnitY) || section.CollideCheck<WaterWheel>(section.Position + Vector2.UnitY)) && !section.CollideCheck<PlayerPlatform>())
+            {
+                while (section.CollideCheck<Solid>() || section.CollideCheck<Liquid>() || section.CollideCheck<WaterWheel>())
+                {
+                    section.Collider.Height -= 1;
+                    section.colliderHeight = section.Collider.Height;
+                }
+            }
+            else if (!section.CollideCheck<Solid>(section.Position + Vector2.UnitY) && !section.CollideCheck<Liquid>() && !section.CollideCheck<WaterWheel>())
+            {
+                while (!section.CollideCheck<Solid>(section.Position + Vector2.UnitY) && !section.CollideCheck<Liquid>() && !section.CollideCheck<WaterWheel>()
+                    && section.Collider.Height < SceneAs<Level>().Bounds.Bottom - section.Top
+                    && section.Collider.Height < Height - section.verticalOffset)
+                {
+                    section.Collider.Height += 1;
+                    section.colliderHeight = section.Collider.Height;
+                }
+            }
+
+            if (section.CollideCheck<PlayerPlatform>())
+            {
+                section.Collider.Height = section.colliderHeight;
+            }
+
+            foreach (PlayerPlatform platform in CachedPlatforms)
+            {
+                platform.RestoreCollisionForPlayer();
+            }
+
+            foreach (Spikes spikes in CachedSpikes)
+            {
+                if (section.CollideCheck(spikes))
+                {
+                    spikes.Depth = section.Depth - 1;
+                }
+                else if (spikes.Depth == section.Depth - 1)
+                {
+                    spikes.Depth = -1;
+                }
+            }
+        }
+
+        private HashSet<int> DetectFloorChanges()
+        {
+            HashSet<int> dirty = new HashSet<int>();
+            Level level = SceneAs<Level>();
+            Rectangle watchArea = new Rectangle((int)X - 4, (int)Y, (int)Width + 8, (int)Height + 32);
+            HashSet<Entity> currentEntities = new HashSet<Entity>();
+
+            void CheckEntities<T>() where T : Entity
+            {
+                foreach (T entity in level.Tracker.GetEntities<T>())
+                {
+                    float left = entity.Collider != null ? entity.Left : entity.X;
+                    float right = entity.Collider != null ? entity.Right : entity.X + 1;
+                    float top = entity.Collider != null ? entity.Top : entity.Y;
+                    float bottom = entity.Collider != null ? entity.Bottom : entity.Y + 1;
+                    Rectangle bounds = new Rectangle((int)left, (int)top, (int)Math.Max(1, right - left), (int)Math.Max(1, bottom - top));
+                    if (!watchArea.Intersects(bounds))
+                    {
+                        if (WatchedFloorEntities.TryGetValue(entity, out FloorEntry leaving))
+                        {
+                            MarkSectionsInRange(leaving.Left, leaving.Right, dirty);
+                            WatchedFloorEntities.Remove(entity);
+                        }
+                        continue;
+                    }
+                    currentEntities.Add(entity);
+                    FloorEntry current = new FloorEntry { Left = left, Right = right, Top = top, Bottom = bottom };
+                    if (!WatchedFloorEntities.TryGetValue(entity, out FloorEntry previous))
+                    {
+                        MarkSectionsInRange(left, right, dirty);
+                    }
+                    else if (previous.Left != current.Left || previous.Right != current.Right || previous.Top != current.Top || previous.Bottom != current.Bottom)
+                    {
+                        MarkSectionsInRange(Math.Min(previous.Left, current.Left), Math.Max(previous.Right, current.Right), dirty);
+                    }
+
+                    WatchedFloorEntities[entity] = current;
+                }
+            }
+            CheckEntities<Solid>();
+            CheckEntities<Liquid>();
+            CheckEntities<WaterWheel>();
+            CheckEntities<PlayerPlatform>();
+            CheckEntities<Spikes>();
+            List<Entity> goneEntities = null;
+            foreach (KeyValuePair<Entity, FloorEntry> kv in WatchedFloorEntities)
+            {
+                if (!currentEntities.Contains(kv.Key))
+                {
+                    (goneEntities ??= new List<Entity>()).Add(kv.Key);
+                    MarkSectionsInRange(kv.Value.Left, kv.Value.Right, dirty);
+                }
+            }
+            if (goneEntities != null)
+            {
+                foreach (Entity entity in goneEntities)
+                {
+                    WatchedFloorEntities.Remove(entity);
+                }
+            }
+            return dirty;
+        }
+
+        private void MarkSectionsInRange(float left, float right, HashSet<int> dirty)
+        {
+            int startIndex = Math.Max(0, (int)(left - X) - 1);
+            int endIndex = Math.Min((int)Width - 1, (int)(right - X) + 1);
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                dirty.Add(i);
+            }
         }
 
         private bool CheckIfPurified()
@@ -478,18 +603,68 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public static bool determineIfInWaterfall()
         {
-            if (Engine.Scene is Level)
+            if (Engine.Scene is Level level)
             {
-                Level level = (Level)Engine.Scene;
-                foreach (WaterfallSection waterfall in level.Tracker.GetEntities<WaterfallSection>())
+                HashSet<Waterfall> checkedWaterfalls = new HashSet<Waterfall>();
+                foreach (WaterfallSection section in level.Tracker.GetEntities<WaterfallSection>())
                 {
-                    if (waterfall.Waterfall.PlayerInside())
+                    if (checkedWaterfalls.Add(section.Waterfall) && section.Waterfall.PlayerInside())
                     {
                         return true;
                     }
                 }
             }
             return false;
+        }
+
+        public override void Render()
+        {
+            base.Render();
+
+            Level level = SceneAs<Level>();
+            Camera camera = level?.Camera;
+            if (camera == null || Sections == null || Sections.Length == 0)
+            {
+                return;
+            }
+
+            int width = Sections.Length;
+            int i = 0;
+
+            while (i < width)
+            {
+                WaterfallSection section = Sections[i];
+                if (section == null)
+                {
+                    i++;
+                    continue;
+                }
+                int tileWidth = section.TileWidth;
+                int runEnd = i;
+                while (runEnd + 1 < width
+                    && (i / tileWidth) == ((runEnd + 1) / tileWidth)
+                    && Sections[runEnd + 1] != null
+                    && Sections[runEnd + 1].CanBatchWith(section))
+                {
+                    runEnd++;
+                }
+                int span = runEnd - i + 1;
+                int totalHeight = section.RenderHeight;
+
+                if (totalHeight > 0)
+                {
+                    int firstVisible = Math.Max(0, (int)(camera.Top - section.Y));
+                    int lastVisible = Math.Min(totalHeight, (int)(camera.Bottom - section.Y) + 1);
+
+                    for (int row = firstVisible; row < lastVisible; row++)
+                    {
+                        section.sectionSprite.RenderPosition = section.Position + Vector2.UnitY * row;
+                        section.sectionSprite.DrawSubrect(Vector2.Zero, new Rectangle(section.DrawSpriteIndex, row % 16, span, 1));
+                    }
+                }
+
+                i = runEnd + 1;
+            }
         }
 
         public override void Removed(Scene scene)
