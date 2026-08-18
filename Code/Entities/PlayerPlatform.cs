@@ -45,6 +45,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool PreventRefillOnSliding;
 
+        private float previousPlayerBottom;
+
+        private float previousPlayerTop;
+
         public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, bool forceSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false, bool preventRefillOnSliding = false) : base(position, width, 4, true)
         {
             AllowStaticMovers = false;
@@ -252,7 +256,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 player.MoveToY(player.Position.Y - 1);
                             }
-                            if (player.Bottom > StartPosition.Y + 4)
+                            float verticalMargin = Math.Abs(player.Speed.Y) * Engine.DeltaTime + 4f;
+                            if (player.Bottom > StartPosition.Y + verticalMargin)
                             {
                                 Collidable = false;
                             }
@@ -329,7 +334,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 player.MoveToY(player.Position.Y + 1);
                             }
-                            if (player.Top < StartPosition.Y + 12)
+                            float verticalMargin = Math.Abs(player.Speed.Y) * Engine.DeltaTime + 12f;
+                            if (player.Top < StartPosition.Y + verticalMargin)
                             {
                                 Collidable = false;
                             }
@@ -409,13 +415,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (player != null)
                 {
+                    float verticalMargin = Math.Abs(player.Speed.Y) * Engine.DeltaTime + 2f;
                     if (!UpsideDown)
                     {
                         if (CanJumpThrough)
                         {
+                            bool wasNearOrAbove = float.IsNaN(previousPlayerBottom) || previousPlayerBottom <= Top + verticalMargin;
+                            bool isNear = player.Bottom <= Top + verticalMargin;
                             if (player.Bottom <= Top + 2)
                             {
-                                Collidable = true;
+                                Collidable = isNear || (wasNearOrAbove && player.Speed.Y >= 0f);
                             }
                             else
                             {
@@ -431,9 +440,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (CanJumpThrough)
                         {
+                            bool wasNearOrBelow = float.IsNaN(previousPlayerTop) || previousPlayerTop >= Bottom - verticalMargin;
+                            bool isNear = player.Top >= Bottom - verticalMargin;
                             if (player.Top >= Bottom)
                             {
-                                Collidable = true;
+                                Collidable = isNear || (wasNearOrBelow && player.Speed.Y <= 0f);
                             }
                             else
                             {
@@ -455,6 +466,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collidable = false;
             }
+            previousPlayerBottom = player?.Bottom ?? 0;
+            previousPlayerTop = player?.Top ?? 0;
         }
 
         // Remove debug render
