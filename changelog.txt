@@ -5,6 +5,7 @@ Version 1.0.80 :
 - Fixed gems sounds when inserted in their slot being incorrect in The Secret Of Celeste Mountain
 - Redesigned the Status screen
 - Imrpoved Slopes collision with the player
+- Any actor or solid should now be able to collide with Slopes, includding modded ones
 - Fixed a bug heavily slowing the game when the Status screen or Upgrade Screen stayed open for a long period of time
 - Fixed a bug preventing the prompt for placing a marker on the In-Game map to be removed correctly if the player close it too fast
 - Fixed a bug incorrectly counting the Golden Strawberry of the B Side of Area 1 into various achievements in The Secret Of Celeste Mountain

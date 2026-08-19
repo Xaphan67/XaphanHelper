@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Microsoft.Xna.Framework;
 using Monocle;

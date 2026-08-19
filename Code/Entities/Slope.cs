@@ -301,16 +301,96 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             On.Celeste.Actor.MoveH += onActorMoveH;
             On.Celeste.Actor.TrySquishWiggle_CollisionData_int_int += onActorTrySquishWiggle;
-            On.Celeste.TheoCrystal.Update += TheoCrystalOnUpdate;
             On.Celeste.TheoCrystal.OnCollideH += TheoCrystalOnOnCollideH;
-            On.Celeste.Glider.Update += GliderOnUpdate;
             On.Celeste.Glider.OnCollideH += GliderOnOnCollideH;
-            On.Celeste.Puffer.Update += PufferOnUpdate;
-            On.Celeste.Seeker.Update += SeekerOnUpdate;
-            On.Celeste.Debris.Update += DebrisOnUpdate;
-            On.Celeste.MoveBlock.Update += MoveBlockOnUpdate;
             On.Celeste.Player.Update += modPlayerUpdate;
             IL.Celeste.Player.NormalUpdate += ilPlayerNormalUpdate;
+            IL.Monocle.EntityList.Update += ilEntityListUpdate;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Actor.MoveH -= onActorMoveH;
+            On.Celeste.Actor.TrySquishWiggle_CollisionData_int_int -= onActorTrySquishWiggle;
+            On.Celeste.TheoCrystal.OnCollideH -= TheoCrystalOnOnCollideH;
+            On.Celeste.Glider.OnCollideH -= GliderOnOnCollideH;
+            On.Celeste.Player.Update -= modPlayerUpdate;
+            IL.Celeste.Player.NormalUpdate -= ilPlayerNormalUpdate;
+            IL.Monocle.EntityList.Update -= ilEntityListUpdate;
+        }
+
+        private static void ilEntityListUpdate(ILContext il)
+        {
+            ILCursor cursor = new(il);
+            if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchCallvirt<Entity>("Update")))
+            {
+                cursor.Remove();
+                cursor.EmitDelegate(WrappedEntityUpdate);
+            }
+        }
+
+        private static void WrappedEntityUpdate(Entity entity)
+        {
+            if (entity is Actor actor && actor is not Player)
+            {
+                List<Slope> enabledSlopes = SetCollisionForEntity(actor);
+                actor.Update();
+                RestoreCollisionForEntity(enabledSlopes, actor.Scene);
+            }
+            else
+            {
+                entity.Update();
+            }
+        }
+
+        public static List<Slope> SetCollisionForEntity(Entity entity)
+        {
+            List<Slope> enabledSlopes = new();
+            if (entity?.Scene == null)
+            {
+                return enabledSlopes;
+            }
+            foreach (PlayerPlatform platform in entity.Scene.Tracker.GetEntities<PlayerPlatform>())
+            {
+                platform.Collidable = false;
+            }
+            foreach (Slope slope in entity.Scene.Tracker.GetEntities<Slope>())
+            {
+                if (!slope.CanJumpThrough)
+                {
+                    continue;
+                }
+                if (slope.IsApproachingFromCollidableSide(entity))
+                {
+                    slope.Collidable = true;
+                    enabledSlopes.Add(slope);
+                }
+            }
+            return enabledSlopes;
+        }
+
+        public static void RestoreCollisionForEntity(List<Slope> enabledSlopes, Scene scene)
+        {
+            foreach (Slope slope in enabledSlopes)
+            {
+                slope.Collidable = false;
+            }
+            if (scene != null)
+            {
+                foreach (PlayerPlatform platform in scene.Tracker.GetEntities<PlayerPlatform>())
+                {
+                    platform.RestoreCollisionForPlayer();
+                }
+            }
+        }
+
+        private static bool onActorMoveH(On.Celeste.Actor.orig_MoveH orig, Actor self, float moveH, Collision onCollide, Solid pusher)
+        {
+            if (self.CollideCheck<Slope>(self.Position + Vector2.UnitY) && self.GetType() != typeof(Player))
+            {
+                moveH = 0;
+            }
+            return orig(self, moveH, onCollide, pusher);
         }
 
         private static bool onActorTrySquishWiggle(On.Celeste.Actor.orig_TrySquishWiggle_CollisionData_int_int orig, Actor self, CollisionData data, int wiggleX, int wiggleY)
@@ -327,54 +407,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return orig(self, data, wiggleX, wiggleY);
         }
 
-        public static void Unload()
-        {
-            On.Celeste.Actor.MoveH -= onActorMoveH;
-            On.Celeste.Actor.TrySquishWiggle_CollisionData_int_int -= onActorTrySquishWiggle;
-            On.Celeste.TheoCrystal.Update -= TheoCrystalOnUpdate;
-            On.Celeste.TheoCrystal.OnCollideH -= TheoCrystalOnOnCollideH;
-            On.Celeste.Glider.Update -= GliderOnUpdate;
-            On.Celeste.Glider.OnCollideH -= GliderOnOnCollideH;
-            On.Celeste.Puffer.Update -= PufferOnUpdate;
-            On.Celeste.Seeker.Update -= SeekerOnUpdate;
-            On.Celeste.Debris.Update -= DebrisOnUpdate;
-            On.Celeste.MoveBlock.Update -= MoveBlockOnUpdate;
-            On.Celeste.Player.Update -= modPlayerUpdate;
-            IL.Celeste.Player.NormalUpdate -= ilPlayerNormalUpdate;
-
-        }
-
-        private static bool onActorMoveH(On.Celeste.Actor.orig_MoveH orig, Actor self, float moveH, Collision onCollide, Solid pusher)
-        {
-            if (self.CollideCheck<Slope>(self.Position + Vector2.UnitY) && self.GetType() != typeof(Player))
-            {
-                moveH = 0;
-            }
-            return orig(self, moveH, onCollide, pusher);
-        }
-
-        private static void TheoCrystalOnUpdate(On.Celeste.TheoCrystal.orig_Update orig, TheoCrystal self)
-        {
-            if (self.GetType() != typeof(TheoCrystal))
-            {
-                orig(self);
-                return;
-            }
-            SetCollisionBeforeUpdate(self);
-            orig(self);
-            if (!self.Hold.IsHeld)
-            {
-                foreach (Slope slope in self.SceneAs<Level>().Tracker.GetEntities<Slope>())
-                {
-                    if (slope.UpsideDown && self.CollideCheck(slope))
-                    {
-                        self.Position.Y += 1;
-                    }
-                }
-            }
-            SetCollisionAfterUpdate(self);
-        }
-
         private static void TheoCrystalOnOnCollideH(On.Celeste.TheoCrystal.orig_OnCollideH orig, TheoCrystal self, CollisionData data)
         {
             if (data.Hit is Slope)
@@ -385,28 +417,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 orig(self, data);
             }
-        }
-
-        private static void GliderOnUpdate(On.Celeste.Glider.orig_Update orig, Glider self)
-        {
-            if (self.GetType() != typeof(Glider))
-            {
-                orig(self);
-                return;
-            }
-            SetCollisionBeforeUpdate(self);
-            orig(self);
-            if (!self.Hold.IsHeld)
-            {
-                foreach (Slope slope in self.SceneAs<Level>().Tracker.GetEntities<Slope>())
-                {
-                    if (slope.UpsideDown && self.CollideCheck(slope))
-                    {
-                        self.Position.Y += 1;
-                    }
-                }
-            }
-            SetCollisionAfterUpdate(self);
         }
 
         private static void GliderOnOnCollideH(On.Celeste.Glider.orig_OnCollideH orig, Glider self, CollisionData data)
@@ -427,63 +437,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 orig(self, data);
             }
-        }
-
-        private static void PufferOnUpdate(On.Celeste.Puffer.orig_Update orig, Puffer self)
-        {
-            if (self.GetType() != typeof(Puffer))
-            {
-                orig(self);
-                return;
-            }
-            SetCollisionBeforeUpdate(self);
-            orig(self);
-            foreach (Slope slope in self.SceneAs<Level>().Tracker.GetEntities<Slope>())
-            {
-                if (slope.UpsideDown && self.CollideCheck(slope))
-                {
-                    self.Position.Y += 1;
-                }
-            }
-            SetCollisionAfterUpdate(self);
-        }
-
-        private static void SeekerOnUpdate(On.Celeste.Seeker.orig_Update orig, Seeker self)
-        {
-            if (self.GetType() != typeof(Seeker))
-            {
-                orig(self);
-                return;
-            }
-            SetCollisionBeforeUpdate(self);
-            orig(self);
-            foreach (Slope slope in self.SceneAs<Level>().Tracker.GetEntities<Slope>())
-            {
-                if (slope.UpsideDown && self.CollideCheck(slope))
-                {
-                    self.Position.Y += 1;
-                }
-            }
-            SetCollisionAfterUpdate(self);
-        }
-
-        private static void DebrisOnUpdate(On.Celeste.Debris.orig_Update orig, Debris self)
-        {
-            if (self.GetType() != typeof(Debris))
-            {
-                orig(self);
-                return;
-            }
-            SetCollisionBeforeUpdate(self);
-            orig(self);
-            foreach (Slope slope in self.SceneAs<Level>().Tracker.GetEntities<Slope>())
-            {
-                if (slope.UpsideDown && self.CollideCheck(slope))
-                {
-                    self.Position.Y += 1;
-                }
-            }
-            SetCollisionAfterUpdate(self);
         }
 
         private static void modPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self)
@@ -511,26 +464,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 XaphanModule.MaxRunSpeed = 0;
             }
-            orig(self);
-        }
-
-        private static void MoveBlockOnUpdate(On.Celeste.MoveBlock.orig_Update orig, MoveBlock self)
-        {
-            if (self.GetType() != typeof(MoveBlock))
+            List<Slope> slopes = null;
+            if (self.Scene is Level level)
             {
-                orig(self);
-                return;
-            }
-            SetCollisionBeforeUpdate(self);
-            orig(self);
-            foreach (Slope slope in self.SceneAs<Level>().Tracker.GetEntities<Slope>())
-            {
-                if (slope.UpsideDown && self.CollideCheck(slope))
+                slopes = level.Tracker.GetEntities<Slope>().Cast<Slope>().ToList();
+                foreach (Slope slope in slopes)
                 {
-                    self.Position.Y += 1;
+                    if (!slope.UpsideDown && self.CollideCheck(slope))
+                    {
+                        self.Y -= 1;
+                    }
+                    slope.Collidable = false;
                 }
             }
-            SetCollisionAfterUpdate(self);
+            orig(self);
+            if (slopes != null)
+            {
+                foreach (Slope slope in slopes)
+                {
+                    slope.Collidable = !slope.CanJumpThrough;
+                }
+            }
         }
 
         private static void ilPlayerNormalUpdate(ILContext il)
@@ -722,6 +676,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            Collidable = !CanJumpThrough;
             foreach (LightOccludeBlock lightOccludeBlock in lightOccludeBlocks)
             {
                 SceneAs<Level>().Add(lightOccludeBlock);
@@ -841,16 +796,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return Calc.HsvToColor(0.4f + Calc.YoYo(value) * 0.4f, 0.4f, 0.9f);
         }
 
-        public override void Update()
+        private bool IsApproachingFromCollidableSide(Entity entity)
         {
-            if (SceneAs<Level>().Tracker.GetEntities<DroneDebris>().Count > 0 && !CanJumpThrough)
+            if (CollideCheck(entity))
             {
-                Collidable = true;
+                return true;
             }
-            else
-            {
-                Collidable = false;
-            }
+            Vector2 testPoint = Side == "Right" ? entity.TopRight : entity.TopLeft;
+            float sideValue = (SlopeBottom.X - SlopeTop.X) * (testPoint.Y - SlopeTop.Y) - (SlopeBottom.Y - SlopeTop.Y) * (testPoint.X - SlopeTop.X);
+            return Side == "Right" ? sideValue >= 0 : sideValue <= 0;
         }
 
         public void DrawSlopesTiles(Vector2 Pos)
