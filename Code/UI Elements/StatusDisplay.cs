@@ -409,7 +409,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                     string qty = "x " + missileCount;
-                    Scene.Add(new UpgradeDisplay(level, false, new Vector2(210f, 789f), 0, 3, qty, getCustomSpritePath("MissilesModule"), "MissilesModule", XaphanModule.ModSaveData.MissilesModuleInactive, 54f, 54f, true, scale, -23f - ActiveFont.Measure(qty).X * scale / 2, 15f, true, true));
+                    Scene.Add(new UpgradeDisplay(level, false, new Vector2(210f, 789f), 0, 3, qty, getCustomSpritePath("Missile"), "Missile", XaphanModule.ModSaveData.MissilesModuleInactive, 54f, 54f, true, scale, -23f - ActiveFont.Measure(qty).X * scale / 2, 15f, true, true));
                 }
                 if (XaphanModule.ModSettings.SuperMissilesModule)
                 {
@@ -422,7 +422,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                     string qty = "x " + superMissileCount;
-                    Scene.Add(new UpgradeDisplay(level, false, new Vector2(320f, 789f), 1, 3, qty, getCustomSpritePath("SuperMissilesModule"), "SuperMissilesModule", XaphanModule.ModSaveData.SuperMissilesModuleInactive, 54f, 54f, true, scale, -25f - ActiveFont.Measure(qty).X * scale / 2, 15f, true, true));
+                    Scene.Add(new UpgradeDisplay(level, false, new Vector2(320f, 789f), 1, 3, qty, getCustomSpritePath("SuperMissile"), "SuperMissile", XaphanModule.ModSaveData.SuperMissilesModuleInactive, 54f, 54f, true, scale, -25f - ActiveFont.Measure(qty).X * scale / 2, 15f, true, true));
                 }
                 if (XaphanModule.ModSettings.RemoteDrone)
                 {
