@@ -769,6 +769,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "waterWheel", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
                     }
+                    else if (entity.Name == "XaphanHelper/Stele")
+                    {
+                        EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "stele", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
+                    }
+                    else if (entity.Name == "XaphanHelper/AncientText")
+                    {
+                        EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "ancientText", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
+                    }
                 }
             }
         }
@@ -2155,6 +2163,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             Icons.Add(new InGameMapIconsData("waterWheel", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                         }
+                        else if (entity.Type.Contains("stele"))
+                        {
+                            Icons.Add(new InGameMapIconsData("stele", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                        }
+                        else if (entity.Type.Contains("ancientText"))
+                        {
+                            Icons.Add(new InGameMapIconsData("ancientText", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                        }
                     }
                 }
                 if (!InGameMapControllerData.HideIconsInUnexploredRooms)
@@ -2246,6 +2262,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 else if (entity.Type.Contains("waterWheel"))
                                 {
                                     Icons.Add(new InGameMapIconsData("waterWheel", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                                }
+                                else if (entity.Type.Contains("stele"))
+                                {
+                                    Icons.Add(new InGameMapIconsData("stele", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                                }
+                                else if (entity.Type.Contains("ancientText"))
+                                {
+                                    Icons.Add(new InGameMapIconsData("ancientText", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                                 }
                             }
                         }
@@ -3026,14 +3050,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         continue;
                     }
                     Image iconImage = null;
-                    string path = icon.Type == "boss" ? "maps/" + Prefix + "/" : "maps/";
+                    HashSet<string> SOCMIcons = new HashSet<string>()
+                    {
+                        "ancientText", "boss", "journalPedestal", "stele", "waterWheel"
+                    };
+                    string path = SOCMIcons.Contains(icon.Type) ? "maps/" + Prefix + "/" : "maps/";
                     if (path.Contains("bubbleDoor") || path.Contains("pipeGate") || path.Contains("bigScreen"))
                     {
                         path = icon.Type;
-                    }
-                    if (icon.Type.Contains("journalPedestal") || icon.Type.Contains("waterWheel"))
-                    {
-                        path = "maps/Xaphan/0/";
                     }
                     if (icon.Checkmark)
                     {
