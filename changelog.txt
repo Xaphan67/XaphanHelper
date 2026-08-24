@@ -2,6 +2,8 @@ Version 1.0.80 :
 - Added "Off Frames", "Turn On Frames" and "On Frames" attributes to Custom Torches
 - Added "Jacket Priority" and "Double Dash Flag" attributes to Upgrade Controller
 - Added "Allow Static Movers" attribute to Flag Dash Switches
+- Added "Allow Light" attribute to Slopes
+- Removed "Can Jump Trough" attribute from Slopes. All slopes (including already existing ones) now act as jump trough slopes by default. Previously non-jump trough slopes still block light
 - Fixed gems sounds when inserted in their slot being incorrect in The Secret Of Celeste Mountain
 - Redesigned the Status screen
 - Imrpoved Slopes collision with the player

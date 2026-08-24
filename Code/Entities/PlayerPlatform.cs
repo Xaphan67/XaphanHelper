@@ -24,8 +24,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool StickyDash;
 
-        public bool CanJumpThrough;
-
         private int SlopeHeight;
 
         public float platfromWidth;
@@ -48,7 +46,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float previousPlayerTop;
 
-        public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, bool forceSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false, bool preventRefillOnSliding = false) : base(position, width, 4, true)
+        public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, bool forceSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool preventRefillOnSliding = false) : base(position, width, 4, true)
         {
             AllowStaticMovers = false;
             Gentle = gentle;
@@ -63,7 +61,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             slopeTop = top;
             AffectPlayerSpeed = affectPlayerSpeed;
             StickyDash = stickyDash;
-            CanJumpThrough = canJumpThrough;
             PreventRefillOnSliding = preventRefillOnSliding;
         }
 
@@ -412,47 +409,33 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!preventCollision)
             {
-                if (player != null)
+                if (player != null && (!UpsideDown ? player.Speed.Y >= 0 : true))
                 {
-                    float verticalMargin = Math.Abs(player.Speed.Y) * Engine.DeltaTime + 2f;
+                    float verticalMargin = Math.Abs(player.Speed.Y) * Engine.DeltaTime + 4f;
                     if (!UpsideDown)
                     {
-                        if (CanJumpThrough)
+                        bool wasNearOrAbove = float.IsNaN(previousPlayerBottom) || previousPlayerBottom <= Top + verticalMargin;
+                        bool isNear = player.Bottom <= Top + verticalMargin;
+                        if (player.Bottom <= Top + 4)
                         {
-                            bool wasNearOrAbove = float.IsNaN(previousPlayerBottom) || previousPlayerBottom <= Top + verticalMargin;
-                            bool isNear = player.Bottom <= Top + verticalMargin;
-                            if (player.Bottom <= Top + 2)
-                            {
-                                Collidable = isNear || (wasNearOrAbove && player.Speed.Y >= 0f);
-                            }
-                            else
-                            {
-                                Collidable = false;
-                            }
+                            Collidable = isNear || (wasNearOrAbove && player.Speed.Y >= 0f);
                         }
                         else
                         {
-                            Collidable = true;
+                            Collidable = false;
                         }
                     }
                     else
                     {
-                        if (CanJumpThrough)
+                        bool wasNearOrBelow = float.IsNaN(previousPlayerTop) || previousPlayerTop >= Bottom - verticalMargin;
+                        bool isNear = player.Top >= Bottom - verticalMargin;
+                        if (player.Top >= Bottom)
                         {
-                            bool wasNearOrBelow = float.IsNaN(previousPlayerTop) || previousPlayerTop >= Bottom - verticalMargin;
-                            bool isNear = player.Top >= Bottom - verticalMargin;
-                            if (player.Top >= Bottom)
-                            {
-                                Collidable = isNear || (wasNearOrBelow && player.Speed.Y <= 0f);
-                            }
-                            else
-                            {
-                                Collidable = false;
-                            }
+                            Collidable = isNear || (wasNearOrBelow && player.Speed.Y <= 0f);
                         }
                         else
                         {
-                            Collidable = true;
+                            Collidable = false;
                         }
                     }
                 }
@@ -472,7 +455,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         // Remove debug render
         public override void DebugRender(Camera camera)
         {
-            if (XaphanModuleSettings.ShowCompleteSlopesHitboxes)
+            //if (XaphanModuleSettings.ShowCompleteSlopesHitboxes)
             {
                 base.DebugRender(camera);
             }

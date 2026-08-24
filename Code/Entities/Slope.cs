@@ -68,7 +68,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool Rainbow;
 
-        public bool CanJumpThrough;
+        public bool AllowLight;
 
         public bool VisualOnly;
 
@@ -84,7 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool PreventRefillOnSliding;
 
-        public Slope(Vector2 position, Vector2 offset, bool gentle, string side, int soundIndex, int slopeHeight, string tilesTop, string tilesBottom, string texture, string flagTexture, bool canSlide, bool forceSlide, string directory, string flagDirectory, bool upsideDown, bool noRender, bool stickyDash, bool rainbow, bool canJumpThrough, string flag, bool affectPlayerSpeed, string renderMethod = "Type A", bool visualOnly = false, bool preventRefillOnSliding = false) : base(position + offset, 0, 0, true)
+        public Slope(Vector2 position, Vector2 offset, bool gentle, string side, int soundIndex, int slopeHeight, string tilesTop, string tilesBottom, string texture, string flagTexture, bool canSlide, bool forceSlide, string directory, string flagDirectory, bool upsideDown, bool noRender, bool stickyDash, bool rainbow, bool allowLight, string flag, bool affectPlayerSpeed, string renderMethod = "Type A", bool visualOnly = false, bool preventRefillOnSliding = false) : base(position + offset, 0, 0, true)
         {
 
             Tag = Tags.TransitionUpdate;
@@ -106,7 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             NoRender = noRender;
             StickyDash = stickyDash;
             Rainbow = rainbow;
-            CanJumpThrough = canJumpThrough;
+            AllowLight = allowLight;
             VisualOnly = visualOnly;
             Flag = flag;
             AffectPlayerSpeed = affectPlayerSpeed;
@@ -119,7 +119,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (side == "Left")
                     {
                         colliderList = new ColliderList(new Hitbox(4, 1, 0, 0));
-                        if (!CanJumpThrough)
+                        if (!AllowLight)
                         {
                             lightOccludeBlocks.Add(new LightOccludeBlock(Position, 8, 2));
                         }
@@ -136,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 14 : 9, 1, (Gentle ? i * 16 : i * 8), 5 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 16 : 10, 1, (Gentle ? i * 16 : i * 8), 6 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 18 : 11, 1, (Gentle ? i * 16 : i * 8), 7 + i * 8));
-                            if (!CanJumpThrough)
+                            if (!AllowLight)
                             {
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 1 + i * 8), 4 + (Gentle ? 6 : 5), 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 3 + i * 8), 4 + (Gentle ? 10 : 7), 2));
@@ -153,7 +153,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 colliderList.Add(new Hitbox(7, 1, SlopeHeight * 8, 3 + SlopeHeight * 8));
                             }
-                            if (!CanJumpThrough)
+                            if (!AllowLight)
                             {
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 1 + SlopeHeight * 8), 4 + (Gentle ? 6 : 5), 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 3 + SlopeHeight * 8), 4 + (Gentle ? 10 : 7), 2));
@@ -164,7 +164,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     else
                     {
                         colliderList = new ColliderList(new Hitbox(4, 1, 20, 0));
-                        if (!CanJumpThrough)
+                        if (!AllowLight)
                         {
                             lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16, 0), 8, 2));
                         }
@@ -181,7 +181,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 14 : 9, 1, (Gentle ? 10f - i * 16 : 15f - i * 8), 5 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 16 : 10, 1, (Gentle ? 8f - i * 16 : 14f - i * 8), 6 + i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 18 : 11, 1, (Gentle ? 6f - i * 16 : 13f - i * 8), 7 + i * 8));
-                            if (!CanJumpThrough)
+                            if (!AllowLight)
                             {
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 14f - i * 16 : 15f - i * 8), 1 + i * 8), 4 + (Gentle ? 6 : 5), 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 10f - i * 16 : 13f - i * 8), 3 + i * 8), 4 + (Gentle ? 10 : 7), 2));
@@ -198,7 +198,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 colliderList.Add(new Hitbox(7, 1, 17f - SlopeHeight * 8, 3 + SlopeHeight * 8));
                             }
-                            if (!CanJumpThrough)
+                            if (!AllowLight)
                             {
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 1 + SlopeHeight * 8), 4 + (Gentle ? 6 : 5), 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(SlopeHeight * (Gentle ? 16 : 8), 3 + SlopeHeight * 8), 4 + (Gentle ? 10 : 7), 2));
@@ -212,7 +212,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (side == "Left")
                     {
                         colliderList = new ColliderList(new Hitbox(8, 1, 0, 15));
-                        if (!CanJumpThrough)
+                        if (!AllowLight)
                         {
                             lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(0, 14), 8, 2));
                         }
@@ -229,7 +229,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 18 : 13, 1, (Gentle ? i * 16 : i * 8), 7 + 3 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 20 : 14, 1, (Gentle ? i * 16 : i * 8), 7 + 2 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 22 : 15, 1, (Gentle ? i * 16 : i * 8), 7 + 1 - i * 8));
-                            if (!CanJumpThrough)
+                            if (!AllowLight)
                             {
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 6 - i * 8), Gentle ? 10 : 9, 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? i * 16 : i * 8), 7 + 4 - i * 8), Gentle ? 14 : 11, 2));
@@ -242,7 +242,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     else
                     {
                         colliderList = new ColliderList(new Hitbox(8, 1, 16, 15));
-                        if (!CanJumpThrough)
+                        if (!AllowLight)
                         {
                             lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2(16, 14), 8, 2));
                         }
@@ -259,7 +259,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             colliderList.Add(new Hitbox(Gentle ? 18 : 13, 1, (Gentle ? 6f - i * 16 : 11f - i * 8), 7 + 3 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 20 : 14, 1, (Gentle ? 4f - i * 16 : 10f - i * 8), 7 + 2 - i * 8));
                             colliderList.Add(new Hitbox(Gentle ? 22 : 15, 1, (Gentle ? 2f - i * 16 : 9f - i * 8), 7 + 1 - i * 8));
-                            if (!CanJumpThrough)
+                            if (!AllowLight)
                             {
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 14f - i * 16 : 15f - i * 8), 7 + 6 - i * 8), Gentle ? 10 : 9, 2));
                                 lightOccludeBlocks.Add(new LightOccludeBlock(Position + new Vector2((Gentle ? 10f - i * 16 : 13f - i * 8), 7 + 4 - i * 8), Gentle ? 14 : 11, 2));
@@ -291,8 +291,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         }
 
         public Slope(EntityData data, Vector2 offset) : this(data.Position, offset, data.Bool("gentle"), data.Attr("side"), data.Int("soundIndex"), data.Int("slopeHeight", 1), data.Attr("tilesTop"), data.Attr("tilesBottom"),
-            data.Attr("texture", "cement"), data.Attr("flagTexture", ""), data.Bool("canSlide", false), data.Bool("forceSlide", false), data.Attr("customDirectory", ""), data.Attr("flagCustomDirectory", ""), data.Bool("upsideDown", false), data.Bool("noRender", false), data.Bool("stickyDash", false), data.Bool("rainbow", false),
-            data.Bool("canJumpThrough", false), data.Attr("flag", ""), data.Bool("affectPlayerSpeed", false), data.Attr("renderMethod", "Type A"), data.Bool("visualOnly", false), data.Bool("preventRefillOnSliding", false))
+        data.Attr("texture", "cement"), data.Attr("flagTexture", ""), data.Bool("canSlide", false), data.Bool("forceSlide", false), data.Attr("customDirectory", ""), data.Attr("flagCustomDirectory", ""), data.Bool("upsideDown", false), data.Bool("noRender", false), data.Bool("stickyDash", false), data.Bool("rainbow", false),
+        data.Bool("canJumpThrough", false) || data.Bool("allowLight", false), data.Attr("flag", ""), data.Bool("affectPlayerSpeed", false), data.Attr("renderMethod", "Type A"), data.Bool("visualOnly", false), data.Bool("preventRefillOnSliding", false))
         {
 
         }
@@ -356,10 +356,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             foreach (Slope slope in entity.Scene.Tracker.GetEntities<Slope>())
             {
-                if (!slope.CanJumpThrough)
-                {
-                    continue;
-                }
                 if (slope.IsApproachingFromCollidableSide(entity))
                 {
                     slope.Collidable = true;
@@ -377,9 +373,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (scene != null)
             {
+                Player player = scene.Tracker.GetEntity<Player>();
                 foreach (PlayerPlatform platform in scene.Tracker.GetEntities<PlayerPlatform>())
                 {
-                    platform.RestoreCollisionForPlayer();
+                    platform.SetCollision(player);
                 }
             }
         }
@@ -464,27 +461,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 XaphanModule.MaxRunSpeed = 0;
             }
-            List<Slope> slopes = null;
-            if (self.Scene is Level level)
-            {
-                slopes = level.Tracker.GetEntities<Slope>().Cast<Slope>().ToList();
-                foreach (Slope slope in slopes)
-                {
-                    if (!slope.UpsideDown && self.CollideCheck(slope))
-                    {
-                        self.Y -= 1;
-                    }
-                    slope.Collidable = false;
-                }
-            }
             orig(self);
-            if (slopes != null)
-            {
-                foreach (Slope slope in slopes)
-                {
-                    slope.Collidable = !slope.CanJumpThrough;
-                }
-            }
         }
 
         private static void ilPlayerNormalUpdate(ILContext il)
@@ -550,46 +527,39 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (slope.CanJumpThrough)
+                    if (!slope.UpsideDown)
                     {
-                        if (!slope.UpsideDown)
+                        if (slope.Side == "Right")
                         {
-                            if (slope.Side == "Right")
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.BottomCenter.X - slope.SlopeTop.X) >= 0)
                             {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.BottomCenter.X - slope.SlopeTop.X) >= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
-                            }
-                            else if (slope.Side == "Left")
-                            {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.BottomCenter.X - slope.SlopeTop.X) <= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
+                                slope.Collidable = true;
                             }
                         }
-                        else
+                        else if (slope.Side == "Left")
                         {
-                            if (slope.Side == "Right")
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.BottomCenter.X - slope.SlopeTop.X) <= 0)
                             {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.TopRight.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.TopRight.X - slope.SlopeTop.X) >= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
-                            }
-                            else if (slope.Side == "Left")
-                            {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.TopLeft.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.TopLeft.X - slope.SlopeTop.X) <= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
+                                slope.Collidable = true;
                             }
                         }
                     }
-                    else if (!slope.UpsideDown || (slope.UpsideDown && ((slope.Side == "Right" && actor.Right < slope.Right) || (slope.Side == "Left" && actor.Left > slope.Left))))
+                    else
                     {
-                        slope.Collidable = true;
+                        if (slope.Side == "Right")
+                        {
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.TopRight.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.TopRight.X - slope.SlopeTop.X) >= 0)
+                            {
+                                slope.Collidable = true;
+                            }
+                        }
+                        else if (slope.Side == "Left")
+                        {
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.TopLeft.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.TopLeft.X - slope.SlopeTop.X) <= 0)
+                            {
+                                slope.Collidable = true;
+                            }
+                        }
                     }
                 }
             }
@@ -611,46 +581,39 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    if (slope.CanJumpThrough)
+                    if (!slope.UpsideDown)
                     {
-                        if (!slope.UpsideDown)
+                        if (slope.Side == "Right")
                         {
-                            if (slope.Side == "Right")
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.BottomCenter.X - slope.SlopeTop.X) >= 0)
                             {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.BottomCenter.X - slope.SlopeTop.X) >= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
-                            }
-                            else if (slope.Side == "Left")
-                            {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.BottomCenter.X - slope.SlopeTop.X) <= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
+                                slope.Collidable = true;
                             }
                         }
-                        else
+                        else if (slope.Side == "Left")
                         {
-                            if (slope.Side == "Right")
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.BottomCenter.X - slope.SlopeTop.X) <= 0)
                             {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.TopRight.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.TopRight.X - slope.SlopeTop.X) >= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
-                            }
-                            else if (slope.Side == "Left")
-                            {
-                                if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.TopLeft.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.TopLeft.X - slope.SlopeTop.X) <= 0)
-                                {
-                                    slope.Collidable = true;
-                                }
+                                slope.Collidable = true;
                             }
                         }
                     }
-                    else if (!slope.UpsideDown || (slope.UpsideDown && ((slope.Side == "Right" && solid.Right < slope.Right) || (slope.Side == "Left" && solid.Left > slope.Left))))
+                    else
                     {
-                        slope.Collidable = true;
+                        if (slope.Side == "Right")
+                        {
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.TopRight.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.TopRight.X - slope.SlopeTop.X) >= 0)
+                            {
+                                slope.Collidable = true;
+                            }
+                        }
+                        else if (slope.Side == "Left")
+                        {
+                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.TopLeft.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.TopLeft.X - slope.SlopeTop.X) <= 0)
+                            {
+                                slope.Collidable = true;
+                            }
+                        }
                     }
                 }
             }
@@ -676,7 +639,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            Collidable = !CanJumpThrough;
+            Collidable = false;
             foreach (LightOccludeBlock lightOccludeBlock in lightOccludeBlocks)
             {
                 SceneAs<Level>().Add(lightOccludeBlock);
@@ -750,10 +713,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (!VisualOnly)
             {
-                SceneAs<Level>().Add(new PlayerPlatform(Position + new Vector2(Side == "Right" ? ((Gentle ? -(SlopeHeight - 1) * 16 : -(SlopeHeight - 1) * 8) + 8) * (UpsideDown ? -1 : 1) : 0 + 0, 4 + (8 * (SlopeHeight - 1) + 4)) * (UpsideDown ? -1 : 1), Gentle ? 8 + 16 * SlopeHeight : 8 + 8 * SlopeHeight, Gentle, Side, SoundIndex, SlopeHeight, CanSlide, ForceSlide, Top, AffectPlayerSpeed, UpsideDown, StickyDash, CanJumpThrough, PreventRefillOnSliding));
+                SceneAs<Level>().Add(new PlayerPlatform(Position + new Vector2(Side == "Right" ? ((Gentle ? -(SlopeHeight - 1) * 16 : -(SlopeHeight - 1) * 8) + 8) * (UpsideDown ? -1 : 1) : 0 + 0, 4 + (8 * (SlopeHeight - 1) + 4)) * (UpsideDown ? -1 : 1), Gentle ? 8 + 16 * SlopeHeight : 8 + 8 * SlopeHeight, Gentle, Side, SoundIndex, SlopeHeight, CanSlide, ForceSlide, Top, AffectPlayerSpeed, UpsideDown, StickyDash, PreventRefillOnSliding));
                 if (!UpsideDown)
                 {
-                    SceneAs<Level>().Add(new FakePlayerPlatform(Position + new Vector2(Side == "Right" ? ((Gentle ? -(SlopeHeight - 1) * 16 : -(SlopeHeight - 1) * 8) + 8) * (UpsideDown ? -1 : 1) : 0 + 0, (8 * (SlopeHeight - 1) + 4)) * (UpsideDown ? -1 : 1), Gentle ? 8 + 16 * SlopeHeight : 8 + 8 * SlopeHeight, Gentle, Side, SoundIndex, SlopeHeight, Top, UpsideDown, StickyDash, CanJumpThrough));
+                    SceneAs<Level>().Add(new FakePlayerPlatform(Position + new Vector2(Side == "Right" ? ((Gentle ? -(SlopeHeight - 1) * 16 : -(SlopeHeight - 1) * 8) + 8) * (UpsideDown ? -1 : 1) : 0 + 0, (8 * (SlopeHeight - 1) + 4)) * (UpsideDown ? -1 : 1), Gentle ? 8 + 16 * SlopeHeight : 8 + 8 * SlopeHeight, Gentle, Side, SoundIndex, SlopeHeight, Top, UpsideDown, StickyDash));
                 }
             }
 
