@@ -266,11 +266,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             foreach (List<Point> loop in loops)
             {
                 List<OutlinePoint> pts = new();
-                for (int i = 0; i < loop.Count; i++)
+                int n = loop.Count;
+                for (int i = 0; i < n; i++)
                 {
+                    Point a = loop[i];
+                    Point b = loop[(i + 1) % n];
+                    Point pixel = BorderPixelForEdge(a, b, covered, w, h);
                     Math.DivRem(i, 4, out int pos);
                     bool visible = pos == 1 || pos == 2;
-                    pts.Add(new OutlinePoint(loop[i].X + offsetX, loop[i].Y + offsetY, visible));
+                    pts.Add(new OutlinePoint(pixel.X + offsetX, pixel.Y + offsetY, visible));
                 }
                 result.Add(pts);
             }
@@ -281,6 +285,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 result.Insert(0, outer);
             }
             return result;
+        }
+
+        private static Point BorderPixelForEdge(Point a, Point b, bool[,] covered, int w, int h)
+        {
+            bool CoveredAt(int x, int y) => x >= 0 && y >= 0 && x < w && y < h && covered[x, y];
+            if (a.X == b.X)
+            {
+                int x = a.X;
+                int y = Math.Min(a.Y, b.Y);
+                int col = CoveredAt(x - 1, y) ? x - 1 : x;
+                return new Point(col, y);
+            }
+            else
+            {
+                int y = a.Y;
+                int x = Math.Min(a.X, b.X);
+                int row = CoveredAt(x, y - 1) ? y - 1 : y;
+                return new Point(x, row);
+            }
         }
     }
 }
