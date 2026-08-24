@@ -17,7 +17,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private List<VertexLight> lights;
 
-        private List<OutlinePoint> outline;
+        private List<List<OutlinePoint>> outlineLoops;
 
         private List<Coroutine> falls;
 
@@ -35,8 +35,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float outlineColorStrength;
 
-        private float outlineColorTimer;
-
         private float crumbleDelay;
 
         private bool oneUse;
@@ -52,6 +50,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public bool light;
 
         private HashSet<CustomCrumbleBlock> groupedCustomCrumbleBlocks = new();
+
+        public bool IsOutlineLeader = true;
 
         public EntityID eid;
 
@@ -103,13 +103,37 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 addRange(groupedCustomCrumbleBlocks, block.groupedCustomCrumbleBlocks);
                 block.groupedCustomCrumbleBlocks = groupedCustomCrumbleBlocks;
             }
+            scene.OnEndOfFrame += RefreshGroupOutline;
+        }
+
+        private void RefreshGroupOutline()
+        {
+            List<CustomCrumbleBlock> outlineCandidates = groupedCustomCrumbleBlocks.Where(b => !b.oneUse).ToList();
+
+            if (outlineCandidates.Count == 0)
+            {
+                // Aucun bloc du groupe ne réapparaît : pas d'outline à afficher.
+                IsOutlineLeader = false;
+                return;
+            }
+
+            CustomCrumbleBlock leader = outlineCandidates.OrderBy(b => b.Position.Y).ThenBy(b => b.Position.X).First();
+            IsOutlineLeader = leader == this;
+
+            if (IsOutlineLeader)
+            {
+                List<Solid> solids = outlineCandidates.Cast<Solid>().ToList();
+                List<List<OutlinePoint>> loops = OutlinePoint.GenerateGroupOutlines(solids, this);
+                if (loops.Count > 0)
+                {
+                    outlineLoops = loops;
+                }
+            }
         }
 
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            outline = OutlinePoint.GenerateSolidOutline(this);
-            outlineColorTimer = respawnTime / outline.Count;
             if (!oneUse)
             {
                 Add(outlineFader = new Coroutine());
@@ -398,17 +422,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Render()
         {
             base.Render();
-            for (int i = 0; i < outline.Count; i++)
+            if (!IsOutlineLeader || outlineLoops == null)
             {
-                if (respawnTimer < i * outlineColorTimer)
+                return;
+            }
+            foreach (List<OutlinePoint> loop in outlineLoops)
+            {
+                float colorTimer = respawnTime / loop.Count;
+                for (int i = 0; i < loop.Count; i++)
                 {
-                    Draw.Point(Position + new Vector2(outline[i].x, outline[i].y), Color.DimGray * (outline[i].visible ? outlineColorStrength : 0f));
-                }
-                else
-                {
-                    Draw.Point(Position + new Vector2(outline[i].x, outline[i].y), Color.White * (outline[i].visible ? outlineColorStrength : 0f));
+                    Color baseColor = respawnTimer < i * colorTimer ? Color.DimGray : Color.White;
+                    Draw.Point(Position + new Vector2(loop[i].x, loop[i].y), baseColor * (loop[i].visible ? outlineColorStrength : 0f));
                 }
             }
+        }
+
+        public override void Removed(Scene scene)
+        {
+            base.Removed(scene);
+            groupedCustomCrumbleBlocks.Remove(this);
         }
     }
 }
