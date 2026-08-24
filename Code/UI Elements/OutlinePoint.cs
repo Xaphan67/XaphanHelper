@@ -22,6 +22,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private struct Point : IEquatable<Point>
         {
             public int X;
+
             public int Y;
 
             public Point(int x, int y)
@@ -31,8 +32,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
 
             public bool Equals(Point other) => X == other.X && Y == other.Y;
-            public override bool Equals(object obj) => obj is Point other && Equals(other);
-            public override int GetHashCode() => X * 397 ^ Y;
         }
 
         public static List<OutlinePoint> GenerateSolidOutline(Solid solid)
@@ -109,24 +108,20 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 return empty;
             }
-
             if (group.Count == 1 && group[0] == origin)
             {
                 return new List<List<OutlinePoint>> { GenerateSolidOutline(origin) };
             }
-
             int minX = (int)group.Min(s => s.Position.X);
             int minY = (int)group.Min(s => s.Position.Y);
             int maxX = (int)group.Max(s => s.Position.X + s.Width);
             int maxY = (int)group.Max(s => s.Position.Y + s.Height);
             int w = maxX - minX;
             int h = maxY - minY;
-
             if (w <= 0 || h <= 0)
             {
                 return empty;
             }
-
             bool[,] covered = new bool[w, h];
             foreach (Solid s in group)
             {
@@ -140,9 +135,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-
             bool Inside(int x, int y) => x >= 0 && y >= 0 && x < w && y < h && covered[x, y];
-
             var neighbors = new Dictionary<Point, List<Point>>();
             void AddEdge(Point a, Point b)
             {
@@ -157,7 +150,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 lb.Add(a);
             }
-
             for (int x = 0; x <= w; x++)
             {
                 for (int y = 0; y < h; y++)
@@ -168,7 +160,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-
             for (int y = 0; y <= h; y++)
             {
                 for (int x = 0; x < w; x++)
@@ -179,12 +170,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-
             if (neighbors.Count == 0)
             {
                 return empty;
             }
-
             var visited = new HashSet<Point>();
             var components = new List<List<Point>>();
             foreach (Point key in neighbors.Keys)
@@ -211,7 +200,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 components.Add(compVerts);
             }
-
             List<List<Point>> loops = new();
             foreach (List<Point> comp in components)
             {
@@ -232,7 +220,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 loops.Add(loop);
             }
-
             int outerIdx = 0;
             long bestArea = -1;
             for (int i = 0; i < loops.Count; i++)
@@ -246,7 +233,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     outerIdx = i;
                 }
             }
-
             Point ComputeTopCenterStart(List<Point> loop)
             {
                 int loopMinX = loop.Min(p => p.X);
@@ -265,7 +251,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 int bestX = topYByX.Keys.OrderBy(x => Math.Abs(x - loopCenterX)).First();
                 return new Point(bestX, topYByX[bestX]);
             }
-
             for (int i = 0; i < loops.Count; i++)
             {
                 Point start = ComputeTopCenterStart(loops[i]);
@@ -275,7 +260,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     loops[i] = loops[i].Skip(idx).Concat(loops[i].Take(idx)).ToList();
                 }
             }
-
             float offsetX = minX - origin.Position.X;
             float offsetY = minY - origin.Position.Y;
             var result = new List<List<OutlinePoint>>();
@@ -290,14 +274,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 result.Add(pts);
             }
-
             if (outerIdx != 0)
             {
                 List<OutlinePoint> outer = result[outerIdx];
                 result.RemoveAt(outerIdx);
                 result.Insert(0, outer);
             }
-
             return result;
         }
     }

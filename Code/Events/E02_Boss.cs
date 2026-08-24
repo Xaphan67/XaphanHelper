@@ -106,8 +106,8 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru3 = new JumpthruPlatform(bounds + new Vector2(232f, 160f), 24, "Xaphan/abyss_a", 8);
             jumpThru4 = new JumpthruPlatform(bounds, 24, "Xaphan/abyss_a", 8);
             jumpThru5 = new JumpthruPlatform(bounds, 24, "Xaphan/abyss_a", 8);
-            crumblePlatform1 = new CustomCrumbleBlock(bounds, Vector2.Zero, 24, 8, 2f, 0.6f, false, false, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
-            crumblePlatform2 = new CustomCrumbleBlock(bounds, Vector2.Zero, 24, 8, 2f, 0.6f, false, false, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
+            crumblePlatform1 = new CustomCrumbleBlock(bounds, Vector2.Zero, 24, 8, 2f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
+            crumblePlatform2 = new CustomCrumbleBlock(bounds, Vector2.Zero, 24, 8, 2f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
             spikes = new Spikes(bounds, 48, Spikes.Directions.Down, "Xaphan/abyss_b");
             arrowUp = new Decal("Xaphan/Common/arrow_up00.png", bounds, new Vector2(1f, 1f), 1);
             arrowDown = new Decal("Xaphan/Common/arrow_down00.png", bounds, new Vector2(1f, 1f), 1);
@@ -404,10 +404,10 @@ namespace Celeste.Mod.XaphanHelper.Events
                             }
                             level.Displacement.AddBurst(refill.Center, 0.5f, 8f, 32f, 0.5f);
                             refill.RemoveSelf();
-                            crumblePlatform3 = new CustomCrumbleBlock(bounds + new Vector2(128f, 152f), Vector2.Zero, 16, 8, 2f, 0.6f, false, false, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
+                            crumblePlatform3 = new CustomCrumbleBlock(bounds + new Vector2(128f, 152f), Vector2.Zero, 16, 8, 2f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
                             level.Add(crumblePlatform3);
                             level.Displacement.AddBurst(crumblePlatform3.Center, 0.5f, 8f, 32f, 0.5f);
-                            crumblePlatform4 = new CustomCrumbleBlock(bounds + new Vector2(176f, 152f), Vector2.Zero, 16, 8, 2f, 0.6f, false, false, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
+                            crumblePlatform4 = new CustomCrumbleBlock(bounds + new Vector2(176f, 152f), Vector2.Zero, 16, 8, 2f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f);
                             level.Add(crumblePlatform4);
                             level.Displacement.AddBurst(crumblePlatform4.Center, 0.5f, 8f, 32f, 0.5f);
                             warningSign.Position = bounds + new Vector2(160f, 56f);

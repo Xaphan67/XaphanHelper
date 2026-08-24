@@ -39,7 +39,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool oneUse;
 
-        private bool triggerAdjacents;
+        public int Group;
 
         private string texture;
 
@@ -55,19 +55,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public EntityID eid;
 
-        public CustomCrumbleBlock(EntityData data, Vector2 offset, EntityID eid) : this(data.Position, offset, data.Width, data.Height, data.Float("respawnTime", 2f), data.Float("crumbleDelay", 0.4f), data.Bool("oneUse", false), data.Bool("triggerAdjacents", false),
+        public CustomCrumbleBlock(EntityData data, Vector2 offset, EntityID eid) : this(data.Position, offset, data.Width, data.Height, data.Float("respawnTime", 2f), data.Float("crumbleDelay", 0.4f), data.Bool("oneUse", false), data.Int("group", -1),
             data.Int("rotation"), data.Attr("texture"), data.Bool("light", true))
         {
             this.eid = eid;
         }
 
-        public CustomCrumbleBlock(Vector2 position, Vector2 offset, int width, int height, float respawnTime, float crumbleDelay, bool oneUse, bool triggerAdjacents, int rotation = 0, string texture = null, bool light = true, float lightOccludeValue = 0.8f) : base(position + offset, width, height, safe: false)
+        public CustomCrumbleBlock(Vector2 position, Vector2 offset, int width, int height, float respawnTime, float crumbleDelay, bool oneUse, int group, int rotation = 0, string texture = null, bool light = true, float lightOccludeValue = 0.8f) : base(position + offset, width, height, safe: false)
         {
             EnableAssistModeChecks = false;
             this.respawnTime = respawnTime;
             this.crumbleDelay = crumbleDelay;
             this.oneUse = oneUse;
-            this.triggerAdjacents = triggerAdjacents;
+            Group = group;
             this.texture = texture;
             this.light = light;
             if (string.IsNullOrEmpty(texture))
@@ -79,29 +79,60 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -2;
         }
 
-        private void addRange(HashSet<CustomCrumbleBlock> set, IEnumerable<CustomCrumbleBlock> elements)
-        {
-            foreach (CustomCrumbleBlock element in elements)
-            {
-                set.Add(element);
-            }
-        }
-
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            groupedCustomCrumbleBlocks.Add(this);
-            if (triggerAdjacents)
+            if (Group != -1)
             {
-                addRange(groupedCustomCrumbleBlocks, CollideAll<CustomCrumbleBlock>(Position + Vector2.UnitX).OfType<CustomCrumbleBlock>().Where(p => p.triggerAdjacents));
-                addRange(groupedCustomCrumbleBlocks, CollideAll<CustomCrumbleBlock>(Position - Vector2.UnitX).OfType<CustomCrumbleBlock>().Where(p => p.triggerAdjacents));
-                addRange(groupedCustomCrumbleBlocks, CollideAll<CustomCrumbleBlock>(Position + Vector2.UnitY).OfType<CustomCrumbleBlock>().Where(p => p.triggerAdjacents));
-                addRange(groupedCustomCrumbleBlocks, CollideAll<CustomCrumbleBlock>(Position - Vector2.UnitY).OfType<CustomCrumbleBlock>().Where(p => p.triggerAdjacents));
+                HashSet<CustomCrumbleBlock> members = new(scene.Tracker.GetEntities<CustomCrumbleBlock>().Cast<CustomCrumbleBlock>().Where(p => p.Group == Group));
+
+                var visited = new HashSet<CustomCrumbleBlock>();
+                foreach (CustomCrumbleBlock start in members)
+                {
+                    if (visited.Contains(start))
+                    {
+                        continue;
+                    }
+                    List<CustomCrumbleBlock> cluster = new List<CustomCrumbleBlock>();
+                    Stack<CustomCrumbleBlock> stack = new Stack<CustomCrumbleBlock>();
+                    stack.Push(start);
+                    visited.Add(start);
+                    while (stack.Count > 0)
+                    {
+                        CustomCrumbleBlock current = stack.Pop();
+                        cluster.Add(current);
+                        foreach (CustomCrumbleBlock other in members)
+                        {
+                            if (!visited.Contains(other) && AreAdjacent(current, other))
+                            {
+                                visited.Add(other);
+                                stack.Push(other);
+                            }
+                        }
+                    }
+                    if (cluster.Count > 1)
+                    {
+                        float minCrumbleDelay = cluster.Min(b => b.crumbleDelay);
+                        float minRespawnTime = cluster.Min(b => b.respawnTime);
+                        foreach (CustomCrumbleBlock block in cluster)
+                        {
+                            block.crumbleDelay = minCrumbleDelay;
+                            block.respawnTime = minRespawnTime;
+                        }
+                    }
+                }
+
+                foreach (CustomCrumbleBlock block in members)
+                {
+                    block.groupedCustomCrumbleBlocks = members;
+                }
             }
-            foreach (CustomCrumbleBlock block in new HashSet<CustomCrumbleBlock>(groupedCustomCrumbleBlocks))
+            else
             {
-                addRange(groupedCustomCrumbleBlocks, block.groupedCustomCrumbleBlocks);
-                block.groupedCustomCrumbleBlocks = groupedCustomCrumbleBlocks;
+                groupedCustomCrumbleBlocks = new HashSet<CustomCrumbleBlock>
+                {
+                    this
+                };
             }
             scene.OnEndOfFrame += RefreshGroupOutline;
         }
@@ -109,26 +140,58 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void RefreshGroupOutline()
         {
             List<CustomCrumbleBlock> outlineCandidates = groupedCustomCrumbleBlocks.Where(b => !b.oneUse).ToList();
-
-            if (outlineCandidates.Count == 0)
+            List<CustomCrumbleBlock> cluster = GetAdjacentCluster(this, outlineCandidates);
+            if (cluster.Count == 0)
             {
-                // Aucun bloc du groupe ne réapparaît : pas d'outline à afficher.
                 IsOutlineLeader = false;
                 return;
             }
-
-            CustomCrumbleBlock leader = outlineCandidates.OrderBy(b => b.Position.Y).ThenBy(b => b.Position.X).First();
+            CustomCrumbleBlock leader = cluster.OrderBy(b => b.Position.Y).ThenBy(b => b.Position.X).First();
             IsOutlineLeader = leader == this;
-
             if (IsOutlineLeader)
             {
-                List<Solid> solids = outlineCandidates.Cast<Solid>().ToList();
+                List<Solid> solids = cluster.Cast<Solid>().ToList();
                 List<List<OutlinePoint>> loops = OutlinePoint.GenerateGroupOutlines(solids, this);
                 if (loops.Count > 0)
                 {
                     outlineLoops = loops;
                 }
             }
+        }
+
+        private static bool AreAdjacent(CustomCrumbleBlock a, CustomCrumbleBlock b)
+        {
+            float aLeft = a.Position.X, aRight = a.Position.X + a.Width, aTop = a.Position.Y, aBottom = a.Position.Y + a.Height;
+            float bLeft = b.Position.X, bRight = b.Position.X + b.Width, bTop = b.Position.Y, bBottom = b.Position.Y + b.Height;
+            bool horizontallyTouching = (aRight == bLeft || aLeft == bRight) && aTop < bBottom && aBottom > bTop;
+            bool verticallyTouching = (aBottom == bTop || aTop == bBottom) && aLeft < bRight && aRight > bLeft;
+            return horizontallyTouching || verticallyTouching;
+        }
+
+        private static List<CustomCrumbleBlock> GetAdjacentCluster(CustomCrumbleBlock start, List<CustomCrumbleBlock> candidates)
+        {
+            if (!candidates.Contains(start))
+            {
+                return new List<CustomCrumbleBlock>();
+            }
+            var visited = new HashSet<CustomCrumbleBlock> { start };
+            Stack<CustomCrumbleBlock> stack = new();
+            stack.Push(start);
+            List<CustomCrumbleBlock> cluster = new();
+            while (stack.Count > 0)
+            {
+                CustomCrumbleBlock current = stack.Pop();
+                cluster.Add(current);
+                foreach (CustomCrumbleBlock other in candidates)
+                {
+                    if (!visited.Contains(other) && AreAdjacent(current, other))
+                    {
+                        visited.Add(other);
+                        stack.Push(other);
+                    }
+                }
+            }
+            return cluster;
         }
 
         public override void Added(Scene scene)
@@ -365,7 +428,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private IEnumerator TileIn(int index, Image img, float delay)
         {
             yield return delay;
-            Audio.Play("event:/game/general/platform_return", Center);
+            if (IsOutlineLeader && index == 0)
+            {
+                Audio.Play("event:/game/general/platform_return", Center);
+            }
             img.Visible = true;
             img.Color = Color.White;
             int imgPerLine = (int)Width / 8;
