@@ -1,4 +1,5 @@
 Version 1.0.80 :
+- Added Custom Crumble Block
 - Added "Off Frames", "Turn On Frames" and "On Frames" attributes to Custom Torches
 - Added "Jacket Priority" and "Double Dash Flag" attributes to Upgrade Controller
 - Added "Allow Static Movers" attribute to Flag Dash Switches

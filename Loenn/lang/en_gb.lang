@@ -160,6 +160,18 @@ entities.XaphanHelper/CustomCoverupWall.attributes.description.tiletype=Change t
 entities.XaphanHelper/CustomCoverupWall.attributes.description.flag=If this flag is set, the wall will use the tileset set in Flag Tiletype when entering the room.
 entities.XaphanHelper/CustomCoverupWall.attributes.description.flagTiletype=Change the visual apparence of the wall if the flag is set.
 
+# CustomCrumbleBlock
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.texture=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.rotation=Determine by how many degrees the srpites will be rotated.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.oneUse=If true, the block will not respawn after beeing triggered.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.group=The group this block is part of.\nAll blocks that are part of the same group will be triggered when one of the block from the group is triggered.\nUse -1 for no group.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.respawnTime=The time (in seconds) the block will wait before respawning.\nIf Group is not -1, this will be overwritten by the lowest value of this field of any other block from the same group that are adjacent to eachother.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.crumbleDelay=The time (in seconds) the block will wait before crumbling when the player land on top of it.\nThere is always 0.2s added to this value.\nIf Group is not -1, this will be overwritten by the lowest value of this field of any other block from the same group that are adjacent to eachother.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.sideCrumbleDelay=The time (in seconds) the block will wait before crumbling when the player grab one of its sides.\nThere is always 0.2s added to this value.\nIf Group is not -1, this will be overwritten by the lowest value of this field of any other block from the same group that are adjacent to eachother.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.canBypassCrumbleDelay=If true, immediately destroy the block if the player leave the top of the block.\nIf Group is not -1, this will be true if any other block from the same group that are adjacent to eachother also have this set to true.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.canBypassSideCrumbleDelay=If true, immediately destroy the block if the player leave any sides of the block.\nIf Group is not -1, this will be true if any other block from the same group that are adjacent to eachother also have this set to true.
+entities.XaphanHelper/CustomCrumbleBlock.attributes.description.light=If true, the block will emit a small amount of light.
+
 # CustomDashBlock
 entities.XaphanHelper/CustomDashBlock.placements.name.CustomDashBlock=Custom Dash Block
 entities.XaphanHelper/CustomDashBlock.attributes.description.canDash=Whether the player can break the block by dashing into it.
