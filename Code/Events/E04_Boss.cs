@@ -85,7 +85,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru3 = new JumpthruPlatform(bounds + new Vector2(148f, 156f), 24, "Xaphan/gorge_a", 5);
             jumpThru4 = new JumpthruPlatform(bounds + new Vector2(200f, 148f), 24, "Xaphan/gorge_a", 5);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(228f, 124f), 24, "Xaphan/gorge_a", 5);
-            crumblePlatform1 = new CustomCrumbleBlock(bounds + new Vector2(148f, 140f), Vector2.Zero, 24, 8, 2f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/gorge_a", lightOccludeValue: 0.2f);
+            crumblePlatform1 = new CustomCrumbleBlock(bounds + new Vector2(148f, 140f), Vector2.Zero, 24, 8, 2f, 0.6f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/gorge_a", lightOccludeValue: 0.2f, canBypassSideCrumbleDelay: true);
             refill1 = new CustomRefill(bounds + new Vector2(92f, 64f), "Max Jumps", true, 2.5f, 5);
             refill2 = new CustomRefill(bounds + new Vector2(228f, 64f), "Max Jumps", true, 2.5f, 5);
             refill3 = new CustomRefill(bounds + new Vector2(160f, 92f), "Max Dashes", false, 2.5f, 5);

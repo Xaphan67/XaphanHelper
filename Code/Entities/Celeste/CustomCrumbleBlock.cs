@@ -37,6 +37,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float crumbleDelay;
 
+        private float sideCrumbleDelay;
+
+        private bool canBypassCrumbleDelay;
+
+        private bool canBypassSideCrumbleDelay;
+
         private bool oneUse;
 
         public int Group;
@@ -55,19 +61,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public EntityID eid;
 
-        public CustomCrumbleBlock(EntityData data, Vector2 offset, EntityID eid) : this(data.Position, offset, data.Width, data.Height, data.Float("respawnTime", 2f), data.Float("crumbleDelay", 0.4f), data.Bool("oneUse", false), data.Int("group", -1),
-            data.Int("rotation"), data.Attr("texture"), data.Bool("light", true))
+        public CustomCrumbleBlock(EntityData data, Vector2 offset, EntityID eid) : this(data.Position, offset, data.Width, data.Height, data.Float("respawnTime", 2f), data.Float("crumbleDelay", 0.4f), data.Float("sideCrumbleDelay", data.Float("crumbleDelay", 0.4f)), data.Bool("oneUse", false), data.Int("group", -1),
+            data.Int("rotation"), data.Attr("texture"), data.Bool("light", true), data.Bool("canBypassCrumbleDelay", true), data.Bool("canBypassSideCrumbleDelay", false))
         {
             this.eid = eid;
         }
 
-        public CustomCrumbleBlock(Vector2 position, Vector2 offset, int width, int height, float respawnTime, float crumbleDelay, bool oneUse, int group, int rotation = 0, string texture = null, bool light = true, float lightOccludeValue = 0.8f) : base(position + offset, width, height, safe: false)
+        public CustomCrumbleBlock(Vector2 position, Vector2 offset, int width, int height, float respawnTime, float crumbleDelay, float sideCrumbleDelay, bool oneUse, int group, int rotation = 0, string texture = null, bool light = true, bool canBypassCrumbleDelay = true, bool canBypassSideCrumbleDelay = false, float lightOccludeValue = 0.8f) : base(position + offset, width, height, safe: false)
         {
             EnableAssistModeChecks = false;
-            this.respawnTime = respawnTime;
-            this.crumbleDelay = crumbleDelay;
+            this.respawnTime = respawnTime <= 0 ? 0 : respawnTime;
+            this.crumbleDelay = crumbleDelay <= 0 ? 0 : crumbleDelay;
+            this.sideCrumbleDelay = sideCrumbleDelay <= 0 ? 0 : sideCrumbleDelay;
+            this.canBypassCrumbleDelay = canBypassCrumbleDelay;
+            this.canBypassSideCrumbleDelay = canBypassSideCrumbleDelay;
             this.oneUse = oneUse;
-            Group = group;
+            Group = group <= -1 ? -1 : group;
             this.texture = texture;
             this.light = light;
             if (string.IsNullOrEmpty(texture))
@@ -113,10 +122,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (cluster.Count > 1)
                     {
                         float minCrumbleDelay = cluster.Min(b => b.crumbleDelay);
+                        float minSideCrumbleDelay = cluster.Min(b => b.sideCrumbleDelay);
+                        bool anyCanBypassCrumbleDelay = cluster.Any(b => b.canBypassCrumbleDelay);
+                        bool anyCanBypassSideCrumbleDelay = cluster.Any(b => b.canBypassSideCrumbleDelay);
                         float minRespawnTime = cluster.Min(b => b.respawnTime);
                         foreach (CustomCrumbleBlock block in cluster)
                         {
                             block.crumbleDelay = minCrumbleDelay;
+                            block.sideCrumbleDelay = minSideCrumbleDelay;
+                            block.canBypassCrumbleDelay = anyCanBypassCrumbleDelay;
+                            block.canBypassSideCrumbleDelay = anyCanBypassSideCrumbleDelay;
                             block.respawnTime = minRespawnTime;
                         }
                     }
@@ -305,8 +320,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Audio.Play("event:/game/general/platform_disintegrate", Center);
                 }
-                shaker.ShakeFor(crumbleDelay + 0.2f, removeOnFinish: false);
-                StartShaking(crumbleDelay + 0.2f);
+                shaker.ShakeFor((onTop ? crumbleDelay : sideCrumbleDelay) + 0.2f, false);
+                StartShaking((onTop ? crumbleDelay : sideCrumbleDelay) + 0.2f);
                 foreach (Image image in images)
                 {
                     SceneAs<Level>().Particles.Emit(CrumblePlatform.P_Crumble, 2, Position + image.Position + new Vector2(0f, 2f), Vector2.One * 3f);
@@ -316,10 +331,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     SceneAs<Level>().Particles.Emit(CrumblePlatform.P_Crumble, 2, Position + image.Position + new Vector2(0f, 2f), Vector2.One * 3f);
                 }
-                float timer = crumbleDelay;
+                float timer = (onTop ? crumbleDelay : sideCrumbleDelay);
                 if (onTop)
                 {
-                    while (timer > 0f && getOneBlockWithPlayerOnTop() != null)
+                    while (timer > 0f && (canBypassCrumbleDelay ? getOneBlockWithPlayerOnTop() != null : true))
                     {
                         yield return null;
                         timer -= Engine.DeltaTime;
@@ -327,7 +342,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    while (timer > 0f && getOneBlockWithPlayerClimbing() != null)
+                    while (timer > 0f && (canBypassSideCrumbleDelay ? getOneBlockWithPlayerClimbing() != null : true))
                     {
                         yield return null;
                         timer -= Engine.DeltaTime;
