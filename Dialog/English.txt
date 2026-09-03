@@ -207,7 +207,7 @@
 
 #Bindings
 	ModOptions_XaphanModule_OpenMap= Open Map / Status Screen
-	ModOptions_XaphanModule_SelectItem= Select Equiped Ability
+	ModOptions_XaphanModule_SelectItem= Select Equiped Ability (Hold)
 	ModOptions_XaphanModule_UseBagItemSlot= Use Equiped Ability in Bag Slot
 	ModOptions_XaphanModule_UseMiscItemSlot= Use Equiped Ability in Misc Slot
 	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= Map Screen - Switch between Area Map and World Map

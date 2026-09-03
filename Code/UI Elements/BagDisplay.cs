@@ -24,6 +24,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Sprite Sprite;
 
+        private Sprite Upgrade1;
+
+        private Sprite Upgrade2;
+
+        private Sprite Upgrade3;
+
         public float Opacity;
 
         public int currentSelection;
@@ -62,6 +68,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private bool drawCross;
 
+        private int totalActiveUpgrades = 0;
+
+        private float selectedAlpha = 0;
+
+        private int alphaStatus = 0;
+
         public BagDisplay(Level level, string type)
         {
             this.level = level;
@@ -70,7 +82,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Position = new Vector2(-200f, 26f);
             Depth = -10002;
             Sprite = new Sprite(GFX.Gui, "");
-            Sprite.Scale = new Vector2(0.15f);
+            Upgrade1 = new Sprite(GFX.Gui, "");
+            Upgrade2 = new Sprite(GFX.Gui, "");
+            Upgrade3 = new Sprite(GFX.Gui, "");
+            Sprite.Scale = Upgrade1.Scale = Upgrade2.Scale = Upgrade3.Scale = new Vector2(0.15f);
             borderColor = Calc.HexToColor("262626");
             ButtonBinding Control = type == "bag" ? XaphanModule.ModSettings.UseBagItemSlot : XaphanModule.ModSettings.UseMiscItemSlot;
             SlotButton.Binding = Control.Binding;
@@ -260,8 +275,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (type == "bag")
             {
                 Sprite.AddLoop("bombs", getCustomSpritePath("Bombs") + "/bombs", 0.08f, 0);
+                Upgrade1.AddLoop("upg", getCustomSpritePath("Bombs") + "/bombs", 0.08f, 0);
                 Sprite.AddLoop("megaBombs", getCustomSpritePath("MegaBombs") + "/megaBombs", 0.08f, 0);
+                Upgrade2.AddLoop("upg", getCustomSpritePath("MegaBombs") + "/megaBombs", 0.08f, 0);
                 Sprite.AddLoop("remoteDrone", getCustomSpritePath("RemoteDrone") + "/remoteDrone", 0.08f, 0);
+                Upgrade3.AddLoop("upg", getCustomSpritePath("RemoteDrone") + "/remoteDrone", 0.08f, 0);
                 if (XaphanModule.ModSaveData.BagUIId1 == 0)
                 {
                     if (Bombs.isActive)
@@ -285,8 +303,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             else
             {
                 Sprite.AddLoop("binoculars", getCustomSpritePath("Binoculars") + "/binoculars", 0.08f, 0);
+                Upgrade1.AddLoop("upg", getCustomSpritePath("Binoculars") + "/binoculars", 0.08f, 0);
                 Sprite.AddLoop("portableStation", getCustomSpritePath("PortableStation") + "/portableStation", 0.08f, 0);
+                Upgrade2.AddLoop("upg", getCustomSpritePath("PortableStation") + "/portableStation", 0.08f, 0);
                 Sprite.AddLoop("pulseRadar", getCustomSpritePath("PulseRadar") + "/pulseRadar", 0.08f, 0);
+                Upgrade3.AddLoop("upg", getCustomSpritePath("PulseRadar") + "/pulseRadar", 0.08f, 0);
                 if (XaphanModule.ModSaveData.BagUIId2 == 0)
                 {
                     if (Binoculars.isActive)
@@ -393,6 +414,41 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     tutorialGui.Open = false;
                 }
+            }
+
+            if (XaphanModule.ModSettings.SelectItem.Check && !XaphanModule.PlayerIsControllingRemoteDrone())
+            {
+                if (alphaStatus == 0 || (alphaStatus == 1 && selectedAlpha != 0.9f))
+                {
+                    alphaStatus = 1;
+                    selectedAlpha = Calc.Approach(selectedAlpha, 0.9f, Engine.DeltaTime);
+                    if (selectedAlpha == 0.9f)
+                    {
+                        alphaStatus = 2;
+                    }
+                }
+                if (alphaStatus == 2 && selectedAlpha != 0.1f)
+                {
+                    selectedAlpha = Calc.Approach(selectedAlpha, 0.1f, Engine.DeltaTime);
+                    if (selectedAlpha == 0.1f)
+                    {
+                        alphaStatus = 1;
+                    }
+                }
+                if (totalActiveUpgrades == 0)
+                {
+                    totalActiveUpgrades = CheckTotalUpgradesActive();
+                }
+            }
+            else
+            {
+                totalActiveUpgrades = 0;
+                if (Upgrade1 != null && Upgrade2 != null && Upgrade3 != null)
+                {
+                    Upgrade1.Visible = Upgrade2.Visible = Upgrade3.Visible = false;
+                }
+                alphaStatus = 0;
+                selectedAlpha = 0;
             }
             if ((type == "bag" ? XaphanModule.ModSettings.UseBagItemSlot.Pressed : XaphanModule.ModSettings.UseMiscItemSlot.Pressed) && XaphanModule.ModSettings.SelectItem.Check)
             {
@@ -554,6 +610,42 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        private int CheckTotalUpgradesActive()
+        {
+            int totalActive = 0;
+            if (type == "bag")
+            {
+                if (Bombs.isActive && XaphanModule.ModSettings.Bombs)
+                {
+                    totalActive++;
+                }
+                if (MegaBombs.isActive && XaphanModule.ModSettings.MegaBombs)
+                {
+                    totalActive++;
+                }
+                if (RemoteDrone.isActive && XaphanModule.ModSettings.RemoteDrone)
+                {
+                    totalActive++;
+                }
+            }
+            else
+            {
+                if (Binoculars.isActive && XaphanModule.ModSettings.Binoculars)
+                {
+                    totalActive++;
+                }
+                if (PortableStation.isActive && XaphanModule.ModSettings.PortableStation)
+                {
+                    totalActive++;
+                }
+                if (PulseRadar.isActive && XaphanModule.ModSettings.PulseRadar)
+                {
+                    totalActive++;
+                }
+            }
+            return totalActive;
+        }
+
         public void ShowTutorial(bool action)
         {
             tutorial = action;
@@ -669,6 +761,64 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 cross.DrawCentered(Center + Vector2.One * 50f, Color.White * Opacity * 0.6f);
             }
+            if (XaphanModule.ModSettings.SelectItem.Check && totalActiveUpgrades != 0 && Upgrade1 != null && Upgrade2 != null && Upgrade3 != null && !XaphanModule.PlayerIsControllingRemoteDrone())
+            {
+                float height = 24f + totalActiveUpgrades * 72f + 12f * (totalActiveUpgrades - 1);
+                Draw.Rect(Position + new Vector2(2f, 122f), 96f, height, Color.Black * 0.85f * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 120f), 100f, 2f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 122f), 2f, height, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(98f, 122f), 2f, height, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 122f + height), 100f, 2f, borderColor * Opacity);
+                Draw.Rect(DetermineDrawPosition(DetermineSlotPosition(currentSelection)) - new Vector2(6f), 84, 84, Color.Yellow * selectedAlpha);
+                int currentPos = 1;
+                if (CheckIfUpgradeIsActive(1))
+                {
+                    Upgrade1.Play("upg");
+                    Upgrade1.RenderPosition = DetermineDrawPosition(currentPos);
+                    Upgrade1.Color = Color.White * Opacity;
+                    Upgrade1.Render();
+                    currentPos++;
+                }
+                if (CheckIfUpgradeIsActive(2))
+                {
+                    Upgrade2.Play("upg");
+                    Upgrade2.RenderPosition = DetermineDrawPosition(currentPos);
+                    Upgrade2.Color = Color.White * Opacity;
+                    Upgrade2.Render();
+                    currentPos++;
+                }
+                if (CheckIfUpgradeIsActive(3))
+                {
+                    Upgrade3.Play("upg");
+                    Upgrade3.RenderPosition = DetermineDrawPosition(currentPos);
+                    Upgrade3.Color = Color.White * Opacity;
+                    Upgrade3.Render();
+                }
+            }
+        }
+
+        private Vector2 DetermineDrawPosition(int pos)
+        {
+            switch (pos)
+            {
+                case 3:
+                    return Position + new Vector2(14f, 302f);
+                case 2:
+                    return Position + new Vector2(14f, 218f);
+                default:
+                    return Position + new Vector2(14f, 134f);
+            }
+        }
+
+        private int DetermineSlotPosition(int upgradeID)
+        {
+            int slot = 0;
+            for (int i = 1; i <= upgradeID; i++)
+            {
+                if (CheckIfUpgradeIsActive(i))
+                    slot++;
+            }
+            return slot;
         }
 
         private IEnumerator ShowCross()

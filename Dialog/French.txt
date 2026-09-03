@@ -207,7 +207,7 @@
 
 #Bindings
 	ModOptions_XaphanModule_OpenMap= Ouvrir la carte / l'écran de status
-	ModOptions_XaphanModule_SelectItem= Sélectionner la capacité équipée
+	ModOptions_XaphanModule_SelectItem= Sélectionner la capacité équipée (Maintenir)
 	ModOptions_XaphanModule_UseBagItemSlot= Utiliser la capacité équipée dans l'emplacement Sac
 	ModOptions_XaphanModule_UseMiscItemSlot= Utiliser la capacité équipée dans l'emplacement Divers
 	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= Écran carte - Permuter entre carte de la zone et carte du monde
