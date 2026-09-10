@@ -349,7 +349,7 @@ entities.XaphanHelper/Fuse.placements.name.Fuse=Fuse
 entities.XaphanHelper/Fuse.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 
 # FuseBreakBlock
-entities.XaphanHelper/FuseBreakBlock.placements.name.FuseBreakBlock=FuseBreakBlock
+entities.XaphanHelper/FuseBreakBlock.placements.name.FuseBreakBlock=Fuse Break Block
 entities.XaphanHelper/FuseBreakBlock.attributes.description.texture=Change the visual apparence of the block.
 entities.XaphanHelper/FuseBreakBlock.attributes.description.soundIndex=Sound that play when the player grab, land or walk on the block.
 
@@ -507,6 +507,12 @@ entities.XaphanHelper/LaserEmitter.attributes.description.inverted=If true, the 
 entities.XaphanHelper/LaserEmitter.attributes.description.base=If true, add a base to the laser emitter.
 entities.XaphanHelper/LaserEmitter.attributes.description.noBeam=If true, this laser emitter will not shoot any laser.
 entities.XaphanHelper/LaserEmitter.attributes.description.laserColor=Hexadecimal code for the color of the laser. Leave empty to use default color.
+
+#LightOrb
+entities.XaphanHelper/LightOrb.placements.name.LightOrb=Light Orb
+entities.XaphanHelper/LightOrb.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/LightOrb.attributes.description.time=The time during wich the light mode will switch.\nNo effect if Temporary is not set.
+entities.XaphanHelper/LightOrb.attributes.description.temporary=If true, the light mode will revert to its previous state after a set time.
 
 # Liquid
 entities.XaphanHelper/Liquid.placements.name.Liquid=Liquid
@@ -752,6 +758,10 @@ triggers.XaphanHelper/GlobalFlagTrigger.attributes.description.levelSet=The leve
 
 # HideMiniMapTrigger
 triggers.XaphanHelper/HideMiniMapTrigger.placements.name.HideMiniMapTrigger=Hide MiniMap
+
+# LightModeTrigger
+triggers.XaphanHelper/LightModeTrigger.placements.name.LightModeTrigger=Light Mode
+triggers.XaphanHelper/LightModeTrigger.attributes.description.mode=The mode that will be set when the player enter the trigger.
 
 # MultiMusicTrigger
 triggers.XaphanHelper/MultiMusicTrigger.placements.name.MultiMusicTrigger=Multi Music
