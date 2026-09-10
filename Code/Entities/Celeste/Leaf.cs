@@ -121,7 +121,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     wiggler.Start();
                 }
             };
-            sprite.Play(((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) ? "idle" : "idle-dead");
+            sprite.Play(((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)) ? "idle" : "idle-dead");
         }
 
         public void SwitchSprite()
@@ -130,7 +130,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             string outline = "";
             int frame = -1;
             int outlineframe = -1;
-            if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && sprite.LastAnimationID.Contains("-dead") && !triggered)
+            if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)) && sprite.LastAnimationID.Contains("-dead") && !triggered)
             {
                 animation = sprite.LastAnimationID.Substring(0, sprite.LastAnimationID.Length - 5);
                 frame = sprite.CurrentAnimationFrame;
@@ -138,7 +138,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 outlineframe = this.outline.CurrentAnimationFrame;
                 ShouldSwitchSprite = true;
             }
-            if (((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light) && !sprite.LastAnimationID.Contains("-dead"))
+            if (((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)) && !sprite.LastAnimationID.Contains("-dead"))
             {
                 animation = sprite.LastAnimationID + "-dead";
                 frame = sprite.CurrentAnimationFrame;
@@ -167,7 +167,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             SwitchSprite();
             Depth = outline.Visible ? 8999 : -100;
-            appearParticles.Color = ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) ? Calc.HexToColor("47550D") : Calc.HexToColor("55310D");
+            appearParticles.Color = ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)) ? Calc.HexToColor("47550D") : Calc.HexToColor("55310D");
             if (sprite.CurrentAnimationID.Contains("fade"))
             {
                 scale.X = Calc.Approach(scale.X, 1.2f, 1f * Engine.DeltaTime);
@@ -178,7 +178,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 scale.X = Calc.Approach(scale.X, 1f, 1f * Engine.DeltaTime);
                 scale.Y = Calc.Approach(scale.Y, 1f, 1f * Engine.DeltaTime);
             }
-            if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && !triggered)
+            if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)) && !triggered)
             {
                 timer += Engine.DeltaTime;
                 if (GetPlayerRider() != null)

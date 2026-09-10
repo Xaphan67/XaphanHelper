@@ -3,6 +3,7 @@ Version 1.0.80 :
 - Added Light Orb
 - Added Vine Path
 - Added Vine Head
+- Added Leaf
 - Added Fuse
 - Added Detonator
 - Added Fuse Break Block

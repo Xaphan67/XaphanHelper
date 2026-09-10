@@ -508,6 +508,12 @@ entities.XaphanHelper/LaserEmitter.attributes.description.base=If true, add a ba
 entities.XaphanHelper/LaserEmitter.attributes.description.noBeam=If true, this laser emitter will not shoot any laser.
 entities.XaphanHelper/LaserEmitter.attributes.description.laserColor=Hexadecimal code for the color of the laser. Leave empty to use default color.
 
+#Leaf
+entities.XaphanHelper/Leaf.placements.name.Leaf=Leaf
+entities.XaphanHelper/Leaf.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/Leaf.attributes.description.flag=The flag that must be set for the leaf to become bouncy.\nIf empty, the leaf will be bouncy if the Light mode set by a Light Mode trigger is set to Light instead, or if the player touch a Light orb.
+entities.XaphanHelper/Leaf.attributes.description.respawnTime=The time (in seconds) for the leaf to reapear after being used.
+
 #LightOrb
 entities.XaphanHelper/LightOrb.placements.name.LightOrb=Light Orb
 entities.XaphanHelper/LightOrb.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
@@ -584,7 +590,6 @@ entities.XaphanHelper/Slope.attributes.description.affectPlayerSpeed=If true, re
 entities.XaphanHelper/Slope.attributes.description.flag=If this flag is set, the slope will use the directory and texture set in Flag Custom Directory and FlagTexture when entering the room.
 entities.XaphanHelper/Slope.attributes.description.renderMethod=Change the way the game draw the slope.\nDepending on your tileset, one method may be better than the other.\n(Effect only visible in game)
 entities.XaphanHelper/Slope.attributes.description.preventRefillOnSliding=If true, prevent the player to gain back their Dash or jumps\n(when using the Space Jump ability) while the player slide on the slope.\nNo effect if Force Slide is false.
-
 
 # TeleportStrawberry
 entities.XaphanHelper/TeleportStrawberry.placements.name.TeleportStrawberry=Teleport Strawberry
@@ -723,7 +728,7 @@ entities.XaphanHelper/VineHead.placements.name.VineHead=Vine Head
 entities.XaphanHelper/VineHead.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 entities.XaphanHelper/VineHead.attributes.description.growSpeed=The speed at wich the head will move across its path.
 entities.XaphanHelper/VineHead.attributes.description.pauseTime=The time (in seconds) the head will stop once the player bounce on it before resume moving.
-entities.XaphanHelper/VineHead.attributes.description.flag=The flag that must be set for the head to start moving.\nIf empty, the head will move if the Light mode set by a Light Mode trigger is set to Light instead.
+entities.XaphanHelper/VineHead.attributes.description.flag=The flag that must be set for the head to start moving.\nIf empty, the head will move if the Light mode set by a Light Mode trigger is set to Light instead, or if the player touch a Light orb.
 
 # VinePath
 entities.XaphanHelper/VinePath.placements.name.VinePath=Vine Path
