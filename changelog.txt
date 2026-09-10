@@ -5,6 +5,7 @@ Version 1.0.80 :
 - Added Vine Head
 - Added Leaf
 - Added Climbable Vine
+- Added Thorn Barrier
 - Added Fuse
 - Added Detonator
 - Added Fuse Break Block

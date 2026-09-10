@@ -621,6 +621,11 @@ entities.XaphanHelper/TeleportToOtherSidePortal.attributes.description.requireCS
 entities.XaphanHelper/TeleportToOtherSidePortal.attributes.description.flags=The flags that must be true before the portal can appear, separated by a comma (,).
 entities.XaphanHelper/TeleportToOtherSidePortal.attributes.description.registerCurrentSideAsCompelete=If true, the side will be considered complete before teleporting the player.\nUsefull when ending a B or C side with a portal instead of a heart.
 
+#ThornBarrier
+entities.XaphanHelper/ThornBarrier.placements.name.ThornBarrier=Thorn Barrier
+entities.XaphanHelper/ThornBarrier.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/ThornBarrier.attributes.description.flag=The flag that must be set for the barrier to kill the player.\nIf empty, the barrier will kill the player only if the Light mode set by a Light Mode trigger is set to Light instead, or if the player touch a Light orb.
+
 # TimedBlock
 entities.XaphanHelper/TimedBlock.placements.name.TimedBlock=Timed Block
 entities.XaphanHelper/TimedBlock.attributes.description.startPressed=If true, the block will not be solid when the player enter the room, and will turn solid when a Timed Dash Switch is pressed.

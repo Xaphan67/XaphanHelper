@@ -244,7 +244,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onPlayer(Player player)
         {
-            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
             {
                 player.Die((player.Position - Position).SafeNormalize());
             }
@@ -268,7 +268,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void HitByMissile(Missile missile)
         {
-            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
             {
                 missile.CollideImmune(missile.Direction);
             }
@@ -282,7 +282,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
             {
                 Sprite.Play("light");
             }
