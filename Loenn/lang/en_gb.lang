@@ -596,6 +596,10 @@ entities.XaphanHelper/PushBlock.attributes.description.particleColor1=Hexadecima
 entities.XaphanHelper/PushBlock.attributes.description.particleColor2=Hexadecimal code used for the second color of the particles emited by the block.
 entities.XaphanHelper/PushBlock.attributes.description.mustDash=If true, kill the player if they touch the block unless dashing into it to move it.
 
+# PushBlockTrack
+entities.XaphanHelper/PushBlockTrack.placements.name.PushBlockTrack=Push Block Track
+entities.XaphanHelper/PushBlockTrack.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+
 # SetStatsFlagsController
 entities.XaphanHelper/SetStatsFlagsController.placements.name.SetStatsFlagsController=Set Stats Flags Controller
 
