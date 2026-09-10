@@ -68,6 +68,11 @@ entities.XaphanHelper/CellLock.attributes.description.onlyCellVisible=If true, t
 entities.XaphanHelper/CellLock.attributes.description.cellOffsetX=Number of pixels to move the horizontal location of the Cell when it is sloted relative to its default position.\nPositive values move it to the right.\nNegative values move it to the left./n This will also move the detection area that move the cell toward its final position.
 entities.XaphanHelper/CellLock.attributes.description.cellOffsetY=Number of pixels to move the vertical location of the Cell when it is sloted relative to its default position.\nPositive values move it down.\nNegative values move it up./n This will also move the detection area that move the cell toward its final position.
 
+# ClimbableVine
+entities.XaphanHelper/ClimbableVine.placements.name.ClimbableVine=Climbable Vine
+entities.XaphanHelper/ClimbableVine.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/ClimbableVine.attributes.description.flag=The flag that must be set for the vine to not kill the player.\nIf empty, the vine will not kill the player if the Light mode set by a Light Mode trigger is set to Light instead, or if the player touch a Light orb.
+
 # CollectableDoor
 entities.XaphanHelper/CollectableDoor.placements.name.CollectableDoor=Collectable Door
 entities.XaphanHelper/CollectableDoor.attributes.description.orientation=Orientation of the door. Vertical will check if the player is to the left or the right of the door. Horizontal wil check if the player is above or bellow the door.

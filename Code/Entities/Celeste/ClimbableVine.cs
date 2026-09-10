@@ -75,7 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             List<Entity> vines = self.Scene.Tracker.GetEntities<ClimbableVine>().ToList();
             foreach (ClimbableVine vine in vines)
             {
-                if ((!string.IsNullOrEmpty(vine.flag) && !self.SceneAs<Level>().Session.GetFlag(vine.flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)
+                if ((!string.IsNullOrEmpty(vine.flag) && !self.SceneAs<Level>().Session.GetFlag(vine.flag)) || (string.IsNullOrEmpty(vine.flag) && XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
                 {
                     vine.Collidable = true;
                 }
@@ -120,7 +120,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onPlayer(Player player)
         {
-            if ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)
+            if ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
             {
                 player.Die((player.Position - Position).SafeNormalize());
             }
@@ -130,7 +130,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             bool playerNotDead = SceneAs<Level>().Tracker.GetEntity<Player>() != null && !SceneAs<Level>().Tracker.GetEntity<Player>().Dead;
-            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
+            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
             {
                 spriteA.Play("light");
                 spriteB.Play("light");
