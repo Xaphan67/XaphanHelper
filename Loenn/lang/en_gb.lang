@@ -234,6 +234,25 @@ entities.XaphanHelper/CustomFakeWall.attributes.description.group=All Custom Fak
 entities.XaphanHelper/CustomFakeWall.attributes.description.flag=If this flag is set, the wall will use the tileset set in Flag Tiletype when entering the room.
 entities.XaphanHelper/CustomFakeWall.attributes.description.flagTiletype=Change the visual apparence of the wall if the flag is set.
 
+# CustomMoveBlock
+entities.XaphanHelper/CustomMoveBlock.placements.name.CustomMoveBlock=Custom Move Block
+entities.XaphanHelper/CustomMoveBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.direction=The direction the block will start moving toward, when activated.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.steerSides=The sides of the block that will have a button to allow the player to steer it.\nDepending of the direction, only some values can be used:\nLeft or Right : TopOnly, BottomOnly, TopAndBottom.\nUp or Down: LeftOnly, RightOnly, LeftAndRight.\nIncorrect values for the choosen direction will result in no button added to the block.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.idleColor=Hexadecimal code of the color of the block when inactive.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.moveColor=Hexadecimal code of the color of the block when it is moving.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.breakColor=Hexadecimal code of the color of the block when it is about to break.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.particlesColor=Hexadecimal code of the color of the particiles emitted by the block.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.speed=The speed the block will move at. Default 60.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.acceleration=The acceleration the block will have until it reach the specified speed. Default 300.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.respawnTime=Time (in seconds) after the block broke before it respawn.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.oneUse=If true, the block will not respawn after being broken.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.addBorder=If true, add a black border around the block.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.glow=If true, the colors of the block will have a glow effect.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.buttonIgnoreColors=If true, the buttons on the block will not be tinted with the colors defined in "Idle Color", "Move Color" and "Break Color".
+entities.XaphanHelper/CustomMoveBlock.attributes.description.buttonPressedOffset=Number of pixels the buttons will move when the player press them.
+entities.XaphanHelper/CustomMoveBlock.attributes.description.magneticCeilingOffset=Number of pixels the magnetic Ceiling attached to this block will be moved downward.\nUsed to give the illusion that the magnetic ceiling is attached to the button bellow the block.\nIgnored if Steer Sides is not set to "OnlyBottom" or "TopAndBottom".
+
 # CustomTorch
 entities.XaphanHelper/CustomTorch.placements.name.CustomTorch=Custom Torch
 entities.XaphanHelper/CustomTorch.attributes.description.playLitSound=If true, play a sound when the torch is activated.

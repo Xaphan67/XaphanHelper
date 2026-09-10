@@ -1,5 +1,4 @@
 Version 1.0.80 :
-- Added Custom Crumble Block
 - Added Light Orb
 - Added Vine Path
 - Added Vine Head
@@ -9,6 +8,8 @@ Version 1.0.80 :
 - Added Fuse
 - Added Detonator
 - Added Fuse Break Block
+- Added Custom Crumble Block
+- Added Custom Move Block
 - Added Light Mode Trigger
 - Added Bag Display Tutorial Trigger
 - Added Drone Destroy Tutorial Trigger
