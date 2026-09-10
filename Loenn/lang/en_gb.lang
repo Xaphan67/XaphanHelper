@@ -348,6 +348,11 @@ entities.XaphanHelper/FlagTempleGate.attributes.description.silent=If true, the 
 entities.XaphanHelper/Fuse.placements.name.Fuse=Fuse
 entities.XaphanHelper/Fuse.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 
+# FuseBreakBlock
+entities.XaphanHelper/FuseBreakBlock.placements.name.FuseBreakBlock=FuseBreakBlock
+entities.XaphanHelper/FuseBreakBlock.attributes.description.texture=Change the visual apparence of the block.
+entities.XaphanHelper/FuseBreakBlock.attributes.description.soundIndex=Sound that play when the player grab, land or walk on the block.
+
 # HeatController
 entities.XaphanHelper/HeatController.placements.name.HeatController=Heat Controller
 entities.XaphanHelper/HeatController.attributes.description.maxDuration=Duration (in seconds) before the player die due to overheating.
@@ -707,14 +712,14 @@ entities.XaphanHelper/UpgradeController.attributes.description.noResetUpgrades=I
 entities.XaphanHelper/UpgradeController.attributes.description.jacketPriority=Define wich Jacket upgrade visually override the other.\nExpected syntax: Gravity>Varia.\nAllowed values: Varia, Gravity. Anything else is ignored.
 entities.XaphanHelper/UpgradeController.attributes.description.doubleDashFlag=If this flag is set, the player will have 2 dashes instead of one with the Dash Boots upgrade.\n Only checked on room enter and respawn.
 
-# Vine Head
+# VineHead
 entities.XaphanHelper/VineHead.placements.name.VineHead=Vine Head
 entities.XaphanHelper/VineHead.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 entities.XaphanHelper/VineHead.attributes.description.growSpeed=The speed at wich the head will move across its path.
 entities.XaphanHelper/VineHead.attributes.description.pauseTime=The time (in seconds) the head will stop once the player bounce on it before resume moving.
 entities.XaphanHelper/VineHead.attributes.description.flag=The flag that must be set for the head to start moving.\nIf empty, the head will move if the Light mode set by a Light Mode trigger is set to Light instead.
 
-# Vine Path
+# VinePath
 entities.XaphanHelper/VinePath.placements.name.VinePath=Vine Path
 entities.XaphanHelper/VinePath.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 
