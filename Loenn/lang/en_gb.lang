@@ -758,11 +758,16 @@ entities.XaphanHelper/WarpStation.attributes.description.onlyCurrentChapter=If t
 
 # -- Triggers --
 
-#BagDisplayTutorialTrigger
+# BagDisplayTutorialTrigger
 triggers.XaphanHelper/BagDisplayTutorialTrigger.placements.name.BagDisplayTutorialTrigger=Bag Display Tutorial
 triggers.XaphanHelper/BagDisplayTutorialTrigger.attributes.description.slot=Determine under wich slot the turorial will appear on the player UI.
 triggers.XaphanHelper/BagDisplayTutorialTrigger.attributes.description.keepUIOpenOnLeave=If true, the tutorial will stay opened even if the player leaves the trigger.
 triggers.XaphanHelper/BagDisplayTutorialTrigger.attributes.description.onlyOnce=If true, the trigger will remove itself once the player leave it.
+
+# DroneDestroyTutorialTrigger
+triggers.XaphanHelper/DroneDestroyTutorialTrigger.placements.name.DroneDestroyTutorialTrigger=Drone Destroy Tutorial
+triggers.XaphanHelper/DroneDestroyTutorialTrigger.attributes.description.flag=The flag that must be true for this trigger to show the tutorial.\nLeave empty for no flag.
+triggers.XaphanHelper/DroneDestroyTutorialTrigger.attributes.description.onlyOnce=If true, the trigger will remove itself once the player leave it.
 
 # FlagOnInteractTrigger
 triggers.XaphanHelper/FlagOnInteractTrigger.placements.name.FlagOnInteractTrigger=Flag On Interact
