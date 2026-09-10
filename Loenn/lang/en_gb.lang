@@ -588,6 +588,14 @@ entities.XaphanHelper/MergeChaptersController.placements.name.MergeChaptersContr
 entities.XaphanHelper/MergeChaptersController.attributes.description.mode=Classic: The player will start at the checkpoint they selected (same as vanilla).\nRooms: The player will start in the same room they were when they left the campaign.\nWarps: The player will start at the location of the last activated Warp Station they stood on.
 entities.XaphanHelper/MergeChaptersController.attributes.description.keepPrologueSeparated=If true, the starting chapter of the campaign will not be merged.\nNo effect if the starting chapter of the campaign is not set as an interlude.
 
+# PushBlock
+entities.XaphanHelper/PushBlock.placements.name.PushBlock=Push Block
+entities.XaphanHelper/PushBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/PushBlock.attributes.description.soundIndex=Sound that play when the player land or walk on the block.
+entities.XaphanHelper/PushBlock.attributes.description.particleColor1=Hexadecimal code used for the first color of the particles emited by the block.
+entities.XaphanHelper/PushBlock.attributes.description.particleColor2=Hexadecimal code used for the second color of the particles emited by the block.
+entities.XaphanHelper/PushBlock.attributes.description.mustDash=If true, kill the player if they touch the block unless dashing into it to move it.
+
 # SetStatsFlagsController
 entities.XaphanHelper/SetStatsFlagsController.placements.name.SetStatsFlagsController=Set Stats Flags Controller
 
