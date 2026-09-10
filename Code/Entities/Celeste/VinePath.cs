@@ -12,6 +12,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         [Tracked(true)]
         public class VinePathSection : Entity
         {
+            public bool ConnectedN;
+
+            public bool ConnectedS;
+
+            public bool ConnectedE;
+
+            public bool ConnectedW;
+
             private Sprite Sprite;
 
             private Sprite GrownSprite;
@@ -26,9 +34,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public int ID;
 
-            public VinePathSection(EntityData data, Vector2 position) : base(position)
+            private int col;
+
+            private int row;
+
+            private int tileWidth;
+
+            private int tileHeight;
+
+            public VinePathSection(EntityData data, Vector2 position, int col, int row, int tileWidth, int tileHeight) : base(position)
             {
                 Tag = Tags.TransitionUpdate;
+                this.col = col;
+                this.row = row;
+                this.tileWidth = tileWidth;
+                this.tileHeight = tileHeight;
                 Collider = new Hitbox(8f, 8f);
                 Add(new PlayerCollider(onPlayer, Collider));
                 Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
@@ -66,53 +86,46 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                if (CollideCheck<VinePathSection>())
+                {
+                    RemoveSelf();
+                }
+            }
+
             public override void Awake(Scene scene)
             {
                 base.Awake(scene);
-                bool N = false;
-                bool S = false;
-                bool E = false;
-                bool W = false;
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
-                {
-                    N = true;
-                }
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
-                {
-                    S = true;
-                }
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
-                {
-                    E = true;
-                }
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
-                {
-                    W = true;
-                }
-                bool None = !N && !S && !E && !W;
-                tile = None ? "None" : (N ? "N" : "") + (S ? "S" : "") + (E ? "E" : "") + (W ? "W" : "");
+                ConnectedN = HasCapConnection(-Vector2.UnitY);
+                ConnectedS = HasCapConnection(Vector2.UnitY);
+                ConnectedE = HasCapConnection(Vector2.UnitX);
+                ConnectedW = HasCapConnection(-Vector2.UnitX);
+                bool None = !ConnectedN && !ConnectedS && !ConnectedE && !ConnectedW;
+                tile = None ? "None" : (ConnectedN ? "N" : "") + (ConnectedS ? "S" : "") + (ConnectedE ? "E" : "") + (ConnectedW ? "W" : "");
                 GetSpritePos();
                 if (ID == 0)
                 {
                     if (CollideCheck<VineHead>())
                     {
                         ID = CollideFirst<VineHead>().ID;
-                        if (N)
+                        if (ConnectedN)
                         {
                             VinePathSection section = CollideFirst<VinePathSection>(Position - Vector2.UnitY);
                             section.AffectID(ID);
                         }
-                        if (S)
+                        if (ConnectedS)
                         {
                             VinePathSection section = CollideFirst<VinePathSection>(Position + Vector2.UnitY);
                             section.AffectID(ID);
                         }
-                        if (E)
+                        if (ConnectedE)
                         {
                             VinePathSection section = CollideFirst<VinePathSection>(Position + Vector2.UnitX);
                             section.AffectID(ID);
                         }
-                        if (W)
+                        if (ConnectedW)
                         {
                             VinePathSection section = CollideFirst<VinePathSection>(Position - Vector2.UnitX);
                             section.AffectID(ID);
@@ -121,30 +134,43 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
+            private static bool IsAtEdge(int size, int index)
+            {
+                return size <= 1 || index == 0 || index == size - 1;
+            }
+
+            public bool HasCapConnection(Vector2 direction)
+            {
+                Vector2 cellPos = Position + direction * 8f;
+                string axis = direction.Y != 0 ? "x" : "y";
+                return HasAdjacentCapOnly(cellPos, axis);
+            }
+
+            private bool HasAdjacentCapOnly(Vector2 cellPos, string axis)
+            {
+                int selfIndex = axis == "x" ? col : row;
+                int selfSize = axis == "x" ? tileWidth : tileHeight;
+
+                if (!IsAtEdge(selfSize, selfIndex))
+                {
+                    return false;
+                }
+
+                VinePathSection other = Scene.CollideFirst<VinePathSection>(new Rectangle((int)cellPos.X, (int)cellPos.Y, 1, 1));
+                if (other == null)
+                {
+                    return false;
+                }
+
+                int otherIndex = axis == "x" ? other.col : other.row;
+                int otherSize = axis == "x" ? other.tileWidth : other.tileHeight;
+                return IsAtEdge(otherSize, otherIndex);
+            }
+
             public void AffectID(int id)
             {
                 ID = id;
-                bool N = false;
-                bool S = false;
-                bool E = false;
-                bool W = false;
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
-                {
-                    N = true;
-                }
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
-                {
-                    S = true;
-                }
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
-                {
-                    E = true;
-                }
-                if (Scene.CollideCheck<VinePathSection>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
-                {
-                    W = true;
-                }
-                if (N)
+                if (HasCapConnection(-Vector2.UnitY))
                 {
                     VinePathSection section = CollideFirst<VinePathSection>(Position - Vector2.UnitY);
                     if (section.ID == 0)
@@ -152,7 +178,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         section.AffectID(ID);
                     }
                 }
-                if (S)
+                if (HasCapConnection(Vector2.UnitY))
                 {
                     VinePathSection section = CollideFirst<VinePathSection>(Position + Vector2.UnitY);
                     if (section.ID == 0)
@@ -160,7 +186,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         section.AffectID(ID);
                     }
                 }
-                if (E)
+                if (HasCapConnection(Vector2.UnitX))
                 {
                     VinePathSection section = CollideFirst<VinePathSection>(Position + Vector2.UnitX);
                     if (section.ID == 0)
@@ -168,7 +194,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         section.AffectID(ID);
                     }
                 }
-                if (W)
+                if (HasCapConnection(-Vector2.UnitX))
                 {
                     VinePathSection section = CollideFirst<VinePathSection>(Position - Vector2.UnitX);
                     if (section.ID == 0)
@@ -272,11 +298,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            int tileWidth = (int)System.Math.Ceiling(data.Width / 8f);
+            int tileHeight = (int)System.Math.Ceiling(data.Height / 8f);
             for (int x = 0; x < data.Width / 8; x++)
             {
                 for (int y = 0; y < data.Height / 8; y++)
                 {
-                    scene.Add(new VinePathSection(data, Position + new Vector2(x * 8, y * 8)));
+                    scene.Add(new VinePathSection(data, Position + new Vector2(x * 8, y * 8), x, y, tileWidth, tileHeight));
                 }
             }
         }

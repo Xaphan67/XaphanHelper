@@ -53,6 +53,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool CheckedStartMode;
 
+        private static readonly Vector2[] Directions = { Vector2.UnitX, -Vector2.UnitX, Vector2.UnitY, -Vector2.UnitY };
+
         public VineHead(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;
@@ -68,7 +70,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new PlayerCollider(onPlayer, new Circle(6, 4, 4)));
             Add(new PlayerCollider(onBounce, new Circle(6, 4, 4)));
             Add(new WeaponCollider(HitByBeam, HitByMissile, new Circle(6, 4, 4)));
-            nodes = data.NodesWithPosition(offset);
             directory = data.Attr("directory");
             if (string.IsNullOrEmpty(directory))
             {
@@ -179,7 +180,43 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            
+            nodes = new Vector2[] { Position, FindPathEnd(Position) };
+        }
+
+        private Vector2 FindPathEnd(Vector2 start)
+        {
+            Vector2 current = start;
+            Vector2 cameFromDir = Vector2.Zero;
+            int maxSteps = 10000;
+            for (int i = 0; i < maxSteps; i++)
+            {
+                VinePath.VinePathSection section = Scene.CollideFirst<VinePath.VinePathSection>(new Rectangle((int)current.X, (int)current.Y, 1, 1));
+                if (section == null)
+                {
+                    break;
+                }
+                Vector2 nextDir = Vector2.Zero;
+                int neighborCount = 0;
+                foreach (Vector2 dir in Directions)
+                {
+                    if (dir == -cameFromDir)
+                    {
+                        continue;
+                    }
+                    if (section.HasCapConnection(dir))
+                    {
+                        nextDir = dir;
+                        neighborCount++;
+                    }
+                }
+                if (neighborCount != 1)
+                {
+                    break;
+                }
+                current += nextDir * 8f;
+                cameFromDir = nextDir;
+            }
+            return current;
         }
 
         public override void Update()
@@ -195,18 +232,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
                 {
                     Sprite.Rotation = Position == nodes[0] ? (float)Math.PI : 0;
+                    PreviousDirection = Vector2.UnitY;
                 }
                 if (Scene.CollideCheck<VinePath>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
                 {
                     Sprite.Rotation = Position == nodes[0] ? (float)Math.PI / 2 : -(float)Math.PI / 2;
+                    PreviousDirection = Vector2.UnitX;
                 }
                 if (Scene.CollideCheck<VinePath>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
                 {
                     Sprite.Rotation = Position == nodes[0] ? -(float)Math.PI / 2 : (float)Math.PI / 2;
+                    PreviousDirection = -Vector2.UnitX;
                 }
                 if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
                 {
                     Sprite.Rotation = Position == nodes[0] ? 0 : (float)Math.PI;
+                    PreviousDirection = -Vector2.UnitY;
                 }
                 CheckedStartMode = true;
             }
