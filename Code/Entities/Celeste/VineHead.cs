@@ -266,7 +266,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
 
-                if ((((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && !SwapDirection) || (((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light) && SwapDirection))
+                if ((((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && !SwapDirection) || (((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)) && SwapDirection))
                 {
                     SwapDirection = !SwapDirection;
                     if (SequenceRoutine.Active)
@@ -277,7 +277,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
 
                 // At start and flag not set -> Wait
-                if (Position == nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
+                if (Position == nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)))
                 {
                     if (SequenceRoutine.Active)
                     {
@@ -293,7 +293,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 else
                 // Not at end and flag set -> Expand
-                if (Position != nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
+                if (Position != nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)))
                 {
                     if (!CanBounce)
                     {
@@ -320,7 +320,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 else
                 // Not at start and flag not set -> Retract
-                if (Position != nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
+                if (Position != nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light)))
                 {
                     if (!SequenceRoutine.Active)
                     {
@@ -345,7 +345,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 else
                 // At end and flag set -> Wait
-                if (Position == nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
+                if (Position == nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || (string.IsNullOrEmpty(flag) && XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)))
                 {
                     if (SequenceRoutine.Active)
                     {
