@@ -14,6 +14,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         [Tracked(true)]
         public class FuseSection : Entity
         {
+            public bool ConnectedN;
+
+            public bool ConnectedS;
+
+            public bool ConnectedE;
+
+            public bool ConnectedW;
+
             private Sprite Sprite;
 
             private Sprite ExplosionSprite;
@@ -30,10 +38,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public int ID;
 
-            public FuseSection(EntityData data, Vector2 position, int id) : base(position)
+            private int col;
+
+            private int row;
+
+            private int tileWidth;
+
+            private int tileHeight;
+
+            public FuseSection(EntityData data, Vector2 position, int id, int col, int row, int tileWidth, int tileHeight) : base(position)
             {
                 Tag = Tags.TransitionUpdate;
                 ID = id;
+                this.col = col;
+                this.row = row;
+                this.tileWidth = tileWidth;
+                this.tileHeight = tileHeight;
                 Collider = new Hitbox(8f, 8f);
                 directory = data.Attr("directory");
                 if (string.IsNullOrEmpty(directory))
@@ -58,29 +78,53 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public override void Awake(Scene scene)
             {
                 base.Awake(scene);
-                bool N = false;
-                bool S = false;
-                bool E = false;
-                bool W = false;
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y - 8, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
-                {
-                    N = true;
-                }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X, (int)Y + 8, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
-                {
-                    S = true;
-                }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X + 8, (int)Y, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
-                {
-                    E = true;
-                }
-                if (Scene.CollideCheck<FuseSection>(new Rectangle((int)X - 8, (int)Y, 1, 1)) || Scene.CollideCheck<Detonator>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
-                {
-                    W = true;
-                }
-                bool None = !N && !S && !E && !W;
-                tile = None ? "None" : (N ? "N" : "") + (S ? "S" : "") + (E ? "E" : "") + (W ? "W" : "");
+                ConnectedN = HasAdjacentThinSide(new Vector2(X, Y - 8), "x");
+                ConnectedS = HasAdjacentThinSide(new Vector2(X, Y + 8), "x");
+                ConnectedE = HasAdjacentThinSide(new Vector2(X + 8, Y), "y");
+                ConnectedW = HasAdjacentThinSide(new Vector2(X - 8, Y), "y");
+                bool None = !ConnectedN && !ConnectedS && !ConnectedE && !ConnectedW;
+                tile = None ? "None" : (ConnectedN ? "N" : "") + (ConnectedS ? "S" : "") + (ConnectedE ? "E" : "") + (ConnectedW ? "W" : "");
                 GetSpritePos();
+            }
+
+            private bool HasAdjacentThinSide(Vector2 cellPos, string axis)
+            {
+                float selfX = X - col * 8;
+                float selfY = Y - row * 8;
+                float selfWidth = tileWidth * 8;
+                float selfHeight = tileHeight * 8;
+
+                Rectangle cellRect = new Rectangle((int)cellPos.X, (int)cellPos.Y, 1, 1);
+
+                FuseSection other = Scene.CollideFirst<FuseSection>(cellRect);
+                if (other != null)
+                {
+                    float ox = other.X - other.col * 8;
+                    float oy = other.Y - other.row * 8;
+                    float ow = other.tileWidth * 8;
+                    float oh = other.tileHeight * 8;
+
+                    float overlapLength;
+                    if (axis == "y")
+                    {
+                        float top = System.Math.Max(selfY, oy);
+                        float bottom = System.Math.Min(selfY + selfHeight, oy + oh);
+                        overlapLength = bottom - top;
+                    }
+                    else
+                    {
+                        float left = System.Math.Max(selfX, ox);
+                        float right = System.Math.Min(selfX + selfWidth, ox + ow);
+                        overlapLength = right - left;
+                    }
+
+                    if (overlapLength <= 8f)
+                    {
+                        return true;
+                    }
+                }
+
+                return Scene.CollideCheck<Detonator>(cellRect);
             }
 
             public IEnumerator ExplodeRoutine(float speed, string flag = null, bool registerInSaveData = false)
@@ -111,7 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     yield return null;
                 }
                 bool isEnd = true;
-                if (CollideCheck<FuseSection>(Position - Vector2.UnitY))
+                if (ConnectedN && CollideCheck<FuseSection>(Position - Vector2.UnitY))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position - Vector2.UnitY);
                     if (nextSection != null && !nextSection.triggered)
@@ -120,7 +164,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         isEnd = false;
                     }
                 }
-                if (CollideCheck<FuseSection>(Position + Vector2.UnitY))
+                if (ConnectedS && CollideCheck<FuseSection>(Position + Vector2.UnitY))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position + Vector2.UnitY);
                     if (nextSection != null && !nextSection.triggered)
@@ -130,7 +174,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                     }
                 }
-                if (CollideCheck<FuseSection>(Position + Vector2.UnitX))
+                if (ConnectedE && CollideCheck<FuseSection>(Position + Vector2.UnitX))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position + Vector2.UnitX);
                     if (nextSection != null && !nextSection.triggered)
@@ -140,7 +184,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                     }
                 }
-                if (CollideCheck<FuseSection>(Position - Vector2.UnitX))
+                if (ConnectedW && CollideCheck<FuseSection>(Position - Vector2.UnitX))
                 {
                     FuseSection nextSection = CollideFirst<FuseSection>(Position - Vector2.UnitX);
                     if (nextSection != null && !nextSection.triggered)
@@ -260,11 +304,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            int tileWidth = (int)System.Math.Ceiling(data.Width / 8f);
+            int tileHeight = (int)System.Math.Ceiling(data.Height / 8f);
             for (int x = 0; x < data.Width / 8; x++)
             {
                 for (int y = 0; y < data.Height / 8; y++)
                 {
-                    scene.Add(new FuseSection(data, Position + new Vector2(x * 8, y * 8), ID));
+                    scene.Add(new FuseSection(data, Position + new Vector2(x * 8, y * 8), ID, x, y, tileWidth, tileHeight));
                 }
             }
         }

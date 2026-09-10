@@ -245,6 +245,14 @@ entities.XaphanHelper/CustomTorch.attributes.description.offFrames=List of frame
 entities.XaphanHelper/CustomTorch.attributes.description.turnOnFrames=List of frames indexes (separated by a comma) to play when the torch is activating.
 entities.XaphanHelper/CustomTorch.attributes.description.onFrames=List of frames indexes (separated by a comma) to play when the torch is activated.
 
+# Detonator
+entities.XaphanHelper/Detonator.placements.name.Detonator=Detonator
+entities.XaphanHelper/Detonator.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/Detonator.attributes.description.flag=The flag that will be true once the fuse connected to this detonator reach one ending.\nThe ending of the fuse MUST collide with a Flag Block.\nIf the player enter the room and this flag is already set, the detonnator will already be pressed.
+entities.XaphanHelper/Detonator.attributes.description.registerInSaveData= If true, the flag will be registered in the player Save file and will be set forever.
+entities.XaphanHelper/Detonator.attributes.description.side=The side the detonator will face.
+entities.XaphanHelper/Detonator.attributes.description.speed=The speed at wich the fuse connected to this denator will explode. (Must be between 0.01 and 0.3)
+
 # DroneGate
 entities.XaphanHelper/DroneGate.placements.name.DroneGate=Drone Gate
 entities.XaphanHelper/DroneGate.attributes.description.side=The side the gate will face.
