@@ -12,6 +12,7 @@ Version 1.0.80 :
 - Added Custom Move Block
 - Added Push Block
 - Added Push Block Track
+- Added Pressure Plate
 - Added Light Mode Trigger
 - Added Bag Display Tutorial Trigger
 - Added Drone Destroy Tutorial Trigger

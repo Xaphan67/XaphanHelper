@@ -588,6 +588,11 @@ entities.XaphanHelper/MergeChaptersController.placements.name.MergeChaptersContr
 entities.XaphanHelper/MergeChaptersController.attributes.description.mode=Classic: The player will start at the checkpoint they selected (same as vanilla).\nRooms: The player will start in the same room they were when they left the campaign.\nWarps: The player will start at the location of the last activated Warp Station they stood on.
 entities.XaphanHelper/MergeChaptersController.attributes.description.keepPrologueSeparated=If true, the starting chapter of the campaign will not be merged.\nNo effect if the starting chapter of the campaign is not set as an interlude.
 
+# PressurePlate
+entities.XaphanHelper/PressurePlate.placements.name.PressurePlate=Pressure Plate
+entities.XaphanHelper/PressurePlate.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/PressurePlate.attributes.description.flag=The flag that will be true as long as the pressure plate is pressed.
+
 # PushBlock
 entities.XaphanHelper/PushBlock.placements.name.PushBlock=Push Block
 entities.XaphanHelper/PushBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
@@ -601,7 +606,7 @@ entities.XaphanHelper/PushBlockTrack.placements.name.PushBlockTrack=Push Block T
 entities.XaphanHelper/PushBlockTrack.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 
 # SetStatsFlagsController
-entities.XaphanHelper/SetStatsFlagsController.placements.name.SetStatsFlagsController=Set Stats Flags Controller
+entities.XaphanHelper/SetStatsFlagsController.placements.name.SetStatsFlagsController=Set Stats Flags Controller.
 
 # Slope
 entities.XaphanHelper/Slope.placements.name.Slope=Slope
