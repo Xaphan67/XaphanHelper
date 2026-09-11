@@ -17,6 +17,7 @@ Version 1.0.80 :
 - Added Sawblade
 - Added Crate
 - Added Crates Spawner
+- Added Work Robot
 - Added Light Mode Trigger
 - Added Bag Display Tutorial Trigger
 - Added Drone Destroy Tutorial Trigger

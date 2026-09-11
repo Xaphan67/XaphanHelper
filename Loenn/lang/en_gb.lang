@@ -837,6 +837,14 @@ entities.XaphanHelper/WarpStation.attributes.description.wipeType=Wipe effect to
 entities.XaphanHelper/WarpStation.attributes.description.noBeam=If true, the beam will not appear when the warp is activated.
 entities.XaphanHelper/WarpStation.attributes.description.onlyCurrentChapter=If true, this warp will only allow the player to others Warp Stations unlocked in the same chapter as this one.
 
+# WorkRobot
+entities.XaphanHelper/WorkRobot.placements.name.WorkRobot=Work Robot
+entities.XaphanHelper/WorkRobot.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/WorkRobot.attributes.description.size=Size of the robot. This also affect its hitbox.
+entities.XaphanHelper/WorkRobot.attributes.description.flag=The flag that must be set for the robot to start walking. Leave empty for no flag.
+entities.XaphanHelper/WorkRobot.attributes.description.speed=The speed at wich the robot moves (Default : 20)
+entities.XaphanHelper/WorkRobot.attributes.description.startWalkLeft=If true, the robot will start walking toward the left instead of the right.
+
 # -- Triggers --
 
 # BagDisplayTutorialTrigger
