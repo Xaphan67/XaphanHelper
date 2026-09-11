@@ -104,6 +104,17 @@ entities.XaphanHelper/CollectableDoor.attributes.description.soundIndex=Sound th
 entities.XaphanHelper/CollectableDoor.attributes.description.registerInSaveData=If true, the door ID will be registered in the player save file and will stay open forever once the requirements are meet and the player opened the door.
 entities.XaphanHelper/CollectableDoor.attributes.description.levelSet=The level set the door will check when the mode is set to TotalHearts, TotalCassettes or TotalStrawberries. Leave empty to check this campaign level set.
 
+# Conveyor
+entities.XaphanHelper/Conveyor.placements.name.Conveyor=Conveyor
+entities.XaphanHelper/Conveyor.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/Conveyor.attributes.description.speed=The speed of the conveyor (Default : 60)
+entities.XaphanHelper/Conveyor.attributes.description.direction=The direction the conveyor will move actors standing on it or grabing it.
+entities.XaphanHelper/Conveyor.attributes.description.activeFlag=The flag that must be set for the conveyor to be active.\nLeave empty for it to be always active.
+entities.XaphanHelper/Conveyor.attributes.description.forceInactiveFlag=If this flag is set, the conveyor will not be active even if the Active Flag is set or if Active Flag is empty.
+entities.XaphanHelper/Conveyor.attributes.description.swapFlag=If this flag is set, swap the direction of the conveyor.
+entities.XaphanHelper/Conveyor.attributes.description.vertical=If true, makes the conveyor vertical instead of horizontal.
+entities.XaphanHelper/Conveyor.attributes.description.flipX=If true, flip the conveyor to face the other way.\nNo effect if Vertical is not set.
+
 # CustomBadelineBoss
 entities.XaphanHelper/CustomBadelineBoss.placements.name.CustomBadelineBoss=Custom Badeline Boss
 entities.XaphanHelper/CustomBadelineBoss.attributes.description.startHit=Determines whether or not Badeline waits to attack until the first hit or upon room entry.
