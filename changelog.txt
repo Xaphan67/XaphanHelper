@@ -15,6 +15,7 @@ Version 1.0.80 :
 - Added Pressure Plate
 - Added Conveyor
 - Added Sawblade
+- Added Crate Spawner
 - Added Light Mode Trigger
 - Added Bag Display Tutorial Trigger
 - Added Drone Destroy Tutorial Trigger

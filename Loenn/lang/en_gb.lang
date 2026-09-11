@@ -115,6 +115,15 @@ entities.XaphanHelper/Conveyor.attributes.description.swapFlag=If this flag is s
 entities.XaphanHelper/Conveyor.attributes.description.vertical=If true, makes the conveyor vertical instead of horizontal.
 entities.XaphanHelper/Conveyor.attributes.description.flipX=If true, flip the conveyor to face the other way.\nNo effect if Vertical is not set.
 
+# CratesSpawner
+entities.XaphanHelper/CratesSpawner.placements.name.CratesSpawner=Crates Spawner
+entities.XaphanHelper/CratesSpawner.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/CratesSpawner.attributes.description.maxCrates=The maximum amount of crates spawned by this spawner that can exist in the room at the same time.\nOnce this limit is reached, the spawned will stop spawing crates until at least one crate it spawned is destroyed.
+entities.XaphanHelper/CratesSpawner.attributes.description.type=Type of crates spawned by the spawner.\nWood: Fragiles crates destroyed by spikes, missiles and sawblades.\nMetal: Resistant crates immune to most hazards.
+entities.XaphanHelper/CratesSpawner.attributes.description.cooldown=Time (in seconds) between each spawn of a crate.
+entities.XaphanHelper/CratesSpawner.attributes.description.flag=The flag that must be true to start spawning crates.\nLeave empty for no flag.
+entities.XaphanHelper/CratesSpawner.attributes.description.forceInactiveFlag=If this flag is true, the spawner will not spawn crates even if the flag set in Flag is set or if its empty.
+
 # CustomBadelineBoss
 entities.XaphanHelper/CustomBadelineBoss.placements.name.CustomBadelineBoss=Custom Badeline Boss
 entities.XaphanHelper/CustomBadelineBoss.attributes.description.startHit=Determines whether or not Badeline waits to attack until the first hit or upon room entry.
