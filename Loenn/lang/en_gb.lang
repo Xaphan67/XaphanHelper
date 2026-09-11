@@ -653,6 +653,17 @@ entities.XaphanHelper/Sawblade.attributes.description.particles=If true, the saw
 # SetStatsFlagsController
 entities.XaphanHelper/SetStatsFlagsController.placements.name.SetStatsFlagsController=Set Stats Flags Controller.
 
+# Shutter
+entities.XaphanHelper/Shutter.placements.name.Shutter=Shutter
+entities.XaphanHelper/Shutter.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/Shutter.attributes.description.direction=The direction of the shutter.
+entities.XaphanHelper/Shutter.attributes.description.speed=The speed at wich the shutter open or close. (Default: 30)
+entities.XaphanHelper/Shutter.attributes.description.length=The length (in tiles) of the shutter.
+entities.XaphanHelper/Shutter.attributes.description.flag=The flag that should be set for the shutter to open.
+entities.XaphanHelper/Shutter.attributes.description.sound=The sound event that play when the shutter open or close.
+entities.XaphanHelper/Shutter.attributes.description.startOpen=If true, the shutter will be open and will start closing when the flag set in Flag is set.
+entities.XaphanHelper/Shutter.attributes.description.silent=If true, the shutter will not make any sound when opening or closing.
+
 # Slope
 entities.XaphanHelper/Slope.placements.name.Slope=Slope
 entities.XaphanHelper/Slope.attributes.description.side=Side of the slope.
