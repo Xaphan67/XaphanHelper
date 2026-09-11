@@ -115,6 +115,11 @@ entities.XaphanHelper/Conveyor.attributes.description.swapFlag=If this flag is s
 entities.XaphanHelper/Conveyor.attributes.description.vertical=If true, makes the conveyor vertical instead of horizontal.
 entities.XaphanHelper/Conveyor.attributes.description.flipX=If true, flip the conveyor to face the other way.\nNo effect if Vertical is not set.
 
+# Crate
+entities.XaphanHelper/Crate.placements.name.Crate=Crate
+entities.XaphanHelper/Crate.attributes.description.type=Type of the crate.\nWood: Fragiles crates destroyed by spikes, missiles and sawblades.\nMetal: Resistant crates immune to most hazards.
+entities.XaphanHelper/Crate.attributes.description.noSpawnFlag=If this flag is set, prevent the crate from spawning when the room load.
+
 # CratesSpawner
 entities.XaphanHelper/CratesSpawner.placements.name.CratesSpawner=Crates Spawner
 entities.XaphanHelper/CratesSpawner.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
