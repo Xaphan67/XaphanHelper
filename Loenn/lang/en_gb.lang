@@ -613,6 +613,13 @@ entities.XaphanHelper/MergeChaptersController.placements.name.MergeChaptersContr
 entities.XaphanHelper/MergeChaptersController.attributes.description.mode=Classic: The player will start at the checkpoint they selected (same as vanilla).\nRooms: The player will start in the same room they were when they left the campaign.\nWarps: The player will start at the location of the last activated Warp Station they stood on.
 entities.XaphanHelper/MergeChaptersController.attributes.description.keepPrologueSeparated=If true, the starting chapter of the campaign will not be merged.\nNo effect if the starting chapter of the campaign is not set as an interlude.
 
+# PowerLine
+entities.XaphanHelper/PowerLine.placements.name.PowerLine=Power Line
+entities.XaphanHelper/PowerLine.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/PowerLine.attributes.description.flag=The flag that must be set for this line to appear as powered.
+entities.XaphanHelper/PowerLine.attributes.description.inverted=If true, the power line will be powered instead of unpowered when the flag in FLag is not set.
+entities.XaphanHelper/PowerLine.attributes.description.background=If true, the power line will render in the background instead of the foreground.
+
 # PressurePlate
 entities.XaphanHelper/PressurePlate.placements.name.PressurePlate=Pressure Plate
 entities.XaphanHelper/PressurePlate.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.

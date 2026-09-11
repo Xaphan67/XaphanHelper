@@ -44,7 +44,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             LineSprite.AddLoop("on", "on", 0.08f);
             LineSprite.AddLoop("off", "off", 0.08f);
             LineSprite.Play("off");
-            Depth = -19999;
+            Depth = data.Bool("background")  ? 9999 : -19999;
         }
 
         public override void Awake(Scene scene)
@@ -54,32 +54,42 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 for (int j = 0; j < Height / 8; j++)
                 {
-                    bool N = false;
-                    bool S = false;
-                    bool E = false;
-                    bool W = false;
-                    bool None = false;
-                    if (Scene.CollideCheck<PowerLine>(new Rectangle((int)X + i * 8, (int)Y + j * 8 - 8, 1, 1)))
-                    {
-                        N = true;
-                    }
-                    if (Scene.CollideCheck<PowerLine>(new Rectangle((int)X + i * 8, (int)Y + j * 8 + 8, 1, 1)))
-                    {
-                        S = true;
-                    }
-                    if (Scene.CollideCheck<PowerLine>(new Rectangle((int)X + i * 8 + 8, (int)Y + j * 8, 1, 1)))
-                    {
-                        E = true;
-                    }
-                    if (Scene.CollideCheck<PowerLine>(new Rectangle((int)X + i * 8 - 8, (int)Y + j * 8, 1, 1)))
-                    {
-                        W = true;
-                    }
-                    None = !N && !S && !E && !W;
+                    bool N = HasAdjacentThinSide(new Vector2(X + i * 8, Y + j * 8 - 8), "x");
+                    bool S = HasAdjacentThinSide(new Vector2(X + i * 8, Y + j * 8 + 8), "x");
+                    bool E = HasAdjacentThinSide(new Vector2(X + i * 8 + 8, Y + j * 8), "y");
+                    bool W = HasAdjacentThinSide(new Vector2(X + i * 8 - 8, Y + j * 8), "y");
+                    bool None = !N && !S && !E && !W;
                     tiles.Add(new Vector2(i, j), None ? "None" : (N ? "N" : "") + (S ? "S" : "") + (E ? "E" : "") + (W ? "W" : ""));
                 }
             }
             GetSpritePos();
+        }
+
+        private bool HasAdjacentThinSide(Vector2 cellPos, string axis)
+        {
+            Rectangle cellRect = new Rectangle((int)cellPos.X, (int)cellPos.Y, 1, 1);
+
+            PowerLine other = Scene.CollideFirst<PowerLine>(cellRect);
+            if (other != null)
+            {
+                float overlapLength;
+                if (axis == "y")
+                {
+                    float top = Math.Max(Y, other.Y);
+                    float bottom = Math.Min(Y + Height, other.Y + other.Height);
+                    overlapLength = bottom - top;
+                }
+                else
+                {
+                    float left = Math.Max(X, other.X);
+                    float right = Math.Min(X + Width, other.X + other.Width);
+                    overlapLength = right - left;
+                }
+
+                return overlapLength <= 8f;
+            }
+
+            return false;
         }
 
         public override void Update()
