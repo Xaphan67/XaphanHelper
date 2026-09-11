@@ -616,6 +616,26 @@ entities.XaphanHelper/PushBlock.attributes.description.mustDash=If true, kill th
 entities.XaphanHelper/PushBlockTrack.placements.name.PushBlockTrack=Push Block Track
 entities.XaphanHelper/PushBlockTrack.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 
+# Sawblade
+entities.XaphanHelper/Sawblade.placements.name.Sawblade=Sawblade
+entities.XaphanHelper/Sawblade.attributes.description.mode=Determine how sawblades will move on the track:\nRestart: Once a sawblade reach the end of the track, it reapear at the start.\nBack And Forth: Once a sawblade reach the end of the track, it goes back toward the beggining.\nBack And Forth (All Sawblades): Once a sawblade reach the end of the track, ALL sawblades goes back toward the beggining. (Even ones that did not reach the end of the track)\nFlag To Move: Sawblades will not move unless the flag set in Move Flag is true.
+entities.XaphanHelper/Sawblade.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/Sawblade.attributes.description.lineColorA=The hexadecimal code for the color of the edges of the track.
+entities.XaphanHelper/Sawblade.attributes.description.lineColorB=The hexadecimal code for the color of the center of the track.
+entities.XaphanHelper/Sawblade.attributes.description.particlesColorA=The hexadecimal code for the first color emited by the sawblades when moving.
+entities.XaphanHelper/Sawblade.attributes.description.particlesColorB=The hexadecimal code for the second color emited by the sawblades when moving.
+entities.XaphanHelper/Sawblade.attributes.description.amount=Number of sawblades that will be on the track.
+entities.XaphanHelper/Sawblade.attributes.description.radius=Radius of the hitbox each sawblade will have. (in pixels)
+entities.XaphanHelper/Sawblade.attributes.description.speed=The speed at wich the sawblades will move along the track.
+entities.XaphanHelper/Sawblade.attributes.description.startOffset=The value (in percent, between 0 and 1) of the track lenght where the first sawblade will be placed on the track.\nExample: use 0.5 to have a sawblade at the exact middle of the track.
+entities.XaphanHelper/Sawblade.attributes.description.spacingOffset=The value (in percent, between 0 and 1) of the track lenght between each sawblade.\nSawblades may behave incorrectly if this value multiplied by the Amount value is greater than 1.
+entities.XaphanHelper/Sawblade.attributes.description.stopFlag=If this flag is set, the sawblades will stop moving no matter what.
+entities.XaphanHelper/Sawblade.attributes.description.swapFlag=If this flag is set, the sawblades will move in the opposite direction.
+entities.XaphanHelper/Sawblade.attributes.description.Move Flag=The flag that must be set to allow the sawblades to move.\nOnly if Mode is set to Flag To Move.
+entities.XaphanHelper/Sawblade.attributes.description.forceInactiveFlag=If this flag if set, sawblades will not move and stay idle.
+entities.XaphanHelper/Sawblade.attributes.description.drawTrack=If true, draw the track that the sawblades will follow.
+entities.XaphanHelper/Sawblade.attributes.description.particles=If true, the sawblades will emit particles when they move.
+
 # SetStatsFlagsController
 entities.XaphanHelper/SetStatsFlagsController.placements.name.SetStatsFlagsController=Set Stats Flags Controller.
 

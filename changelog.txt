@@ -14,6 +14,7 @@ Version 1.0.80 :
 - Added Push Block Track
 - Added Pressure Plate
 - Added Conveyor
+- Added Sawblade
 - Added Light Mode Trigger
 - Added Bag Display Tutorial Trigger
 - Added Drone Destroy Tutorial Trigger
