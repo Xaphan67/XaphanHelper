@@ -11,6 +11,7 @@ Version 1.0.80 :
 - Added Detonator
 - Added Fuse Break Block
 - Added Lever
+- Added Custom Bounce Block
 - Added Custom Move Block
 - Added Push Block
 - Added Push Block Track

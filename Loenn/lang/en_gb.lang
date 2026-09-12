@@ -146,6 +146,14 @@ entities.XaphanHelper/CustomBadelineBoss.attributes.description.spriteName=The n
 entities.XaphanHelper/CustomBadelineBoss.attributes.description.cameraLock=If true, the boss will prevent the camera to move freely.
 entities.XaphanHelper/CustomBadelineBoss.attributes.description.drawProjectilesOutline=If true, draw a black outline arround the projectiles shoot by the boss.
 
+# CustomBounceBlock
+entities.XaphanHelper/CustomBounceBlock.placements.name.CustomBounceBlock=Custom Bounce Block
+entities.XaphanHelper/CustomBounceBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/CustomBounceBlock.attributes.description.bounceStrengthMultiplier=Determine how strongly the block will push the player away.\n1 is default vanilla value.
+entities.XaphanHelper/CustomBounceBlock.attributes.description.respawnTime=Time (in seconds) for the block to respawn after use.
+entities.XaphanHelper/CustomBounceBlock.attributes.description.reformTime=Time (in seconds) for the block to reform when it respawn.
+entities.XaphanHelper/CustomBounceBlock.attributes.description.notCoreMode=If true, ignore current Core Mode and default to Ice mode.
+
 # CustomCheckpoint
 entities.XaphanHelper/CustomCheckpoint.placements.name.CustomCheckpoint=Custom Checkpoint
 entities.XaphanHelper/CustomCheckpoint.attributes.description.sprite=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
