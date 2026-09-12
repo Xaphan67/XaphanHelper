@@ -11,6 +11,7 @@ entities.XaphanHelper/AirBubbles.placements.name.AirBubbles=Air Bubbles
 
 # BouncyBubble
 entities.XaphanHelper/BouncyBubble.placements.name.BouncyBubble=Bouncy Bubble
+entities.XaphanHelper/BouncyBubble.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 entities.XaphanHelper/BouncyBubble.attributes.description.respawnTime=Time (in seconds) after the bubble got destroyed before it respawn.\nLeave at 0 for no respawn.
 
 # BreakBlock

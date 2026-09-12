@@ -36,7 +36,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Collider = new Hitbox(16f, 16, -8f, -8f);
             respawnTime = data.Float("respawnTime", 0f);
             Add(new PlayerCollider(OnBounce, Collider));
-            Add(Sprite = new Sprite(GFX.Game, "objects/XaphanHelper/BouncyBubble/"));
+            Add(Sprite = new Sprite(GFX.Game, data.Attr("directory", "objects/XaphanHelper/BouncyBubble") + "/"));
             Sprite.Add("idle", "idle", 0f);
             Sprite.Play("idle");
             Sprite.CenterOrigin();
