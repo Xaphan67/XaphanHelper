@@ -6,7 +6,7 @@ local drawing = require("utils.drawing")
 local CustomMovingPlatform = {}
 
 CustomMovingPlatform.name = "XaphanHelper/CustomMovingPlatform"
-CustomMovingPlatform.nodeLimits = {0, -1}
+CustomMovingPlatform.nodeLimits = {1, -1}
 CustomMovingPlatform.nodeLineRenderType = "line"
 CustomMovingPlatform.nodeVisibility = "always"
 CustomMovingPlatform.fieldOrder = {
