@@ -698,6 +698,20 @@ entities.XaphanHelper/PushBlock.attributes.description.mustDash=If true, kill th
 entities.XaphanHelper/PushBlockTrack.placements.name.PushBlockTrack=Push Block Track
 entities.XaphanHelper/PushBlockTrack.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
 
+# RailBlock
+entities.XaphanHelper/RailBlock.placements.name.RailBlock=Rail Block
+entities.XaphanHelper/RailBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/RailBlock.attributes.description.speedMult=Speed multiplier applied to the block when it move.\n1 = normal speed. Higher is faster, lower is slower.\nMinimum 0.5, Maximum 1.5.
+entities.XaphanHelper/RailBlock.attributes.description.lineColorA=The hexadecimal code for the color of the edges of the track.
+entities.XaphanHelper/RailBlock.attributes.description.lineColorB=The hexadecimal code for the color of the center of the track.
+entities.XaphanHelper/RailBlock.attributes.description.particlesColorA=The hexadecimal code for the first color emited by the block when it move.
+entities.XaphanHelper/RailBlock.attributes.description.particlesColorB=The hexadecimal code for the second color emited by the block when it move.
+entities.XaphanHelper/RailBlock.attributes.description.canDash=If true, the block can move along the track when the player dash into it from the correct side.
+entities.XaphanHelper/RailBlock.attributes.description.playerMomentum=If true, the block can move along the track when the player stand on it.
+entities.XaphanHelper/RailBlock.attributes.description.noReturn=If true, prevent the block to go back to its starting position when the player stop interacting with it after a short time.
+entities.XaphanHelper/RailBlock.attributes.description.drawTrack=If true, draw the track that the block will follow.
+entities.XaphanHelper/RailBlock.attributes.description.particles=If true, the block will emit particles when it move.
+
 # Sawblade
 entities.XaphanHelper/Sawblade.placements.name.Sawblade=Sawblade
 entities.XaphanHelper/Sawblade.attributes.description.mode=Determine how sawblades will move on the track:\nRestart: Once a sawblade reach the end of the track, it reapear at the start.\nBack And Forth: Once a sawblade reach the end of the track, it goes back toward the beggining.\nBack And Forth (All Sawblades): Once a sawblade reach the end of the track, ALL sawblades goes back toward the beggining. (Even ones that did not reach the end of the track)\nFlag To Move: Sawblades will not move unless the flag set in Move Flag is true.

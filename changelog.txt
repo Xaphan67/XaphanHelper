@@ -15,6 +15,7 @@ Version 1.0.80 :
 - Added Explosive Boulder
 - Added Dragon
 - Added Bubble Block
+- Added Rail Block
 - Added Custom Move Block
 - Added Push Block
 - Added Push Block Track
