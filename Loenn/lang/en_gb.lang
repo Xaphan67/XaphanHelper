@@ -278,6 +278,28 @@ entities.XaphanHelper/CustomMoveBlock.attributes.description.buttonIgnoreColors=
 entities.XaphanHelper/CustomMoveBlock.attributes.description.buttonPressedOffset=Number of pixels the buttons will move when the player press them.
 entities.XaphanHelper/CustomMoveBlock.attributes.description.magneticCeilingOffset=Number of pixels the magnetic Ceiling attached to this block will be moved downward.\nUsed to give the illusion that the magnetic ceiling is attached to the button bellow the block.\nIgnored if Steer Sides is not set to "OnlyBottom" or "TopAndBottom".
 
+# CustomMovingPlatform
+entities.XaphanHelper/CustomMovingPlatform.placements.name.CustomMovingPlatform=Custom Moving Platform
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.mode=Determine how platforms will move on the track:\nRestart: Once a platform reach the end of the track, it reapear at the start.\nBack And Forth: Once a platform reach the end of the track, it goes back toward the beggining.\nBack And Forth (All Platforms): Once a platform reach the end of the track, ALL platforms goes back toward the beggining. (Even ones that did not reach the end of the track)\nFlag To Move: Platforms will not move unless the flag set in Move Flag is true.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.lineColorA=The hexadecimal code for the color of the edges of the track.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.lineColorB=The hexadecimal code for the color of the center of the track.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.particlesColorA=The hexadecimal code for the first color emited by the platforms when moving.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.particlesColorB=The hexadecimal code for the second color emited by the platforms when moving.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.orientation=The side the platform will face toward.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.amount=Number of platforms that will be on the track.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.length=Length of the platforms. (in tiles)
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.speed=The speed at wich the platforms will move along the track.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.startOffset=The value (in percent, between 0 and 1) of the track lenght where the first platform will be placed on the track.\nExample: use 0.5 to have a platform at the exact middle of the track.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.spacingOffset=The value (in percent, between 0 and 1) of the track lenght between each platform.\nPlatformss may behave incorrectly if this value multiplied by the Amount value is greater than 1.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.attachedEntityPlatformsIndexes=Determines wich platforms will have entities attached to it, starting at index 1 for first platform (Separated by a comma (,)).\nYou need to place another entity next to the platform for this to work.\nLeave empty to copy the attached entity to all platforms.\nCompatibles entities : Spikes, Spring, Magnetic Ceiling, Lever.\n\nExample: If you have 3 platforms and want a spring attached to the 1st and last ones, place a spring attached to this platform, then change this to 1,3.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.stopFlag=If this flag is set, the platforms will stop moving no matter what.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.swapFlag=If this flag is set, the platforms will move in the opposite direction.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.Move Flag=The flag that must be set to allow the platforms to move.\nOnly if Mode is set to Flag To Move.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.forceInactiveFlag=If this flag if set, platforms will not move and stay idle.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.drawTrack=If true, draw the track that the platforms will follow.
+entities.XaphanHelper/CustomMovingPlatform.attributes.description.particles=If true, the platforms will emit particles when they move.
+
 # CustomTorch
 entities.XaphanHelper/CustomTorch.placements.name.CustomTorch=Custom Torch
 entities.XaphanHelper/CustomTorch.attributes.description.playLitSound=If true, play a sound when the torch is activated.

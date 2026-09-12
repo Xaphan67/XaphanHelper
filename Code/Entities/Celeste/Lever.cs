@@ -10,7 +10,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Lever")]
     class Lever : Entity
     {
-        private Vector2[] nodes;
+        public Vector2[] nodes;
 
         private Sprite Sprite;
 

@@ -1,14 +1,15 @@
 Version 1.0.80 :
+- Added Custom Crumble Block
 - Added Light Orb
 - Added Vine Path
 - Added Vine Head
 - Added Leaf
 - Added Climbable Vine
 - Added Thorn Barrier
+- Added Custom Moving Platform
 - Added Fuse
 - Added Detonator
 - Added Fuse Break Block
-- Added Custom Crumble Block
 - Added Custom Move Block
 - Added Push Block
 - Added Push Block Track

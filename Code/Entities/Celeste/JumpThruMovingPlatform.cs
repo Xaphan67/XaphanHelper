@@ -13,6 +13,41 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private static FieldInfo SpikesSpikeType = typeof(Spikes).GetField("overrideType", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private class AttachableInfo
+        {
+            public Func<Entity, bool> Validate;
+            public Func<Entity, JumpThruMovingPlatform, Entity> Clone;
+        }
+
+        private static readonly Dictionary<Type, AttachableInfo> AttachableRegistry = new();
+
+        public static void RegisterAttachable<T>(Func<T, bool> validate, Func<T, JumpThruMovingPlatform, Entity> clone) where T : Entity
+        {
+            AttachableRegistry[typeof(T)] = new AttachableInfo
+            {
+                Validate = e => validate((T)e),
+                Clone = (e, target) => clone((T)e, target)
+            };
+        }
+
+        static JumpThruMovingPlatform()
+        {
+            RegisterAttachable<Spikes>(
+                validate: s => s.Direction == Spikes.Directions.Up,
+                clone: (s, target) => new Spikes(target.Position - target.attachedEntityOffset, target.length * 8, s.Direction, (string)SpikesSpikeType.GetValue(s))
+            );
+
+            RegisterAttachable<Spring>(
+                validate: s => s.Orientation == Spring.Orientations.Floor,
+                clone: (s, target) => new Spring(target.Position - target.attachedEntityOffset, s.Orientation, true)
+            );
+
+            RegisterAttachable<Lever>(
+                validate: l => l.Side == "Up",
+                clone: (l, target) => new Lever(target.Position - target.attachedEntityOffset, l.nodes, l.Directory, l.Flag, l.CanSwapFlag, l.Side, l.registerInSaveData, l.saveDataOnlyAfterCheckpoint)
+            );
+        }
+
         private Vector2[] nodes;
 
         private int amount;
@@ -75,21 +110,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string Orientation;
 
-        private bool AttachedEntity;
+        public Entity AttachedEntity;
 
-        public Spikes AttachedSpike;
+        private Type attachedEntityType;
 
-        public Lever AttachedLever;
-
-        public Spring AttachedSpring;
+        private bool attachedEntityResolved;
 
         public Vector2 attachedEntityOffset;
 
         private string AttachedEntityPlatformsIndexes;
 
         private Vector2 OrigPosition;
-
-        private List<Spring> Springs = new();
 
         public JumpThruMovingPlatform(int id, Vector2 position, Vector2[] nodes, string mode, string directory, int length, string particlesColorA, string particlesColorB, string orientation, int amount, int index, float speedMult, float startOffset, float spacingOffset, string attachedEntityPlatformsIndexes, string stopFlag, string swapFlag, string moveFlag, string forceInactiveFlag, bool particles, int direction, float startPercent = -1f, bool swapped = false) : base(position, 8, false)
         {
@@ -207,73 +238,34 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            foreach (Entity entity in scene.Entities)
-            {
-                if (entity.GetType() == typeof(Spring))
-                {
-                    Springs.Add(entity as Spring);
-                }
-            }
+
             if (trackSfx != null)
             {
                 PositionTrackSfx();
-                //trackSfx.Play("event:/env/local/09_core/fireballs_idle");
             }
 
             if (index == 1)
             {
-                AttachedSpike = CollideFirst<Spikes>(OrigPosition - Vector2.UnitY * 2);
-                if (AttachedSpike != null && AttachedSpike.Direction != Spikes.Directions.Up)
+                foreach (Entity entity in scene.Entities)
                 {
-                    AttachedSpike = null;
-                }
-                if (AttachedSpike != null)
-                {
-                    attachedEntityOffset = OrigPosition - AttachedSpike.Position;
-                    foreach (Spikes spike in SceneAs<Level>().Tracker.GetEntities<Spikes>())
+                    if (!AttachableRegistry.TryGetValue(entity.GetType(), out AttachableInfo info))
                     {
-                        if (spike == AttachedSpike)
-                        {
-                            spike.RemoveSelf();
-                        }
+                        continue;
                     }
-                }
+                    if (!CollideCheck(entity, OrigPosition - Vector2.UnitY * 2))
+                    {
+                        continue;
+                    }
+                    if (!info.Validate(entity))
+                    {
+                        continue;
+                    }
 
-                AttachedLever = CollideFirst<Lever>(OrigPosition - Vector2.UnitY * 2);
-                if (AttachedLever != null && AttachedLever.Side != "Up")
-                {
-                    AttachedLever = null;
-                }
-                if (AttachedLever != null)
-                {
-                    attachedEntityOffset = OrigPosition - AttachedLever.Position;
-                    foreach (Lever lever in SceneAs<Level>().Tracker.GetEntities<Lever>())
-                    {
-                        if (lever == AttachedLever)
-                        {
-                            lever.RemoveSelf();
-                        }
-                    }
-                }
-
-                foreach (Spring spring in Springs)
-                {
-                    if (CollideCheck(spring, OrigPosition - Vector2.UnitY * 2) && spring.Orientation == Spring.Orientations.Floor)
-                    {
-                        AttachedSpring = spring;
-                        break;
-                    }
-                }
-                if (AttachedSpring != null)
-                {
-                    attachedEntityOffset = OrigPosition - AttachedSpring.Position;
-                    foreach (Spring spring in Springs)
-                    {
-                        if (spring == AttachedSpring)
-                        {
-                            spring.RemoveSelf();
-                        }
-                    }
+                    AttachedEntity = entity;
+                    attachedEntityType = entity.GetType();
+                    attachedEntityOffset = OrigPosition - entity.Position;
+                    entity.RemoveSelf();
+                    break;
                 }
             }
         }
@@ -282,78 +274,45 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             alpha += Engine.DeltaTime * 4f;
             base.Update();
-            if (index >= 1 && !AttachedEntity)
+            if (index >= 1 && !attachedEntityResolved)
             {
                 foreach (JumpThruMovingPlatform platform in SceneAs<Level>().Tracker.GetEntities<JumpThruMovingPlatform>())
                 {
-                    if (platform.id == id && platform.index == 1)
+                    if (platform.id == id && platform.index == 1 && platform.AttachedEntity != null)
                     {
-                        if (platform.AttachedSpike != null)
-                        {
-                            AttachedSpike = new Spikes(platform.Position - platform.attachedEntityOffset, length * 8, platform.AttachedSpike.Direction, (string)SpikesSpikeType.GetValue(platform.AttachedSpike));
-                            AttachedSpike.Depth = Depth + 1;
-                        }
-                        else if (platform.AttachedLever != null)
-                        {
-                            AttachedLever = new Lever(platform.Position - platform.attachedEntityOffset, platform.nodes, platform.AttachedLever.Directory, platform.AttachedLever.Flag, platform.AttachedLever.CanSwapFlag, platform.AttachedLever.Side, platform.AttachedLever.registerInSaveData, platform.AttachedLever.saveDataOnlyAfterCheckpoint);
-                            AttachedLever.Depth = Depth + 1;
-                        }
-                        else if (platform.AttachedSpring != null)
-                        {
-                            AttachedSpring = new Spring(platform.Position - platform.attachedEntityOffset, platform.AttachedSpring.Orientation, true);
-                            AttachedSpring.Depth = Depth + 1;
-                        }
+                        attachedEntityType = platform.attachedEntityType;
                         attachedEntityOffset = platform.attachedEntityOffset;
+                        if (AttachableRegistry.TryGetValue(attachedEntityType, out AttachableInfo info))
+                        {
+                            AttachedEntity = info.Clone(platform.AttachedEntity, this);
+                            AttachedEntity.Depth = Depth + 1;
+                        }
                     }
                     if (platform.id == id && (!string.IsNullOrEmpty(AttachedEntityPlatformsIndexes) ? AttachedEntityPlatformsIndexes.Split(',').ToList().Contains(index.ToString()) : true))
                     {
-                        if (AttachedSpike != null)
+                        if (AttachedEntity != null)
                         {
-                            SceneAs<Level>().Add(AttachedSpike);
-                        }
-                        else if (AttachedLever != null)
-                        {
-                            SceneAs<Level>().Add(AttachedLever);
-                        }
-                        else if (AttachedSpring != null)
-                        {
-                            SceneAs<Level>().Add(AttachedSpring);
+                            SceneAs<Level>().Add(AttachedEntity);
                         }
                     }
                 }
-                AttachedEntity = true;
+                attachedEntityResolved = true;
             }
             if ((Scene as Level).Transitioning)
             {
                 if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || AtStartOfTrack || AtEndOfTrack || !Moving)
                 {
-                    if (AttachedSpike != null)
+                    if (AttachedEntity != null)
                     {
-                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedLever != null)
-                    {
-                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedSpring != null)
-                    {
-                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                        AttachedEntity.Position = GetPercentPosition(percent) - attachedEntityOffset;
                     }
                     return;
                 }
                 if (index >= 1)
                 {
-                    if (AttachedSpike != null)
+                    if (AttachedEntity != null)
                     {
-                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedLever != null)
-                    {
-                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedSpring != null)
-                    {
-                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                        AttachedEntity.Position = GetPercentPosition(percent) - attachedEntityOffset;
                     }
                 }
             }
@@ -380,17 +339,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if ((!string.IsNullOrEmpty(forceInactiveFlag) && SceneAs<Level>().Session.GetFlag(forceInactiveFlag)) || (!string.IsNullOrEmpty(stopFlag) && SceneAs<Level>().Session.GetFlag(stopFlag)) || (!string.IsNullOrEmpty(moveFlag) && !SceneAs<Level>().Session.GetFlag(moveFlag) && mode != "Flag To Move") || AtStartOfTrack || AtEndOfTrack || !Moving)
                 {
-                    if (AttachedSpike != null)
+                    if (AttachedEntity != null)
                     {
-                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedLever != null)
-                    {
-                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedSpring != null)
-                    {
-                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                        AttachedEntity.Position = GetPercentPosition(percent) - attachedEntityOffset;
                     }
                     return;
                 }
@@ -519,17 +470,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (index >= 1)
                 {
-                    if (AttachedSpike != null)
+                    if (AttachedEntity != null)
                     {
-                        AttachedSpike.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedLever != null)
-                    {
-                        AttachedLever.Position = GetPercentPosition(percent) - attachedEntityOffset;
-                    }
-                    else if (AttachedSpring != null)
-                    {
-                        AttachedSpring.Position = GetPercentPosition(percent) - attachedEntityOffset;
+                        AttachedEntity.Position = GetPercentPosition(percent) - attachedEntityOffset;
                     }
                 }
                 MoveTo(GetPercentPosition(percent));
@@ -629,18 +572,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Removed(Scene scene)
         {
             base.Removed(scene);
-            if (AttachedSpike != null)
-            {
-                AttachedSpike.RemoveSelf();
-            }
-            if (AttachedLever != null)
-            {
-                AttachedLever.RemoveSelf();
-            }
-            if (AttachedSpring != null)
-            {
-                AttachedSpring.RemoveSelf();
-            }
+            AttachedEntity?.RemoveSelf();
         }
     }
 }
