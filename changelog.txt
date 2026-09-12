@@ -19,6 +19,7 @@ Version 1.0.80 :
 - Added Custom Move Block
 - Added Air Bubbles
 - Added Bouncy Bubble
+- Added Powamp
 - Added Push Block
 - Added Push Block Track
 - Added Pressure Plate
