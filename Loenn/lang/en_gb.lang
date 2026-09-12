@@ -332,6 +332,15 @@ entities.XaphanHelper/Detonator.attributes.description.registerInSaveData= If tr
 entities.XaphanHelper/Detonator.attributes.description.side=The side the detonator will face.
 entities.XaphanHelper/Detonator.attributes.description.speed=The speed at wich the fuse connected to this denator will explode. (Must be between 0.01 and 0.3)
 
+# Dragon
+entities.XaphanHelper/Dragon.placements.name.Dragon=Dragon
+entities.XaphanHelper/Dragon.attributes.description.shootDirection=Directions the dragon will try to shoot at the player.
+entities.XaphanHelper/Dragon.attributes.description.shootStrength=Strenght at wich the dragon will shoot fireballs at the player.
+entities.XaphanHelper/Dragon.attributes.description.initialDelay=Time (in seconds) before the dragon start shooting fireballs.
+entities.XaphanHelper/Dragon.attributes.description.fireballTimer=Time (in seconds) between each fireball.
+entities.XaphanHelper/Dragon.attributes.description.fireballs=Number of fireballs the dragon will shoot in a row before going in idle state.
+entities.XaphanHelper/Dragon.attributes.description.idleTimer=Time (in seconds) between each batch of fireballs.
+
 # DroneGate
 entities.XaphanHelper/DroneGate.placements.name.DroneGate=Drone Gate
 entities.XaphanHelper/DroneGate.attributes.description.side=The side the gate will face.

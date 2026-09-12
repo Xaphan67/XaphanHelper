@@ -13,6 +13,7 @@ Version 1.0.80 :
 - Added Lever
 - Added Custom Bounce Block
 - Added Explosive Boulder
+- Added Dragon
 - Added Custom Move Block
 - Added Push Block
 - Added Push Block Track
