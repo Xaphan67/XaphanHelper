@@ -20,6 +20,7 @@ Version 1.0.80 :
 - Added Air Bubbles
 - Added Bouncy Bubble
 - Added Powamp
+- Added Skultera
 - Added Push Block
 - Added Push Block Track
 - Added Pressure Plate

@@ -759,6 +759,12 @@ entities.XaphanHelper/Shutter.attributes.description.sound=The sound event that 
 entities.XaphanHelper/Shutter.attributes.description.startOpen=If true, the shutter will be open and will start closing when the flag set in Flag is set.
 entities.XaphanHelper/Shutter.attributes.description.silent=If true, the shutter will not make any sound when opening or closing.
 
+# Skultera
+entities.XaphanHelper/Skultera.placements.name.Skultera=Skultera
+entities.XaphanHelper/Skultera.attributes.description.direction=the direction the skultera will face.
+entities.XaphanHelper/Skultera.attributes.description.maxRange=The range (in tiles) in front of the skultera where the player will be affected.
+entities.XaphanHelper/Skultera.attributes.description.suctionStrength=The strength at wich the player will be pulled toward the skultera when in range. (Default: 150)
+
 # Slope
 entities.XaphanHelper/Slope.placements.name.Slope=Slope
 entities.XaphanHelper/Slope.attributes.description.side=Side of the slope.
