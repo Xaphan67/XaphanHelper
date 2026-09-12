@@ -370,6 +370,14 @@ entities.XaphanHelper/ElevatorBarrier.placements.name.ElevatorBarrier=Elevator B
 entities.XaphanHelper/EtherealBlock.placements.name.EtherealBlock=Ethereal Block
 entities.XaphanHelper/EtherealBlock.attributes.description.tiletype=Change the visual apparence of the block.
 
+# ExplosiveBoulder
+entities.XaphanHelper/ExplosiveBoulder.placements.name.ExplosiveBoulder=Explosive Boulder
+entities.XaphanHelper/ExplosiveBoulder.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/ExplosiveBoulder.attributes.description.bounceForce=How stronly the player will be pushed back when they dash into the boulder.
+entities.XaphanHelper/ExplosiveBoulder.attributes.description.DashCooldown=Time (in seconds) the player cannot dash after they dash into the boulder.
+entities.XaphanHelper/ExplosiveBoulder.attributes.description.gravity=If true, the boulder will be affected by gravity and explode when it hit the ground from falling.
+entities.XaphanHelper/ExplosiveBoulder.attributes.description.RefillJump=If true, the player will get back their Space Jump when they dash into the boulder.\nOnly work with the Upgrade system.
+
 # FlagBlock
 entities.XaphanHelper/FlagBlock.placements.name.FlagBlock=Flag Block
 entities.XaphanHelper/FlagBlock.attributes.description.tiletype=Change the visual apparence of the block.
