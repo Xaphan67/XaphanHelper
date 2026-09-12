@@ -17,6 +17,7 @@ Version 1.0.80 :
 - Added Bubble Block
 - Added Rail Block
 - Added Custom Move Block
+- Added Air Bubbles
 - Added Push Block
 - Added Push Block Track
 - Added Pressure Plate

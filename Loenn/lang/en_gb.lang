@@ -6,6 +6,9 @@ mods.XaphanHelper.name=Xaphan Helper
 # entities.entityName.attributes.description.name.*
 # entities.entityName.attributes.description.description.*
 
+# AirBubbles
+entities.XaphanHelper/AirBubbles.placements.name.AirBubbles=Air Bubbles
+
 # BreakBlock
 entities.XaphanHelper/BreakBlock.placements.name.BreakBlock=Break Block
 entities.XaphanHelper/BreakBlock.attributes.description.mode=Block: The break block will not try to merge with nearby solid tiles.\nWall: The break block will try to merge with nearby solid tiles.
