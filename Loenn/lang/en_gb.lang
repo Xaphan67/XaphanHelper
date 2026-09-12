@@ -9,6 +9,10 @@ mods.XaphanHelper.name=Xaphan Helper
 # AirBubbles
 entities.XaphanHelper/AirBubbles.placements.name.AirBubbles=Air Bubbles
 
+# BouncyBubble
+entities.XaphanHelper/BouncyBubble.placements.name.BouncyBubble=Bouncy Bubble
+entities.XaphanHelper/BouncyBubble.attributes.description.respawnTime=Time (in seconds) after the bubble got destroyed before it respawn.\nLeave at 0 for no respawn.
+
 # BreakBlock
 entities.XaphanHelper/BreakBlock.placements.name.BreakBlock=Break Block
 entities.XaphanHelper/BreakBlock.attributes.description.mode=Block: The break block will not try to merge with nearby solid tiles.\nWall: The break block will try to merge with nearby solid tiles.
