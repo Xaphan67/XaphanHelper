@@ -585,6 +585,16 @@ entities.XaphanHelper/Leaf.attributes.description.directory=The directory from w
 entities.XaphanHelper/Leaf.attributes.description.flag=The flag that must be set for the leaf to become bouncy.\nIf empty, the leaf will be bouncy if the Light mode set by a Light Mode trigger is set to Light instead, or if the player touch a Light orb.
 entities.XaphanHelper/Leaf.attributes.description.respawnTime=The time (in seconds) for the leaf to reapear after being used.
 
+#Lever
+entities.XaphanHelper/Lever.placements.name.Lever=Lever
+entities.XaphanHelper/Lever.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/Lever.attributes.description.side=The side of the lever.
+entities.XaphanHelper/Lever.attributes.description.group=All levers with the same group will activate when the player touch one. Leave at 0 for no group.
+entities.XaphanHelper/Lever.attributes.description.flag=The flag that will be true when the lever is activated.
+entities.XaphanHelper/Lever.attributes.description.canSwapFlag=If true, the player can touch lever multiple times, each time inverting the flag state.
+entities.XaphanHelper/Lever.attributes.description.registerInSaveData=If true, the flag will be registered in the player Save file and will be set forever. (No effect if Can Swap Flag is true)
+entities.XaphanHelper/Lever.attributes.description.saveDataOnlyAfterCheckpoint=If true, the flag will be registered in the player Save file and will be set forever only after they get to a checkpoint in the current room or exit the room.\n(Register In Save Data must be set to true. No effect if Can Swap Flag is true)
+
 #LightOrb
 entities.XaphanHelper/LightOrb.placements.name.LightOrb=Light Orb
 entities.XaphanHelper/LightOrb.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
