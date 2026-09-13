@@ -9,6 +9,21 @@ mods.XaphanHelper.name=Xaphan Helper
 # AirBubbles
 entities.XaphanHelper/AirBubbles.placements.name.AirBubbles=Air Bubbles
 
+# BombBlock
+entities.XaphanHelper/BombBlock.placements.name.BombBlock=Bomb Block
+entities.XaphanHelper/BombBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/BombBlock.attributes.description.particleColor1=Hexadecimal code for the first color of the particles appearing when the block move.
+entities.XaphanHelper/BombBlock.attributes.description.particleColor2=Hexadecimal code for the second color of the particles appearing when the block move.
+entities.XaphanHelper/BombBlock.attributes.description.leftSide=Determine how bombs will interact with the block when hitting its left side.\nStart Active: Bombs can activate the block multiple times.\nStart Inactive: Bombs can activate the block multiple times once the side become active.\nActive Only Once: Bombs can activate the block once.\nNone: Bombs cannot activate the block.
+entities.XaphanHelper/BombBlock.attributes.description.topSide=Determine how bombs will interact with the block when hitting its top side.\nStart Active: Bombs can activate the block multiple times.\nStart Inactive: Bombs can activate the block multiple times once the side become active.\nActive Only Once: Bombs can activate the block once.\nNone: Bombs cannot activate the block.
+entities.XaphanHelper/BombBlock.attributes.description.rightSide=Determine how bombs will interact with the block when hitting its right side.\nStart Active: Bombs can activate the block multiple times.\nStart Inactive: Bombs can activate the block multiple times once the side become active.\nActive Only Once: Bombs can activate the block once.\nNone: Bombs cannot activate the block.
+entities.XaphanHelper/BombBlock.attributes.description.bottomSide=Determine how bombs will interact with the block when hitting its bottom side.\nStart Active: Bombs can activate the block multiple times.\nStart Inactive: Bombs can activate the block multiple times once the side become active.\nActive Only Once: Bombs can activate the block once.\nNone: Bombs cannot activate the block.
+entities.XaphanHelper/BombBlock.attributes.description.flag=The flag that must be true for the block to be activated by bombs, regardless of sides configuration.\nLeave empty for it to be always activable by bombs.
+entities.XaphanHelper/BombBlock.attributes.description.speed=The speed at wich the block will move toward the end of its track when activated by a bomb. (Default: 360)
+entities.XaphanHelper/BombBlock.attributes.description.swapActiveSides=If true, once one side of the block is activated by a bomb, inactive sides will become active and actives ones will become inactive.\nSides usable only once will stay inactive if they have been activated once.
+entities.XaphanHelper/BombBlock.attributes.description.deactivateAllSidesAfterUse=If true, once the block get activated from any side, all sides will become inactive regardless of if they were already used or not.
+entities.XaphanHelper/BombBlock.attributes.description.toggle=If true, the block will stay at the end of its track once activated.
+
 # BouncyBubble
 entities.XaphanHelper/BouncyBubble.placements.name.BouncyBubble=Bouncy Bubble
 entities.XaphanHelper/BouncyBubble.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
