@@ -309,6 +309,15 @@ entities.XaphanHelper/CustomFakeWall.attributes.description.group=All Custom Fak
 entities.XaphanHelper/CustomFakeWall.attributes.description.flag=If this flag is set, the wall will use the tileset set in Flag Tiletype when entering the room.
 entities.XaphanHelper/CustomFakeWall.attributes.description.flagTiletype=Change the visual apparence of the wall if the flag is set.
 
+# CustomFallingBlock
+entities.XaphanHelper/CustomFallingBlock.placements.name.CustomFallingBlock=Custom Falling Block
+entities.XaphanHelper/CustomFallingBlock.attributes.description.tiletype=Change the visual apparence of the block.
+entities.XaphanHelper/CustomFallingBlock.attributes.description.climbFall=If true, the block will start falling when the player climb on it.
+entities.XaphanHelper/CustomFallingBlock.attributes.description.behind=If true, renders the block in the background.
+entities.XaphanHelper/CustomFallingBlock.attributes.description.fallIfNoSolidOnTop=If true, the block will fall if there is no solid entities or tiles directly colliding on its top side.
+entities.XaphanHelper/CustomFallingBlock.attributes.description.magnetingCeilingsDoNotTrigger=If true, the block will not fall if the player grab a Magnetic Ceiling attached to it.
+entities.XaphanHelper/CustomFallingBlock.attributes.description.canFloat=If true, the block will float when falling into a Liquid.
+
 # CustomMoveBlock
 entities.XaphanHelper/CustomMoveBlock.placements.name.CustomMoveBlock=Custom Move Block
 entities.XaphanHelper/CustomMoveBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
