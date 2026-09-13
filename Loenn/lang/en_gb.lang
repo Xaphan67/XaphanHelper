@@ -438,6 +438,11 @@ entities.XaphanHelper/ExplosiveBoulder.attributes.description.DashCooldown=Time 
 entities.XaphanHelper/ExplosiveBoulder.attributes.description.gravity=If true, the boulder will be affected by gravity and explode when it hit the ground from falling.
 entities.XaphanHelper/ExplosiveBoulder.attributes.description.RefillJump=If true, the player will get back their Space Jump when they dash into the boulder.\nOnly work with the Upgrade system.
 
+# FGTilesJumpthru
+entities.XaphanHelper/FGTilesJumpthru.placements.name.FGTilesJumpthru=FG Tiles Jumpthru
+entities.XaphanHelper/FGTilesJumpthru.attributes.description.surfaceIndex=The sound that will play when the player stand or walk on the platform.
+entities.XaphanHelper/FGTilesJumpthru.attributes.description.texture=Changes the appearance of the platform.
+
 # FlagBlock
 entities.XaphanHelper/FlagBlock.placements.name.FlagBlock=Flag Block
 entities.XaphanHelper/FlagBlock.attributes.description.tiletype=Change the visual apparence of the block.
