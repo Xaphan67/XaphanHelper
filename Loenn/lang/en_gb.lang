@@ -9,6 +9,16 @@ mods.XaphanHelper.name=Xaphan Helper
 # AirBubbles
 entities.XaphanHelper/AirBubbles.placements.name.AirBubbles=Air Bubbles
 
+# ArrowTrap
+entities.XaphanHelper/ArrowTrap.placements.name.ArrowTrap=Arrow Trap
+entities.XaphanHelper/ArrowTrap.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/ArrowTrap.attributes.description.side=The side the arrow trap will face.
+entities.XaphanHelper/ArrowTrap.attributes.description.mode=How the arrow trap behave.\nTriggered: Shoot an arrow when the player is in front of the trap.\nAutomatic: Shoot a arrows repeateadly.
+entities.XaphanHelper/ArrowTrap.attributes.description.initialDelay=Time (in seconds) the trap will wait before starting shooting arrows.\nOnly used if Mode is set to Automatic.
+entities.XaphanHelper/ArrowTrap.attributes.description.flag=The flag that must be true for the trap to be able to shoot arrows.\nLeave empty for no flag.
+entities.XaphanHelper/ArrowTrap.attributes.description.cooldown=Time (in seconds) the trap will wait after shooting an arrow before shooting another one.\nOnly used if Mode is set to Automatic.
+entities.XaphanHelper/ArrowTrap.attributes.description.onlyOnce=If true, the trap will only try to shoot one arrow.\nOnly used if Mode is set to Triggered.
+
 # BombBlock
 entities.XaphanHelper/BombBlock.placements.name.BombBlock=Bomb Block
 entities.XaphanHelper/BombBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.

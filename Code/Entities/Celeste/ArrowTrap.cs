@@ -259,6 +259,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Coroutine ReloadRoutine = new();
 
+        private string directory;
+
         public ArrowTrap(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, false)
         {
             active = true;
@@ -268,7 +270,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             initialDelay = data.Float("initialDelay", 1f);
             flag = data.Attr("flag");
             onlyOnce = data.Bool("onlyOnce");
-            Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/ArrowTrap" + "/"));
+            directory = data.Attr("directory", "objects/XaphanHelper/ArrowTrap");
+            Add(sprite = new Sprite(GFX.Game, directory + "/"));
             sprite.AddLoop("idle", "idle", 0.08f);
             sprite.Origin = new Vector2(sprite.Width / 2, sprite.Height / 2);
             sprite.Play("idle");
@@ -335,14 +338,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Visible = Collidable = active = true;
             if (side == "Right" || side == "Left")
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-11, 4), this, side)
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-11, 4), this, side, directory)
                 {
                     canShoot = true
                 });
             }
             else
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -11), this, side)
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -11), this, side, directory)
                 {
                     canShoot = true
                 });
@@ -404,14 +407,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SceneAs<Level>().Add(CollideDetect = new CollideDetector(this));
             if (side == "Right" || side == "Left")
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-11, 4), this, side)
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-11, 4), this, side, directory)
                 {
                     canShoot = true
                 });
             }
             else
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -11), this, side)
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -11), this, side, directory)
                 {
                     canShoot = true
                 });
@@ -504,19 +507,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             if (side == "Right")
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-23, 4), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-23, 4), this, side, directory));
             }
             else if (side == "Left")
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-1, 4), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(-1, 4), this, side, directory));
             }
             else if (side == "Top")
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, 1), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, 1), this, side, directory));
             }
             else if (side == "Bottom")
             {
-                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -23), this, side));
+                Scene.Add(nextArrow = new Arrow(Position + new Vector2(4, -23), this, side, directory));
             }
             Add(new Coroutine(nextArrow.Reload()));
             while (mainCooldown > 0f)

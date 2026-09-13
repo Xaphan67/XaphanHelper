@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -47,7 +48,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float playerStamina;
 
-        public Arrow(Vector2 position, ArrowTrap trap, string side) : base(position, 4, 4, false)
+        private string directory;
+
+        public Arrow(Vector2 position, ArrowTrap trap, string side, string directory) : base(position, 4, 4, false)
         {
             sourceTrap = trap;
             this.side = side;
@@ -74,7 +77,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(new LedgeBlocker());
                 Collider = new Hitbox(2f, 22f, 3f, 3f);
             }
-            Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/ArrowTrap" + "/"));
+            this.directory = directory;
+            Add(sprite = new Sprite(GFX.Game, this.directory + "/"));
             sprite.AddLoop("arrow", "arrow", 0.08f, 0);
             sprite.Add("vibrating", "arrow", 0.04f, 1, 2, 3, 0, 1, 2, 3, 0);
             sprite.Origin = new Vector2(sprite.Width / 2, sprite.Height / 2);
@@ -541,7 +545,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.Y += 1;
                     }
-                    Scene.Add(new Arrow(Position, null, "Top"));
+                    Scene.Add(new Arrow(Position, null, "Top", directory));
                 }
                 else if (side == "Bottom")
                 {
@@ -549,7 +553,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.Y -= 1;
                     }
-                    Scene.Add(new Arrow(Position, null, "Bottom"));
+                    Scene.Add(new Arrow(Position, null, "Bottom", directory));
                 }
             }
             RemoveSelf();

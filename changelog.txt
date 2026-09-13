@@ -2,6 +2,7 @@ Version 1.0.80 :
 - Added Custom Crumble Block
 - Added Spike Trap
 - Added Bomb Block
+- Added Arrow Trap
 - Added Air Bubbles
 - Added Bouncy Bubble
 - Added Powamp
