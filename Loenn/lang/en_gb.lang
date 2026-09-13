@@ -9,6 +9,11 @@ mods.XaphanHelper.name=Xaphan Helper
 # AirBubbles
 entities.XaphanHelper/AirBubbles.placements.name.AirBubbles=Air Bubbles
 
+# ArrowHole
+entities.XaphanHelper/ArrowHole.placements.name.ArrowTrap=Arrow Hole
+entities.XaphanHelper/ArrowHole.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/ArrowHole.attributes.description.side=The side the hole will face.
+
 # ArrowTrap
 entities.XaphanHelper/ArrowTrap.placements.name.ArrowTrap=Arrow Trap
 entities.XaphanHelper/ArrowTrap.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.

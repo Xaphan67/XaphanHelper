@@ -3,6 +3,7 @@ Version 1.0.80 :
 - Added Spike Trap
 - Added Bomb Block
 - Added Arrow Trap
+- Added Arrow Hole
 - Added Air Bubbles
 - Added Bouncy Bubble
 - Added Powamp
