@@ -1,5 +1,10 @@
 Version 1.0.80 :
 - Added Custom Crumble Block
+- Added Spike Trap
+- Added Air Bubbles
+- Added Bouncy Bubble
+- Added Powamp
+- Added Skultera
 - Added Light Orb
 - Added Vine Path
 - Added Vine Head
@@ -17,10 +22,6 @@ Version 1.0.80 :
 - Added Bubble Block
 - Added Rail Block
 - Added Custom Move Block
-- Added Air Bubbles
-- Added Bouncy Bubble
-- Added Powamp
-- Added Skultera
 - Added Push Block
 - Added Push Block Track
 - Added Pressure Plate

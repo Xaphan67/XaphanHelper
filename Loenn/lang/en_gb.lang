@@ -789,6 +789,14 @@ entities.XaphanHelper/Slope.attributes.description.flag=If this flag is set, the
 entities.XaphanHelper/Slope.attributes.description.renderMethod=Change the way the game draw the slope.\nDepending on your tileset, one method may be better than the other.\n(Effect only visible in game)
 entities.XaphanHelper/Slope.attributes.description.preventRefillOnSliding=If true, prevent the player to gain back their Dash or jumps\n(when using the Space Jump ability) while the player slide on the slope.\nNo effect if Force Slide is false.
 
+# SpikeTrap
+entities.XaphanHelper/SpikeTrap.placements.name.SpikeTrap=Spike Trap
+entities.XaphanHelper/SpikeTrap.attributes.description.sprite=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/SpikeTrap.attributes.description.direction=Direction the spikes from the trap will be facing.
+entities.XaphanHelper/SpikeTrap.attributes.description.triggerTime=Time (in second) after the player land on the trap before the spikes get released.
+entities.XaphanHelper/SpikeTrap.attributes.description.retract=If true, retract the spikes shortly after thay have been triggered, allowing the trap to be triggered again.
+
+
 # TeleportStrawberry
 entities.XaphanHelper/TeleportStrawberry.placements.name.TeleportStrawberry=Teleport Strawberry
 entities.XaphanHelper/TeleportStrawberry.attributes.description.destinationRoom=Name of the room the player will be transported into.
