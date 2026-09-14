@@ -77,9 +77,9 @@ namespace Celeste.Mod.XaphanHelper.Events
             ceiling3 = new Genesis.GenesisBarrier(bounds + new Vector2(416f, 24f), 64, 8);
             dashBlock = new DashBlock(bounds + new Vector2(576f, 56f), 'Y', 64, 80, true, false, false, new EntityID());
             spikes = new Spikes(bounds + new Vector2(576f, 80f), 40, Spikes.Directions.Left, "Xaphan/terminal");
-            refill1 = new CustomRefill(bounds + new Vector2(256f, 44f), "Max Dashes", false, 2.5f, 5);
-            refill2 = new CustomRefill(bounds + new Vector2(320f, 96f), "Max Dashes", false, 2.5f, 5);
-            refill3 = new CustomRefill(bounds + new Vector2(384f, 44f), "Max Dashes", false, 2.5f, 5);
+            refill1 = new CustomRefill(bounds + new Vector2(256f, 44f), "Max Dashes", false, 2.5f);
+            refill2 = new CustomRefill(bounds + new Vector2(320f, 96f), "Max Dashes", false, 2.5f);
+            refill3 = new CustomRefill(bounds + new Vector2(384f, 44f), "Max Dashes", false, 2.5f);
             arrowUp1 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(256f, 68f), new Vector2(1f, 1f), 1);
             arrowUp2 = new Decal("Xaphan/Common/arrow_up00.png", bounds + new Vector2(384f, 68f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(128f, 128f), new Vector2(1f, 1f), 1);

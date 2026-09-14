@@ -4,6 +4,7 @@ Version 1.0.80 :
 - Added FG Tiles Jumpthru
 - Added Bomb Switch
 - Added Upgrade Ressource Collectable
+- Added Custom Refill
 - Added Spike Trap
 - Added Bomb Block
 - Added Arrow Trap

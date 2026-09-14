@@ -86,11 +86,11 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru4 = new JumpthruPlatform(bounds + new Vector2(200f, 148f), 24, "Xaphan/gorge_a", 5);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(228f, 124f), 24, "Xaphan/gorge_a", 5);
             crumblePlatform1 = new CustomCrumbleBlock(bounds + new Vector2(148f, 140f), Vector2.Zero, 24, 8, 2f, 0.6f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/gorge_a", lightOccludeValue: 0.2f, canBypassSideCrumbleDelay: true);
-            refill1 = new CustomRefill(bounds + new Vector2(92f, 64f), "Max Jumps", true, 2.5f, 5);
-            refill2 = new CustomRefill(bounds + new Vector2(228f, 64f), "Max Jumps", true, 2.5f, 5);
-            refill3 = new CustomRefill(bounds + new Vector2(160f, 92f), "Max Dashes", false, 2.5f, 5);
-            refill4 = new CustomRefill(bounds + new Vector2(64f, 56f), "Max Dashes", true, 2.5f, 5);
-            refill5 = new CustomRefill(bounds + new Vector2(256f, 56f), "Max Dashes", true, 2.5f, 5);
+            refill1 = new CustomRefill(bounds + new Vector2(92f, 64f), "Max Jumps", true, 2.5f);
+            refill2 = new CustomRefill(bounds + new Vector2(228f, 64f), "Max Jumps", true, 2.5f);
+            refill3 = new CustomRefill(bounds + new Vector2(160f, 92f), "Max Dashes", false, 2.5f);
+            refill4 = new CustomRefill(bounds + new Vector2(64f, 56f), "Max Dashes", true, 2.5f);
+            refill5 = new CustomRefill(bounds + new Vector2(256f, 56f), "Max Dashes", true, 2.5f);
             arrowDown1 = new Decal("Xaphan/Common/arrow_down00.png", crumblePlatform1.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign2 = new Decal("Xaphan/Common/warning00.png", jumpThru5.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
@@ -195,8 +195,8 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         jumpThru1.RemoveSelf();
                         jumpThru5.RemoveSelf();
-                        level.Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime, 5));
-                        level.Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime, 5));
+                        level.Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
+                        level.Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
                         boss.SetHealth(8);
                     }
                     while (!boss.playerHasMoved && !level.Session.GetFlag("boss_Normal_Mode_Given_Up") && !level.Session.GetFlag("boss_Challenge_Mode_Given_Up"))
@@ -235,11 +235,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                         // Phase 1
                         if (level.Session.GetFlag("boss_Challenge_Mode"))
                         {
-                            SceneAs<Level>().Add(new CustomRefill(refill4.Position, refill4.type, refill4.oneUse, refill4.respawnTime, 5));
+                            SceneAs<Level>().Add(new CustomRefill(refill4.Position, refill4.type, refill4.oneUse, refill4.respawnTime));
                             SceneAs<Level>().Displacement.AddBurst(refill4.Center, 0.5f, 8f, 32f, 0.5f);
-                            SceneAs<Level>().Add(new CustomRefill(refill5.Position, refill5.type, refill5.oneUse, refill5.respawnTime, 5));
+                            SceneAs<Level>().Add(new CustomRefill(refill5.Position, refill5.type, refill5.oneUse, refill5.respawnTime));
                             SceneAs<Level>().Displacement.AddBurst(refill5.Center, 0.5f, 8f, 32f, 0.5f);
-                            SceneAs<Level>().Add(new CustomRefill(refill3.Position, refill4.type, refill4.oneUse, refill4.respawnTime, 5));
+                            SceneAs<Level>().Add(new CustomRefill(refill3.Position, refill4.type, refill4.oneUse, refill4.respawnTime));
                             SceneAs<Level>().Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
                         }
 
@@ -442,11 +442,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return 3f;
                         if (boss.Health >= 13)
                         {
-                            SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill3.type, refill1.oneUse, refill1.respawnTime, 5));
+                            SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill3.type, refill1.oneUse, refill1.respawnTime));
                             SceneAs<Level>().Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                            SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill3.type, refill2.oneUse, refill2.respawnTime, 5));
+                            SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill3.type, refill2.oneUse, refill2.respawnTime));
                             SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
-                            SceneAs<Level>().Add(new CustomRefill(refill3.Position, refill3.type, true, refill3.respawnTime, 5));
+                            SceneAs<Level>().Add(new CustomRefill(refill3.Position, refill3.type, true, refill3.respawnTime));
                             SceneAs<Level>().Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
                         }
                     }
@@ -463,9 +463,9 @@ namespace Celeste.Mod.XaphanHelper.Events
             }
             if (SceneAs<Level>().Tracker.GetEntities<CustomRefill>().Count <= 0)
             {
-                SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime, 5));
+                SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
                 SceneAs<Level>().Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime, 5));
+                SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
                 SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
             }
             yield return null;
@@ -476,9 +476,9 @@ namespace Celeste.Mod.XaphanHelper.Events
                     yield return 3f;
                     if (boss.Health >= 5)
                     {
-                        SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime, 5));
+                        SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
                         SceneAs<Level>().Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                        SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime, 5));
+                        SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
                         SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
                     }
                 }
@@ -503,9 +503,9 @@ namespace Celeste.Mod.XaphanHelper.Events
                     if (currentOneUseRefills == 0)
                     {
                         yield return 3f;
-                        SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime, 5));
+                        SceneAs<Level>().Add(new CustomRefill(refill1.Position, refill1.type, refill1.oneUse, refill1.respawnTime));
                         SceneAs<Level>().Displacement.AddBurst(refill1.Center, 0.5f, 8f, 32f, 0.5f);
-                        SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime, 5));
+                        SceneAs<Level>().Add(new CustomRefill(refill2.Position, refill2.type, refill2.oneUse, refill2.respawnTime));
                         SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
                         yield return null;
                     }

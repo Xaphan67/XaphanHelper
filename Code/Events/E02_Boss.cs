@@ -100,7 +100,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             cellingRight = level.Entities.FindFirst<TempleCrackedBlock>();
             cellingRightSprite = level.Entities.FindFirst<CoverupWall>();
             booster = new Booster(bounds, true);
-            refill = new CustomRefill(bounds, "Max Dashes", false, 2.5f, 5);
+            refill = new CustomRefill(bounds, "Max Dashes", false, 2.5f);
             jumpThru1 = new JumpthruPlatform(bounds + new Vector2(144f, 80f), 32, "Xaphan/abyss_a", 8);
             jumpThru2 = new JumpthruPlatform(bounds + new Vector2(64f, 160f), 24, "Xaphan/abyss_a", 8);
             jumpThru3 = new JumpthruPlatform(bounds + new Vector2(232f, 160f), 24, "Xaphan/abyss_a", 8);

@@ -370,6 +370,13 @@ entities.XaphanHelper/CustomMovingPlatform.attributes.description.forceInactiveF
 entities.XaphanHelper/CustomMovingPlatform.attributes.description.drawTrack=If true, draw the track that the platforms will follow.
 entities.XaphanHelper/CustomMovingPlatform.attributes.description.particles=If true, the platforms will emit particles when they move.
 
+# CustomRefill
+entities.XaphanHelper/CustomRefill.placements.name.CustomRefill=Custom Refill
+entities.XaphanHelper/CustomRefill.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.\nA subfolder with the name of the Type must be present in this directory (please refer to the directory names in the helper).
+entities.XaphanHelper/CustomRefill.attributes.description.type=The type of the refill. Determine what will be refilled.\nOne Dash=Give back exactly one dash if the player does not have max dashes already. Also resaurte jumps from the Space Jump ability if the dash is refilled.\nTwo Dashes: Alwaus give two dashes even if the player max dashes is currently only 1. Also restaure jumps from the Space Jump ability if the dash is refilled.\nMax Jumps:Only restaure jumps from the Space Jump ability.\nMissiles: Restaure the drone missiles to the current maximum amount of missiles.\nSuper Missiles: Restaure the done super missiles to the current amount of super missiles.\nOxygen: Fully restaure the oxygen of the player.\nOxygen Small: Restaure 1/3 of the oxygen of the player.\nOxygen and Oxygen Small will always make the refill usable only once.
+entities.XaphanHelper/CustomRefill.attributes.description.respawnTime=Time (in seconds) beforethe refill reapear after being used. (Ignored if the type is Oxygen or Oxygen Small)
+entities.XaphanHelper/CustomRefill.attributes.description.oneUse=If true, the refill will not respawn after being used. (Ignored if the type is Oxygen or Oxygen Small)
+
 # CustomTorch
 entities.XaphanHelper/CustomTorch.placements.name.CustomTorch=Custom Torch
 entities.XaphanHelper/CustomTorch.attributes.description.playLitSound=If true, play a sound when the torch is activated.

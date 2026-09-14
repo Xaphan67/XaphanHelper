@@ -42,7 +42,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float respawnTime;
 
-        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, int airSections) : base(position)
+        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, string directory = "objects/XaphanHelper/CustomRefill/") : base(position)
         {
             Collider = new Hitbox(16f, 16f, -8f, -8f);
             Add(new PlayerCollider(OnPlayer));
@@ -74,7 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         spriteStr = "OxygenSmall";
                         break;
                 }
-                path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + (type.Contains("Oxygen") ? "/" : "Once/");
+                path = directory + "/refill" + spriteStr + (type.Contains("Oxygen") ? "/" : "Once/");
                 p_shatter = new ParticleType(Refill.P_Shatter)
                 {
                     Color = Calc.HexToColor("DAECFA"),
@@ -140,7 +140,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         };
                         break;
                 }
-                path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + "/";
+                path = directory + "/refill" + spriteStr + "/";
             }
             if (!oneUse && !type.Contains("Oxygen"))
             {
@@ -173,7 +173,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -100;
         }
 
-        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "One Dash"), data.Bool("oneUse"), data.Float("respawnTime"), data.Int("airSections", 5))
+        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "One Dash"), data.Bool("oneUse"), data.Float("respawnTime"), data.Attr("directory", "objects/XaphanHelper/CustomRefill/"))
         {
 
         }
