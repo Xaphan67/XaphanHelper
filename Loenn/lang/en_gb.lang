@@ -39,6 +39,12 @@ entities.XaphanHelper/BombBlock.attributes.description.swapActiveSides=If true, 
 entities.XaphanHelper/BombBlock.attributes.description.deactivateAllSidesAfterUse=If true, once the block get activated from any side, all sides will become inactive regardless of if they were already used or not.
 entities.XaphanHelper/BombBlock.attributes.description.toggle=If true, the block will stay at the end of its track once activated.
 
+# BombSwitch
+entities.XaphanHelper/BombSwitch.attributes.description.sprite=The directory from which the sprites are taken, relative to Atlases/Gameplay/.
+entities.XaphanHelper/BombSwitch.attributes.description.flag=The flag that will be set or unset each time a bomb explode while into the switch.
+entities.XaphanHelper/BombSwitch.attributes.description.registerInSaveData=If true, the flag will be registered in the player Save file and will be set/unset forever.
+entities.XaphanHelper/BombSwitch.attributes.description.saveDataOnlyAfterCheckpoint=If true, the flag will be registered in the player Save file and will be set forever only after the player get to a checkpoint in the current room or exit the room.\n(Register In Save Data must be set to true)
+
 # BouncyBubble
 entities.XaphanHelper/BouncyBubble.placements.name.BouncyBubble=Bouncy Bubble
 entities.XaphanHelper/BouncyBubble.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.

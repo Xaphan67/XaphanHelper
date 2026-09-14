@@ -2,6 +2,7 @@ Version 1.0.80 :
 - Added Custom Crumble Block
 - Added Custom Falling Block
 - Added FG Tiles Jumpthru
+- Added Bomb Switch
 - Added Spike Trap
 - Added Bomb Block
 - Added Arrow Trap
