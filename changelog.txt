@@ -3,6 +3,7 @@ Version 1.0.80 :
 - Added Custom Falling Block
 - Added FG Tiles Jumpthru
 - Added Bomb Switch
+- Added Upgrade Ressource Collectable
 - Added Spike Trap
 - Added Bomb Block
 - Added Arrow Trap

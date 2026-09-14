@@ -324,6 +324,11 @@ entities.XaphanHelper/CustomFallingBlock.attributes.description.fallIfNoSolidOnT
 entities.XaphanHelper/CustomFallingBlock.attributes.description.magnetingCeilingsDoNotTrigger=If true, the block will not fall if the player grab a Magnetic Ceiling attached to it.
 entities.XaphanHelper/CustomFallingBlock.attributes.description.canFloat=If true, the block will float when falling into a Liquid.
 
+# CustomFollower
+entities.XaphanHelper/CustomFollower.placements.name.CustomFollower=Upgrade Collectable (Ressource)
+entities.XaphanHelper/CustomFollower.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.\nA subfolder with the name of the Type (without spaces) must be present in this directory.
+entities.XaphanHelper/CustomFollower.attributes.description.type= Type of the ressource that will be given to the player.\nEnergy Tank:Increases the player stamina by 5.\nFire Rate Module: Increases the drone fire rte by 15%.\nMissile: Increases the drone missiles max amount by 2.\nSuper Missile: Increases the drone super missiles max amount by 1.
+
 # CustomMoveBlock
 entities.XaphanHelper/CustomMoveBlock.placements.name.CustomMoveBlock=Custom Move Block
 entities.XaphanHelper/CustomMoveBlock.attributes.description.directory=The directory from which the sprites are taken, relative to Atlases/Gameplay/.

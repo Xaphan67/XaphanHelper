@@ -193,9 +193,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private int chapterIndex;
 
+        private string directory;
+
         public CustomFollower(EntityData data, Vector2 offset, EntityID gid)
         {
             ID = gid;
+            directory = data.Attr("directory", "collectables/XaphanHelper/CustomFollower");
             string str = data.Attr("type").Replace(" ", "");
             type = (char.ToLower(str[0]) + str.Substring(1));
             Position = (start = data.Position + offset);
@@ -247,7 +250,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         break;
                     }
             }
-            Add(sprite = new Sprite(GFX.Game, "collectables/XaphanHelper/CustomFollower/" + type + "/"));
+            Add(sprite = new Sprite(GFX.Game, directory + "/" + type + "/"));
             sprite.AddLoop("idle", "idle", 0.1f, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3);
             sprite.Add("collect", "collect", 0.05f);
             sprite.CenterOrigin();
