@@ -51,7 +51,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
         public override void OnLeave(Player player)
         {
             base.OnLeave(player);
-            if (!string.IsNullOrEmpty(Flag) && SceneAs<Level>().Session.GetFlag(Flag) && onlyOnce)
+            if (Scene is Level && !string.IsNullOrEmpty(Flag) && SceneAs<Level>().Session.GetFlag(Flag) && onlyOnce)
             {
                 RemoveSelf();
             }
