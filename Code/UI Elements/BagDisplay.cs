@@ -459,9 +459,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     while (!nextActiveUpgrade)
                     {
                         nextSelection += 1;
-                        if (nextSelection > 3)
+                        if (nextSelection > 4)
                         {
-                            nextSelection -= 3;
+                            nextSelection -= 4;
                         }
                         nextActiveUpgrade = CheckIfUpgradeIsActive(nextSelection);
                     }
@@ -588,9 +588,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     return MegaBombs.isActive && XaphanModule.ModSettings.MegaBombs;
                 }
-                else
+                else if (upgradeID == 3)
                 {
                     return RemoteDrone.isActive && XaphanModule.ModSettings.RemoteDrone;
+                }
+                else if (upgradeID == 4)
+                {
+                    return GrappleHook.isActive && XaphanModule.ModSettings.GrappleHook;
                 }
             }
             else
@@ -603,11 +607,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     return PortableStation.isActive && XaphanModule.ModSettings.PortableStation;
                 }
-                else
+                else if (upgradeID == 3)
                 {
                     return PulseRadar.isActive && XaphanModule.ModSettings.PulseRadar;
                 }
             }
+            return false;
         }
 
         private int CheckTotalUpgradesActive()
@@ -624,6 +629,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     totalActive++;
                 }
                 if (RemoteDrone.isActive && XaphanModule.ModSettings.RemoteDrone)
+                {
+                    totalActive++;
+                }
+                if (GrappleHook.isActive && XaphanModule.ModSettings.GrappleHook)
                 {
                     totalActive++;
                 }

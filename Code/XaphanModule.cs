@@ -162,6 +162,7 @@ namespace Celeste.Mod.XaphanHelper
             LightningDash,
             MissilesModule,
             SuperMissilesModule,
+            GrappleHook,
 
             // Metroid Upgrades
 
@@ -274,6 +275,11 @@ namespace Celeste.Mod.XaphanHelper
         public static bool SuperMissilesModuleCollected(Level level)
         {
             return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule");
+        }
+
+        public static bool GrappleHookCollected(Level level)
+        {
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_GrappleHook");
         }
 
         // Metroid Upgrades
@@ -588,6 +594,7 @@ namespace Celeste.Mod.XaphanHelper
             UpgradeHandlers[Upgrades.LightningDash] = new LightningDash();
             UpgradeHandlers[Upgrades.MissilesModule] = new MissilesModule();
             UpgradeHandlers[Upgrades.SuperMissilesModule] = new SuperMissilesModule();
+            UpgradeHandlers[Upgrades.GrappleHook] = new GrappleHook();
 
             //Metroid Upgrades
 
@@ -987,10 +994,15 @@ namespace Celeste.Mod.XaphanHelper
 
         public static int StFastFall;
 
+        public static int StGrapple;
+
+        public static Facings CurrentFacing;
+
         private void modPlayerCtor(On.Celeste.Player.orig_ctor orig, Player self, Vector2 position, PlayerSpriteMode spriteMode)
         {
             orig.Invoke(self, position, spriteMode);
             StFastFall = StateMachineExt.AddState(self.StateMachine, FastFallUpdate, FastLabFallCoroutine);
+            StGrapple = StateMachineExt.AddState(self.StateMachine, GrappleUpdate, begin: GrappleBeggin);
         }
 
         private int FastFallUpdate()
@@ -1040,6 +1052,27 @@ namespace Celeste.Mod.XaphanHelper
                 }
                 player.StateMachine.State = 0;
             }
+        }
+
+        private void GrappleBeggin()
+        {
+            if (Engine.Scene is Level)
+            {
+                Player player = ((Level)Engine.Scene).Tracker.GetEntity<Player>();
+                CurrentFacing = player.Facing;
+                player.Speed = Vector2.Zero;
+            }
+        }
+
+        private int GrappleUpdate()
+        {
+            if (Engine.Scene is Level)
+            {
+                Player player = ((Level)Engine.Scene).Tracker.GetEntity<Player>();
+                player.Facing = CurrentFacing;
+                player.Sprite.Stop();
+            }
+            return StGrapple;
         }
 
         private void onGameplayStatsRender(On.Celeste.GameplayStats.orig_Render orig, GameplayStats self)
@@ -2259,6 +2292,7 @@ namespace Celeste.Mod.XaphanHelper
                 ModSettings.SpeedBooster = false;
                 ModSettings.MissilesModule = false;
                 ModSettings.SuperMissilesModule = false;
+                ModSettings.GrappleHook = false;
             }
 
             // Set flags based on previous player progress
@@ -2426,6 +2460,7 @@ namespace Celeste.Mod.XaphanHelper
             ModSettings.SpeedBooster = false;
             ModSettings.MissilesModule = false;
             ModSettings.SuperMissilesModule = false;
+            ModSettings.GrappleHook = false;
             level.Session.SetFlag("Using_Elevator", false);
 
             EntityData UpgradeController = new();
@@ -2471,7 +2506,8 @@ namespace Celeste.Mod.XaphanHelper
             bool setWaveBeam = UpgradeController.Bool("onlyAllowWaveBeam") || UpgradeController.Bool("startWithWaveBeam");
             bool setMissilesModule = UpgradeController.Bool("onlyAllowMissilesModule") || UpgradeController.Bool("startWithMissilesModule");
             bool setSuperMissilesModule = UpgradeController.Bool("onlyAllowSuperMissilesModule") || UpgradeController.Bool("startWithSuperMissilesModule");
-            bool hasStartingUpgrades = setPowerGrip || setClimbingKit || setSpiderMagnet || setDroneTeleport || setJumpBoost || setScrewAttack || setVariaJacket || setGravityJacket || setBombs || setMegaBombs || setRemoteDrone || setGoldenFeather || setBinoculars || setEtherealDash || setPortableStation || setPulseRadar || setDashBoots || setSpaceJump || setHoverJet || setLightningDash || setLongBeam || setIceBeam || setWaveBeam || setMissilesModule || setSuperMissilesModule;
+            bool setSuperGrappleHook = UpgradeController.Bool("onlyAllowGrappleHook") || UpgradeController.Bool("startWithGrappleHook");
+            bool hasStartingUpgrades = setPowerGrip || setClimbingKit || setSpiderMagnet || setDroneTeleport || setJumpBoost || setScrewAttack || setVariaJacket || setGravityJacket || setBombs || setMegaBombs || setRemoteDrone || setGoldenFeather || setBinoculars || setEtherealDash || setPortableStation || setPulseRadar || setDashBoots || setSpaceJump || setHoverJet || setLightningDash || setLongBeam || setIceBeam || setWaveBeam || setMissilesModule || setSuperMissilesModule || setSuperGrappleHook;
             forceStartingUpgrades = UpgradeController.Bool("onlyAllowStartingUpgrades", hasStartingUpgrades ? true : false);
 
             // Check specified upgrades for the golden berry
@@ -2501,6 +2537,7 @@ namespace Celeste.Mod.XaphanHelper
             bool goldenWaveBeam = UpgradeController.Bool("goldenStartWithWaveBeam");
             bool goldenMissilesModule = UpgradeController.Bool("goldenStartWithMissilesModule");
             bool goldenSuperMissilesModule = UpgradeController.Bool("goldenStartWithSuperMissilesModule");
+            bool goldenGrappleHook = UpgradeController.Bool("goldenStartWithGrappleHook");
 
             // Give specified upgrades
 
@@ -2637,6 +2674,11 @@ namespace Celeste.Mod.XaphanHelper
                     ModSettings.SuperMissilesModule = true;
                     level.Session.SetFlag("Upgrade_SuperMissilesModule", true);
                 }
+                if (setSuperGrappleHook || level.Session.GetFlag("Upgrade_GrappleHook"))
+                {
+                    ModSettings.GrappleHook = true;
+                    level.Session.SetFlag("Upgrade_GrappleHook", true);
+                }
             }
             else
             {
@@ -2738,7 +2780,12 @@ namespace Celeste.Mod.XaphanHelper
                     if (SuperMissilesModuleCollected(level))
                     {
                         ModSettings.SuperMissilesModule = true;
-                        level.Session.SetFlag("SuperUpgrade_MissilesModule", true);
+                        level.Session.SetFlag("Upgrade_SuperMissilesModule", true);
+                    }
+                    if (GrappleHookCollected(level))
+                    {
+                        ModSettings.GrappleHook = true;
+                        level.Session.SetFlag("Upgrade_GrappleHook", true);
                     }
 
                     //Metroid Upgrades
@@ -2918,6 +2965,10 @@ namespace Celeste.Mod.XaphanHelper
                     if (goldenSuperMissilesModule || level.Session.GetFlag("Upgrade_SuperMissilesModule"))
                     {
                         ModSettings.SuperMissilesModule = true;
+                    }
+                    if (goldenGrappleHook || level.Session.GetFlag("Upgrade_GrappleHook"))
+                    {
+                        ModSettings.GrappleHook = true;
                     }
                 }
             }
@@ -4467,6 +4518,8 @@ namespace Celeste.Mod.XaphanHelper
                             ModSettings.MissilesModule = false;
                             level.Session.SetFlag("Upgrade_SuperMissilesModule", false);
                             ModSettings.SuperMissilesModule = false;
+                            level.Session.SetFlag("Upgrade_GrappleHook", false);
+                            ModSettings.GrappleHook = false;
 
                             // Give allowed starting upgrades
 
@@ -4495,6 +4548,7 @@ namespace Celeste.Mod.XaphanHelper
                             bool goldenWaveBeam = UpgradeController.Bool("goldenStartWithWaveBeam");
                             bool goldenMissilesModule = UpgradeController.Bool("goldenStartWithMissilesModule");
                             bool goldenSuperMissilesModule = UpgradeController.Bool("goldenStartWithSuperMissilesModule");
+                            bool goldenGrappleHook = UpgradeController.Bool("goldenStartWithGrappleHook");
 
                             if (goldenPowerGrip)
                             {
@@ -4645,6 +4699,12 @@ namespace Celeste.Mod.XaphanHelper
                                 ModSettings.SuperMissilesModule = true;
                                 level.Session.SetFlag("Upgrade_SuperMissilesModule", true);
                                 ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule");
+                            }
+                            if (goldenGrappleHook)
+                            {
+                                ModSettings.GrappleHook = true;
+                                level.Session.SetFlag("Upgrade_GrappleHook", true);
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_GrappleHook");
                             }
                         }
                     }

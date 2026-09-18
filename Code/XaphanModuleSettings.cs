@@ -164,6 +164,9 @@ namespace Celeste.Mod.XaphanHelper
         [SettingIgnore]
         public bool SuperMissilesModule { get; set; } = false;
 
+        [SettingIgnore]
+        public bool GrappleHook { get; set; } = false;
+
         // Metroid Upgrades
 
         [SettingIgnore]
