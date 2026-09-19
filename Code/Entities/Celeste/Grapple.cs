@@ -13,29 +13,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public class ConditionalGrabNode : VirtualButton.Node
         {
             public Func<bool> Condition;
-
             private bool wasPressed;
-
             public override bool Check => Condition?.Invoke() ?? false;
-
             public override bool Pressed => Check && !wasPressed;
-
             public override bool Released => !Check && wasPressed;
-
-            public override void Update()
-            {
-                wasPressed = Check;
-            }
+            public override void Update() { wasPressed = Check; }
         }
 
-        public enum States
-        {
-            Deploy,
-            Attached,
-            Reached
-        }
+        public enum States { Deploy, Attached, Reached }
 
-        private int direction;
+        private Vector2 direction;
+
+        private bool vertical;
 
         private float distance;
 
@@ -57,11 +46,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private SoundSource sfx;
 
-        public Grapple(Player player)
+        public Grapple(Player player, bool vertical = false)
         {
             this.player = player;
+            this.vertical = vertical;
             Position = player.Center;
-            direction = player.Facing == Facings.Left ? -1 : 1;
+
+            direction = vertical
+                ? new Vector2(0f, -1f)
+                : new Vector2(player.Facing == Facings.Left ? -1f : 1f, 0f);
+
             Collider = new Hitbox(4, 4, -2, -2);
             lineSprite = GFX.Game["util/XaphanHelper/grappleBeam"];
             timer = Calc.Random.NextFloat();
@@ -86,38 +80,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 case States.Deploy:
                     UpdateDeploy();
                     break;
-
                 case States.Attached:
                     UpdateAttached();
                     break;
-            }          
+            }
         }
 
         private void UpdateDeploy()
         {
             float step = 480f * Engine.DeltaTime;
-            Position.X += direction * step;
+            Position += direction * step;
             distance += step;
 
             foreach (GrapplePoint target in Scene.Tracker.GetEntities<GrapplePoint>())
             {
                 if (Collider.Collide(target.Collider))
                 {
-                    sfx.Play("event:/game/xaphan/grapple_attached");
-                    State = States.Attached;
-                    attachedTarget = target;
-                    attachedTarget.SetSparks(true);
-                    player.Position += new Vector2(0f, (float)Math.Round(target.Center.Y - player.Center.Y));
-                    Position.Y = target.Center.Y;
-                    if (player.X < attachedTarget.Center.X)
-                    {
-                        Right = attachedTarget.Left + (attachedTarget.Collidable ? 0 : 1);
-                    }
-                    else
-                    {
-                        Left = attachedTarget.Right - (attachedTarget.Collidable ? 0 : 1);
-                    }
-                    anchorPoint = Position;
+                    Attach(target);
                     return;
                 }
             }
@@ -128,20 +107,70 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private void Attach(GrapplePoint target)
+        {
+            sfx.Play("event:/game/xaphan/grapple_attached");
+            State = States.Attached;
+            attachedTarget = target;
+            attachedTarget.SetSparks(true);
+
+            if (vertical)
+            {
+                player.Position += new Vector2((float)Math.Round(target.Center.X - player.Center.X), 0f);
+                Position.X = target.Center.X;
+
+                if (player.Y < target.Center.Y)
+                {
+                    Bottom = target.Top + (target.Collidable ? 0 : 1);
+                }
+                else
+                {
+                    Top = target.Bottom - (target.Collidable ? 0 : 1);
+                }
+            }
+            else
+            {
+                player.Position += new Vector2(0f, (float)Math.Round(target.Center.Y - player.Center.Y));
+                Position.Y = target.Center.Y;
+
+                if (player.X < target.Center.X)
+                {
+                    Right = target.Left + (target.Collidable ? 0 : 1);
+                }
+                else
+                {
+                    Left = target.Right - (target.Collidable ? 0 : 1);
+                }
+            }
+
+            anchorPoint = Position;
+        }
+
         private void UpdateAttached()
         {
-            
             if (Input.Jump.Pressed && SpaceJump.Active(player.SceneAs<Level>()) || !XaphanModule.ModSettings.UseBagItemSlot.Check)
             {
                 Detach();
                 return;
             }
 
-            player.MoveTowardsX(anchorPoint.X, pullSpeed * Engine.DeltaTime);
-
-            if (Math.Abs(player.X - anchorPoint.X) <= 2f || (attachedTarget != null && player.CollideCheck(attachedTarget)))
+            if (vertical)
             {
-                Add(new Coroutine(Reach()));
+                player.MoveTowardsY(anchorPoint.Y, pullSpeed * Engine.DeltaTime);
+
+                if (player.CollideCheck(this))
+                {
+                    Detach();
+                }
+            }
+            else
+            {
+                player.MoveTowardsX(anchorPoint.X, pullSpeed * Engine.DeltaTime);
+
+                if (Math.Abs(player.X - anchorPoint.X) <= 2f || (attachedTarget != null && player.CollideCheck(attachedTarget)))
+                {
+                    Add(new Coroutine(Reach()));
+                }
             }
         }
 
@@ -173,8 +202,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void Detach()
         {
             sfx.Stop();
-            attachedTarget.SetSparks(false);
-            player.Speed.X = direction * pullSpeed * Engine.DeltaTime * 50f;
+            attachedTarget?.SetSparks(false);
+
+            if (vertical)
+            {
+                player.Speed.Y = direction.Y * pullSpeed * Engine.DeltaTime * 50f;
+            }
+            else
+            {
+                player.Speed.X = direction.X * pullSpeed * Engine.DeltaTime * 50f;
+            }
+
             player.StateMachine.State = Player.StNormal;
             RemoveSelf();
         }
@@ -191,7 +229,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (State != States.Reached)
             {
                 Vector2 origin = new Vector2(0f, lineSprite.Height / 2f);
-                Vector2 tip = Position + Vector2.UnitX * (player.Facing == Facings.Left ? -1 : 1);
+                Vector2 tip = Position + direction;
 
                 Draw.SineTextureH(
                     lineSprite,
