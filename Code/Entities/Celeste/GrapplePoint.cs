@@ -15,11 +15,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public GrapplePoint(EntityData data, Vector2 position) : base(data.Position + position, 8, 8, safe: true)
         {
             Collider = new Hitbox(8f, 8f);
-            Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/GrapplePoint/"));
+            string directory = data.Attr("directory", "objects/XaphanHelper/GrapplePoint");
+            Add(sprite = new Sprite(GFX.Game, directory + "/"));
             sprite.Add("block", "block", 0);
             sprite.Add("node", "node", 0);
             sprite.Play(data.Bool("notSolid") ? "node" : "block");
-            Add(spark = new Sprite(GFX.Game, "objects/XaphanHelper/GrapplePoint/"));
+            Add(spark = new Sprite(GFX.Game, directory + "/"));
             spark.AddLoop("spark", "spark", 0.08f, 0, 1, 2, 1);
             spark.Visible = false;
             spark.Play("spark");
@@ -30,6 +31,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public void SetSparks(bool attached)
         {
             spark.Visible = attached;
+        }
+
+        public override void Render()
+        {
+            if (!Collidable)
+            {
+                sprite.DrawOutline();
+            }
+            base.Render();
         }
     }
 }
