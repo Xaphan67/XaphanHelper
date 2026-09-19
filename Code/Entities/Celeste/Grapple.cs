@@ -55,6 +55,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private ConditionalGrabNode grabNode;
 
+        private SoundSource sfx;
+
         public Grapple(Player player)
         {
             this.player = player;
@@ -70,6 +72,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Added(scene);
             State = States.Deploy;
+            Add(sfx = new SoundSource());
+            sfx.Play("event:/game/xaphan/grapple");
         }
 
         public override void Update()
@@ -99,6 +103,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (Collider.Collide(target.Collider))
                 {
+                    sfx.Play("event:/game/xaphan/grapple_attached");
                     State = States.Attached;
                     attachedTarget = target;
                     attachedTarget.SetSparks(true);
@@ -125,6 +130,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void UpdateAttached()
         {
+            
             if (Input.Jump.Pressed && SpaceJump.Active(player.SceneAs<Level>()) || !XaphanModule.ModSettings.UseBagItemSlot.Check)
             {
                 Detach();
@@ -141,6 +147,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Reach()
         {
+            sfx.Stop();
             State = States.Reached;
             attachedTarget.SetSparks(false);
 
@@ -165,6 +172,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Detach()
         {
+            sfx.Stop();
             attachedTarget.SetSparks(false);
             player.Speed.X = direction * pullSpeed * Engine.DeltaTime * 50f;
             player.StateMachine.State = Player.StNormal;
@@ -173,6 +181,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Fail()
         {
+            sfx.Stop();
             player.StateMachine.State = Player.StNormal;
             RemoveSelf();
         }
