@@ -101,13 +101,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     State = States.Attached;
                     attachedTarget = target;
+                    attachedTarget.SetSparks(true);
+                    player.Position += new Vector2(0f, (float)Math.Round(target.Center.Y - player.Center.Y));
+                    Position.Y = target.Center.Y;
                     if (player.X < attachedTarget.Center.X)
                     {
-                        Right = attachedTarget.Left;
+                        Right = attachedTarget.Left + (attachedTarget.Collidable ? 0 : 1);
                     }
                     else
                     {
-                        Left = attachedTarget.Right;
+                        Left = attachedTarget.Right - (attachedTarget.Collidable ? 0 : 1);
                     }
                     anchorPoint = Position;
                     return;
@@ -139,6 +142,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private IEnumerator Reach()
         {
             State = States.Reached;
+            attachedTarget.SetSparks(false);
 
             if (attachedTarget.Collidable)
             {
@@ -161,6 +165,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Detach()
         {
+            attachedTarget.SetSparks(false);
             player.Speed.X = direction * pullSpeed * Engine.DeltaTime * 50f;
             player.StateMachine.State = Player.StNormal;
             RemoveSelf();
