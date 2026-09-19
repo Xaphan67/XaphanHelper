@@ -749,6 +749,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         drawCross = SceneAs<Level>().Session.GetFlag("XaphanHelper_Prevent_Drone") || !RemoteDrone.canUse;
                     }
+                    if (currentSelection == 4)
+                    {
+                        drawCross = !GrappleHook.canUse;
+                    }
                 }
                 else
                 {

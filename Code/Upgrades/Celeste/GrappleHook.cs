@@ -1,9 +1,15 @@
-﻿using Celeste.Mod.XaphanHelper.Entities;
+﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Entities;
+using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {
     class GrappleHook : Upgrade
     {
+        Coroutine CooldownCoroutine = new();
+
+        public static bool canUse = true;
+
         public override int GetDefaultValue()
         {
             return 0;
@@ -45,11 +51,16 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 {
                     isActive = true;
                     Player player = self.Tracker.GetEntity<Player>();
-                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
+                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && canUse)
                     {
                         player.StateMachine.State = XaphanModule.StGrapple;
                         //bool vertical = Input.MoveY.Value == -1;
                         self.Add(new Grapple(player/*, vertical*/));
+                        CooldownCoroutine = new Coroutine(Cooldown());
+                    }
+                    if (CooldownCoroutine != null)
+                    {
+                        CooldownCoroutine.Update();
                     }
                 }
                 else
@@ -57,6 +68,13 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                     isActive = false;
                 }
             }
+        }
+
+        private IEnumerator Cooldown()
+        {
+            canUse = false;
+            yield return 0.4f;
+            canUse = true;
         }
     }
 }
