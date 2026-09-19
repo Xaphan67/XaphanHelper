@@ -1070,7 +1070,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 Player player = ((Level)Engine.Scene).Tracker.GetEntity<Player>();
                 player.Facing = CurrentFacing;
-                player.Sprite.Stop();
+                player.Sprite.Rate = 0;
             }
             return StGrapple;
         }
