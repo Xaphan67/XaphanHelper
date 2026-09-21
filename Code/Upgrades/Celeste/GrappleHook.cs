@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Entities;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
@@ -51,12 +53,27 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 {
                     isActive = true;
                     Player player = self.Tracker.GetEntity<Player>();
-                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && canUse)
+                    UpgradesComponent component = null;
+                    if (player != null)
                     {
-                        player.StateMachine.State = XaphanModule.StGrapple;
-                        //bool vertical = Input.MoveY.Value == -1;
-                        self.Add(new Grapple(player/*, vertical*/));
-                        CooldownCoroutine = new Coroutine(Cooldown());
+                        component = player.Get<UpgradesComponent>();
+                        canUse = component.GrappleHookCooldown == 0;
+                    }
+                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && component != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && canUse)
+                    {
+                        BagDisplay bagDisplay = GetDisplay(self, "bag");
+                        if (bagDisplay != null)
+                        {
+                            if (bagDisplay.currentSelection == 4 && component.GrappleHookCooldown <= 0f)
+                            {
+                                player.StateMachine.State = XaphanModule.StGrapple;
+                                //bool vertical = Input.MoveY.Value == -1;
+                                Grapple gapple = new Grapple(player/*, vertical*/);
+                                self.Add(gapple);
+                                CooldownCoroutine = new Coroutine(Cooldown(gapple, component));
+                            }
+                        }
+                        
                     }
                     if (CooldownCoroutine != null)
                     {
@@ -70,11 +87,13 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
         }
 
-        private IEnumerator Cooldown()
+        private IEnumerator Cooldown(Grapple gapple, UpgradesComponent component)
         {
-            canUse = false;
-            yield return 0.4f;
-            canUse = true;
+            while (gapple.State != Grapple.States.Breaked)
+            {
+                yield return null;
+            }
+            component.GrappleHookCooldown = 0.3f;
         }
     }
 }

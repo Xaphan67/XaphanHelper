@@ -1,6 +1,8 @@
-﻿using Monocle;
-using Microsoft.Xna.Framework;
+﻿using System.Linq;
 using Celeste.Mod.Entities;
+using Microsoft.Xna.Framework;
+using Monocle;
+using static Celeste.Mod.XaphanHelper.Entities.Grapple;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -26,6 +28,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             spark.Play("spark");
             Collidable = !data.Bool("notSolid");
             Depth = 100;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            Grapple grapple = SceneAs<Level>().Tracker.GetEntity<Grapple>();
+            if (grapple != null && (grapple.State == States.Attached || grapple.State == States.Reached))
+            {
+                Rectangle zone = Collider.Bounds;
+                zone.Inflate(1, 1);
+                SetSparks(zone.Intersects(grapple.Collider.Bounds));
+            }
+            else
+            {
+                SetSparks(false);
+            }
         }
 
         public void SetSparks(bool attached)

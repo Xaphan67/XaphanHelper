@@ -20,7 +20,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public override void Update() { wasPressed = Check; }
         }
 
-        public enum States { Deploy, Attached, Reached }
+        public enum States { Deploy, Attached, Reached, Breaked }
 
         private Vector2 direction;
 
@@ -32,13 +32,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Player player;
 
-        private States State;
+        public States State;
 
         private Vector2 anchorPoint;
 
         private GrapplePoint attachedTarget;
 
-        private MTexture lineSprite;
+        private Sprite hook;
 
         private float timer = 0f;
 
@@ -57,7 +57,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 : new Vector2(player.Facing == Facings.Left ? -1f : 1f, 0f);
 
             Collider = new Hitbox(4, 4, -2, -2);
-            lineSprite = GFX.Game["util/XaphanHelper/grappleBeam"];
+            Add(hook = new Sprite(GFX.Game, "upgrades/GrappleHook/"));
+            hook.AddLoop("hook", "hook", 0.08f);
+            hook.Play("hook");
+            hook.Visible = false;
             timer = Calc.Random.NextFloat();
             Depth = -1000;
         }
@@ -103,7 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             if (distance >= 80f || CollideCheck<Solid, GrapplePoint>())
             {
-                Fail();
+                Add(new Coroutine(Fail()));
             }
         }
 
@@ -112,7 +115,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             sfx.Play("event:/game/xaphan/grapple_attached");
             State = States.Attached;
             attachedTarget = target;
-            attachedTarget.SetSparks(true);
 
             if (vertical)
             {
@@ -121,11 +123,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 if (player.Y < target.Center.Y)
                 {
-                    Bottom = target.Top + (target.Collidable ? 0 : 1);
+                    Bottom = target.Top + (target.Collidable ? 2 : 1);
                 }
                 else
                 {
-                    Top = target.Bottom - (target.Collidable ? 0 : 1);
+                    Top = target.Bottom - (target.Collidable ? 2 : 1);
                 }
             }
             else
@@ -135,11 +137,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 if (player.X < target.Center.X)
                 {
-                    Right = target.Left + (target.Collidable ? 0 : 1);
+                    Right = target.Left + (target.Collidable ? 2 : 1);
                 }
                 else
                 {
-                    Left = target.Right - (target.Collidable ? 0 : 1);
+                    Left = target.Right - (target.Collidable ? 2 : 1);
                 }
             }
 
@@ -167,7 +169,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 player.MoveTowardsX(anchorPoint.X, pullSpeed * Engine.DeltaTime);
 
-                if (Math.Abs(player.X - anchorPoint.X) <= 2f || (attachedTarget != null && player.CollideCheck(attachedTarget)))
+                if (Math.Abs(player.X - anchorPoint.X) <= 4f || (attachedTarget != null && player.CollideCheck(attachedTarget)))
                 {
                     Add(new Coroutine(Reach()));
                 }
@@ -176,19 +178,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Reach()
         {
-            sfx.Stop();
             State = States.Reached;
-            attachedTarget.SetSparks(false);
+            float stamina = player.Stamina;
+            Vector2 position = player.Position;
 
             if (attachedTarget.Collidable)
             {
                 grabNode = new ConditionalGrabNode { Condition = () => State == States.Reached && XaphanModule.ModSettings.UseBagItemSlot.Check };
                 Input.Grab.Nodes.Add(grabNode);
                 player.StateMachine.State = Player.StClimb;
-                while (State == States.Reached && XaphanModule.ModSettings.UseBagItemSlot.Check)
+                while (State == States.Reached && XaphanModule.ModSettings.UseBagItemSlot.Check && CollideCheck<Player>() && player.Position == position)
                 {
+                    player.Stamina = stamina;
                     yield return null;
                 }
+                State = States.Breaked;
 
                 RemoveGrabNode();
                 RemoveSelf();
@@ -201,6 +205,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Detach()
         {
+            State = States.Breaked;
+
             sfx.Stop();
             attachedTarget?.SetSparks(false);
 
@@ -217,22 +223,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
             RemoveSelf();
         }
 
-        private void Fail()
+        private IEnumerator Fail()
         {
-            sfx.Stop();
+            State = States.Breaked;
             player.StateMachine.State = Player.StNormal;
+            while (sfx.Playing)
+            {
+                yield return null;
+            }
             RemoveSelf();
         }
 
         public override void Render()
         {
-            if (State != States.Reached)
+            if (State != States.Breaked)
             {
-                Vector2 origin = new Vector2(0f, lineSprite.Height / 2f);
+                Vector2 origin = new Vector2(0f, hook.Height / 2f);
                 Vector2 tip = Position + direction;
+                MTexture currentFrame = hook.Texture;
 
                 Draw.SineTextureH(
-                    lineSprite,
+                    currentFrame,
                     player.Center,
                     origin,
                     new Vector2(Vector2.Distance(tip, player.Center) / 80f, 1f),

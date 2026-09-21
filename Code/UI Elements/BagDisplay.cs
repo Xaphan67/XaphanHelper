@@ -30,6 +30,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Sprite Upgrade3;
 
+        private Sprite Upgrade4;
+
         public float Opacity;
 
         public int currentSelection;
@@ -85,7 +87,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Upgrade1 = new Sprite(GFX.Gui, "");
             Upgrade2 = new Sprite(GFX.Gui, "");
             Upgrade3 = new Sprite(GFX.Gui, "");
-            Sprite.Scale = Upgrade1.Scale = Upgrade2.Scale = Upgrade3.Scale = new Vector2(0.15f);
+            Upgrade4 = new Sprite(GFX.Gui, "");
+            Sprite.Scale = Upgrade1.Scale = Upgrade2.Scale = Upgrade3.Scale = Upgrade4.Scale = new Vector2(0.15f);
             borderColor = Calc.HexToColor("262626");
             ButtonBinding Control = type == "bag" ? XaphanModule.ModSettings.UseBagItemSlot : XaphanModule.ModSettings.UseMiscItemSlot;
             SlotButton.Binding = Control.Binding;
@@ -280,6 +283,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Upgrade2.AddLoop("upg", getCustomSpritePath("MegaBombs") + "/megaBombs", 0.08f, 0);
                 Sprite.AddLoop("remoteDrone", getCustomSpritePath("RemoteDrone") + "/remoteDrone", 0.08f, 0);
                 Upgrade3.AddLoop("upg", getCustomSpritePath("RemoteDrone") + "/remoteDrone", 0.08f, 0);
+                Sprite.AddLoop("grappleHook", getCustomSpritePath("GrappleHook") + "/grappleHook", 0.08f, 0);
+                Upgrade4.AddLoop("upg", getCustomSpritePath("GrappleHook") + "/grappleHook", 0.08f, 0);
                 if (XaphanModule.ModSaveData.BagUIId1 == 0)
                 {
                     if (Bombs.isActive)
@@ -293,6 +298,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     else if (RemoteDrone.isActive)
                     {
                         currentSelection = 3;
+                    }
+                    else if (GrappleHook.isActive)
+                    {
+                        currentSelection = 4;
                     }
                 }
                 else
@@ -443,9 +452,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             else
             {
                 totalActiveUpgrades = 0;
-                if (Upgrade1 != null && Upgrade2 != null && Upgrade3 != null)
+                if (Upgrade1 != null && Upgrade2 != null && Upgrade3 != null && Upgrade4 != null)
                 {
-                    Upgrade1.Visible = Upgrade2.Visible = Upgrade3.Visible = false;
+                    Upgrade1.Visible = Upgrade2.Visible = Upgrade3.Visible = Upgrade4.Visible = false;
                 }
                 alphaStatus = 0;
                 selectedAlpha = 0;
@@ -491,7 +500,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 if (type == "bag")
                 {
-                    if ((currentSelection == 1 && !(Bombs.isActive && XaphanModule.ModSettings.Bombs)) || (currentSelection == 2 && !(MegaBombs.isActive && XaphanModule.ModSettings.MegaBombs)) || (currentSelection == 3 && !(RemoteDrone.isActive && XaphanModule.ModSettings.RemoteDrone)))
+                    if ((currentSelection == 1 && !(Bombs.isActive && XaphanModule.ModSettings.Bombs)) || (currentSelection == 2 && !(MegaBombs.isActive && XaphanModule.ModSettings.MegaBombs)) || (currentSelection == 3 && !(RemoteDrone.isActive && XaphanModule.ModSettings.RemoteDrone)) || (currentSelection == 4 && !(GrappleHook.isActive && XaphanModule.ModSettings.GrappleHook)))
                     {
                         SetToFirstActiveUpgrade();
                     }
@@ -513,17 +522,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             bool bombActive = true;
             bool megaBombActive = true;
             bool droneActive = true;
+            bool grappleActive = true;
             bool binocularsActive = true;
             bool teleporterActive = true;
             bool radarActive = true;
             if (type == "bag")
             {
-                while (!nextActiveUpgrade && (bombActive || megaBombActive || droneActive))
+                while (!nextActiveUpgrade && (bombActive || megaBombActive || droneActive || grappleActive))
                 {
                     nextSelection += 1;
-                    if (nextSelection > 3)
+                    if (nextSelection > 4)
                     {
-                        nextSelection -= 3;
+                        nextSelection -= 4;
                     }
                     nextActiveUpgrade = CheckIfUpgradeIsActive(nextSelection);
                     if (nextSelection == 1 && !nextActiveUpgrade)
@@ -538,8 +548,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         droneActive = false;
                     }
+                    if (nextSelection == 4 && !nextActiveUpgrade)
+                    {
+                        grappleActive = false;
+                    }
                 }
-                if (bombActive || megaBombActive || droneActive)
+                if (bombActive || megaBombActive || droneActive || grappleActive)
                 {
                     currentSelection = nextSelection;
                     XaphanModule.ModSaveData.BagUIId1 = nextSelection;
@@ -707,6 +721,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         Sprite.Play("remoteDrone");
                     }
+                    else if (currentSelection == 4)
+                    {
+                        Sprite.Play("grappleHook");
+                    }
                 }
                 else
                 {
@@ -774,7 +792,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 cross.DrawCentered(Center + Vector2.One * 50f, Color.White * Opacity * 0.6f);
             }
-            if (XaphanModule.ModSettings.SelectItem.Check && totalActiveUpgrades != 0 && Upgrade1 != null && Upgrade2 != null && Upgrade3 != null && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (XaphanModule.ModSettings.SelectItem.Check && totalActiveUpgrades != 0 && Upgrade1 != null && Upgrade2 != null && Upgrade3 != null && Upgrade4 != null && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 float height = 24f + totalActiveUpgrades * 72f + 12f * (totalActiveUpgrades - 1);
                 Draw.Rect(Position + new Vector2(2f, 122f), 96f, height, Color.Black * 0.85f * Opacity);
@@ -806,6 +824,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     Upgrade3.RenderPosition = DetermineDrawPosition(currentPos);
                     Upgrade3.Color = Color.White * Opacity;
                     Upgrade3.Render();
+                    currentPos++;
+                }
+                if (CheckIfUpgradeIsActive(4))
+                {
+                    Upgrade4.Play("upg");
+                    Upgrade4.RenderPosition = DetermineDrawPosition(currentPos);
+                    Upgrade4.Color = Color.White * Opacity;
+                    Upgrade4.Render();
                 }
             }
         }
@@ -814,6 +840,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             switch (pos)
             {
+                case 4:
+                    return Position + new Vector2(14f, 386f);
                 case 3:
                     return Position + new Vector2(14f, 302f);
                 case 2:

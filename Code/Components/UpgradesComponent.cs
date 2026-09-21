@@ -8,6 +8,8 @@ namespace Celeste.Mod.XaphanHelper.Components
 
         public float MegaBombsCooldown;
 
+        public float GrappleHookCooldown;
+
         public UpgradesComponent() : base(true, false)
         {
         }
@@ -35,6 +37,14 @@ namespace Celeste.Mod.XaphanHelper.Components
             else
             {
                 MegaBombsCooldown = 0f;
+            }
+            if (GrappleHookCooldown > 0)
+            {
+                GrappleHookCooldown -= Engine.DeltaTime;
+            }
+            else
+            {
+                GrappleHookCooldown = 0f;
             }
         }
     }
