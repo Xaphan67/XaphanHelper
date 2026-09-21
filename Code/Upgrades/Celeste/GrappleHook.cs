@@ -57,7 +57,10 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                     if (player != null)
                     {
                         component = player.Get<UpgradesComponent>();
-                        canUse = component.GrappleHookCooldown == 0;
+                        if (component != null)
+                        {
+                            canUse = component.GrappleHookCooldown == 0;
+                        }
                     }
                     if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && component != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && canUse)
                     {
