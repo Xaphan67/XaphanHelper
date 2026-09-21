@@ -70,7 +70,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                             if (bagDisplay.currentSelection == 4 && component.GrappleHookCooldown <= 0f)
                             {
                                 player.StateMachine.State = XaphanModule.StGrapple;
-                                //bool vertical = Input.MoveY.Value == -1;
+                                //bool vertical = Input.Aim.Value.Y == -1;
                                 Grapple gapple = new Grapple(player/*, vertical*/);
                                 self.Add(gapple);
                                 CooldownCoroutine = new Coroutine(Cooldown(gapple, component));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Celeste.Mod.XaphanHelper.Effects;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -40,6 +41,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Sprite hook;
 
+        private MTexture head;
+
         private float timer = 0f;
 
         private ConditionalGrabNode grabNode;
@@ -61,6 +64,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             hook.AddLoop("hook", "hook", 0.08f);
             hook.Play("hook");
             hook.Visible = false;
+            head = GFX.Game["upgrades/GrappleHook/head00"];
+            head.ScaleFix = 1f;
             timer = Calc.Random.NextFloat();
             Depth = -1000;
         }
@@ -123,11 +128,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 if (player.Y < target.Center.Y)
                 {
-                    Bottom = target.Top + (target.Collidable ? 2 : 1);
+                    Bottom = target.Top + 2;
                 }
                 else
                 {
-                    Top = target.Bottom - (target.Collidable ? 2 : 1);
+                    Top = target.Bottom - 2;
                 }
             }
             else
@@ -137,11 +142,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 if (player.X < target.Center.X)
                 {
-                    Right = target.Left + (target.Collidable ? 2 : 1);
+                    Right = target.Left + 2;
                 }
                 else
                 {
-                    Left = target.Right - (target.Collidable ? 2 : 1);
+                    Left = target.Right - 2;
                 }
             }
 
@@ -255,6 +260,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     1,
                     0.08f
                 );
+
+                Vector2 scale = new Vector2(player.Facing == Facings.Left ? -1f : 1f, 1f);
+                head.DrawCentered(Position, Color.White, scale);
             }
             base.Render();
         }
