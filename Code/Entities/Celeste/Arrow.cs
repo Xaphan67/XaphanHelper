@@ -221,9 +221,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Add(DestroyRoutine = new Coroutine(Destroy()));
             }
-            if (attachedSolid != null && attachedSolid.GetType() == typeof(FlagTempleGate))
+            if (attachedSolid != null && attachedSolid.GetType() == typeof(CustomTempleGate))
             {
-                FlagTempleGate gate = attachedSolid as FlagTempleGate;
+                CustomTempleGate gate = attachedSolid as CustomTempleGate;
                 if (!gate.Collidable)
                 {
                     destroyImmediate = true;

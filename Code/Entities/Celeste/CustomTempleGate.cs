@@ -9,7 +9,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 {
     [Tracked(true)]
     [CustomEntity("XaphanHelper/FlagTempleGate", "XaphanHelper/CustomTempleGate")]
-    class FlagTempleGate : Solid
+    class CustomTempleGate : Solid
     {
         private bool horizontal;
 
@@ -49,9 +49,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool FlagActive => ControlledBySwitch ? openedBySwitch : SceneAs<Level>().Session.GetFlag(flag);
 
-        private static FlagTempleGate chosenGate;
+        private static CustomTempleGate chosenGate;
 
-        public FlagTempleGate(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, true)
+        public CustomTempleGate(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, true)
         {
             LevelID = data.Level.Name;
             horizontal = data.Bool("horizontal", false);
@@ -113,8 +113,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             chosenGate = null;
             TempleGate vanillaGate = orig(self);
             EntityID id = new DynamicData(self).Get<EntityID>("id");
-            FlagTempleGate flagGate = self.Scene.Tracker.GetEntities<FlagTempleGate>()
-                .Cast<FlagTempleGate>()
+            CustomTempleGate flagGate = self.Scene.Tracker.GetEntities<CustomTempleGate>()
+                .Cast<CustomTempleGate>()
                 .Where(g => g.ControlledBySwitch && !g.ClaimedByASwitch && g.LevelID == id.Level)
                 .OrderBy(g => Vector2.DistanceSquared(self.Position, g.Position))
                 .FirstOrDefault();
@@ -163,8 +163,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (data.Get<bool>("allGates"))
             {
                 EntityID id = data.Get<EntityID>("id");
-                foreach (FlagTempleGate gate in sw.Scene.Tracker.GetEntities<FlagTempleGate>()
-                    .Cast<FlagTempleGate>()
+                foreach (CustomTempleGate gate in sw.Scene.Tracker.GetEntities<CustomTempleGate>()
+                    .Cast<CustomTempleGate>()
                     .Where(g => g.ControlledBySwitch && g.LevelID == id.Level))
                 {
                     gate.SwitchOpen(instant);
