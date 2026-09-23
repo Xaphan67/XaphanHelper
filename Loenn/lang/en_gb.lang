@@ -377,6 +377,16 @@ entities.XaphanHelper/CustomRefill.attributes.description.type=The type of the r
 entities.XaphanHelper/CustomRefill.attributes.description.respawnTime=Time (in seconds) beforethe refill reapear after being used. (Ignored if the type is Oxygen or Oxygen Small)
 entities.XaphanHelper/CustomRefill.attributes.description.oneUse=If true, the refill will not respawn after being used. (Ignored if the type is Oxygen or Oxygen Small)
 
+# CustomTempleGate
+entities.XaphanHelper/CustomTempleGate.placements.name.CustomTempleGate=Custom Temple Gate
+entities.XaphanHelper/CustomTempleGate.attributes.description.flag=The flag that need to be set for the gate to open.\nIf empty, the closest vanilla Dash Switch will affect this door.
+entities.XaphanHelper/CustomTempleGate.attributes.description.spriteName=The name of the variant for the sprite in Sprites.xml. (minus templegate_)
+entities.XaphanHelper/CustomTempleGate.attributes.description.openOnHeartCollection=If true, the gate will open when the heart is collected by the player in the current session (regardless of the flag state)
+entities.XaphanHelper/CustomTempleGate.attributes.description.startOpen=If true, the gate will be open when the player enter the room.\nIf a flag is set in Flag, the door will close when the flag is true.\nIf not, the door will close when the closest vanilla Dash Switch is pressed.
+entities.XaphanHelper/CustomTempleGate.attributes.description.horizontal=If true, the gate will be horizontal instead of vertical.
+entities.XaphanHelper/CustomTempleGate.attributes.description.attachRight=If true, the gate will be attached to the right. (only if Horizontal is true)
+entities.XaphanHelper/CustomTempleGate.attributes.description.silent=If true, the gate will not emit any sound when it open or close.
+
 # CustomTorch
 entities.XaphanHelper/CustomTorch.placements.name.CustomTorch=Custom Torch
 entities.XaphanHelper/CustomTorch.attributes.description.playLitSound=If true, play a sound when the torch is activated.
@@ -503,16 +513,6 @@ entities.XaphanHelper/FlagSwapBlock.attributes.description.toggle=If true, the s
 entities.XaphanHelper/FlagSwapBlock.attributes.description.particleColor1=Hexadecimal code of the first color of particles emited when the block move from one side to the other.
 entities.XaphanHelper/FlagSwapBlock.attributes.description.particleColor2=Hexadecimal code of the second color of particles emited when the block move from one side to the other.
 entities.XaphanHelper/FlagSwapBlock.attributes.description.renderBG=If true, render the background behind the block path.
-
-# FlagTempleGate
-entities.XaphanHelper/FlagTempleGate.placements.name.FlagTempleGate=Flag Temple Gate
-entities.XaphanHelper/FlagTempleGate.attributes.description.flag=The flag that need to be set for the gate to open.
-entities.XaphanHelper/FlagTempleGate.attributes.description.spriteName=The name of the variant for the sprite in Sprites.xml. (minus templegate_)
-entities.XaphanHelper/FlagTempleGate.attributes.description.openOnHeartCollection=If true, the gate will open when the heart is collected by the player in the current session (regardless of the flag state)
-entities.XaphanHelper/FlagTempleGate.attributes.description.startOpen=If true, the gate will be open when the player enter the room, and will close when the flag is true.
-entities.XaphanHelper/FlagTempleGate.attributes.description.horizontal=If true, the gate will be horizontal instead of vertical.
-entities.XaphanHelper/FlagTempleGate.attributes.description.attachRight=If true, the gate will be attached to the right. (only if Horizontal is true)
-entities.XaphanHelper/FlagTempleGate.attributes.description.silent=If true, the gate will not emit any sound when it open or close.
 
 # Fuse
 entities.XaphanHelper/Fuse.placements.name.Fuse=Fuse

@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-
+using MonoMod.Utils;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
     [Tracked(true)]
-    [CustomEntity("XaphanHelper/FlagTempleGate")]
+    [CustomEntity("XaphanHelper/FlagTempleGate", "XaphanHelper/CustomTempleGate")]
     class FlagTempleGate : Solid
     {
         private bool horizontal;
@@ -38,8 +39,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool silent;
 
+        private bool openedBySwitch;
+
+        public bool ClaimedByASwitch;
+
+        public string LevelID;
+
+        public bool ControlledBySwitch => string.IsNullOrEmpty(flag);
+
+        private bool FlagActive => ControlledBySwitch ? openedBySwitch : SceneAs<Level>().Session.GetFlag(flag);
+
+        private static FlagTempleGate chosenGate;
+
         public FlagTempleGate(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, true)
         {
+            LevelID = data.Level.Name;
             horizontal = data.Bool("horizontal", false);
             attachRight = data.Bool("attachRight", false);
             flag = data.Attr("flag", "");
@@ -80,11 +94,93 @@ namespace Celeste.Mod.XaphanHelper.Entities
             holdingCheckFrom = Position + (horizontal ? new Vector2(data.Height / 2, Width / 2f) : new Vector2(Width / 2f, data.Height / 2));
         }
 
+        public static void Load()
+        {
+            On.Celeste.DashSwitch.OnDashed += onDashSwitchOnDashed;
+            On.Celeste.DashSwitch.Awake += onDashSwitchAwake;
+            On.Celeste.DashSwitch.GetGate += onDashSwitchGetGate;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.DashSwitch.OnDashed -= onDashSwitchOnDashed;
+            On.Celeste.DashSwitch.Awake -= onDashSwitchAwake;
+            On.Celeste.DashSwitch.GetGate -= onDashSwitchGetGate;
+        }
+
+        private static TempleGate onDashSwitchGetGate(On.Celeste.DashSwitch.orig_GetGate orig, DashSwitch self)
+        {
+            chosenGate = null;
+            TempleGate vanillaGate = orig(self);
+            EntityID id = new DynamicData(self).Get<EntityID>("id");
+            FlagTempleGate flagGate = self.Scene.Tracker.GetEntities<FlagTempleGate>()
+                .Cast<FlagTempleGate>()
+                .Where(g => g.ControlledBySwitch && !g.ClaimedByASwitch && g.LevelID == id.Level)
+                .OrderBy(g => Vector2.DistanceSquared(self.Position, g.Position))
+                .FirstOrDefault();
+            if (flagGate != null && (vanillaGate == null ||
+                Vector2.DistanceSquared(self.Position, flagGate.Position) < Vector2.DistanceSquared(self.Position, vanillaGate.Position)))
+            {
+                if (vanillaGate != null)
+                {
+                    vanillaGate.ClaimedByASwitch = false;
+                }
+                flagGate.ClaimedByASwitch = true;
+                chosenGate = flagGate;
+                return null;
+            }
+            return vanillaGate;
+        }
+
+        private static DashCollisionResults onDashSwitchOnDashed(On.Celeste.DashSwitch.orig_OnDashed orig, DashSwitch self, Player player, Vector2 direction)
+        {
+            DynamicData data = new DynamicData(self);
+            bool wasPressed = data.Get<bool>("pressed");
+            chosenGate = null;
+            DashCollisionResults result = orig(self, player, direction);
+            if (!wasPressed && data.Get<bool>("pressed"))
+            {
+                OpenFlagGates(self, data, false);
+            }
+            chosenGate = null;
+            return result;
+        }
+
+        private static void onDashSwitchAwake(On.Celeste.DashSwitch.orig_Awake orig, DashSwitch self, Scene scene)
+        {
+            chosenGate = null;
+            orig(self, scene);
+            DynamicData data = new DynamicData(self);
+            if (data.Get<bool>("pressed"))
+            {
+                OpenFlagGates(self, data, true);
+            }
+            chosenGate = null;
+        }
+
+        private static void OpenFlagGates(DashSwitch sw, DynamicData data, bool instant)
+        {
+            if (data.Get<bool>("allGates"))
+            {
+                EntityID id = data.Get<EntityID>("id");
+                foreach (FlagTempleGate gate in sw.Scene.Tracker.GetEntities<FlagTempleGate>()
+                    .Cast<FlagTempleGate>()
+                    .Where(g => g.ControlledBySwitch && g.LevelID == id.Level))
+                {
+                    gate.SwitchOpen(instant);
+                }
+            }
+            else
+            {
+                chosenGate?.SwitchOpen(instant);
+            }
+        }
+
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
             drawHeight = Math.Max(4f, Height);
-            if ((!startOpen && SceneAs<Level>().Session.GetFlag(flag)) || (startOpen && !SceneAs<Level>().Session.GetFlag(flag)) || (openOnHeartCollection && SceneAs<Level>().Session.HeartGem))
+            if ((!startOpen && FlagActive) || (startOpen && !FlagActive) || (openOnHeartCollection && SceneAs<Level>().Session.HeartGem))
             {
                 StartOpen();
             }
@@ -92,6 +188,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 SetHeight(closedHeight);
                 drawHeight = Math.Max(4f, horizontal ? Width : Height);
+            }
+        }
+
+        public void SwitchOpen(bool instant = false)
+        {
+            openedBySwitch = true;
+            if (instant && !open)
+            {
+                StartOpen();
             }
         }
 
@@ -185,20 +290,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 drawHeight = Calc.Approach(drawHeight, num, drawHeightMoveSpeed * Engine.DeltaTime);
             }
-            if (((!startOpen && (SceneAs<Level>().Session.GetFlag(flag))) || (startOpen && (!SceneAs<Level>().Session.GetFlag(flag))) || (openOnHeartCollection && SceneAs<Level>().Session.HeartGem)) && !open)
+            if (((!startOpen && (FlagActive)) || (startOpen && (!FlagActive)) || (openOnHeartCollection && SceneAs<Level>().Session.HeartGem)) && !open)
             {
                 Open();
             }
             else if (!openOnHeartCollection)
             {
-                if (((!startOpen && !SceneAs<Level>().Session.GetFlag(flag)) || (startOpen && SceneAs<Level>().Session.GetFlag(flag))) && open)
+                if (((!startOpen && !FlagActive) || (startOpen && FlagActive)) && open)
                 {
                     Close();
                 }
             }
             else if (openOnHeartCollection)
             {
-                if (((!startOpen && !SceneAs<Level>().Session.GetFlag(flag)) || (startOpen && SceneAs<Level>().Session.GetFlag(flag))) && !SceneAs<Level>().Session.HeartGem && open)
+                if (((!startOpen && !FlagActive) || (startOpen && FlagActive)) && !SceneAs<Level>().Session.HeartGem && open)
                 {
                     Close();
                 }

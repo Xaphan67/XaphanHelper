@@ -849,6 +849,7 @@ namespace Celeste.Mod.XaphanHelper
             GemController.Load();
             Stele.Load();
             AncientText.Load();
+            FlagTempleGate.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -978,6 +979,7 @@ namespace Celeste.Mod.XaphanHelper
             GemController.Unload();
             Stele.Unload();
             AncientText.Unload();
+            FlagTempleGate.Unload();
         }
 
         private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)
