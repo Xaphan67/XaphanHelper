@@ -27,9 +27,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Solid attachedSolid;
 
-        StaticMover staticMover;
+        private StaticMover staticMover;
 
-        public JumpThruArrow(Vector2 position, string side) : base(position, 4, false)
+        private string directory;
+
+        public JumpThruArrow(Vector2 position, string side, string directory) : base(position, 4, false)
         {
             this.side = side;
             inWall = true;
@@ -41,7 +43,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collider = new Hitbox(22f, 4f, 5f, 3f);
             }
-            Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/ArrowTrap" + "/"));
+            this.directory = directory;
+            Add(sprite = new Sprite(GFX.Game, this.directory + "/"));
             sprite.AddLoop("arrow", "arrow", 0.08f, 0);
             sprite.Add("vibrating", "arrow", 0.04f, 1, 2, 3, 0, 1, 2, 3, 0);
             sprite.Origin = new Vector2(sprite.Width / 2, sprite.Height / 2);

@@ -529,7 +529,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.X -= 1;
                     }
-                    Scene.Add(new JumpThruArrow(Position, "Right"));
+                    Scene.Add(new JumpThruArrow(Position, "Right", directory));
                 }
                 else if (side == "Left")
                 {
@@ -537,7 +537,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         Position.X += 1;
                     }
-                    Scene.Add(new JumpThruArrow(Position, "Left"));
+                    Scene.Add(new JumpThruArrow(Position, "Left", directory));
                 }
                 else if (side == "Top")
                 {
