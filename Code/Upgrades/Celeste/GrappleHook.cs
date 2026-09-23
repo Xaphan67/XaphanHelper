@@ -70,8 +70,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                             if (bagDisplay.currentSelection == 4 && component.GrappleHookCooldown <= 0f)
                             {
                                 player.StateMachine.State = XaphanModule.StGrapple;
-                                //bool vertical = Input.Aim.Value.Y == -1;
-                                Grapple gapple = new Grapple(player/*, vertical*/);
+                                Grapple gapple = new Grapple(player);
                                 self.Add(gapple);
                                 CooldownCoroutine = new Coroutine(Cooldown(gapple, component));
                             }
@@ -90,13 +89,13 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
         }
 
-        private IEnumerator Cooldown(Grapple gapple, UpgradesComponent component)
+        private IEnumerator Cooldown(Grapple grapple, UpgradesComponent component)
         {
-            while (gapple.State != Grapple.States.Breaked)
+            while (grapple.State != Grapple.States.Breaked && grapple.State != Grapple.States.Failed)
             {
                 yield return null;
             }
-            component.GrappleHookCooldown = 0.3f;
+            component.GrappleHookCooldown = grapple.State == Grapple.States.Failed ? 0.3f : 0.15f;
         }
     }
 }

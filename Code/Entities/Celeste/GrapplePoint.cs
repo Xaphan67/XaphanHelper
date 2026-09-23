@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using static Celeste.Mod.XaphanHelper.Entities.Grapple;
@@ -34,7 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             Grapple grapple = SceneAs<Level>().Tracker.GetEntity<Grapple>();
-            if (grapple != null && (grapple.State == States.Attached || grapple.State == States.Reached))
+            if (grapple != null && grapple.State == States.Attached)
             {
                 Rectangle zone = Collider.Bounds;
                 zone.Inflate(1, 1);
