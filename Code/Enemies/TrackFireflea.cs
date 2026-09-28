@@ -115,6 +115,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             }
         }
 
+        protected override void OnSquish(CollisionData data)
+        {
+            
+        }
+
         private void OnBounce(Player player)
         {
             if (player.Bottom < Y + 1 && player.Speed.Y >= 0f && !Freezed && !PlayerBounced)
@@ -126,6 +131,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private IEnumerator Bounce(Player player)
         {
+            if (player.Scene == null || player.Dead)
+            {
+                PlayerBounced = false;
+                yield break;
+            }
             scaleWiggler.Start();
             XaphanModule.refillJumps = false;
             player.Bounce((int)(Y - 4f));

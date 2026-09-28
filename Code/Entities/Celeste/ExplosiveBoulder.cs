@@ -113,7 +113,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static bool OnActorMoveH(On.Celeste.Actor.orig_MoveHExact orig, Actor self, int moveH, Collision onCollide, Solid pusher)
         {
-            if (self.GetType() == typeof(ExplosiveBoulder))
+            if (self.Scene != null && self.GetType() == typeof(ExplosiveBoulder))
             {
                 ExplosiveBoulder boulder = self as ExplosiveBoulder;
                 foreach (CustomSpinner.Filler filler in self.SceneAs<Level>().Tracker.GetEntities<CustomSpinner.Filler>())
@@ -129,7 +129,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static bool OnActorMoveV(On.Celeste.Actor.orig_MoveVExact orig, Actor self, int moveV, Collision onCollide, Solid pusher)
         {
-            if (self.GetType() == typeof(ExplosiveBoulder))
+            if (self.Scene != null && self.GetType() == typeof(ExplosiveBoulder))
             {
                 ExplosiveBoulder boulder = self as ExplosiveBoulder;
                 foreach (CustomSpinner.Filler filler in self.SceneAs<Level>().Tracker.GetEntities<CustomSpinner.Filler>())
