@@ -75,6 +75,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float CheckHoldTime;
 
+        private bool WillExplode;
+
         public Bomb(Vector2 position, Player player) : base(position)
         {
             this.player = player;
@@ -381,29 +383,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Slope.SetCollisionBeforeUpdate(this);
             base.Update();
-            foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+            if (!WillExplode)
             {
-                if (CollideCheck(liquid))
+                foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
                 {
-                    if ((liquid.liquidType == "lava" || liquid.liquidType.Contains("acid")))
+                    if (CollideCheck(liquid))
                     {
-                        shouldExplodeImmediately = true;
-                    }
-                    else if (liquid.liquidType == "water" && !disapear)
-                    {
-                        disapear = true;
-                        Add(new Coroutine(Disapear()));
+                        if ((liquid.liquidType == "lava" || liquid.liquidType.Contains("acid")))
+                        {
+                            shouldExplodeImmediately = true;
+                        }
+                        else if (liquid.liquidType == "water" && !disapear)
+                        {
+                            disapear = true;
+                            Add(new Coroutine(Disapear()));
+                        }
                     }
                 }
-            }
-            foreach (Waterfall.WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<Waterfall.WaterfallSection>())
-            {
-                if (CollideCheck(waterfall))
+                foreach (Waterfall.WaterfallSection waterfall in SceneAs<Level>().Tracker.GetEntities<Waterfall.WaterfallSection>())
                 {
-                    if (!disapear)
+                    if (CollideCheck(waterfall))
                     {
-                        disapear = true;
-                        Add(new Coroutine(Disapear()));
+                        if (!disapear)
+                        {
+                            disapear = true;
+                            Add(new Coroutine(Disapear()));
+                        }
                     }
                 }
             }
@@ -607,6 +612,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Hold.RemoveSelf();
             AllowPushing = false;
+            WillExplode = true;
             Collider = new Circle(12f, 0f, -4f);
             Speed = Vector2.Zero;
             noGravityTimer = 0.01f;

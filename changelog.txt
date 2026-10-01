@@ -55,6 +55,7 @@ Version 1.0.80 :
 - Holding the 'Select Equipped Ability' button now show a list of currently aquired ability for each slots
 - Improved Slopes collision with the player
 - Any actor or solid should now be able to collide with Slopes, includding modded ones
+- Fixed a bug preventing bombs to explode if a Liquid with its type set to Water was in the range of the explosion
 - Fixed a bug heavily slowing the game when the Status screen or Collect Upgrade Screen stayed open for a long period of time
 - Fixed a bug preventing the prompt for placing a marker on the In-Game map to be removed correctly if the player closed it too fast
 - Fixed a bug incorrectly counting the Golden Strawberry of the B Side of Area 1 into various achievements in The Secret Of Celeste Mountain
