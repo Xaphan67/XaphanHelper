@@ -513,6 +513,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 CollideDroneSwitch(Direction);
             }
+            if (CollideCheck<BreakBlockIndicator>())
+            {
+                CollideBreakBlockIndicator(Direction);
+            }
             if (Left > SceneAs<Level>().Bounds.Right || Right < SceneAs<Level>().Bounds.Left || Top > SceneAs<Level>().Bounds.Bottom || Bottom < SceneAs<Level>().Bounds.Top)
             {
                 RemoveSelf();
@@ -582,43 +586,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
                 ImpactParticles(dir);
-            }
-            foreach (BreakBlockIndicator breakBlockIndicator in Scene.Tracker.GetEntities<BreakBlockIndicator>())
-            {
-                if (breakBlockIndicator.mode == "Drone")
-                {
-                    if (CollideCheck(breakBlockIndicator, Position + dir))
-                    {
-                        breakBlockIndicator.BreakSequence();
-                    }
-                }
-                else
-                {
-                    if (CollideCheck(breakBlockIndicator, Position + dir))
-                    {
-                        breakBlockIndicator.RevealSequence();
-                    }
-                }
-            }
-            foreach (DroneSwitch droneSwitch in Scene.Tracker.GetEntities<DroneSwitch>())
-            {
-                if (CollideCheck(droneSwitch, Position + dir) && droneSwitch.type == "Beam")
-                {
-                    string Direction = null;
-                    if (dir == new Vector2(-1, 0))
-                    {
-                        Direction = "Left";
-                    }
-                    else if (dir == new Vector2(1, 0))
-                    {
-                        Direction = "Right";
-                    }
-                    else if (dir == new Vector2(0, -1))
-                    {
-                        Direction = "Down";
-                    }
-                    droneSwitch.Triggered(Direction);
-                }
             }
             foreach (PlayerBlocker playerBlocker in Scene.Tracker.GetEntities<PlayerBlocker>())
             {
@@ -695,6 +662,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (CollideCheck(droneSwitch) && droneSwitch.type == "Beam")
                 {
                     droneSwitch.Triggered(Direction);
+                }
+            }
+        }
+
+        public void CollideBreakBlockIndicator(Vector2 dir)
+        {
+            foreach (BreakBlockIndicator breakBlockIndicator in Scene.Tracker.GetEntities<BreakBlockIndicator>())
+            {
+                if (breakBlockIndicator.mode == "Drone")
+                {
+                    if (CollideCheck(breakBlockIndicator, Position + dir))
+                    {
+                        breakBlockIndicator.BreakSequence();
+                    }
+                }
+                else
+                {
+                    if (CollideCheck(breakBlockIndicator, Position + dir))
+                    {
+                        breakBlockIndicator.RevealSequence();
+                    }
                 }
             }
         }
