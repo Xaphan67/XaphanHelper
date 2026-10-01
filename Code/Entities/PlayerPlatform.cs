@@ -166,7 +166,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if (platform.InView())
                     {
-                        if (platform.GetPlayerRider() == self && platform.ForceSlide && platform.Sliding && platform.PreventRefillOnSliding)
+                        if (platform.GetPlayerRider() == self && platform.ForceSlide && platform.PreventRefillOnSliding)
                         {
                             return false;
                         }
