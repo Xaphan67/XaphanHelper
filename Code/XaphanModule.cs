@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Xml;
 using Celeste.Mod.Meta;
@@ -557,7 +559,7 @@ namespace Celeste.Mod.XaphanHelper
 
         private bool onMapListOrSearch;
 
-        public override void CreateModMenuSection(TextMenu menu, bool inGame, EventInstance pauseSnapshot)
+        public override void CreateModMenuSection(TextMenu menu, bool inGame, FMOD.Studio.EventInstance pauseSnapshot)
         {
             bool isPlayingSoCM = false;
             if (Engine.Scene is Level)
@@ -783,6 +785,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.OnPlayer += modStrawberryOnPlayer;
             On.Celeste.Strawberry.OnLoseLeader += modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
+            On.Celeste.Textbox.Update += onTextboxUpdate;
             On.Celeste.Mod.UI.OuiMapList.Enter += modOuiMapListEnter;
             On.Celeste.Mod.UI.OuiMapList.Inspect += modOuiMapListInspect;
             On.Celeste.Mod.UI.OuiMapList.Leave += modOuiMapListLeave;
@@ -850,6 +853,7 @@ namespace Celeste.Mod.XaphanHelper
             Stele.Load();
             AncientText.Load();
             CustomTempleGate.Load();
+            CutscenesHelper.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -913,6 +917,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.OnPlayer -= modStrawberryOnPlayer;
             On.Celeste.Strawberry.OnLoseLeader -= modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine -= onStrawberryCollectRoutine;
+            On.Celeste.Textbox.Update -= onTextboxUpdate;
             On.Celeste.Mod.UI.OuiMapList.Enter -= modOuiMapListEnter;
             On.Celeste.Mod.UI.OuiMapList.Inspect -= modOuiMapListInspect;
             On.Celeste.Mod.UI.OuiMapList.Leave -= modOuiMapListLeave;
@@ -980,6 +985,7 @@ namespace Celeste.Mod.XaphanHelper
             Stele.Unload();
             AncientText.Unload();
             CustomTempleGate.Unload();
+            CutscenesHelper.Unload();
         }
 
         private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)
@@ -2426,6 +2432,24 @@ namespace Celeste.Mod.XaphanHelper
             startedAnyChapter = true;
         }
 
+        public static EntityData GetUpgradeController(MapData MapData)
+        {
+            EntityData UpgradeController = new();
+            foreach (LevelData levelData in MapData.Levels)
+            {
+                foreach (EntityData entity in levelData.Entities)
+                {
+                    if (entity.Name == "XaphanHelper/UpgradeController")
+                    {
+                        UpgradeController = entity;
+                        break;
+                    }
+                }
+            }
+
+            return UpgradeController;
+        }
+
         private static void GiveUpgradesToPlayer(MapData MapData, Level level)
         {
             // Remove all upgrades
@@ -2465,18 +2489,7 @@ namespace Celeste.Mod.XaphanHelper
             ModSettings.GrappleHook = false;
             level.Session.SetFlag("Using_Elevator", false);
 
-            EntityData UpgradeController = new();
-            foreach (LevelData levelData in MapData.Levels)
-            {
-                foreach (EntityData entity in levelData.Entities)
-                {
-                    if (entity.Name == "XaphanHelper/UpgradeController")
-                    {
-                        UpgradeController = entity;
-                        break;
-                    }
-                }
-            }
+            EntityData UpgradeController = GetUpgradeController(MapData);
 
             // Get upgrades info from the Upgrade Controller
 
@@ -4766,6 +4779,36 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.PreGoldenTimer = 0;
                 }*/
             }
+        }
+
+        private static readonly ConditionalWeakTable<Textbox, object> processed = new ConditionalWeakTable<Textbox, object>();
+
+        private static void onTextboxUpdate(On.Celeste.Textbox.orig_Update orig, Textbox self)
+        {
+            if (!processed.TryGetValue(self, out _))
+            {
+                processed.Add(self, null);
+                if (PlayerHasTwoDashes())
+                {
+                    foreach (FancyText.Node node in self.Nodes)
+                    {
+                        if (node is FancyText.Portrait po)
+                        {
+                            Logger.Log(LogLevel.Info, "XH", po.Sprite.ToString());
+                        }
+                        if (node is FancyText.Portrait p && p.Sprite == "MADELINE")
+                        {
+                            p.Sprite = "MADELINE_PINK";
+                        }
+                    }
+                }
+            }
+            orig(self);
+        }
+
+        private static bool PlayerHasTwoDashes()
+        {
+            return (Engine.Scene as Level)?.Session.Inventory.Dashes == 2;
         }
 
         private ScreenWipe GetWipe(Level level, bool wipeIn)
