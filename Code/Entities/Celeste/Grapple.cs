@@ -139,6 +139,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 return;
             }
             float dt = Engine.DeltaTime;
+            if (Input.MoveX.Value != 0)
+            {
+                player.Facing = (Facings)Input.MoveX.Value;
+            }
+            else if (Math.Abs(omega) > 0.3f)
+            {
+                player.Facing = omega > 0f ? Facings.Right : Facings.Left;
+            }
+            player.Hair.Facing = player.Facing;
             float previousLength = length;
             length = Calc.Clamp(length + Input.MoveY.Value * ReelSpeed * dt, MinLength, MaxLength);
             if (length != previousLength && length > 0f)

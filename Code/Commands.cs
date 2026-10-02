@@ -191,6 +191,10 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         if (u == upgrade.ToString())
                         {
+                            /*if (u == "GrappleHook")
+                            {
+                                continue;
+                            }*/
                             if (u == "SpaceJump")
                             {
                                 XaphanModule.Instance.UpgradeHandlers[upgrade].SetValue(2);
