@@ -88,9 +88,9 @@ namespace Celeste.Mod.XaphanHelper.Events
             crumblePlatform1 = new CustomCrumbleBlock(bounds + new Vector2(148f, 140f), Vector2.Zero, 24, 8, 2f, 0.6f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/gorge_a", lightOccludeValue: 0.2f, canBypassSideCrumbleDelay: true);
             refill1 = new CustomRefill(bounds + new Vector2(92f, 64f), "Max Jumps", true, 2.5f);
             refill2 = new CustomRefill(bounds + new Vector2(228f, 64f), "Max Jumps", true, 2.5f);
-            refill3 = new CustomRefill(bounds + new Vector2(160f, 92f), "Max Dashes", false, 2.5f);
-            refill4 = new CustomRefill(bounds + new Vector2(64f, 56f), "Max Dashes", true, 2.5f);
-            refill5 = new CustomRefill(bounds + new Vector2(256f, 56f), "Max Dashes", true, 2.5f);
+            refill3 = new CustomRefill(bounds + new Vector2(160f, 92f), "One Dash", false, 2.5f);
+            refill4 = new CustomRefill(bounds + new Vector2(64f, 56f), "One Dash", true, 2.5f);
+            refill5 = new CustomRefill(bounds + new Vector2(256f, 56f), "One Dash", true, 2.5f);
             arrowDown1 = new Decal("Xaphan/Common/arrow_down00.png", crumblePlatform1.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);
             warningSign2 = new Decal("Xaphan/Common/warning00.png", jumpThru5.Position + new Vector2(12f, -16f), new Vector2(1f, 1f), 1);

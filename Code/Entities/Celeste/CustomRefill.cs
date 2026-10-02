@@ -42,7 +42,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float respawnTime;
 
-        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, string directory = "objects/XaphanHelper/CustomRefill/") : base(position)
+        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, string directory = "objects/XaphanHelper/CustomRefill") : base(position)
         {
             Collider = new Hitbox(16f, 16f, -8f, -8f);
             Add(new PlayerCollider(OnPlayer));
