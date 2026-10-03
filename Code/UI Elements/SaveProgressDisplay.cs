@@ -97,6 +97,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             // Portrait
             Portrait.RenderPosition = Position - new Vector2(Width / 2f - 135f, 0f);
             Portrait.Render();
+            PortraitTint.drawOverlays(Portrait);
             Draw.HollowRect(Position - new Vector2(Width / 2f - 35f, 100f), Portrait.Width * Portrait.Scale.X, Portrait.Height * Portrait.Scale.Y, Color.Black * 0.8f);
             Draw.HollowRect(Position - new Vector2(Width / 2f - 36f, 99f), Portrait.Width * Portrait.Scale.X - 2, Portrait.Height * Portrait.Scale.Y - 2, Color.Black * 0.6f);
             Draw.HollowRect(Position - new Vector2(Width / 2f - 37f, 98f), Portrait.Width * Portrait.Scale.X - 4, Portrait.Height * Portrait.Scale.Y - 4, Color.Black * 0.4f);

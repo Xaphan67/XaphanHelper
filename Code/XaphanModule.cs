@@ -785,13 +785,13 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.OnPlayer += modStrawberryOnPlayer;
             On.Celeste.Strawberry.OnLoseLeader += modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine += onStrawberryCollectRoutine;
-            On.Celeste.Textbox.Update += onTextboxUpdate;
             On.Celeste.Mod.UI.OuiMapList.Enter += modOuiMapListEnter;
             On.Celeste.Mod.UI.OuiMapList.Inspect += modOuiMapListInspect;
             On.Celeste.Mod.UI.OuiMapList.Leave += modOuiMapListLeave;
             On.Celeste.Mod.UI.OuiMapSearch.Enter += modOuiMapSeatchEnter;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave += modOuiMapSeatchLeave;
+            PortraitTint.Load();
             Upgrade.LoadComponent();
             SaveUpdater.Load();
             MetroidGameplayController.Load();
@@ -917,13 +917,13 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Strawberry.OnPlayer -= modStrawberryOnPlayer;
             On.Celeste.Strawberry.OnLoseLeader -= modStrawberryOnLoseLeader;
             On.Celeste.Strawberry.CollectRoutine -= onStrawberryCollectRoutine;
-            On.Celeste.Textbox.Update -= onTextboxUpdate;
             On.Celeste.Mod.UI.OuiMapList.Enter -= modOuiMapListEnter;
             On.Celeste.Mod.UI.OuiMapList.Inspect -= modOuiMapListInspect;
             On.Celeste.Mod.UI.OuiMapList.Leave -= modOuiMapListLeave;
             On.Celeste.Mod.UI.OuiMapSearch.Enter -= modOuiMapSeatchEnter;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave -= modOuiMapSeatchLeave;
+            PortraitTint.Unload();
             Upgrade.UnloadComponent();
             SaveUpdater.Unload();
             MetroidGameplayController.Unload();
@@ -4779,31 +4779,6 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.PreGoldenTimer = 0;
                 }*/
             }
-        }
-
-        private static readonly ConditionalWeakTable<Textbox, object> processed = new ConditionalWeakTable<Textbox, object>();
-
-        private static void onTextboxUpdate(On.Celeste.Textbox.orig_Update orig, Textbox self)
-        {
-            if (!processed.TryGetValue(self, out _))
-            {
-                processed.Add(self, null);
-                if (PlayerHasTwoDashes())
-                {
-                    foreach (FancyText.Node node in self.Nodes)
-                    {
-                        if (node is FancyText.Portrait po)
-                        {
-                            Logger.Log(LogLevel.Info, "XH", po.Sprite.ToString());
-                        }
-                        if (node is FancyText.Portrait p && p.Sprite == "MADELINE")
-                        {
-                            p.Sprite = "MADELINE_PINK";
-                        }
-                    }
-                }
-            }
-            orig(self);
         }
 
         private static bool PlayerHasTwoDashes()
