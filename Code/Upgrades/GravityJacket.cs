@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
+using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
@@ -19,7 +20,9 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private ILHook dashCoroutineHookForCounter;
 
-        private FieldInfo LookoutAnimPrefix = typeof(Lookout).GetField("animPrefix", BindingFlags.Instance | BindingFlags.NonPublic);
+        //private FieldInfo LookoutAnimPrefix = typeof(Lookout).GetField("animPrefix", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static FieldInfo lookoutInteracting = typeof(Lookout).GetField("interacting", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public override int GetDefaultValue()
         {
@@ -48,7 +51,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             MethodInfo dashCoroutine = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
             dashCoroutineHookForTimer = new ILHook(dashCoroutine, modDashLength);
             dashCoroutineHookForCounter = new ILHook(dashCoroutine, modDashTrailCounter);
-            On.Celeste.Lookout.LookRoutine += modLookoutLookRoutine;
+            //On.Celeste.Lookout.LookRoutine += modLookoutLookRoutine;
+            On.Monocle.Entity.Render += modEntityRender;
         }
 
         public override void Unload()
@@ -71,7 +75,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             {
                 dashCoroutineHookForCounter.Dispose();
             }
-            On.Celeste.Lookout.LookRoutine -= modLookoutLookRoutine;
+            //On.Celeste.Lookout.LookRoutine -= modLookoutLookRoutine;
+            On.Monocle.Entity.Render -= modEntityRender;
         }
 
         public static bool Active(Level level)
@@ -214,7 +219,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
         }
 
-        private IEnumerator modLookoutLookRoutine(On.Celeste.Lookout.orig_LookRoutine orig, Lookout self, Player player)
+        /*private IEnumerator modLookoutLookRoutine(On.Celeste.Lookout.orig_LookRoutine orig, Lookout self, Player player)
         {
             string id = "";
             foreach (string name in XaphanModule.JacketPriorityNames)
@@ -236,6 +241,44 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
             IEnumerator origEnum = orig(self, player);
             while (origEnum.MoveNext()) yield return origEnum.Current;
+        }*/
+
+        private void modEntityRender(On.Monocle.Entity.orig_Render orig, Entity self)
+        {
+            if (self is Lookout lookout && (bool)lookoutInteracting.GetValue(lookout))
+            {
+                Level level = lookout.SceneAs<Level>();
+                if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(level) || GravityJacket.Active(level)))
+                {
+                    string id = "";
+                    foreach (string name in XaphanModule.JacketPriorityNames)
+                    {
+                        var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
+                        if (data.Test != null && data.Test(level))
+                        {
+                            id = data.Id;
+                            break;
+                        }
+                    }
+
+                    //if (!string.IsNullOrEmpty(id) && GFX.ColorGrades.ContainsKey(id))
+                    {
+                        Effect fxColorGrading = GFX.FxColorGrading;
+                        fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
+                        Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
+
+                        Draw.SpriteBatch.End();
+                        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
+
+                        orig(self);
+
+                        Draw.SpriteBatch.End();
+                        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
+                        return;
+                    }
+                }
+            }
+            orig(self);
         }
 
         private int applyDashTrailCounter(int dashTrailCounter)
