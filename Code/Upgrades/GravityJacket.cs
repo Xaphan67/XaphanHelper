@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
@@ -19,8 +18,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         private ILHook dashCoroutineHookForTimer;
 
         private ILHook dashCoroutineHookForCounter;
-
-        //private FieldInfo LookoutAnimPrefix = typeof(Lookout).GetField("animPrefix", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private static FieldInfo lookoutInteracting = typeof(Lookout).GetField("interacting", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -51,7 +48,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             MethodInfo dashCoroutine = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
             dashCoroutineHookForTimer = new ILHook(dashCoroutine, modDashLength);
             dashCoroutineHookForCounter = new ILHook(dashCoroutine, modDashTrailCounter);
-            //On.Celeste.Lookout.LookRoutine += modLookoutLookRoutine;
             On.Monocle.Entity.Render += modEntityRender;
         }
 
@@ -75,7 +71,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             {
                 dashCoroutineHookForCounter.Dispose();
             }
-            //On.Celeste.Lookout.LookRoutine -= modLookoutLookRoutine;
             On.Monocle.Entity.Render -= modEntityRender;
         }
 
@@ -219,30 +214,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
         }
 
-        /*private IEnumerator modLookoutLookRoutine(On.Celeste.Lookout.orig_LookRoutine orig, Lookout self, Player player)
-        {
-            string id = "";
-            foreach (string name in XaphanModule.JacketPriorityNames)
-            {
-                var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
-                if (data.Test != null && data.Test(self.SceneAs<Level>()))
-                {
-                    id = data.Id;
-                    break;
-                }
-            }
-            if (id.Contains("samus_"))
-            {
-                id = id.Substring(6);
-            }
-            if (!string.IsNullOrEmpty(id))
-            {
-                LookoutAnimPrefix.SetValue(self, id + "_");
-            }
-            IEnumerator origEnum = orig(self, player);
-            while (origEnum.MoveNext()) yield return origEnum.Current;
-        }*/
-
         private void modEntityRender(On.Monocle.Entity.orig_Render orig, Entity self)
         {
             if (self is Lookout lookout && (bool)lookoutInteracting.GetValue(lookout))
@@ -260,22 +231,15 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                             break;
                         }
                     }
-
-                    //if (!string.IsNullOrEmpty(id) && GFX.ColorGrades.ContainsKey(id))
-                    {
-                        Effect fxColorGrading = GFX.FxColorGrading;
-                        fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
-                        Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
-
-                        Draw.SpriteBatch.End();
-                        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
-
-                        orig(self);
-
-                        Draw.SpriteBatch.End();
-                        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
-                        return;
-                    }
+                    Effect fxColorGrading = GFX.FxColorGrading;
+                    fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
+                    Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
+                    Draw.SpriteBatch.End();
+                    Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
+                    orig(self);
+                    Draw.SpriteBatch.End();
+                    Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
+                    return;
                 }
             }
             orig(self);
