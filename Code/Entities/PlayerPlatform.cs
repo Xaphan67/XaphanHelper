@@ -48,6 +48,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, bool forceSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool preventRefillOnSliding = false) : base(position, width, 4, true)
         {
+            Tag = Tags.TransitionUpdate;
             AllowStaticMovers = false;
             Gentle = gentle;
             Side = side;
