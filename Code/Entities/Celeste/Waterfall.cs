@@ -139,6 +139,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private struct FloorEntry
         {
             public float Left, Right, Top, Bottom;
+            public bool Collidable;
         }
 
         public string color;
@@ -473,12 +474,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         continue;
                     }
                     currentEntities.Add(entity);
-                    FloorEntry current = new FloorEntry { Left = left, Right = right, Top = top, Bottom = bottom };
+                    FloorEntry current = new FloorEntry { Left = left, Right = right, Top = top, Bottom = bottom, Collidable = entity.Collidable };
                     if (!WatchedFloorEntities.TryGetValue(entity, out FloorEntry previous))
                     {
                         MarkSectionsInRange(left, right, dirty);
                     }
-                    else if (previous.Left != current.Left || previous.Right != current.Right || previous.Top != current.Top || previous.Bottom != current.Bottom)
+                    else if (previous.Left != current.Left || previous.Right != current.Right|| previous.Top != current.Top || previous.Bottom != current.Bottom || previous.Collidable != current.Collidable)
                     {
                         MarkSectionsInRange(Math.Min(previous.Left, current.Left), Math.Max(previous.Right, current.Right), dirty);
                     }
