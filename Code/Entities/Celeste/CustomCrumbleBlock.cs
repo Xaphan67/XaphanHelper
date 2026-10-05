@@ -522,6 +522,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Removed(scene);
             groupedCustomCrumbleBlocks.Remove(this);
+            foreach (StaticMover staticMover in staticMovers)
+            {
+                staticMover.Entity.RemoveSelf();
+            }
         }
     }
 }
