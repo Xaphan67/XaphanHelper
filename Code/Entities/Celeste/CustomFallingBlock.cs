@@ -32,6 +32,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool canFloat;
 
+        private bool ignoreFirstShake;
+
         public bool HasStartedFalling { get; private set; }
 
         public CustomFallingBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false)
@@ -52,6 +54,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (data.Bool("behind"))
             {
                 Depth = 5000;
+            }
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            if (fallIfNoSolidOnTop && !CollideCheck<Solid>(Position - Vector2.UnitY) && CollideCheck<Solid>(Position + Vector2.UnitY))
+            {
+                Triggered = true;
+                ignoreFirstShake = true;
             }
         }
 
@@ -129,36 +141,42 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Sequence()
         {
-            while (!Triggered && !PlayerFallCheck())
+            if (!ignoreFirstShake)
             {
-                yield return null;
-            }
-            while (FallDelay > 0f)
-            {
-                FallDelay -= Engine.DeltaTime;
-                yield return null;
+                while (!Triggered && !PlayerFallCheck())
+                {
+                    yield return null;
+                }
+                while (FallDelay > 0f)
+                {
+                    FallDelay -= Engine.DeltaTime;
+                    yield return null;
+                }
             }
             HasStartedFalling = true;
             while (true)
             {
-                ShakeSfx();
-                StartShaking();
-                Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-                yield return 0.2f;
-                float timer = 0.4f;
-                while (timer > 0f && PlayerWaitCheck())
+                if (!ignoreFirstShake)
                 {
-                    yield return null;
-                    timer -= Engine.DeltaTime;
-                }
-                StopShaking();
-                for (int i = 2; i < Width; i += 4)
-                {
-                    if (Scene.CollideCheck<Solid>(TopLeft + new Vector2(i, -2f)))
+                    ShakeSfx();
+                    StartShaking();
+                    Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                    yield return 0.2f;
+                    float timer = 0.4f;
+                    while (timer > 0f && PlayerWaitCheck())
                     {
-                        SceneAs<Level>().Particles.Emit(FallingBlock.P_FallDustA, 2, new Vector2(X + i, Y), Vector2.One * 4f, (float)Math.PI / 2f);
+                        yield return null;
+                        timer -= Engine.DeltaTime;
                     }
-                    SceneAs<Level>().Particles.Emit(FallingBlock.P_FallDustB, 2, new Vector2(X + i, Y), Vector2.One * 4f);
+                    StopShaking();
+                    for (int i = 2; i < Width; i += 4)
+                    {
+                        if (Scene.CollideCheck<Solid>(TopLeft + new Vector2(i, -2f)))
+                        {
+                            SceneAs<Level>().Particles.Emit(FallingBlock.P_FallDustA, 2, new Vector2(X + i, Y), Vector2.One * 4f, (float)Math.PI / 2f);
+                        }
+                        SceneAs<Level>().Particles.Emit(FallingBlock.P_FallDustB, 2, new Vector2(X + i, Y), Vector2.One * 4f);
+                    }
                 }
                 float speed = 0f;
                 float maxSpeed = 160f;
@@ -255,13 +273,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     yield return null;
                 }
-                ImpactSfx();
-                Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
-                SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.3f);
-                StartShaking();
-                LandParticles();
-                yield return 0.2f;
-                StopShaking();
+                if (!ignoreFirstShake)
+                {
+                    ImpactSfx();
+                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+                    SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.3f);
+                    StartShaking();
+                    LandParticles();
+                    yield return 0.2f;
+                    StopShaking();
+                }
+                ignoreFirstShake = false;
                 if (CollideCheck<SolidTiles>(Position + Vector2.UnitY))
                 {
                     break;
