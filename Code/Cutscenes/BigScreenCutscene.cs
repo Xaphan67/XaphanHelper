@@ -33,18 +33,21 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnEnd(Level level)
         {
-            player.StateMachine.State = 0;
             level.Session.Audio.Music.Event = SFX.EventnameByHandle(music);
             level.Session.Audio.Apply(forceSixteenthNoteHack: false);
             level.TimerHidden = false;
             screen.isOn = true;
             screen.showPortrait = true;
             screen.bgAlpha = 0f;
-            screen.PlayerPose = "XaphanHelper_turnAround_reverse";
-            player.Sprite.Play(screen.PlayerPose);
-            player.Sprite.OnLastFrame = delegate
+            screen.PlayerSprites.PlayerSprite.Play("turnBackpack_reverse");
+            screen.PlayerSprites.PlayerHairSprite.Play("hairBackpack_reverse");
+            screen.PlayerSprites.PlayerSprite.OnLastFrame = delegate
             {
-                screen.PlayerPose = "";
+                screen.PlayerSprites.PlayerSprite.Visible = false;
+                screen.PlayerSprites.PlayerHairSprite.Visible = false;
+                player.Sprite.Visible = true;
+                player.Hair.Visible = true;
+                player.StateMachine.State = 0;
             };
             screen.talk.Enabled = true;
             screen.Depth = 9010;
@@ -66,12 +69,16 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.TimerHidden = true;
             player.StateMachine.State = 11;
             yield return player.DummyWalkToExact((int)screen.X + 40, false, 1f, true);
-            screen.PlayerPose = "XaphanHelper_turnAround";
-            player.Sprite.Play(screen.PlayerPose);
-            player.Sprite.OnLastFrame = delegate
+            screen.PlayerSprites.PlayerSprite.FlipX = player.Facing == Facings.Left;
+            screen.PlayerSprites.PlayerHairSprite.FlipX = player.Facing == Facings.Left;
+            player.Sprite.Visible = false;
+            player.Hair.Visible = false;
+            screen.PlayerSprites.PlayerSprite.Visible = true;
+            screen.PlayerSprites.PlayerHairSprite.Visible = true;
+            screen.PlayerSprites.PlayerSprite.Play("turnBackpack");
+            screen.PlayerSprites.PlayerHairSprite.Play("hairBackpack");
+            screen.PlayerSprites.PlayerSprite.OnLastFrame = delegate
             {
-                screen.PlayerPose = "XaphanHelper_turnAround_end";
-                player.Sprite.Play(screen.PlayerPose);
                 level.Session.SetFlag(SceneAs<Level>().Session.Level + "_" + screen.ID.ID);
             };
             yield return level.ZoomTo(new Vector2(160f, 92f), 1.75f, 2f);

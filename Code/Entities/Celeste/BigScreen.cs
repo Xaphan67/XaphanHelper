@@ -11,6 +11,42 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/BigScreen")]
     public class BigScreen : Entity
     {
+        public class BigScreenSpriteRenderer : Entity
+        {
+            public Sprite PlayerSprite;
+
+            public Sprite PlayerHairSprite;
+
+            public BigScreenSpriteRenderer(BigScreen screen)
+            {
+                Position = screen.Position;
+                Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+                PlayerSprite.CenterOrigin();
+                PlayerSprite.Position += new Vector2(40f, 80f);
+                PlayerSprite.Visible = false;
+                Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+                PlayerHairSprite.CenterOrigin();
+                PlayerHairSprite.Position += new Vector2(40f, 80f);
+                PlayerHairSprite.Visible = false;
+                Depth = 0;
+            }
+
+            public override void Render()
+            {
+                base.Render();
+                if (PlayerSprite != null && PlayerSprite.Visible)
+                {
+                    PlayerSprite.Render();
+                }
+                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
+                {
+                    PlayerHairSprite.Color = player.Hair.Color;
+                    PlayerHairSprite.Render();
+                }
+            }
+        }
+
         public EntityID ID;
 
         public const int BGDepth = 9010;
@@ -47,11 +83,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool registerInSaveData;
 
-        public string PlayerPose = "";
-
         private bool skipTurnOnAnim;
 
         private string PortraitPath;
+
+        public BigScreenSpriteRenderer PlayerSprites;
 
         public BigScreen(EntityData data, Vector2 position, EntityID eID) : base(data.Position + position)
         {
@@ -72,28 +108,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public static void Load()
         {
-            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
+            On.Celeste.Player.Die += OnPlayerDie;
         }
 
         public static void Unload()
         {
-            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+            On.Celeste.Player.Die -= OnPlayerDie;
         }
 
-        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
+        private static PlayerDeadBody OnPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
+            foreach (BigScreen screen in self.SceneAs<Level>().Tracker.GetEntities<BigScreen>())
             {
-                foreach (BigScreen screen in level.Tracker.GetEntities<BigScreen>())
+                if (screen.PlayerSprites.PlayerSprite.Visible)
                 {
-                    if (!string.IsNullOrEmpty(screen.PlayerPose) && screen.Active)
-                    {
-                        id = screen.PlayerPose;
-                        break;
-                    }
+                    screen.PlayerSprites.PlayerSprite.Visible = false;
+                    screen.PlayerSprites.PlayerHairSprite.Visible = false;
+                    self.Sprite.Visible = true;
                 }
             }
-            orig(self, id, restart, randomizeFrame);
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         public override void Added(Scene scene)
@@ -126,6 +160,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
+            scene.Add(PlayerSprites = new BigScreenSpriteRenderer(this));
             MTexture mTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlices"];
             tiles = new MTexture[mTexture.Width / 8, mTexture.Height / 8];
             for (int i = 0; i < mTexture.Width / 8; i++)
@@ -333,5 +368,5 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             return min + (PseudoRand(ref seed) % 1000u) / 1000f * (max - min);
         }
-    }
+    }    
 }

@@ -62,19 +62,19 @@
     <Loop id="hairNoBackpack" path="player_no_backpack/spinJumpHair" delay="0.04"/>
   </XaphanHelper_player_spinJump>
 
-  # The animation here will populate the vanilla "player" etc
-  <XaphanHelper_Extend_player path="characters/Xaphan/" start="XaphanHelper_turnAround">
-    # SoCM Only
-    <Anim id="XaphanHelper_turnAround" path="player/turnaround" frames="0-3" delay="0.08"/>
-    <Anim id="XaphanHelper_turnAround_reverse" path="player/turnaround" frames="3-0" delay="0.08"/>
-    <Loop id="XaphanHelper_turnAround_end" path="player/turnaround" frames="3" delay = "0"/>
-    # End of SoCM only
+  # SoCM Only
+  <XaphanHelper_player_turnAround path="characters/Xaphan/" start="turnBackpack">
+    <Anim id="turnBackpack" path="player/turnaround" frames="0-3" delay="0.08"/>
+    <Anim id="turnBackpack_reverse" path="player/turnaround" frames="3-0" delay="0.08"/>
+    <Anim id="hairBackpack" path="player/turnaroundHair" frames="0-3" delay="0.08"/>
+    <Anim id="hairBackpack_reverse" path="player/turnaroundHair" frames="3-0" delay="0.08"/>
+  </XaphanHelper_player_turnAround>
 
+  # The animation here will populate the vanilla "player" etc
+  <XaphanHelper_Extend_player path="characters/Xaphan/" start="XaphanHelper_ceilingIdle">
     <Loop id="XaphanHelper_ceilingIdle" path="player/ceilingIdle" delay="0.1"/>
     <Loop id="XaphanHelper_ceilingMove" path="player/ceilingMove" delay="0.05"/>
-
     <Loop id="XaphanHelper_slopeSlide" path="player/slopeSlide" delay="0.01"/>
-
     <Loop id="XaphanHelper_spinFast" path="player/spinJump" delay="0.04"/>
 
     <Metadata>
@@ -84,21 +84,13 @@
     </Metadata>
 
     # if you want to modify them,
-    ## can directly add them into vanilla "player" etc, Includes new IDs for some skins
+    ## you can directly add them into vanilla "player" etc, Includes new IDs for some skins
   </XaphanHelper_Extend_player>
 
-  <XaphanHelper_Extend_player_no_backpack path="characters/Xaphan/" start="XaphanHelper_turnAround">
-    # SoCM Only - Uses backpack animations for now
-    <Anim id="XaphanHelper_turnAround" path="player/turnaround" frames="0-3" delay="0.08"/>
-    <Anim id="XaphanHelper_turnAround_reverse" path="player/turnaround" frames="3-0" delay="0.08"/>
-    <Loop id="XaphanHelper_turnAround_end" path="player/turnaround" frames="3" delay = "0"/>
-    # End of SoCM only
-
+  <XaphanHelper_Extend_player_no_backpack path="characters/Xaphan/" start="XaphanHelper_ceilingIdle">
     <Loop id="XaphanHelper_ceilingIdle" path="player_no_backpack/ceilingIdle" delay="0.1"/>
     <Loop id="XaphanHelper_ceilingMove" path="player_no_backpack/ceilingMove" delay="0.05"/>
-
     <Loop id="XaphanHelper_slopeSlide" path="player_no_backpack/slopeSlide" delay="0.01"/>
-
     <Loop id="XaphanHelper_spinFast" path="player_no_backpack/spinJump" delay="0.04"/>
 
     <Metadata>
@@ -108,6 +100,6 @@
     </Metadata>
 
     # if you want to modify them,
-    ## can directly add them into vanilla "player" etc, Includes new IDs for some skins
+    ## you can directly add them into vanilla "player" etc, Includes new IDs for some skins
   </XaphanHelper_Extend_player_no_backpack>
 </Sprites>
