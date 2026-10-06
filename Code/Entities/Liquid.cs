@@ -1433,6 +1433,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+
+            if (!foreground)
+            {
+                bool IsInLiquid(float worldX, float worldY)
+                {
+                    int i = (int)Math.Floor((worldX - X) / 8f);
+                    int j = (int)Math.Floor((worldY - Y) / 8f);
+                    return i >= 0 && j >= 0 && i < grid.GetLength(0) && j < grid.GetLength(1) && grid[i, j];
+                }
+
+                foreach (Slope slope in Scene.Tracker.GetEntities<Slope>())
+                {
+                    if (slope.colliderList == null)
+                    {
+                        continue;
+                    }
+                    foreach (Collider collider in slope.colliderList.colliders)
+                    {
+                        if (collider is Hitbox hitbox && IsInLiquid(hitbox.AbsoluteLeft + hitbox.Width / 2f, hitbox.AbsoluteTop + hitbox.Height / 2f))
+                        {
+                            Draw.Rect(hitbox.AbsoluteLeft -4f, hitbox.AbsoluteTop, hitbox.Width + 4f, hitbox.Height, new(0.5f, 0.5f, 0f, 1f));
+                        }
+                    }
+                }
+            }
         }
 
         public bool PlayerInside()
