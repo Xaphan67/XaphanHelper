@@ -12,24 +12,29 @@ using MonoMod.Cil;
 public static class PortraitTint
 {
     public static Func<Color?> HairTintProvider = DefaultHairTint;
+
     public static Func<Color?> JacketTintProvider = DefaultJacketTint;
 
     private static readonly FieldInfo portraitSpriteField = typeof(Textbox).GetField("portraitSprite", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+    private static readonly FieldInfo miniPortraitField = typeof(MiniTextbox).GetField("portrait", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
     private static MTexture lastBase, lastHair, lastJacket;
 
     public static void Load()
     {
-        IL.Celeste.Textbox.Render += patchRender;
+        IL.Celeste.Textbox.Render += modTextboxRender;
+        IL.Celeste.MiniTextbox.Render += modMiniTextboxRender;
     }
 
     public static void Unload()
     {
-        IL.Celeste.Textbox.Render -= patchRender;
+        IL.Celeste.Textbox.Render -= modTextboxRender;
+        IL.Celeste.MiniTextbox.Render -= modMiniTextboxRender;
         lastBase = lastHair = lastJacket = null;
     }
 
-    private static void patchRender(ILContext il)
+    private static void modTextboxRender(ILContext il)
     {
         ILCursor c = new ILCursor(il);
         if (c.TryGotoNext(MoveType.After,
@@ -39,6 +44,20 @@ public static class PortraitTint
         {
             c.Emit(OpCodes.Ldarg_0);
             c.Emit(OpCodes.Ldfld, portraitSpriteField);
+            c.EmitDelegate<Action<Image>>(drawOverlays);
+        }
+    }
+
+    private static void modMiniTextboxRender(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+        if (c.TryGotoNext(MoveType.After,
+                i => i.MatchLdarg(0),
+                i => i.MatchLdfld<MiniTextbox>("portrait"),
+                i => i.MatchCallOrCallvirt(out var m) && m.Name == "Render"))
+        {
+            c.Emit(OpCodes.Ldarg_0);
+            c.Emit(OpCodes.Ldfld, miniPortraitField);
             c.EmitDelegate<Action<Image>>(drawOverlays);
         }
     }
