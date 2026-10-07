@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
-using Celeste.Mod.XaphanHelper.Controllers;
-using Celeste.Mod.XaphanHelper.Effects;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -21,7 +19,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Player player;
 
-        public string PlayerPose = "";
+        public Sprite PlayerSprite;
+
+        public Sprite PlayerHairSprite;
 
         private TalkComponent talk;
 
@@ -59,32 +59,38 @@ namespace Celeste.Mod.XaphanHelper.Entities
             rightOrb.CenterOrigin();
             rightOrb.Color = Color.White * 0.7f;
             rightOrb.Scale = Vector2.Zero;
+            Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+            PlayerSprite.CenterOrigin();
+            PlayerSprite.Position += new Vector2(0f, 2f);
+            PlayerSprite.Visible = false;
+            Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+            PlayerHairSprite.CenterOrigin();
+            PlayerHairSprite.Position += new Vector2(0f, 2f);
+            PlayerHairSprite.Visible = false;
         }
 
         public static void Load()
         {
-            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
+            On.Celeste.Player.Die += OnPlayerDie;
         }
 
         public static void Unload()
         {
-            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+            On.Celeste.Player.Die -= OnPlayerDie;
         }
 
-        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
+        private static PlayerDeadBody OnPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
+            foreach (Stele stele in self.SceneAs<Level>().Tracker.GetEntities<Stele>())
             {
-                foreach (Stele stele in level.Tracker.GetEntities<Stele>())
+                if (stele.PlayerSprite.Visible)
                 {
-                    if (!string.IsNullOrEmpty(stele.PlayerPose))
-                    {
-                        id = stele.PlayerPose;
-                        break;
-                    }
+                    stele.PlayerSprite.Visible = false;
+                    stele.PlayerHairSprite.Visible = false;
+                    self.Sprite.Visible = true;
                 }
             }
-            orig(self, id, restart, randomizeFrame);
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         public override void Added(Scene scene)
@@ -116,16 +122,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Routine()
         {
+            PlayerSprite.OnLastFrame = null;
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
+            player.DummyAutoAnimate = false;
             yield return player.DummyWalkToExact((int)BottomCenter.X);
-            PlayerPose = "XaphanHelper_turnAround";
-            player.Sprite.Play(PlayerPose);
-            player.Sprite.OnLastFrame = delegate
-            {
-                PlayerPose = "XaphanHelper_turnAround_end";
-                player.Sprite.Play(PlayerPose);
-            };
+            PlayerSprite.FlipX = player.Facing == Facings.Left;
+            PlayerHairSprite.FlipX = player.Facing == Facings.Left;
+            player.Sprite.Visible = false;
+            player.Hair.Visible = false;
+            PlayerSprite.Visible = true;
+            PlayerHairSprite.Visible = true;
+            PlayerSprite.Play("turnBackpack");
+            PlayerHairSprite.Play("hairBackpack");
             yield return 0.5f;
 
             mainSprite.Play("interact");
@@ -158,14 +167,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
 
             yield return 0.5f;
-            PlayerPose = "XaphanHelper_turnAround_reverse";
-            player.Sprite.Play(PlayerPose);
-            player.Sprite.OnLastFrame = delegate
+            PlayerSprite.Play("turnBackpack_reverse");
+            PlayerHairSprite.Play("hairBackpack_reverse");
+            PlayerSprite.OnLastFrame = delegate
             {
-                PlayerPose = "";
+                PlayerSprite.Visible = false;
+                PlayerHairSprite.Visible = false;
+                player.Sprite.Visible = true;
+                player.Hair.Visible = true;
+                player.StateMachine.State = 0;
             };
             yield return 0.2f;
             player.StateMachine.Locked = false;
+            player.DummyAutoAnimate = true;
             player.StateMachine.State = 0;
         }
 
@@ -241,6 +255,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
             mainSprite.Play("inactivePurple");
             yield return 0.8f;
             shake = false;
+        }
+
+        public override void Render()
+        {
+            base.Render();
+            if (PlayerSprite != null && PlayerSprite.Visible)
+            {
+                PlayerSprite.Render();
+            }
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
+            {
+                PlayerHairSprite.Color = player.Hair.Color;
+                PlayerHairSprite.Render();
+            }
         }
     }
 }
