@@ -1015,10 +1015,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     FakePlayer.DummyGravity = false;
                 }
-                if (FakePlayer.Sprite.CurrentAnimationID == "idle")
+                if (FakePlayer.Sprite.CurrentAnimationID == "idle" && FakePlayer.startedSleepAnim == false)
                 {
-                    FakePlayer.Sprite.Rate = 2f;
-                    FakePlayer.Sprite.Play("sleep");
+                    FakePlayer.PlaySleep();
                 }
                 if (FakePlayer.Top > SceneAs<Level>().Bounds.Bottom && !SceneAs<Level>().Transitioning && currentRoom == startRoom)
                 {
@@ -1399,18 +1398,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     }
                                     if (FakePlayer != null)
                                     {
+                                        FakePlayer.PlayWakeUp();
+                                        while (FakePlayer.Sprite.CurrentAnimationID == "wakeUp" || FakePlayer.startedWakeUpAnim)
+                                        {
+                                            yield return null;
+                                        }
                                         player.Facing = FakePlayer.Facing;
                                         FakePlayer.RemoveSelf();
                                     }
                                     player.Visible = true;
                                     player.Light.Position = new Vector2(0f, -8f);
                                     player.DummyAutoAnimate = false;
-                                    player.Sprite.Play("wakeUp");
-                                    player.Sprite.Rate = 2f;
-                                    while (player.Sprite.CurrentAnimationID == "wakeUp")
-                                    {
-                                        yield return null;
-                                    }
                                     player.StateMachine.Locked = false;
                                     player.StateMachine.State = 0;
                                     Level.PauseLock = false;
