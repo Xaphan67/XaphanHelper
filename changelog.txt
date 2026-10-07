@@ -52,10 +52,11 @@ Version 1.0.80 :
 - Removed "Can Jump Trough" attribute from Slopes. All slopes (including already existing ones) now act as jump trough slopes by default. Previously non-jump trough slopes still block light
 - Fixed gems sounds when inserted in their slot being incorrect in The Secret Of Celeste Mountain
 - Redesigned the Status screen
-- Holding the 'Select Equipped Ability' button now show a list of currently aquired ability for each slots
+- Holding the 'Select Equipped Ability' button now show a list of currently aquired abilities for each slots
 - Improved Slopes collision with the player
 - Any actor or solid should now be able to collide with Slopes, includding modded ones
 - Refactored the code used to adjust the player jacket color when using a binocular with some upgrades active. This no longer require custom animations that could crash the game when used with skin mods that do not account for these animations, and will remove warnings in the log files
+- The "sleep" animation used when using the Remote Drone ability and "turnaround" anmiation used when interacting with some entities now use a custom animation using the correct hair color
 - Fixed a bug preventing bombs to explode if a Liquid with its type set to Water was in the range of the explosion
 - Fixed a bug heavily slowing the game when the Status screen or Collect Upgrade Screen stayed open for a long period of time
 - Fixed a bug preventing the prompt for placing a marker on the In-Game map to be removed correctly if the player closed it too fast
