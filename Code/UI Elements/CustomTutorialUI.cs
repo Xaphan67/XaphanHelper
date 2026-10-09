@@ -41,6 +41,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float arrowOffset;
 
+        private Vector2 startPosition;
+
         private static Dictionary<VirtualButton, ButtonPrompt> controlsButtonsToID = new();
 
         private static Dictionary<ButtonPrompt, VirtualButton> controlsIDToButton = new();
@@ -66,6 +68,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             lineColor = new Color(1f, 1f, 1f);
             textColor = Calc.HexToColor("6179e2");
             Position = position;
+            startPosition = position;
             this.info = info;
             this.controls = new List<object>(controls);
             if (info is string)
@@ -149,7 +152,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             UpdateControlsSize();
             Scale = Calc.Approach(Scale, Open ? 1 : 0, Engine.RawDeltaTime * 8f);
+            Position.Y = startPosition.Y + TutorialVerticalPositionOffset();
             base.Update();
+        }
+
+        private float TutorialVerticalPositionOffset()
+        {
+            float offset = 0f;
+            if (XaphanModule.ModSettings.SelectItem.Check && !XaphanModule.PlayerIsControllingRemoteDrone())
+            {
+                foreach (BagDisplay display in SceneAs<Level>().Tracker.GetEntities<BagDisplay>())
+                {
+                    float displayUIHeight = 24f + display.totalActiveUpgrades * 72f + 12f * (display.totalActiveUpgrades - 1);
+                    if (displayUIHeight > offset)
+                    {
+                        offset = displayUIHeight;
+                    }
+                }
+            }
+            return offset;
         }
 
         public override void Render()

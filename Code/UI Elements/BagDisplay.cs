@@ -70,7 +70,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private bool drawCross;
 
-        private int totalActiveUpgrades = 0;
+        public int totalActiveUpgrades = 0;
 
         private float selectedAlpha = 0;
 
