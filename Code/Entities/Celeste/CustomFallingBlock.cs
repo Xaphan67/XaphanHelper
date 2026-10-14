@@ -34,6 +34,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool ignoreFirstShake;
 
+        private bool SolidOnTop()
+        {
+            return CollideCheck<Solid>(Position - Vector2.UnitY);
+        }
+
+        private bool CanStartFalling()
+        {
+            if (fallIfNoSolidOnTop && SolidOnTop())
+            {
+                return false;
+            }
+            return Triggered || PlayerFallCheck();
+        }
+
         public bool HasStartedFalling { get; private set; }
 
         public CustomFallingBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false)
@@ -95,6 +109,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void OnStaticMoverTrigger(StaticMover sm)
         {
+            if (fallIfNoSolidOnTop && SolidOnTop())
+            {
+                return;
+            }
             if (sm.Entity is not MagneticCeiling || (sm.Entity is MagneticCeiling && !magneticCeilingsNoTrigger))
             {
                 Triggered = true;
@@ -143,7 +161,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!ignoreFirstShake)
             {
-                while (!Triggered && !PlayerFallCheck())
+                while (!CanStartFalling())
                 {
                     yield return null;
                 }
