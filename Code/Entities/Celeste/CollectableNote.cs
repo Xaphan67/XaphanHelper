@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text.RegularExpressions;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,13 +30,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private bool easingOut;
 
+            private static readonly Regex colorRegex = new Regex(@"\{#\s*(?:[0-9a-fA-F]{6})?\s*\}", RegexOptions.Compiled);
+
+            private static readonly Regex includeRegex = new Regex(@"\{\+(\w+)\}", RegexOptions.Compiled);
+
             public NotePage(string dialogID, float scale = 0.7f)
             {
                 Tag = Tags.HUD;
-                paper = GFX.Gui["poempage"];
+                paper = GFX.Gui["others/note"];
                 textScale = scale;
-                text = FancyText.Parse(Dialog.Get(dialogID), (int)((paper.Width - 120) / textScale), -1, 1f, Color.Black * 0.7f);
+                string dialog = StripColors(dialogID);
+                text = FancyText.Parse(dialog, (int)((paper.Width - 120) / textScale), -1, 1f, Color.Black * 0.7f);
                 Add(new BeforeRenderHook(BeforeRender));
+            }
+
+            private static string StripColors(string dialogID)
+            {
+                string text = Dialog.Get(dialogID);
+                text = includeRegex.Replace(text, m =>
+                {
+                    string id = m.Groups[1].Value;
+                    return Dialog.Has(id) ? StripColors(id) : m.Value;
+                });
+
+                return colorRegex.Replace(text, "");
             }
 
             public IEnumerator EaseIn()
