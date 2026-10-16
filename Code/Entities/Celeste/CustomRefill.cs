@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Upgrades;
@@ -12,11 +13,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/CustomRefill")]
     public class CustomRefill : Entity
     {
+        private class CooldownMask
+        {
+            public int Width, Height;
+
+            public Vector2 Offset;
+
+            public Color[] Colors;
+
+            public bool[] IsEdge;
+
+            public float[] Angle;
+        }
+
         private Sprite sprite;
 
         private Sprite flash;
-
-        private Sprite outline;
 
         public Wiggler wiggler;
 
@@ -42,6 +54,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float respawnTime;
 
+        private string path;
+
         public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, string directory = "objects/XaphanHelper/CustomRefill") : base(position)
         {
             Collider = new Hitbox(16f, 16f, -8f, -8f);
@@ -49,7 +63,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.type = type;
             this.oneUse = type.Contains("Oxygen") ? true : oneUse;
             this.respawnTime = respawnTime;
-            string path;
             if (this.oneUse)
             {
                 string spriteStr = "";
@@ -142,13 +155,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 path = directory + "/refill" + spriteStr + "/";
             }
-            if (!oneUse && !type.Contains("Oxygen"))
-            {
-                Add(outline = new Sprite(GFX.Game, path + "outline"));
-                outline.AddLoop("idle", "", respawnTime / (type == "Missiles" ? 37f : (type == "Super Missiles" ? 35f : (type == "Two Dashes" ? 25f : 21f))));
-                outline.Visible = false;
-                outline.CenterOrigin();
-            }
             Add(sprite = new Sprite(GFX.Game, path + "idle"));
             sprite.AddLoop("idle", "", 0.1f);
             sprite.Play("idle");
@@ -203,6 +209,81 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level = SceneAs<Level>();
         }
 
+        private static readonly Dictionary<string, CooldownMask> masks = new Dictionary<string, CooldownMask>();
+
+        private static CooldownMask GetMask(MTexture texture, string key)
+        {
+            if (masks.TryGetValue(key, out CooldownMask mask))
+            {
+                return mask;
+            }
+            Rectangle clip = texture.ClipRect;
+            Color[] sourceColors = new Color[clip.Width * clip.Height];
+            texture.Texture.Texture_Safe.GetData(0, clip, sourceColors, 0, sourceColors.Length);
+            int width = clip.Width + 2;
+            int height = clip.Height + 2;
+            mask = new CooldownMask
+            {
+                Width = width,
+                Height = height,
+                Colors = new Color[width * height],
+                IsEdge = new bool[width * height],
+                Angle = new float[width * height],
+                Offset = new Vector2(texture.DrawOffset.X - 1 - texture.Width / 2f, texture.DrawOffset.Y - 1 - texture.Height / 2f)
+            };
+            for (int y = 0; y < clip.Height; y++)
+            {
+                for (int x = 0; x < clip.Width; x++)
+                {
+                    mask.Colors[(y + 1) * width + (x + 1)] = sourceColors[y * clip.Width + x];
+                }
+            }
+
+            bool Opaque(int x, int y)
+            {
+                return x >= 0 && y >= 0 && x < width && y < height && mask.Colors[y * width + x].A > 0;
+            }
+
+            bool HasOpaqueNeighbor(int x, int y)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        if ((dx != 0 || dy != 0) && Opaque(x + dx, y + dy))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int index = y * width + x;
+                    bool opaque = mask.Colors[index].A > 0;
+                    mask.IsEdge[index] = !opaque && HasOpaqueNeighbor(x, y);
+                    if (opaque || mask.IsEdge[index])
+                    {
+                        float dx = x + 0.5f + mask.Offset.X;
+                        float dy = y + 0.5f + mask.Offset.Y;
+                        float angle = (float)Math.Atan2(dx, -dy);
+                        if (angle < 0) angle += MathHelper.TwoPi;
+                        mask.Angle[index] = angle / MathHelper.TwoPi;
+                    }
+                    else
+                    {
+                        mask.Angle[index] = -1f;
+                    }
+                }
+            }
+            masks[key] = mask;
+            return mask;
+        }
+
         public override void Update()
         {
             base.Update();
@@ -234,8 +315,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collidable = true;
                 sprite.Visible = true;
-                outline.Visible = false;
-                outline.Stop();
                 Depth = -100;
                 wiggler.Start();
                 Audio.Play(type == "Two Dashes" ? "event:/new_content/game/10_farewell/pinkdiamond_return" : "event:/game/general/diamond_return", Position);
@@ -258,6 +337,36 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 sprite.DrawOutline();
             }
             base.Render();
+            if (respawnTimer > 0f && !oneUse)
+            {
+                RenderCooldown();
+            }
+        }
+
+        private void RenderCooldown()
+        {
+            CooldownMask mask = GetMask(GFX.Game.GetAtlasSubtextures(path + "idle")[0], path);
+            float progress = Calc.Clamp(1f - respawnTimer / respawnTime, 0f, 1f);
+            Vector2 origin = (Position + mask.Offset).Floor();
+            for (int i = 0; i < mask.Angle.Length; i++)
+            {
+                float angle = mask.Angle[i];
+                if (angle < 0f)
+                {
+                    continue;
+                }
+                bool filled = angle <= progress;
+                Color color;
+                if (mask.IsEdge[i])
+                {
+                    color = filled ? Color.Black : Color.Transparent;
+                }
+                else
+                {
+                    color = filled ? mask.Colors[i] * 0.6f : Color.Transparent;
+                }
+                Draw.Rect(origin.X + i % mask.Width, origin.Y + i / mask.Width + sine.Value * 2f, 1f, 1f, color);
+            }
         }
 
         public void OnPlayer(Player player)
@@ -310,11 +419,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return null;
             level.Shake();
             sprite.Visible = (flash.Visible = false);
-            if (!oneUse)
-            {
-                outline.Visible = true;
-                outline.Play("idle");
-            }
             Depth = 8999;
             float num = player.Speed.Angle();
             level.ParticlesFG.Emit(p_shatter, 5, Position, Vector2.One * 4f, num - (float)Math.PI / 2f);
