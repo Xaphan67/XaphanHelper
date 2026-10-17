@@ -417,7 +417,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         bool wasNearOrAbove = float.IsNaN(previousPlayerBottom) || previousPlayerBottom <= Top + verticalMargin;
                         bool isNear = player.Bottom <= Top + verticalMargin;
-                        if (player.Bottom <= Top + 4)
+                        if (player.Bottom <= Top + (4 + verticalMargin))
                         {
                             Collidable = isNear || (wasNearOrAbove && player.Speed.Y >= 0f);
                         }
@@ -430,7 +430,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         bool wasNearOrBelow = float.IsNaN(previousPlayerTop) || previousPlayerTop >= Bottom - verticalMargin;
                         bool isNear = player.Top >= Bottom - verticalMargin;
-                        if (player.Top >= Bottom)
+                        if (player.Top >= Bottom - (4 + verticalMargin))
                         {
                             Collidable = isNear || (wasNearOrBelow && player.Speed.Y <= 0f);
                         }
