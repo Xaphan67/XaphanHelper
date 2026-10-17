@@ -391,10 +391,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     moveH = 0;
                 }
             }
-            /*if (self.CollideCheck<Slope>(self.Position + Vector2.UnitY) && self.GetType() != typeof(Player))
-            {
-                moveH = 0;
-            }*/
             return orig(self, moveH, onCollide, pusher);
         }
 
