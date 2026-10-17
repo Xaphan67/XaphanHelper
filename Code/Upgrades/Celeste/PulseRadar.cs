@@ -74,7 +74,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                     if (player != null)
                     {
                         int radar = self.Tracker.GetEntities<Radar>().Count;
-                        canUse = self.Tracker.GetEntities<RadarTile>().Count == 0 && radar == 0;
+                        canUse = self.Tracker.GetEntities<RadarTile>().Count == 0 && radar == 0 && !self.Session.GetFlag("In_bossfight");
                     }
                     if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && !self.Session.GetFlag("In_bossfight") && XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
                     {

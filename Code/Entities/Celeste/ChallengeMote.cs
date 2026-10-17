@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -39,52 +40,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Coroutine BerryRoutine = new();
 
-        private bool AllowsSpaceJump;
-
-        private bool AllowsBombs;
-
-        private bool AllowsSpiderMagnet;
-
-        private bool AllowsRemoteDrone;
+        private string[] AllowedUpgrades;
 
         private bool Activated;
 
-        public bool SpaceJumpCollected()
+        public bool UpgradeCollected(string upgrade)
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
-        }
-
-        public bool BombsCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_Bombs");
-        }
-
-        public bool SpiderMagnetCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpiderMagnet");
-        }
-
-        public bool RemoteDroneCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_RemoteDrone");
-        }
-
-        public bool LightningDashCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_LightningDash");
-        }
-
-        public bool GravityJacketCollected()
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_GravityJacket");
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_" + upgrade);
         }
 
         public ChallengeMote(EntityData data, Vector2 position, EntityID ID) : base(data.Position + position)
         {
-            AllowsSpaceJump = data.Bool("allowsSpaceJump", false);
-            AllowsBombs = data.Bool("allowsBombs", false);
-            AllowsSpiderMagnet = data.Bool("allowsSpiderMagnet", false);
-            AllowsRemoteDrone = data.Bool("allowsRemoteDrone", false);
+            AllowedUpgrades = data.Attr("allowedUpgrades", "").Split(',');
             Tag = Tags.TransitionUpdate;
             BerryPos = Position + new Vector2(0, -48);
             P_Fire = new ParticleType
@@ -406,79 +373,43 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (active)
             {
-                if (level.Session.GetFlag("Upgrade_HadSpaceJump"))
+                foreach (XaphanModule.Upgrades upgrade in XaphanModule.Instance.UpgradeHandlers.Keys)
                 {
-                    level.Session.SetFlag("Upgrade_SpaceJump", true);
-                    XaphanModule.ModSettings.SpaceJump = 2;
-                    level.Session.SetFlag("Upgrade_HadSpaceJump", false);
+                    string u = upgrade.ToString();
+                    if (level.Session.GetFlag("Upgrade_Had" + u))
+                    {
+                        level.Session.SetFlag("Upgrade_" + u, true);
+                        if (u == "SpaceJump")
+                        {
+                            XaphanModule.Instance.UpgradeHandlers[upgrade].SetValue(2);
+                        }
+                        else
+                        {
+                            XaphanModule.Instance.UpgradeHandlers[upgrade].SetValue(1);
+                        }
+                        level.Session.SetFlag("Upgrade_Had" + u, false);
+                    }
                 }
-                if (level.Session.GetFlag("Upgrade_HadBombs"))
-                {
-                    level.Session.SetFlag("Upgrade_Bombs", true);
-                    XaphanModule.ModSettings.Bombs = true;
-                    level.Session.SetFlag("Upgrade_HadBombs", false);
-                }
-                if (level.Session.GetFlag("Upgrade_HadSpiderMagnet"))
-                {
-                    level.Session.SetFlag("Upgrade_SpiderMagnet", true);
-                    XaphanModule.ModSettings.SpiderMagnet = true;
-                    level.Session.SetFlag("Upgrade_HadSpiderMagnet", false);
-                }
-                if (level.Session.GetFlag("Upgrade_HadRemoteDrone"))
-                {
-                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", false);
-                    level.Session.SetFlag("Upgrade_HadRemoteDrone", false);
-                }
-                /*if (level.Session.GetFlag("Upgrade_HadLightningDash"))
-                {
-                    level.Session.SetFlag("Upgrade_LightningDash", true);
-                    XaphanModule.ModSettings.LightningDash = true;
-                    level.Session.SetFlag("Upgrade_HadLightningDash", false);
-                }
-                if (level.Session.GetFlag("Upgrade_HadGravityJacket"))
-                {
-                    level.Session.SetFlag("Upgrade_GravityJacket", true);
-                    XaphanModule.ModSettings.GravityJacket = true;
-                    level.Session.SetFlag("Upgrade_HadGravityJacket", false);
-                }*/
             }
             else
             {
-                if ((SpaceJumpCollected() || level.Session.GetFlag("Upgrade_SpaceJump")) && !AllowsSpaceJump)
+                foreach (XaphanModule.Upgrades upgrade in XaphanModule.Instance.UpgradeHandlers.Keys)
                 {
-                    level.Session.SetFlag("Upgrade_SpaceJump", false);
-                    XaphanModule.ModSettings.SpaceJump = 1;
-                    level.Session.SetFlag("Upgrade_HadSpaceJump", true);
+                    string u = upgrade.ToString();
+                    if ((!UpgradeCollected(u) || level.Session.GetFlag("Upgrade_" + u)) && !AllowedUpgrades.Contains(u))
+                    {
+                        level.Session.SetFlag("Upgrade_" + u, false);
+                        if (u == "SpaceJump")
+                        {
+                            XaphanModule.Instance.UpgradeHandlers[upgrade].SetValue(1);
+                        }
+                        else
+                        {
+                            XaphanModule.Instance.UpgradeHandlers[upgrade].SetValue(0);
+                        }
+                        level.Session.SetFlag("Upgrade_Had" + u, true);
+                    }
                 }
-                if ((BombsCollected() || level.Session.GetFlag("Upgrade_Bombs")) && !AllowsBombs)
-                {
-                    level.Session.SetFlag("Upgrade_Bombs", false);
-                    XaphanModule.ModSettings.Bombs = false;
-                    level.Session.SetFlag("Upgrade_HadBombs", true);
-                }
-                if ((SpiderMagnetCollected() || level.Session.GetFlag("Upgrade_SpiderMagnet")) && !AllowsSpiderMagnet)
-                {
-                    level.Session.SetFlag("Upgrade_SpiderMagnet", false);
-                    XaphanModule.ModSettings.SpiderMagnet = false;
-                    level.Session.SetFlag("Upgrade_HadSpiderMagnet", true);
-                }
-                if ((RemoteDroneCollected() || level.Session.GetFlag("Upgrade_RemoteDrone")) && !AllowsRemoteDrone)
-                {
-                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", true);
-                    level.Session.SetFlag("Upgrade_HadRemoteDrone", true);
-                }
-                /*if (LightningDashCollected() || level.Session.GetFlag("Upgrade_HadLightningDash"))
-                {
-                    level.Session.SetFlag("Upgrade_LightningDash", false);
-                    XaphanModule.ModSettings.LightningDash = false;
-                    level.Session.SetFlag("Upgrade_HadLightningDash", true);
-                }
-                if (GravityJacketCollected() || level.Session.GetFlag("Upgrade_HadGravityJacket"))
-                {
-                    level.Session.SetFlag("Upgrade_GravityJacket", false);
-                    XaphanModule.ModSettings.GravityJacket = false;
-                    level.Session.SetFlag("Upgrade_HadGravityJacket", true);
-                }*/
             }
         }
     }
