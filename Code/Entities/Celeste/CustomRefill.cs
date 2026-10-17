@@ -56,7 +56,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string path;
 
-        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, string directory = "objects/XaphanHelper/CustomRefill") : base(position)
+        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, string directory = "") : base(position)
         {
             Collider = new Hitbox(16f, 16f, -8f, -8f);
             Add(new PlayerCollider(OnPlayer));
@@ -65,29 +65,36 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.respawnTime = respawnTime;
             if (this.oneUse)
             {
-                string spriteStr = "";
-                switch (type)
+                if (string.IsNullOrEmpty(directory))
                 {
-                    case "Max Jumps":
-                        spriteStr = "Jumps";
-                        break;
-                    case "Two Dashes":
-                        spriteStr = "Two";
-                        break;
-                    case "Missiles":
-                        spriteStr = "Missile";
-                        break;
-                    case "Super Missiles":
-                        spriteStr = "SMissile";
-                        break;
-                    case "Oxygen":
-                        spriteStr = "Oxygen";
-                        break;
-                    case "Oxygen Small":
-                        spriteStr = "OxygenSmall";
-                        break;
+                    string spriteStr = "";
+                    switch (type)
+                    {
+                        case "Max Jumps":
+                            spriteStr = "Jumps";
+                            break;
+                        case "Two Dashes":
+                            spriteStr = "Two";
+                            break;
+                        case "Missiles":
+                            spriteStr = "Missile";
+                            break;
+                        case "Super Missiles":
+                            spriteStr = "SMissile";
+                            break;
+                        case "Oxygen":
+                            spriteStr = "Oxygen";
+                            break;
+                        case "Oxygen Small":
+                            spriteStr = "OxygenSmall";
+                            break;
+                    }
+                    path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + (type.Contains("Oxygen") ? "/" : "Once/");
                 }
-                path = directory + "/refill" + spriteStr + (type.Contains("Oxygen") ? "/" : "Once/");
+                else
+                {
+                    path = directory + "/";
+                }
                 p_shatter = new ParticleType(Refill.P_Shatter)
                 {
                     Color = Calc.HexToColor("DAECFA"),
@@ -153,7 +160,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         };
                         break;
                 }
-                path = directory + "/refill" + spriteStr + "/";
+                if (string.IsNullOrEmpty(directory))
+                {
+                    path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + "/";
+                }
+                else
+                {
+                    path = directory + "/";
+                }
             }
             Add(sprite = new Sprite(GFX.Game, path + "idle"));
             sprite.AddLoop("idle", "", 0.1f);
@@ -179,7 +193,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -100;
         }
 
-        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "One Dash"), data.Bool("oneUse"), data.Float("respawnTime"), data.Attr("directory", "objects/XaphanHelper/CustomRefill/"))
+        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "One Dash"), data.Bool("oneUse"), data.Float("respawnTime"), data.Attr("directory", ""))
         {
 
         }

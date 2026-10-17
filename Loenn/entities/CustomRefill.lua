@@ -20,7 +20,7 @@ CustomRefill.fieldOrder = {
 CustomRefill.placements = {
     name = "CustomRefill",
     data = {
-        directory = "objects/XaphanHelper/CustomRefill",
+        directory = "",
         type = "One Dash",
         oneUse = false,
         respawnTime = 2.5
@@ -28,46 +28,50 @@ CustomRefill.placements = {
 }
 
 function CustomRefill.texture(room, entity)
-    local directory = entity.directory or "objects/XaphanHelper/CustomRefill"
-    local type = entity.type or "Max Dashes"
+    local directory = entity.directory or ""
+    local type = entity.type or "One Dash"
     local oneUse = entity.oneUse or false
 
     if type == "Oxygen" then
         oneUse = true
     end
 
-    if oneUse then
-        if type == "Missiles" then
-            return directory .. "/refillMissileOnce/idle00"
-        elseif type == "Super Missiles" then
-            return directory .. "/refillSMissileOnce/idle00"
-        elseif type == "Two Dashes" then
-            return directory .. "/refillTwoOnce/idle00"
-        elseif type == "Max Jumps" then
-            return directory .. "/refillJumpsOnce/idle00"
-        elseif type == "Oxygen" then
-            return directory .. "/refillOxygen/idle00"
-        elseif type == "Oxygen Small" then
-            return directory .. "/refillOxygenSmall/idle00"
+    if directory == "" then
+        if oneUse then
+            if type == "Missiles" then
+                return "objects/XaphanHelper/CustomRefill/refillMissileOnce/idle00"
+            elseif type == "Super Missiles" then
+                return "objects/XaphanHelper/CustomRefill/refillSMissileOnce/idle00"
+            elseif type == "Two Dashes" then
+                return "objects/XaphanHelper/CustomRefill/refillTwoOnce/idle00"
+            elseif type == "Max Jumps" then
+                return "objects/XaphanHelper/CustomRefill/refillJumpsOnce/idle00"
+            elseif type == "Oxygen" then
+                return "objects/XaphanHelper/CustomRefill/refillOxygen/idle00"
+            elseif type == "Oxygen Small" then
+                return "objects/XaphanHelper/CustomRefill/refillOxygenSmall/idle00"
+            else
+                return "objects/XaphanHelper/CustomRefill/refillOnce/idle00"
+            end
         else
-            return directory .. "/refillOnce/idle00"
+            if type == "Missiles" then
+                return "objects/XaphanHelper/CustomRefill/refillMissile/idle00"
+            elseif type == "Super Missiles" then
+                return "objects/XaphanHelper/CustomRefill/refillSMissile/idle00"
+            elseif type == "Two Dashes" then
+                return "objects/XaphanHelper/CustomRefill/refillTwo/idle00"
+            elseif type == "Max Jumps" then
+                return "objects/XaphanHelper/CustomRefill/refillJumps/idle00"
+            elseif type == "Oxygen" then
+                return "objects/XaphanHelper/CustomRefill/refillOxygen/idle00"
+            elseif type == "Oxygen Small" then
+                return "objects/XaphanHelper/CustomRefill/refillOxygenSmall/idle00"
+            else
+                return "objects/XaphanHelper/CustomRefill/refill/idle00"
+            end
         end
     else
-        if type == "Missiles" then
-            return directory .. "/refillMissile/idle00"
-        elseif type == "Super Missiles" then
-            return directory .. "/refillSMissile/idle00"
-        elseif type == "Two Dashes" then
-            return directory .. "/refillTwo/idle00"
-        elseif type == "Max Jumps" then
-            return directory .. "/refillJumps/idle00"
-        elseif type == "Oxygen" then
-            return directory .. "/refillOxygen/idle00"
-        elseif type == "Oxygen Small" then
-            return directory .. "/refillOxygenSmall/idle00"
-        else
-            return directory .. "/refill/idle00"
-        end
+        return directory .. "/idle00"
     end
 end
 
