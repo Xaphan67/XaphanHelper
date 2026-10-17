@@ -383,10 +383,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static bool onActorMoveH(On.Celeste.Actor.orig_MoveH orig, Actor self, float moveH, Collision onCollide, Solid pusher)
         {
-            if (self.CollideCheck<Slope>(self.Position + Vector2.UnitY) && self.GetType() != typeof(Player))
+            if (self.GetType() != typeof(Player))
+            {
+                Slope slope = self.CollideFirst<Slope>(self.Position + Vector2.UnitY);
+                if (slope != null && (slope.UpsideDown || self.Bottom > slope.SlopeTop.Y))
+                {
+                    moveH = 0;
+                }
+            }
+            /*if (self.CollideCheck<Slope>(self.Position + Vector2.UnitY) && self.GetType() != typeof(Player))
             {
                 moveH = 0;
-            }
+            }*/
             return orig(self, moveH, onCollide, pusher);
         }
 
