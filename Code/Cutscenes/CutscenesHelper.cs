@@ -31,7 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             BadelineDummy badeline = new BadelineDummy(position);
             level.Add(badeline);
             badeline.Appear(level);
-            level.Session.Inventory = new PlayerInventory(1);
+            level.Session.Inventory.Dashes = 1;
             player.Dashes = 1;
             return badeline;
         }
@@ -42,7 +42,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             Audio.Play("event:/char/badeline/maddy_split", player.Position);
             level.Add(badeline);
             level.Displacement.AddBurst(badeline.Center, 0.5f, 8f, 32f, 0.5f);
-            level.Session.Inventory = new PlayerInventory(1);
+            level.Session.Inventory.Dashes = 1;
             player.Dashes = 1;
             return badeline;
         }
@@ -78,7 +78,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             string doubleDashFlag = UpgradeController.Attr("doubleDashFlag");
             if (!string.IsNullOrEmpty(doubleDashFlag) && (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_" + doubleDashFlag) || level.Session.GetFlag(doubleDashFlag)))
             {
-                level.Session.Inventory = new PlayerInventory(2);
+                level.Session.Inventory.Dashes = 2;
                 player.Dashes = 2;
             }
         }

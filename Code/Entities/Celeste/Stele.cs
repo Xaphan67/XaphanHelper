@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Upgrades;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -259,16 +262,39 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Render()
         {
-            base.Render();
-            if (PlayerSprite != null && PlayerSprite.Visible)
+            Level level = SceneAs<Level>();
+            if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(level) || GravityJacket.Active(level)))
             {
-                PlayerSprite.Render();
-            }
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
-            {
-                PlayerHairSprite.Color = player.Hair.Color;
-                PlayerHairSprite.Render();
+                string id = "";
+                foreach (string name in XaphanModule.JacketPriorityNames)
+                {
+                    var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
+                    if (data.Test != null && data.Test(level))
+                    {
+                        id = data.Id;
+                        break;
+                    }
+                }
+                Effect fxColorGrading = GFX.FxColorGrading;
+                fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
+                Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
+                Draw.SpriteBatch.End();
+                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
+                base.Render();
+                if (PlayerSprite != null && PlayerSprite.Visible)
+                {
+
+                    PlayerSprite.Render();
+                }
+                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
+                {
+                    PlayerHairSprite.Color = player.Hair.Color;
+                    PlayerHairSprite.Render();
+                }
+                Draw.SpriteBatch.End();
+                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
+                return;
             }
         }
     }

@@ -238,11 +238,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         currentTotalLambertLogs++;
                     }
-                    else if (flag.Contains("A-15"))
+                    else if (flag.Contains("A-19"))
                     {
                         currentTotalNoteLogs++;
                     }
-                    else if (flag.Contains("AncientText_A-23"))
+                    else if (flag.Contains("AncientText_A-26"))
                     {
                         currentTotalTextLogs++;
                     }

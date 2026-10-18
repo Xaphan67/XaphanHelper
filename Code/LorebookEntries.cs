@@ -583,7 +583,7 @@ namespace Celeste.Mod.XaphanHelper
                     entryID: "note-1",
                     categoryID: 3,
                     picture: "lorebook/Xaphan/Logs/note",
-                    flag: "A-15_592",
+                    flag: "A-19_592",
                     subCategoryID: "log2",
                     pages: 5
                 ));
@@ -599,7 +599,7 @@ namespace Celeste.Mod.XaphanHelper
                     entryID: "anct-0-1",
                     categoryID: 3,
                     picture: "lorebook/Xaphan/Equipment/oth1",
-                    flag: "AncientText_A-23",
+                    flag: "AncientText_A-26",
                     subCategoryID: "log3",
                     code: true,
                     dialogID: "Xaphan_Ch0_Text_A"

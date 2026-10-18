@@ -148,7 +148,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         if (level.Session.Area.LevelSet == "Xaphan/0")
                         {
                             XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps.Add($"{level.Session.Area.LevelSet}_Ch0_A-W0");
-                            level.Session.Inventory = new PlayerInventory(1);
+                            level.Session.Inventory.Dashes = 1;
                         }
                         if (XaphanModule.useUpgrades)
                         {

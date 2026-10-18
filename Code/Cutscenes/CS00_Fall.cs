@@ -26,8 +26,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.PauseLock = false;
             XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch0_Fall");
             level.Session.SetFlag("CS_Ch0_Fall");
-            XaphanModule.ModSaveData.VisitedRoomsTiles.Add("Xaphan/0/Ch0/A-15-0-1");
-            XaphanModule.ModSaveData.VisitedRoomsTiles.Add("Xaphan/0/Ch0/A-15-0-2");
+            XaphanModule.ModSaveData.VisitedRoomsTiles.Add("Xaphan/0/Ch0/A-19-0-1");
+            XaphanModule.ModSaveData.VisitedRoomsTiles.Add("Xaphan/0/Ch0/A-19-0-2");
             player.StateMachine.State = 0;
         }
 

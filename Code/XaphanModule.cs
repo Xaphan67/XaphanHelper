@@ -2646,7 +2646,7 @@ namespace Celeste.Mod.XaphanHelper
                     level.Session.SetFlag("Upgrade_DashBoots", true);
                     if (!string.IsNullOrEmpty(doubleDashFlag) && (ModSaveData.SavedFlags.Contains(prefix + "_" + doubleDashFlag) || level.Session.GetFlag(doubleDashFlag)))
                     {
-                        level.Session.Inventory = new PlayerInventory(2);
+                        level.Session.Inventory.Dashes = 2;
                     }
                 }
                 if (setSpaceJump || level.Session.GetFlag("Upgrade_SpaceJump"))
@@ -2774,7 +2774,7 @@ namespace Celeste.Mod.XaphanHelper
                         level.Session.SetFlag("Upgrade_DashBoots", true);
                         if (!string.IsNullOrEmpty(doubleDashFlag) && (ModSaveData.SavedFlags.Contains(prefix + "_" + doubleDashFlag) || level.Session.GetFlag(doubleDashFlag)))
                         {
-                            level.Session.Inventory = new PlayerInventory(2);
+                            level.Session.Inventory.Dashes = 2;
                         }
                     }
                     if (HoverJetCollected(level))
@@ -4779,11 +4779,6 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.PreGoldenTimer = 0;
                 }*/
             }
-        }
-
-        private static bool PlayerHasTwoDashes()
-        {
-            return (Engine.Scene as Level)?.Session.Inventory.Dashes == 2;
         }
 
         private ScreenWipe GetWipe(Level level, bool wipeIn)

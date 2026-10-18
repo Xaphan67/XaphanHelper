@@ -18,6 +18,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Level level;
 
+        private Player player;
+
         private TextMenu menu;
 
         private Sprite sprite = new(GFX.Game, "objects/XaphanHelper/ChallengeMote/");
@@ -42,6 +44,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string[] AllowedUpgrades;
 
+        private bool AllowDoubleDash;
+
         private bool Activated;
 
         public bool UpgradeCollected(string upgrade)
@@ -52,6 +56,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public ChallengeMote(EntityData data, Vector2 position, EntityID ID) : base(data.Position + position)
         {
             AllowedUpgrades = data.Attr("allowedUpgrades", "").Split(',');
+            AllowDoubleDash = data.Bool("allowDoubleDash");
             Tag = Tags.TransitionUpdate;
             BerryPos = Position + new Vector2(0, -48);
             P_Fire = new ParticleType
@@ -90,6 +95,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             ChapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             Visible = false;
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            player = scene.Tracker.GetEntity<Player>();
         }
 
         public override void Update()
@@ -198,7 +209,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             talk.Enabled = false;
             level.Session.SetFlag("Boss_Appeared", true);
-            Add(new Coroutine(Routine(player)));
+            Add(new Coroutine(Routine()));
         }
 
         public IEnumerator BerryApear()
@@ -267,7 +278,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Scene.Remove(dummy);
         }
 
-        public IEnumerator Routine(Player player)
+        public IEnumerator Routine()
         {
             level.PauseLock = true;
             player.StateMachine.State = 11;
@@ -390,6 +401,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         level.Session.SetFlag("Upgrade_Had" + u, false);
                     }
                 }
+                if (level.Session.GetFlag("Had_Double_Dash"))
+                {
+                    level.Session.Inventory.Dashes = 2;
+                    level.Session.SetFlag("Had_Double_Dash", false);
+                }
             }
             else
             {
@@ -409,6 +425,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         level.Session.SetFlag("Upgrade_Had" + u, true);
                     }
+                }
+                if (level.Session.GetFlag("Double_Dash_Unlocked") && !AllowDoubleDash && player != null)
+                {
+                    level.Session.Inventory.Dashes = 1;
+                    player.Dashes = 1;
+                    level.Session.SetFlag("Had_Double_Dash", true);
                 }
             }
         }

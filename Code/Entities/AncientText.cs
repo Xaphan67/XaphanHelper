@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -313,6 +316,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public Sprite PlayerSprite;
+
+        public Sprite PlayerHairSprite;
+
         private TextDisplay display;
 
         private SemantographDisplay semantograph;
@@ -325,11 +332,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Player player;
 
-        public string PlayerPose = "";
-
         private Image rune;
 
         private SoundSource sfx;
+
+        private VertexLight light;
 
         private Color Tint;
 
@@ -340,37 +347,45 @@ namespace Celeste.Mod.XaphanHelper.Entities
             DialogID = data.Attr("dialogId");
             Tint = Calc.HexToColor(data.Attr("color", "FFFFFF"));
             TextVerticalOffset = data.Float("textOffset", 64f);
-            Collider = new Hitbox(24f, 8f, -12f, 24f);
+            Collider = new Hitbox(24f, 8f, -12f, 32f);
+            Add(light = new VertexLight(Color.White, 0.75f, 24, 36));
+            light.Position = Collider.TopCenter - Vector2.UnitY * 32f;
             rune = new(GFX.Game["objects/Xaphan/AncientText/rune00"]);
             rune.Color = Tint;
             rune.CenterOrigin();
             Add(rune);
+            Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+            PlayerSprite.CenterOrigin();
+            PlayerSprite.Position += new Vector2(0f, 24f);
+            PlayerSprite.Visible = false;
+            Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+            PlayerHairSprite.CenterOrigin();
+            PlayerHairSprite.Position += new Vector2(0f, 24f);
+            PlayerHairSprite.Visible = false;
         }
 
         public static void Load()
         {
-            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
+            On.Celeste.Player.Die += OnPlayerDie;
         }
 
         public static void Unload()
         {
-            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+            On.Celeste.Player.Die -= OnPlayerDie;
         }
 
-        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
+        private static PlayerDeadBody OnPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
+            foreach (AncientText text in self.SceneAs<Level>().Tracker.GetEntities<AncientText>())
             {
-                foreach (AncientText text in level.Tracker.GetEntities<AncientText>())
+                if (text.PlayerSprite.Visible)
                 {
-                    if (!string.IsNullOrEmpty(text.PlayerPose))
-                    {
-                        id = text.PlayerPose;
-                        break;
-                    }
+                    text.PlayerSprite.Visible = false;
+                    text.PlayerHairSprite.Visible = false;
+                    self.Sprite.Visible = true;
                 }
             }
-            orig(self, id, restart, randomizeFrame);
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         public override void Added(Scene scene)
@@ -379,7 +394,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex == -1 ? 0 : SceneAs<Level>().Session.Area.ChapterIndex;
             if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch0_Semantograph") && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + chapterIndex + "_AncientText_" + SceneAs<Level>().Session.Level))
             {
-                Add(talk = new TalkComponent(new Rectangle(-12, 24, 24, 8), new Vector2(0, -12f), Interact));
+                Add(talk = new TalkComponent(new Rectangle(-12, 32, 24, 8), new Vector2(0, -12f), Interact));
                 talk.PlayerMustBeFacing = false;
                 Add(sfx = new SoundSource());
             }
@@ -412,13 +427,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
             yield return player.DummyWalkToExact((int)BottomCenter.X);
-            PlayerPose = "XaphanHelper_turnAround";
-            player.Sprite.Play(PlayerPose);
-            player.Sprite.OnLastFrame = delegate
-            {
-                PlayerPose = "XaphanHelper_turnAround_end";
-                player.Sprite.Play(PlayerPose);
-            };
+            PlayerSprite.FlipX = player.Facing == Facings.Left;
+            PlayerHairSprite.FlipX = player.Facing == Facings.Left;
+            player.Sprite.Visible = false;
+            player.Hair.Visible = false;
+            PlayerSprite.Visible = true;
+            PlayerHairSprite.Visible = true;
+            PlayerSprite.Play("turnBackpack");
+            PlayerHairSprite.Play("hairBackpack");
             yield return 0.5f;
 
             semantograph.Visible = true;
@@ -436,15 +452,56 @@ namespace Celeste.Mod.XaphanHelper.Entities
             XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch" + chapterIndex + "_AncientText_" + SceneAs<Level>().Session.Level);
 
             yield return 0.5f;
-            PlayerPose = "XaphanHelper_turnAround_reverse";
-            player.Sprite.Play(PlayerPose);
-            player.Sprite.OnLastFrame = delegate
+            PlayerSprite.Play("turnBackpack_reverse");
+            PlayerHairSprite.Play("hairBackpack_reverse");
+            PlayerSprite.OnLastFrame = delegate
             {
-                PlayerPose = "";
+                PlayerSprite.Visible = false;
+                PlayerHairSprite.Visible = false;
+                player.Sprite.Visible = true;
+                player.Hair.Visible = true;
+                player.StateMachine.State = 0;
             };
             yield return 0.2f;
             player.StateMachine.Locked = false;
-            player.StateMachine.State = 0;
+        }
+
+        public override void Render()
+        {
+            Level level = SceneAs<Level>();
+            if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(level) || GravityJacket.Active(level)))
+            {
+                string id = "";
+                foreach (string name in XaphanModule.JacketPriorityNames)
+                {
+                    var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
+                    if (data.Test != null && data.Test(level))
+                    {
+                        id = data.Id;
+                        break;
+                    }
+                }
+                Effect fxColorGrading = GFX.FxColorGrading;
+                fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
+                Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
+                Draw.SpriteBatch.End();
+                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
+                base.Render();
+                if (PlayerSprite != null && PlayerSprite.Visible)
+                {
+
+                    PlayerSprite.Render();
+                }
+                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
+                {
+                    PlayerHairSprite.Color = player.Hair.Color;
+                    PlayerHairSprite.Render();
+                }
+                Draw.SpriteBatch.End();
+                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
+                return;
+            }
         }
     }
 }

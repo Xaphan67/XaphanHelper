@@ -1,7 +1,10 @@
 ﻿using System.Collections;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Entities;
+using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Controllers
@@ -10,7 +13,9 @@ namespace Celeste.Mod.XaphanHelper.Controllers
     [CustomEntity("XaphanHelper/GemController")]
     class GemController : Entity
     {
-        public string PlayerPose = "";
+        public Sprite PlayerSprite;
+
+        public Sprite PlayerHairSprite;
 
         public bool AllGemCollected()
         {
@@ -24,33 +29,38 @@ namespace Celeste.Mod.XaphanHelper.Controllers
 
         public GemController(EntityData data, Vector2 position) : base(data.Position + position)
         {
-
+            Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+            PlayerSprite.CenterOrigin();
+            PlayerSprite.Position += new Vector2(0f, 62f);
+            PlayerSprite.Visible = false;
+            Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
+            PlayerHairSprite.CenterOrigin();
+            PlayerHairSprite.Position += new Vector2(0f, 62f);
+            PlayerHairSprite.Visible = false;
         }
 
         public static void Load()
         {
-            On.Monocle.Sprite.Play += PlayerSpritePlayHook;
+            On.Celeste.Player.Die += OnPlayerDie;
         }
 
         public static void Unload()
         {
-            On.Monocle.Sprite.Play -= PlayerSpritePlayHook;
+            On.Celeste.Player.Die -= OnPlayerDie;
         }
 
-        private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
+        private static PlayerDeadBody OnPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
         {
-            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
+            foreach (GemController controller in self.SceneAs<Level>().Tracker.GetEntities<GemController>())
             {
-                foreach (GemController controller in level.Tracker.GetEntities<GemController>())
+                if (controller.PlayerSprite.Visible)
                 {
-                    if (!string.IsNullOrEmpty(controller.PlayerPose))
-                    {
-                        id = controller.PlayerPose;
-                        break;
-                    }
+                    controller.PlayerSprite.Visible = false;
+                    controller.PlayerHairSprite.Visible = false;
+                    self.Sprite.Visible = true;
                 }
             }
-            orig(self, id, restart, randomizeFrame);
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         public IEnumerator ActivateGems()
@@ -80,6 +90,44 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                         block.Break();
                     }
                 }
+            }
+        }
+
+        public override void Render()
+        {
+            Level level = SceneAs<Level>();
+            if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(level) || GravityJacket.Active(level)))
+            {
+                string id = "";
+                foreach (string name in XaphanModule.JacketPriorityNames)
+                {
+                    var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
+                    if (data.Test != null && data.Test(level))
+                    {
+                        id = data.Id;
+                        break;
+                    }
+                }
+                Effect fxColorGrading = GFX.FxColorGrading;
+                fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
+                Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
+                Draw.SpriteBatch.End();
+                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
+                base.Render();
+                if (PlayerSprite != null && PlayerSprite.Visible)
+                {
+
+                    PlayerSprite.Render();
+                }
+                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
+                {
+                    PlayerHairSprite.Color = player.Hair.Color;
+                    PlayerHairSprite.Render();
+                }
+                Draw.SpriteBatch.End();
+                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
+                return;
             }
         }
     }

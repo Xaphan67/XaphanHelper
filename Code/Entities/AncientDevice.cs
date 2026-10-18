@@ -416,7 +416,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch0_AncientText_A-23"))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch0_AncientText_A-26"))
             {
                 Player playerOnTop = GetPlayerOnTop();
                 if (playerOnTop != null)

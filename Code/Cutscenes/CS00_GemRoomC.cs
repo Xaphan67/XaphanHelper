@@ -64,7 +64,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 if (WasSkipped)
                 {
                     bool playerRight = player.BottomCenter.X > gemController.BottomCenter.X;
-                    level.Session.Inventory = new PlayerInventory(2);
+                    level.Session.Inventory.Dashes = 2;
                     level.Session.SetFlag("Ch-1_All_Gems_Active");
                     XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_All_Gems_Active");
                     XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Double_Dash_Unlocked");
@@ -102,13 +102,14 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     }
                 }
                 yield return player.DummyWalkToExact((int)gemController.X);
-                gemController.PlayerPose = "XaphanHelper_turnAround";
-                player.Sprite.Play(gemController.PlayerPose);
-                player.Sprite.OnLastFrame = delegate
-                {
-                    gemController.PlayerPose = "XaphanHelper_turnAround_end";
-                    player.Sprite.Play(gemController.PlayerPose);
-                };
+                gemController.PlayerSprite.FlipX = player.Facing == Facings.Left;
+                gemController.PlayerHairSprite.FlipX = player.Facing == Facings.Left;
+                player.Sprite.Visible = false;
+                player.Hair.Visible = false;
+                gemController.PlayerSprite.Visible = true;
+                gemController.PlayerHairSprite.Visible = true;
+                gemController.PlayerSprite.Play("turnBackpack");
+                gemController.PlayerHairSprite.Play("hairBackpack");
                 yield return gemController.ActivateGems();
                 if (!XaphanModule.ModSettings.AutoSkipCutscenes)
                 {
@@ -129,11 +130,14 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                         yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_b_" + missingGems);
                     }
                 }
-                gemController.PlayerPose = "XaphanHelper_turnAround_reverse";
-                player.Sprite.Play(gemController.PlayerPose);
-                player.Sprite.OnLastFrame = delegate
+                gemController.PlayerSprite.Play("turnBackpack_reverse");
+                gemController.PlayerHairSprite.Play("hairBackpack_reverse");
+                gemController.PlayerSprite.OnLastFrame = delegate
                 {
-                    gemController.PlayerPose = "";
+                    gemController.PlayerSprite.Visible = false;
+                    gemController.PlayerHairSprite.Visible = false;
+                    player.Sprite.Visible = true;
+                    player.Hair.Visible = true;
                 };
             }
             else
@@ -153,20 +157,24 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_c_" + (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch0_Gem_Room_First_Time") ? "main" : "alt") + (playerRight ? "_flip" : ""));
                 }
                 yield return player.DummyWalkToExact((int)gemController.X);
-                gemController.PlayerPose = "XaphanHelper_turnAround";
-                player.Sprite.Play(gemController.PlayerPose);
-                player.Sprite.OnLastFrame = delegate
-                {
-                    gemController.PlayerPose = "XaphanHelper_turnAround_end";
-                    player.Sprite.Play(gemController.PlayerPose);
-                };
+                gemController.PlayerSprite.FlipX = player.Facing == Facings.Left;
+                gemController.PlayerHairSprite.FlipX = player.Facing == Facings.Left;
+                player.Sprite.Visible = false;
+                player.Hair.Visible = false;
+                gemController.PlayerSprite.Visible = true;
+                gemController.PlayerHairSprite.Visible = true;
+                gemController.PlayerSprite.Play("turnBackpack");
+                gemController.PlayerHairSprite.Play("hairBackpack");
                 yield return gemController.ActivateGems();
                 yield return 0.25f;
-                gemController.PlayerPose = "XaphanHelper_turnAround_reverse";
-                player.Sprite.Play(gemController.PlayerPose);
-                player.Sprite.OnLastFrame = delegate
+                gemController.PlayerSprite.Play("turnBackpack_reverse");
+                gemController.PlayerHairSprite.Play("hairBackpack_reverse");
+                gemController.PlayerSprite.OnLastFrame = delegate
                 {
-                    gemController.PlayerPose = "";
+                    gemController.PlayerSprite.Visible = false;
+                    gemController.PlayerHairSprite.Visible = false;
+                    player.Sprite.Visible = true;
+                    player.Hair.Visible = true;
                 };
                 Image white = new(GFX.Game["objects/Xaphan/heart_bwhite"]);
                 white.CenterOrigin();
@@ -220,7 +228,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_d" + (playerRight ? "_flip" : ""));
                     yield return CutscenesHelper.BadelineMerge(Level, player, badeline);
                 }
-                level.Session.Inventory = new PlayerInventory(2);
+                level.Session.Inventory.Dashes = 2;
                 XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Double_Dash_Unlocked");
                 if (!XaphanModule.ModSettings.AutoSkipCutscenes)
                 {
@@ -265,7 +273,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_g" + (playerRight ? "_flip" : ""));
             }
             yield return 1f;
-            Scene.Add(new TeleportCutscene(player, "A-15", new Vector2(0, 0), 0, 0, true, 0, "Fade", 1.35f));
+            Scene.Add(new TeleportCutscene(player, "A-19", new Vector2(0, 0), 0, 0, true, 0, "Fade", 1.35f));
         }
     }
 }
