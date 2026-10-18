@@ -6,7 +6,7 @@ namespace Celeste.Mod.XaphanHelper
 {
     class Commands
     {
-        private static Level level = Engine.Scene as Level;
+        private static Level level => Engine.Scene as Level;
 
         private static string prefix = level.Session.Area.LevelSet;
 
@@ -17,90 +17,97 @@ namespace Celeste.Mod.XaphanHelper
         [Command("clear_ingamemap", "Clear the In-Game map for the current chapter or all chapters")]
         public static void Cmd_Clear_InGameMap(bool allChapters = false, bool includeCurrentRoom = false)
         {
-            List<string> TilesToRemove = new();
-            List<string> ExtraUnexploredRoomsTilesToRemove = new();
-            List<string> FlagsToRemove = new();
-            if (!allChapters)
+            if (XaphanModule.isInLevel && level != null && XaphanModule.useIngameMap)
             {
-                foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
+                List<string> TilesToRemove = new();
+                List<string> ExtraUnexploredRoomsTilesToRemove = new();
+                List<string> FlagsToRemove = new();
+                if (!allChapters)
                 {
-                    if (visitedRoom.Contains(prefix + "/Ch" + chapterIndex + "/") && (!includeCurrentRoom ? !visitedRoom.Contains(level.Session.Level) : true))
+                    foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
                     {
-                        TilesToRemove.Add(visitedRoom);
+                        if (visitedRoom.Contains(prefix + "/Ch" + chapterIndex + "/") && (!includeCurrentRoom ? !visitedRoom.Contains(level.Session.Level) : true))
+                        {
+                            TilesToRemove.Add(visitedRoom);
+                        }
+                    }
+                    foreach (string visitedRoomTile in XaphanModule.ModSaveData.VisitedRoomsTiles)
+                    {
+                        if (visitedRoomTile.Contains(prefix + "/Ch" + chapterIndex + "/"))
+                        {
+                            TilesToRemove.Add(visitedRoomTile);
+                        }
+                    }
+                    foreach (string extraUnexploredRoomTile in XaphanModule.ModSaveData.ExtraUnexploredRooms)
+                    {
+                        if (extraUnexploredRoomTile.Contains(prefix + "/Ch" + chapterIndex + "/"))
+                        {
+                            ExtraUnexploredRoomsTilesToRemove.Add(extraUnexploredRoomTile);
+                        }
+                    }
+                    foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+                    {
+                        if (flag.Contains(prefix + "/Ch" + chapterIndex + "_MapShard"))
+                        {
+                            FlagsToRemove.Add(flag);
+                        }
                     }
                 }
-                foreach (string visitedRoomTile in XaphanModule.ModSaveData.VisitedRoomsTiles)
+                else
                 {
-                    if (visitedRoomTile.Contains(prefix + "/Ch" + chapterIndex + "/"))
+                    foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
                     {
-                        TilesToRemove.Add(visitedRoomTile);
+                        if (visitedRoom.Contains(prefix) && (!includeCurrentRoom ? !visitedRoom.Contains(level.Session.Level) : true))
+                        {
+                            TilesToRemove.Add(visitedRoom);
+                        }
+                    }
+                    foreach (string visitedRoomTile in XaphanModule.ModSaveData.VisitedRoomsTiles)
+                    {
+                        if (visitedRoomTile.Contains(prefix))
+                        {
+                            TilesToRemove.Add(visitedRoomTile);
+                        }
+                    }
+                    foreach (string extraUnexploredRoomTile in XaphanModule.ModSaveData.ExtraUnexploredRooms)
+                    {
+                        if (extraUnexploredRoomTile.Contains(prefix))
+                        {
+                            ExtraUnexploredRoomsTilesToRemove.Add(extraUnexploredRoomTile);
+                        }
+                    }
+                    foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+                    {
+                        if (flag.Contains(prefix) && flag.Contains("_MapShard"))
+                        {
+                            FlagsToRemove.Add(flag);
+                        }
                     }
                 }
-                foreach (string extraUnexploredRoomTile in XaphanModule.ModSaveData.ExtraUnexploredRooms)
+                foreach (string value in TilesToRemove)
                 {
-                    if (extraUnexploredRoomTile.Contains(prefix + "/Ch" + chapterIndex + "/"))
-                    {
-                        ExtraUnexploredRoomsTilesToRemove.Add(extraUnexploredRoomTile);
-                    }
+                    XaphanModule.ModSaveData.VisitedRooms.Remove(value);
+                    XaphanModule.ModSaveData.VisitedRoomsTiles.Remove(value);
                 }
-                foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+                foreach (string value in ExtraUnexploredRoomsTilesToRemove)
                 {
-                    if (flag.Contains(prefix + "/Ch" + chapterIndex + "_MapShard"))
-                    {
-                        FlagsToRemove.Add(flag);
-                    }
+                    XaphanModule.ModSaveData.ExtraUnexploredRooms.Remove(value);
+                }
+                foreach (string value in FlagsToRemove)
+                {
+                    XaphanModule.ModSaveData.SavedFlags.Remove(value);
                 }
             }
             else
             {
-                foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
-                {
-                    if (visitedRoom.Contains(prefix) && (!includeCurrentRoom ? !visitedRoom.Contains(level.Session.Level) : true))
-                    {
-                        TilesToRemove.Add(visitedRoom);
-                    }
-                }
-                foreach (string visitedRoomTile in XaphanModule.ModSaveData.VisitedRoomsTiles)
-                {
-                    if (visitedRoomTile.Contains(prefix))
-                    {
-                        TilesToRemove.Add(visitedRoomTile);
-                    }
-                }
-                foreach (string extraUnexploredRoomTile in XaphanModule.ModSaveData.ExtraUnexploredRooms)
-                {
-                    if (extraUnexploredRoomTile.Contains(prefix))
-                    {
-                        ExtraUnexploredRoomsTilesToRemove.Add(extraUnexploredRoomTile);
-                    }
-                }
-                foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
-                {
-                    if (flag.Contains(prefix) && flag.Contains("_MapShard"))
-                    {
-                        FlagsToRemove.Add(flag);
-                    }
-                }
-            }
-            foreach (string value in TilesToRemove)
-            {
-                XaphanModule.ModSaveData.VisitedRooms.Remove(value);
-                XaphanModule.ModSaveData.VisitedRoomsTiles.Remove(value);
-            }
-            foreach (string value in ExtraUnexploredRoomsTilesToRemove)
-            {
-                XaphanModule.ModSaveData.ExtraUnexploredRooms.Remove(value);
-            }
-            foreach (string value in FlagsToRemove)
-            {
-                XaphanModule.ModSaveData.SavedFlags.Remove(value);
+                Engine.Commands.Log("You are not currently in a campaign, or this campaign does not use the In-Game map. Aborting...");
             }
         }
 
         [Command("reveal_ingamemap", "Reveal or hide all rooms on the In-Game map")]
         private static void Cmd_Reveal_InGameMap(bool state = true)
         {
-            if (XaphanModule.useIngameMap)
+            if (XaphanModule.isInLevel && level != null && XaphanModule.useIngameMap)
             {
                 MapDisplay.ForceRevealUnexploredRooms = state;
                 MiniMap minimap = level.Tracker.GetEntity<MiniMap>();
@@ -117,6 +124,10 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
             }
+            else
+            {
+                Engine.Commands.Log("You are not currently in a campaign, or this campaign does not use the In-Game map. Aborting...");
+            }
         }
 
         // Warps Commands
@@ -124,17 +135,24 @@ namespace Celeste.Mod.XaphanHelper
         [Command("clear_warps", "Clear all warps unlocked in this campaign")]
         public static void Cmd_Clear_Warps()
         {
-            List<string> ToRemove = new();
-            foreach (string warp in XaphanModule.ModSaveData.UnlockedWarps)
+            if (XaphanModule.isInLevel && level != null)
             {
-                if (warp.Contains(prefix))
+                List<string> ToRemove = new();
+                foreach (string warp in XaphanModule.ModSaveData.UnlockedWarps)
                 {
-                    ToRemove.Add(warp);
+                    if (warp.Contains(prefix))
+                    {
+                        ToRemove.Add(warp);
+                    }
+                }
+                foreach (string value in ToRemove)
+                {
+                    XaphanModule.ModSaveData.UnlockedWarps.Remove(value);
                 }
             }
-            foreach (string value in ToRemove)
+            else
             {
-                XaphanModule.ModSaveData.UnlockedWarps.Remove(value);
+                Engine.Commands.Log("You are not currently in a campaign. Aborting...");
             }
         }
 
@@ -143,7 +161,7 @@ namespace Celeste.Mod.XaphanHelper
         [Command("remove_upgrade", "Remove specified upgrades (Separated by a semicolon). If no upgrades are specified, remove all upgrades. Avaiable upgrades: PowerGrip, ClimbingKit, SpiderMagnet, DashBoots, SpaceJump, LightningDash, LongBeam, IceBeam, WaveBeam, MissilesModule, SuperMissilesModule, DroneTeleport, JumpBoost, HoverJet, VariaJacket, GravityJacket, Bombs, MegaBombs, RemoteDrone, GoldenFeather, EtherealDash, ScrewAttack, Binoculars, PortableStation, PulseRadar")]
         public static void Cmd_Remove_Upgrades(string upg = "")
         {
-            if (XaphanModule.useUpgrades)
+            if (XaphanModule.isInLevel && level != null && XaphanModule.useUpgrades)
             {
                 if (upg == "")
                 {
@@ -173,12 +191,16 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
             }
+            else
+            {
+                Engine.Commands.Log("You are not currently in a level, or this level does not use upgrades. Aborting...");
+            }
         }
 
         [Command("give_upgrade", "Give specified upgrades (Separated by a semicolon). If no upgrades are specified, give all upgrades. Avaiable upgrades: PowerGrip, ClimbingKit, SpiderMagnet, DashBoots, SpaceJump, LightningDash, LongBeam, IceBeam, WaveBeam, MissilesModule, SuperMissilesModule, DroneTeleport, JumpBoost, HoverJet, VariaJacket, GravityJacket, Bombs, MegaBombs, RemoteDrone, GoldenFeather, EtherealDash, ScrewAttack, Binoculars, PortableStation, PulseRadar")]
         public static void Cmd_Give_Upgrade(string upg = "")
         {
-            if (XaphanModule.useUpgrades)
+            if (XaphanModule.isInLevel && level != null && XaphanModule.useUpgrades)
             {
                 if (upg == "")
                 {
@@ -203,6 +225,7 @@ namespace Celeste.Mod.XaphanHelper
                             {
                                 XaphanModule.Instance.UpgradeHandlers[upgrade].SetValue(1);
                             }
+                            Logger.Log(LogLevel.Info, "XH", "Test - Give upgrade : " + upgrade.ToString());
                             level.Session.SetFlag("Upgrade_" + upgrade.ToString(), true);
                             if (!XaphanModule.ModSaveData.SavedFlags.Contains(prefix + "_Upgrade_" + upgrade.ToString()))
                             {
@@ -212,6 +235,10 @@ namespace Celeste.Mod.XaphanHelper
                     }
                     ReActivateUpgrade(u);
                 }
+            }
+            else
+            {
+                Engine.Commands.Log("You are not currently in a level, or this level does not use upgrades. Aborting...");
             }
         }
 
@@ -359,53 +386,60 @@ namespace Celeste.Mod.XaphanHelper
         [Command("reset_collectables_upgrades", "Remove all collectable upgrades (Energy Tanks, Missiles, Super Missiles and Fire Rate Modules) and allow to collect them again")]
         public static void Cmd_Reset_Collectables_Upgrades()
         {
-            List<string> StaminaUpgradesToRemove = new();
-            List<string> DroneMissilesUpgradesToRemove = new();
-            List<string> DroneSuperMissilesUpgradesToRemove = new();
-            List<string> DroneFireRateUpgradesToRemove = new();
-            foreach (string staminaUpgrade in XaphanModule.ModSaveData.StaminaUpgrades)
+            if (XaphanModule.isInLevel && level != null)
             {
-                if (staminaUpgrade.Contains(level.Session.Area.LevelSet))
+                List<string> StaminaUpgradesToRemove = new();
+                List<string> DroneMissilesUpgradesToRemove = new();
+                List<string> DroneSuperMissilesUpgradesToRemove = new();
+                List<string> DroneFireRateUpgradesToRemove = new();
+                foreach (string staminaUpgrade in XaphanModule.ModSaveData.StaminaUpgrades)
                 {
-                    StaminaUpgradesToRemove.Add(staminaUpgrade);
+                    if (staminaUpgrade.Contains(level.Session.Area.LevelSet))
+                    {
+                        StaminaUpgradesToRemove.Add(staminaUpgrade);
+                    }
+                }
+                foreach (string droneMissileUpgrade in XaphanModule.ModSaveData.DroneMissilesUpgrades)
+                {
+                    if (droneMissileUpgrade.Contains(level.Session.Area.LevelSet))
+                    {
+                        DroneMissilesUpgradesToRemove.Add(droneMissileUpgrade);
+                    }
+                }
+                foreach (string droneSuperMissileUpgrade in XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
+                {
+                    if (droneSuperMissileUpgrade.Contains(level.Session.Area.LevelSet))
+                    {
+                        DroneSuperMissilesUpgradesToRemove.Add(droneSuperMissileUpgrade);
+                    }
+                }
+                foreach (string droneFireRateUpgrade in XaphanModule.ModSaveData.DroneFireRateUpgrades)
+                {
+                    if (droneFireRateUpgrade.Contains(level.Session.Area.LevelSet))
+                    {
+                        DroneFireRateUpgradesToRemove.Add(droneFireRateUpgrade);
+                    }
+                }
+                foreach (string value in StaminaUpgradesToRemove)
+                {
+                    XaphanModule.ModSaveData.StaminaUpgrades.Remove(value);
+                }
+                foreach (string value in DroneMissilesUpgradesToRemove)
+                {
+                    XaphanModule.ModSaveData.DroneMissilesUpgrades.Remove(value);
+                }
+                foreach (string value in DroneSuperMissilesUpgradesToRemove)
+                {
+                    XaphanModule.ModSaveData.DroneSuperMissilesUpgrades.Remove(value);
+                }
+                foreach (string value in DroneFireRateUpgradesToRemove)
+                {
+                    XaphanModule.ModSaveData.DroneFireRateUpgrades.Remove(value);
                 }
             }
-            foreach (string droneMissileUpgrade in XaphanModule.ModSaveData.DroneMissilesUpgrades)
+            else
             {
-                if (droneMissileUpgrade.Contains(level.Session.Area.LevelSet))
-                {
-                    DroneMissilesUpgradesToRemove.Add(droneMissileUpgrade);
-                }
-            }
-            foreach (string droneSuperMissileUpgrade in XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
-            {
-                if (droneSuperMissileUpgrade.Contains(level.Session.Area.LevelSet))
-                {
-                    DroneSuperMissilesUpgradesToRemove.Add(droneSuperMissileUpgrade);
-                }
-            }
-            foreach (string droneFireRateUpgrade in XaphanModule.ModSaveData.DroneFireRateUpgrades)
-            {
-                if (droneFireRateUpgrade.Contains(level.Session.Area.LevelSet))
-                {
-                    DroneFireRateUpgradesToRemove.Add(droneFireRateUpgrade);
-                }
-            }
-            foreach (string value in StaminaUpgradesToRemove)
-            {
-                XaphanModule.ModSaveData.StaminaUpgrades.Remove(value);
-            }
-            foreach (string value in DroneMissilesUpgradesToRemove)
-            {
-                XaphanModule.ModSaveData.DroneMissilesUpgrades.Remove(value);
-            }
-            foreach (string value in DroneSuperMissilesUpgradesToRemove)
-            {
-                XaphanModule.ModSaveData.DroneSuperMissilesUpgrades.Remove(value);
-            }
-            foreach (string value in DroneFireRateUpgradesToRemove)
-            {
-                XaphanModule.ModSaveData.DroneFireRateUpgrades.Remove(value);
+                Engine.Commands.Log("You are not currently in a level. Aborting...");
             }
         }
 
@@ -414,8 +448,8 @@ namespace Celeste.Mod.XaphanHelper
         [Command("reset_campaign", "Delete all progress on the current campaign and restart it from the beggining (Campaigns that use a Merge Chapter Controller only)")]
         public static void Cmd_Reset_Campaign()
         {
-            if (XaphanModule.isInLevel && XaphanModule.useMergeChaptersController)
-            {
+            if (XaphanModule.isInLevel && level != null  && XaphanModule.useMergeChaptersController)
+                {
                 Cmd_Clear_InGameMap(true, true);
                 Cmd_Clear_Warps();
                 Cmd_Remove_Upgrades();
@@ -481,7 +515,7 @@ namespace Celeste.Mod.XaphanHelper
         [Command("remove_no_load_ID", "Remove an entity from the list of entities that should not load. Parameters: room: Room of the entity, id: ID of the entity")]
         public static void Cmd_Remove_No_Load_ID(string room, int id)
         {
-            if (XaphanModule.isInLevel)
+            if (XaphanModule.isInLevel && level != null)
             {
                 level.Session.DoNotLoad.Remove(new EntityID(room, id));
             }
