@@ -16,8 +16,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Coroutine PopupRoutine = new();
 
-        private Coroutine DelayRoutine = new();
-
         private MTexture Icon;
 
         private MTexture MedalIcon;
@@ -34,6 +32,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private bool renderLorebook;
 
+        private float delayTimer;
+
         public Popup()
         {
             Tag = (Tags.HUD | Tags.Persistent | Tags.PauseUpdate | Tags.TransitionUpdate);
@@ -48,22 +48,26 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Added(scene);
             achievements = Achievements.GenerateAchievementsList(SceneAs<Level>().Session);
             lorebookEntries = LorebookEntries.GenerateLorebookEntriesDataList();
-            Add(DelayRoutine = new(DelayPopupCheck()));
         }
 
         public override void Update()
         {
             base.Update();
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if ((SceneAs<Level>().Transitioning || (player != null && player.StateMachine.State == Player.StDummy)) && !DelayRoutine.Active)
+            Level level = SceneAs<Level>();
+            Player player = level.Tracker.GetEntity<Player>();
+            if (level.Transitioning || (player != null && player.StateMachine.State == Player.StDummy))
             {
-                Add(DelayRoutine = new(DelayPopupCheck()));
+                delayTimer = 0.1f;
             }
-            if (!PopupRoutine.Active && !DelayRoutine.Active && XaphanModule.ModSaveData.CanDisplayPopups)
+            else if (delayTimer > 0f)
+            {
+                delayTimer -= Engine.DeltaTime;
+            }
+            if (!PopupRoutine.Active && delayTimer <= 0f && XaphanModule.ModSaveData.CanDisplayPopups)
             {
                 foreach (AchievementData achievement in achievements)
                 {
-                    if (SceneAs<Level>().Session.GetFlag(achievement.Flag) && !XaphanModule.ModSaveData.Achievements.Contains(achievement.AchievementID))
+                    if (level.Session.GetFlag(achievement.Flag) && !XaphanModule.ModSaveData.Achievements.Contains(achievement.AchievementID))
                     {
                         XaphanModule.ModSaveData.Achievements.Add(achievement.AchievementID);
                         if (XaphanModule.ModSettings.ShowAchievementsPopups)
@@ -79,7 +83,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         foreach (LorebookData entry in lorebookEntries)
                         {
-                            if (SceneAs<Level>().Session.GetFlag(entry.Flag) && !XaphanModule.ModSaveData.LorebookEntries.Contains(entry.EntryID))
+                            if (level.Session.GetFlag(entry.Flag) && !XaphanModule.ModSaveData.LorebookEntries.Contains(entry.EntryID))
                             {
                                 XaphanModule.ModSaveData.LorebookEntries.Add(entry.EntryID);
                                 if (XaphanModule.ModSettings.ShowLorebookPopups)
@@ -144,11 +148,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 yield return null;
             }
             Visible = false;
-        }
-
-        private IEnumerator DelayPopupCheck()
-        {
-            yield return 0.1f;
         }
 
         public override void Render()
