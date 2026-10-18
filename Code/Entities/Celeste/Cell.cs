@@ -147,7 +147,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            Slope.SetCollisionBeforeUpdate(this);
             base.Update();
             string Prefix = Level.Session.Area.LevelSet;
             int chapterIndex = Level.Session.Area.ChapterIndex;
@@ -303,7 +302,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 tutorialGui.Open = (tutorial && tutorialTimer > 0.25f);
             }
-            Slope.SetCollisionAfterUpdate(this);
         }
 
         public void ExplodeLaunch(Vector2 from)

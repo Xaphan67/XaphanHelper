@@ -379,7 +379,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            Slope.SetCollisionBeforeUpdate(this);
             if (SourceSpawner != null && CollideCheck(SourceSpawner))
             {
                 SourceSpawner.Collidable = false;
@@ -512,7 +511,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 SourceSpawner.Collidable = true;
             }
-            Slope.SetCollisionAfterUpdate(this);
         }
 
         public override void Render()

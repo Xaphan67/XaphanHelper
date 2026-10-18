@@ -381,7 +381,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     platform.Collidable = false;
                 }
             }
-            Slope.SetCollisionBeforeUpdate(this);
             base.Update();
             if (!WillExplode)
             {
@@ -567,7 +566,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             CheckHoldTime += Engine.DeltaTime;
-            Slope.SetCollisionAfterUpdate(this);
             platforms.ForEach(entity => entity.Collidable = false);
         }
 

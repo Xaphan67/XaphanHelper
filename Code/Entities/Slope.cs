@@ -301,8 +301,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             On.Celeste.Actor.MoveH += onActorMoveH;
             On.Celeste.Actor.TrySquishWiggle_CollisionData_int_int += onActorTrySquishWiggle;
-            On.Celeste.TheoCrystal.OnCollideH += TheoCrystalOnOnCollideH;
-            On.Celeste.Glider.OnCollideH += GliderOnOnCollideH;
             On.Celeste.Player.Update += modPlayerUpdate;
             IL.Celeste.Player.NormalUpdate += ilPlayerNormalUpdate;
             IL.Monocle.EntityList.Update += ilEntityListUpdate;
@@ -312,8 +310,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             On.Celeste.Actor.MoveH -= onActorMoveH;
             On.Celeste.Actor.TrySquishWiggle_CollisionData_int_int -= onActorTrySquishWiggle;
-            On.Celeste.TheoCrystal.OnCollideH -= TheoCrystalOnOnCollideH;
-            On.Celeste.Glider.OnCollideH -= GliderOnOnCollideH;
             On.Celeste.Player.Update -= modPlayerUpdate;
             IL.Celeste.Player.NormalUpdate -= ilPlayerNormalUpdate;
             IL.Monocle.EntityList.Update -= ilEntityListUpdate;
@@ -336,6 +332,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 List<Slope> enabledSlopes = SetCollisionForEntity(actor);
                 actor.Update();
                 RestoreCollisionForEntity(enabledSlopes, actor.Scene);
+            }
+            else if (entity is Solid solid)
+            {
+                List<Slope> enabledSlopes = SetCollisionForEntity(solid);
+                solid.Update();
+                RestoreCollisionForEntity(enabledSlopes, solid.Scene);
             }
             else
             {
@@ -406,38 +408,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             return orig(self, data, wiggleX, wiggleY);
-        }
-
-        private static void TheoCrystalOnOnCollideH(On.Celeste.TheoCrystal.orig_OnCollideH orig, TheoCrystal self, CollisionData data)
-        {
-            if (data.Hit is Slope)
-            {
-                self.Speed.X *= -0.4f;
-            }
-            else
-            {
-                orig(self, data);
-            }
-        }
-
-        private static void GliderOnOnCollideH(On.Celeste.Glider.orig_OnCollideH orig, Glider self, CollisionData data)
-        {
-            if (data.Hit is Slope)
-            {
-                if (self.Speed.X < -50f)
-                {
-                    Audio.Play("event:/new_content/game/10_farewell/glider_wallbounce_left", self.Position);
-                }
-                else if (self.Speed.X > 50f)
-                {
-                    Audio.Play("event:/new_content/game/10_farewell/glider_wallbounce_right", self.Position);
-                }
-                self.Speed.X *= -1f;
-            }
-            else
-            {
-                orig(self, data);
-            }
         }
 
         private static void modPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self)
@@ -517,127 +487,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
             return 1f + speedFactor;
-        }
-
-        public static void SetCollisionBeforeUpdate(Actor actor)
-        {
-            List<Entity> playerPlatforms = actor.Scene.Tracker.GetEntities<PlayerPlatform>().ToList();
-            List<Entity> slopes = actor.Scene.Tracker.GetEntities<Slope>().ToList();
-            foreach (Slope slope in slopes)
-            {
-                if (slope.CollideCheck(actor))
-                {
-                    slope.Collidable = true;
-                }
-                else
-                {
-                    if (!slope.UpsideDown)
-                    {
-                        if (slope.Side == "Right")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.BottomCenter.X - slope.SlopeTop.X) >= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                        else if (slope.Side == "Left")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.BottomCenter.X - slope.SlopeTop.X) <= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (slope.Side == "Right")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.TopRight.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.TopRight.X - slope.SlopeTop.X) >= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                        else if (slope.Side == "Left")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (actor.TopLeft.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (actor.TopLeft.X - slope.SlopeTop.X) <= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                    }
-                }
-            }
-            foreach (PlayerPlatform platform in playerPlatforms)
-            {
-                platform.Collidable = false;
-            }
-        }
-
-        public static void SetCollisionBeforeUpdate(Solid solid)
-        {
-            List<Entity> playerPlatforms = solid.Scene.Tracker.GetEntities<PlayerPlatform>().ToList();
-            List<Entity> slopes = solid.Scene.Tracker.GetEntities<Slope>().ToList();
-            foreach (Slope slope in slopes)
-            {
-                if (slope.CollideCheck(solid))
-                {
-                    slope.Collidable = true;
-                }
-                else
-                {
-                    if (!slope.UpsideDown)
-                    {
-                        if (slope.Side == "Right")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.BottomCenter.X - slope.SlopeTop.X) >= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                        else if (slope.Side == "Left")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.BottomCenter.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.BottomCenter.X - slope.SlopeTop.X) <= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (slope.Side == "Right")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.TopRight.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.TopRight.X - slope.SlopeTop.X) >= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                        else if (slope.Side == "Left")
-                        {
-                            if ((slope.SlopeBottom.X - slope.SlopeTop.X) * (solid.TopLeft.Y - slope.SlopeTop.Y) - (slope.SlopeBottom.Y - slope.SlopeTop.Y) * (solid.TopLeft.X - slope.SlopeTop.X) <= 0)
-                            {
-                                slope.Collidable = true;
-                            }
-                        }
-                    }
-                }
-            }
-            foreach (PlayerPlatform platform in playerPlatforms)
-            {
-                platform.Collidable = false;
-            }
-        }
-
-
-        public static void SetCollisionAfterUpdate(Entity entity)
-        {
-            List<Entity> slopes = entity.Scene.Tracker.GetEntities<Slope>().ToList();
-            Player player = entity.Scene.Tracker.GetEntity<Player>();
-            slopes.ForEach(entity => entity.Collidable = false);
-
-            foreach (PlayerPlatform platform in entity.Scene.Tracker.GetEntities<PlayerPlatform>())
-            {
-                platform.RestoreCollisionForPlayer();
-            }
         }
 
         public override void Added(Scene scene)

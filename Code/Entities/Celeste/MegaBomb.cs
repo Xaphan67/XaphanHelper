@@ -290,7 +290,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            Slope.SetCollisionBeforeUpdate(this);
             base.Update();
             if (Hold.IsHeld)
             {
@@ -412,7 +411,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Hold.CheckAgainstColliders();
             }
             CheckHoldTime += Engine.DeltaTime;
-            Slope.SetCollisionAfterUpdate(this);
         }
 
         public IEnumerator Explode()

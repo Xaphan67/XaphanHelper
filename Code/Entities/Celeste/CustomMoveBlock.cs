@@ -134,7 +134,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public override void Update()
             {
-                Slope.SetCollisionBeforeUpdate(this);
+                //Slope.SetCollisionBeforeUpdate(this);
                 base.Update();
                 if (Collidable)
                 {
@@ -174,7 +174,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     fadeLerp = Calc.Approach(fadeLerp, 1f, 2f * Engine.DeltaTime);
                 }
                 sprite.Color = Color.Lerp(Color.White, Color.Gray, fadeLerp) * alpha;
-                Slope.SetCollisionAfterUpdate(this);
+                //Slope.SetCollisionAfterUpdate(this);
             }
         }
 
@@ -639,7 +639,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            Slope.SetCollisionBeforeUpdate(this);
             base.Update();
             alpha += Engine.DeltaTime * 4f;
             if (steerSides != "None")
@@ -690,7 +689,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             flash = Calc.Approach(flash, 0f, Engine.DeltaTime * 5f);
             UpdateColors();
-            Slope.SetCollisionAfterUpdate(this);
         }
 
         public override void OnStaticMoverTrigger(StaticMover sm)
