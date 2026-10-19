@@ -468,6 +468,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Render()
         {
+            base.Render();
             Level level = SceneAs<Level>();
             if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(level) || GravityJacket.Active(level)))
             {
@@ -486,21 +487,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
                 Draw.SpriteBatch.End();
                 Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
-                base.Render();
                 if (PlayerSprite != null && PlayerSprite.Visible)
                 {
 
                     PlayerSprite.Render();
                 }
-                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-                if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
-                {
-                    PlayerHairSprite.Color = player.Hair.Color;
-                    PlayerHairSprite.Render();
-                }
                 Draw.SpriteBatch.End();
                 Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
-                return;
+            }
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
+            {
+                PlayerHairSprite.Color = player.Hair.Color;
+                PlayerHairSprite.Render();
             }
         }
     }
