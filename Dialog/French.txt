@@ -297,6 +297,7 @@
 	XaphanHelper_UI_Informations= INFORMATIONS
 	XaphanHelper_UI_LorebookEntry_Locked= Vous n'avez pas encore découvert cette entrée
 	XaphanHelper_UI_LorebookNewEntry= Nouvelle entrée !
+	XaphanHelper_UI_LorebookOpen= pour ouvrir le journal
 	Xaphanhelper_UI_Breath= OXYGENE
 
 #Metroid UI

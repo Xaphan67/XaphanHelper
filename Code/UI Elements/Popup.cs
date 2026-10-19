@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Ports;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -14,11 +15,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private List<LorebookData> lorebookEntries;
 
-        private Coroutine PopupRoutine = new();
+        public Coroutine PopupRoutine = new();
 
         private MTexture Icon;
 
         private MTexture MedalIcon;
+
+        private MTexture buttonTexture;
+
+        VirtualButton Button = new();
 
         private string Name;
 
@@ -30,7 +35,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private bool renderAchievement;
 
-        private bool renderLorebook;
+        public bool renderLorebook;
 
         private float delayTimer;
 
@@ -39,6 +44,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Tag = (Tags.HUD | Tags.Persistent | Tags.PauseUpdate | Tags.TransitionUpdate);
             Position = new Vector2(0f, Engine.Height - 149f);
             MedalIcon = GFX.Gui["achievements/medal"];
+            ButtonBinding Control = XaphanModule.ModSettings.OpenMap;
+            Button.Binding = Control.Binding;
+            buttonTexture = Input.GuiButton(Button, "controls/keyboard/oemquestion");
             Visible = false;
             Depth = -1000000;
         }
@@ -156,20 +164,32 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Vector2 position = Position;
             if (renderLorebook)
             {
-                position.Y += 49f;
+                position.Y += 20f;
             }
-            Draw.Rect(position, renderLorebook ? 450f : 750f, renderLorebook ? 100f : 149f, Color.Black * alpha);
+            Draw.Rect(position, renderLorebook ? 450f : 750f, renderLorebook ? 129f : 149f, Color.Black * alpha);
             Draw.Rect(position, renderLorebook ? 450f : 750f, 5f, Color.Gold * alpha);
-            Draw.Rect(position + Vector2.UnitY * 5f, 5f, renderLorebook ? 90f : 139f, Color.Gold * alpha);
-            Draw.Rect(position + new Vector2(renderLorebook ? 445f : 745f, 5f), 5f, renderLorebook ? 90f : 139f, Color.Gold * alpha);
-            Draw.Rect(position + Vector2.UnitY * (renderLorebook ? 95f : 144f), renderLorebook ? 450f : 750f, 5f, Color.Gold * alpha);
-            Icon.Draw(position + Vector2.One * 7f + (renderLorebook ? Vector2.One * 20f : Vector2.Zero), Vector2.Zero, Color.White * alpha, 0.9f);
+            Draw.Rect(position + Vector2.UnitY * 5f, 5f, renderLorebook ? 119f : 139f, Color.Gold * alpha);
+            Draw.Rect(position + new Vector2(renderLorebook ? 445f : 745f, 5f), 5f, renderLorebook ? 119f : 139f, Color.Gold * alpha);
+            Draw.Rect(position + Vector2.UnitY * (renderLorebook ? 124f : 144f), renderLorebook ? 450f : 750f, 5f, Color.Gold * alpha);
+            Icon.Draw(position + Vector2.One * 7f + (renderLorebook ? new Vector2(20f, 15f) : Vector2.Zero), Vector2.Zero, Color.White * alpha, 0.9f);
             if (renderLorebook)
             {
                 float loreLength = ActiveFont.Measure(Dialog.Clean("XaphanHelper_UI_LorebookNewEntry")).X * 0.6f;
                 float nameLenght = ActiveFont.Measure(Name).X * 0.4f;
+                float infoPressLength = ActiveFont.Measure(Dialog.Clean("XaphanHelper_Press")).X * 0.4f;
+                float infoOpenLength = ActiveFont.Measure(Dialog.Clean("XaphanHelper_UI_LorebookOpen")).X * 0.4f;
                 ActiveFont.DrawOutline(Dialog.Clean("XaphanHelper_UI_LorebookNewEntry"), position + new Vector2(114f + loreLength / 2 - 10, 35f), new Vector2(0.5f, 0.5f), Vector2.One * 0.6f, Color.White * alpha, 2f, Color.Black * alpha);
                 ActiveFont.DrawOutline(Name, position + new Vector2(114f + nameLenght / 2 - 10, 65f), new Vector2(0.5f, 0.5f), Vector2.One * 0.4f, Color.Gray * alpha, 2f, Color.Black * alpha);
+                if (buttonTexture != null)
+                {
+                    float x = 27f;
+                    float buttonWidth = buttonTexture.Width * 0.4f;
+                    ActiveFont.DrawOutline(Dialog.Clean("XaphanHelper_Press"), position + new Vector2(x, 95f), new Vector2(0f, 0.5f), Vector2.One * 0.4f, Color.Gray * alpha, 2f, Color.Black * alpha);
+                    x += infoPressLength + 5f;
+                    buttonTexture.DrawCentered(position + new Vector2(x + buttonWidth / 2, 95f), Color.White * alpha, 0.4f);
+                    x += buttonWidth + 5f;
+                    ActiveFont.DrawOutline(Dialog.Clean("XaphanHelper_UI_LorebookOpen"), position + new Vector2(x, 95f), new Vector2(0f, 0.5f), Vector2.One * 0.4f, Color.Gray * alpha, 2f, Color.Black * alpha);
+                }
             }
             if (renderAchievement)
             {

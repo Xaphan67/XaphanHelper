@@ -3875,7 +3875,17 @@ namespace Celeste.Mod.XaphanHelper
                 string room = self.Session.Level;
                 if (self.CanPause && (self.CanRetry || PlayerIsControllingRemoteDrone()) && player != null && player.StateMachine.State == Player.StNormal && player.Speed == Vector2.Zero && !self.Session.GetFlag("In_bossfight") && player.OnSafeGround && ModSettings.OpenMap.Pressed && !self.Session.GetFlag("Map_Opened"))
                 {
-                    if (useIngameMap && ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room) && CanOpenMap(self))
+                    if (self.Session.Area.LevelSet == "Xaphan/0" && SoCMVersion >= new Version(3, 0, 0) && self.Tracker.GetEntity<Popup>() is Popup popup && popup.PopupRoutine.Active && popup.renderLorebook)
+                    {
+                        player.StateMachine.State = Player.StDummy;
+                        player.DummyAutoAnimate = false;
+                        if (!player.Sprite.CurrentAnimationID.Contains("idle") && !player.Sprite.CurrentAnimationID.Contains("edge"))
+                        {
+                            player.Sprite.Play("idle");
+                        }
+                        self.Add(new LorebookScreen(self));
+                    }
+                    else if (useIngameMap && ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room) && CanOpenMap(self))
                     {
                         player.StateMachine.State = Player.StDummy;
                         player.DummyAutoAnimate = false;
