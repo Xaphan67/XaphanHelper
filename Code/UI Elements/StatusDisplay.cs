@@ -982,6 +982,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     ActiveFont.Draw(UpgDesc_b, new Vector2(TextCPosition, vector.Y), new Vector2(0.5f, 0.5f), Vector2.One * 0.75f, Color.White);
                 }
+                else
+                {
+                    Draw.Rect(Position + new Vector2(140, 896f), 1640f, 8f, Color.White);
+                }
             }
             else
             {
