@@ -528,7 +528,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             LorebookEntriesData = LorebookEntries.GenerateLorebookEntriesDataList();
         }
 
-        public IEnumerator GenerateLorebookDisplay()
+        public IEnumerator GenerateLorebookDisplay(int category = 0)
         {
             Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 154f : 355f, 245f), 0, "XaphanHelper_UI_Locations", LorebookEntriesData.FindAll(entry => entry.CategoryID == 0), "XaphanHelper_UI_Locations_Desc"));
             Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 558f : 760f, 245f), 1, "XaphanHelper_UI_Equipment", LorebookEntriesData.FindAll(entry => entry.CategoryID == 1), "XaphanHelper_UI_Equipment_Desc"));
@@ -539,7 +539,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Scene.Add(new CategoryDisplay(level, new Vector2(1366f, 245f), 3, "XaphanHelper_UI_Lore", LorebookEntriesData.FindAll(entry => entry.CategoryID == 3), "XaphanHelper_UI_Lore_Desc"));
             }
 
-            GenerateEntryList(0);
+            GenerateEntryList(category);
 
             yield return null;
         }

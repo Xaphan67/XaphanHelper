@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -14,6 +15,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private bool NoInput;
 
         private Level level;
+
+        private LorebookData lorebookData;
 
         private LorebookDisplay lorebookDisplay;
 
@@ -43,14 +46,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int entrySelection = -1;
 
-        public LorebookScreen(Level level)
+        public LorebookScreen(Level level, LorebookData lorebookData = null)
         {
             this.level = level;
+            this.lorebookData = lorebookData;
             Tag = Tags.HUD;
             Title = Dialog.Clean("XaphanHelper_UI_lorebook");
             Add(menuWiggle = Wiggler.Create(0.4f, 4f));
             Add(closeWiggle = Wiggler.Create(0.4f, 4f));
-            categorySelection = 0;
             Depth = -10003;
         }
 
@@ -249,9 +252,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
             }
 
-            int maxCategories = ((currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0 || currentTotalTextLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)) ? 3 : 2;
-            Scene.Add(lorebookDisplay = new LorebookDisplay(level, (currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0 || currentTotalTextLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0)));
-            yield return lorebookDisplay.GenerateLorebookDisplay();
+            bool showLoreTab = (currentTotalLambertLogs > 0 || currentTotalNoteLogs > 0 || currentTotalTextLogs > 0) && XaphanModule.SoCMVersion >= new Version(3, 1, 0);
+            int maxCategories = showLoreTab ? 3 : 2;
+            int category = (lorebookData != null && (lorebookData.CategoryID != 3 || showLoreTab)) ? lorebookData.CategoryID : 0;
+            Scene.Add(lorebookDisplay = new LorebookDisplay(level, showLoreTab));
+            yield return lorebookDisplay.GenerateLorebookDisplay(category);
+            if (lorebookData != null)
+            {
+                AutoSelectPopupEntry(category);
+            }
             while (switchTimer > 0)
             {
                 yield return null;
@@ -469,6 +478,31 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 LorebookDisplay.EntryDisplay display = entryDisplay as LorebookDisplay.EntryDisplay;
                 Displays.Add(display);
+            }
+        }
+
+        private void AutoSelectPopupEntry(int category)
+        {
+            GetEntryDisplays();
+            LorebookDisplay.EntryDisplay target = Displays.Find(d => !d.isSubCategory && d.entryID == lorebookData.EntryID);
+            if (target == null)
+            {
+                categorySelection = category;
+                return;
+            }
+            previousCategorySelection = category;
+            categorySelection = -1;
+            entrySelection = target.ID;
+            if (Displays.Count <= 10)
+            {
+                return;
+            }
+            LorebookDisplay.EntryDisplay first = Displays.Find(d => d.ID == 0);
+            LorebookDisplay.EntryDisplay last = Displays.Find(d => d.ID == Displays.Count - 1);
+            float offset = Calc.Clamp(731f - target.Position.Y, 931f - last.Position.Y, 481f - first.Position.Y);
+            foreach (LorebookDisplay.EntryDisplay display in Displays)
+            {
+                display.Position.Y += offset;
             }
         }
 

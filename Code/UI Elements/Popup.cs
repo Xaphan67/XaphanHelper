@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO.Ports;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -28,6 +27,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private string Name;
 
         private string Description;
+
+        public LorebookData LorebookData;
 
         private string MedalsValue;
 
@@ -139,6 +140,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             renderLorebook = true;
             Icon = GFX.Gui["common/lorebookScreen"];
             Name = Dialog.Clean(data.Name);
+            LorebookData = data;
             Audio.Play("event:/game/02_old_site/theoselfie_photo_filter");
             float popupTime = 5f;
             while (popupTime > 0)

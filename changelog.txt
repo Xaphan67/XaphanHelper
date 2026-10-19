@@ -50,8 +50,6 @@ Version 1.0.80 :
 - Renamed Flag Temple Gate to Custom Temple Gate
 - Custom Temple Gates will now be affected by the nearest vanilla Dash Switch if their flag attribute is left empty.
 - Removed "Can Jump Trough" attribute from Slopes. All slopes (including already existing ones) now act as jump trough slopes by default. Previously non-jump trough slopes still block light
-- Fixed gems sounds when inserted in their slot being incorrect in The Secret Of Celeste Mountain
-- Pressing the "Open Map" button now open the Lorebook when a 'New entry in the Lorebook' popup is displayed in The Secret Of Celeste Mountain
 - Redesigned the Status screen
 - Holding the 'Select Equipped Ability' button now show a list of currently aquired abilities for each slots
 - Improved Slopes collision with the player
