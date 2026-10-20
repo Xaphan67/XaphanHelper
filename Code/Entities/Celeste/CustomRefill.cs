@@ -30,6 +30,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Sprite flash;
 
+        private Sprite outline;
+
         public Wiggler wiggler;
 
         private BloomPoint bloom;
@@ -180,6 +182,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 flash.Visible = false;
             };
             flash.CenterOrigin();
+            if (!oneUse)
+            {
+                Add(outline = new Sprite(GFX.Game, path + "outline"));
+                outline.AddLoop("outline", "", 0.1f);
+                outline.Play("outline");
+                outline.CenterOrigin();
+                outline.Visible = false;
+            }
             Add(wiggler = Wiggler.Create(1f, 4f, delegate (float v)
             {
                 sprite.Scale = (flash.Scale = Vector2.One * (1f + v * 0.2f));
@@ -301,8 +311,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (respawnTimer > 0f)
+            if (respawnTimer > 0f && !oneUse)
             {
+                outline.Visible = true;
                 respawnTimer -= Engine.DeltaTime;
                 if (respawnTimer <= 0f)
                 {
@@ -325,6 +336,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Respawn()
         {
+            outline.Visible = false;
             if (!Collidable)
             {
                 Collidable = true;
@@ -338,10 +350,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void UpdateY()
         {
-            Sprite obj = flash;
-            Sprite obj2 = sprite;
-            float num2 = (bloom.Y = sine.Value * 2f);
-            float num5 = (obj.Y = (obj2.Y = num2));
+            flash.Y = sprite.Y = bloom.Y = sine.Value * 2f;
         }
 
         public override void Render()
@@ -377,9 +386,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    color = filled ? mask.Colors[i] * 0.6f : Color.Transparent;
+                    color = filled ? mask.Colors[i] : Color.Transparent;
                 }
-                Draw.Rect(origin.X + i % mask.Width, origin.Y + i / mask.Width + sine.Value * 2f, 1f, 1f, color);
+                Draw.Rect(origin.X + i % mask.Width, origin.Y + i / mask.Width, 1f, 1f, color);
             }
         }
 
