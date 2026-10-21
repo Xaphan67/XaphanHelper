@@ -39,12 +39,21 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch3_Gem");
             level.Session.SetFlag("CS_Ch3_Gem");
+            player.StateMachine.Locked = false;
             player.StateMachine.State = 0;
         }
 
         public IEnumerator Cutscene(Level level)
         {
             player.StateMachine.State = 11;
+            player.StateMachine.Locked = true;
+            yield return player.DummyWalkTo(Level.Bounds.Left + 128f, false, 1f);
+            while (!player.OnSafeGround)
+            {
+                yield return null;
+            }
+            yield return 0.2f;
+            player.Facing = Facings.Right;
             yield return Level.ZoomTo(new Vector2(165f, 110f), 1.5f, 1f);
             badeline = CutscenesHelper.BadelineSplit(Level, player);
             yield return CutscenesHelper.BadelineFloat(this, 30, -18, badeline, -1, false, false, true);
