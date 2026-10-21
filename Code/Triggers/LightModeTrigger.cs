@@ -10,20 +10,34 @@ namespace Celeste.Mod.XaphanHelper.Triggers
     {
         private readonly LightModes mode;
 
+        public bool entered;
+
         public LightModeTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
+            Tag = Tags.TransitionUpdate;
             mode = data.Enum("mode", LightModes.None);
         }
 
-        public override void OnEnter(Player player)
+        public override void Update()
         {
-            base.OnEnter(player);
+            base.Update();
             Level level = Scene as Level;
-            foreach (LightManager manager in level.Tracker.GetEntities<LightManager>())
+            Player player = level.Tracker.GetEntity<Player>();
+            if (player != null && CollideCheck(player) && !entered)
             {
-                manager.MainMode = manager.RespawnMode = mode;
+                entered = true;
+                foreach (LightManager manager in level.Tracker.GetEntities<LightManager>())
+                {
+                    manager.MainMode = manager.RespawnMode = mode;
+                }
+                XaphanModule.ModSession.LightMode = mode;
             }
-            XaphanModule.ModSession.LightMode = mode;
+        }
+
+        public override void OnLeave(Player player)
+        {
+            base.OnLeave(player);
+            entered = false;
         }
     }
 }

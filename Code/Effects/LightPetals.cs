@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Celeste.Mod.XaphanHelper.Managers;
+using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Effects
@@ -94,7 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Effects
 
         public override void Render(Scene level)
         {
-            if (!(fade <= 0f))
+            if (!(fade <= 0f) && XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.None)
             {
                 Camera camera = (level as Level).Camera;
                 MTexture mTexture = GFX.Game["particles/petal"];

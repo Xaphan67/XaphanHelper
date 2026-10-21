@@ -122,13 +122,6 @@ namespace Celeste.Mod.XaphanHelper.Managers
                     XaphanModule.ModSession.LightMode = MainMode;
                 }
             }
-            else
-            {
-                if (SceneAs<Level>().Tracker.GetEntities<LightOrb>().Count > 0 && MainMode == XaphanModuleSession.LightModes.None)
-                {
-                    MainMode = RespawnMode = XaphanModuleSession.LightModes.Dark;
-                }
-            }
             if (SceneAs<Level>().Transitioning)
             {
                 if (XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light && SceneAs<Level>().Lighting.Alpha != SceneAs<Level>().BaseLightingAlpha)
