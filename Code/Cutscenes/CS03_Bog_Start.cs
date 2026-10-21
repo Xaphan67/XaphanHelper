@@ -30,6 +30,13 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnEnd(Level level)
         {
+            if (WasSkipped)
+            {
+                if (badeline != null)
+                {
+                    badeline.RemoveSelf();
+                }
+            }
             XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch3_Bog_Start");
             level.Session.SetFlag("CS_Ch3_Bog_Start");
             player.StateMachine.State = 0;

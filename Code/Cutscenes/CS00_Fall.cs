@@ -23,9 +23,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnEnd(Level level)
         {
-            if (badeline != null)
+            if (WasSkipped)
             {
-                badeline.RemoveSelf();
+                if (badeline != null)
+                {
+                    badeline.RemoveSelf();
+                }
             }
             level.PauseLock = false;
             XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch0_Fall");
