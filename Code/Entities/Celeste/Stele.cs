@@ -1,11 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Celeste.Mod.Entities;
-using Celeste.Mod.XaphanHelper.Upgrades;
+using Celeste.Mod.XaphanHelper.Components;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -21,10 +19,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Sprite rightOrb;
 
         private Player player;
-
-        public Sprite PlayerSprite;
-
-        public Sprite PlayerHairSprite;
 
         private TalkComponent talk;
 
@@ -62,38 +56,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             rightOrb.CenterOrigin();
             rightOrb.Color = Color.White * 0.7f;
             rightOrb.Scale = Vector2.Zero;
-            Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
-            PlayerSprite.CenterOrigin();
-            PlayerSprite.Position += new Vector2(0f, 2f);
-            PlayerSprite.Visible = false;
-            Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
-            PlayerHairSprite.CenterOrigin();
-            PlayerHairSprite.Position += new Vector2(0f, 2f);
-            PlayerHairSprite.Visible = false;
-        }
-
-        public static void Load()
-        {
-            On.Celeste.Player.Die += OnPlayerDie;
-        }
-
-        public static void Unload()
-        {
-            On.Celeste.Player.Die -= OnPlayerDie;
-        }
-
-        private static PlayerDeadBody OnPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
-        {
-            foreach (Stele stele in self.SceneAs<Level>().Tracker.GetEntities<Stele>())
-            {
-                if (stele.PlayerSprite.Visible)
-                {
-                    stele.PlayerSprite.Visible = false;
-                    stele.PlayerHairSprite.Visible = false;
-                    self.Sprite.Visible = true;
-                }
-            }
-            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         public override void Added(Scene scene)
@@ -125,19 +87,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Routine()
         {
-            PlayerSprite.OnLastFrame = null;
+            PlayerCustomAnimation component = player.Components.Get<PlayerCustomAnimation>();
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
             player.DummyAutoAnimate = false;
             yield return player.DummyWalkToExact((int)BottomCenter.X);
-            PlayerSprite.FlipX = player.Facing == Facings.Left;
-            PlayerHairSprite.FlipX = player.Facing == Facings.Left;
-            player.Sprite.Visible = false;
-            player.Hair.Visible = false;
-            PlayerSprite.Visible = true;
-            PlayerHairSprite.Visible = true;
-            PlayerSprite.Play("turnBackpack");
-            PlayerHairSprite.Play("hairBackpack");
+            if (component != null)
+            {
+                component.SetAnim("XaphanHelper_player_turnAround");
+                component.PlaySprite("turnBackpack", "hairBackpack", false);
+            }
             yield return 0.5f;
 
             mainSprite.Play("interact");
@@ -170,16 +129,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
 
             yield return 0.5f;
-            PlayerSprite.Play("turnBackpack_reverse");
-            PlayerHairSprite.Play("hairBackpack_reverse");
-            PlayerSprite.OnLastFrame = delegate
+            if (component != null)
             {
-                PlayerSprite.Visible = false;
-                PlayerHairSprite.Visible = false;
-                player.Sprite.Visible = true;
-                player.Hair.Visible = true;
-                player.StateMachine.State = 0;
-            };
+                component.PlaySprite("turnBackpack", "hairBackpack", true, true);
+            }
             yield return 0.2f;
             player.StateMachine.Locked = false;
             player.DummyAutoAnimate = true;
@@ -258,43 +211,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             mainSprite.Play("inactivePurple");
             yield return 0.8f;
             shake = false;
-        }
-
-        public override void Render()
-        {
-            base.Render();
-            Level level = SceneAs<Level>();
-            if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(level) || GravityJacket.Active(level)))
-            {
-                string id = "";
-                foreach (string name in XaphanModule.JacketPriorityNames)
-                {
-                    var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
-                    if (data.Test != null && data.Test(level))
-                    {
-                        id = data.Id;
-                        break;
-                    }
-                }
-                Effect fxColorGrading = GFX.FxColorGrading;
-                fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
-                Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
-                Draw.SpriteBatch.End();
-                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
-                if (PlayerSprite != null && PlayerSprite.Visible)
-                {
-
-                    PlayerSprite.Render();
-                }
-                Draw.SpriteBatch.End();
-                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
-            }
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
-            {
-                PlayerHairSprite.Color = player.Hair.Color;
-                PlayerHairSprite.Render();
-            }
         }
     }
 }

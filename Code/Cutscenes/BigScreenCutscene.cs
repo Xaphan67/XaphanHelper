@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -33,22 +34,17 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnEnd(Level level)
         {
+            PlayerCustomAnimation component = player.Components.Get<PlayerCustomAnimation>();
             level.Session.Audio.Music.Event = SFX.EventnameByHandle(music);
             level.Session.Audio.Apply(forceSixteenthNoteHack: false);
             level.TimerHidden = false;
             screen.isOn = true;
             screen.showPortrait = true;
             screen.bgAlpha = 0f;
-            screen.PlayerSprites.PlayerSprite.Play("turnBackpack_reverse");
-            screen.PlayerSprites.PlayerHairSprite.Play("hairBackpack_reverse");
-            screen.PlayerSprites.PlayerSprite.OnLastFrame = delegate
+            if (component != null)
             {
-                screen.PlayerSprites.PlayerSprite.Visible = false;
-                screen.PlayerSprites.PlayerHairSprite.Visible = false;
-                player.Sprite.Visible = true;
-                player.Hair.Visible = true;
-                player.StateMachine.State = 0;
-            };
+                component.PlaySprite("turnBackpack", "hairBackpack", true, true);
+            }
             screen.talk.Enabled = true;
             screen.Depth = 9010;
             string Prefix = level.Session.Area.LevelSet;
@@ -65,22 +61,17 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public IEnumerator Cutscene(Level level)
         {
+            PlayerCustomAnimation component = player.Components.Get<PlayerCustomAnimation>();
             screen.Depth = -90000;
             level.TimerHidden = true;
             player.StateMachine.State = 11;
             yield return player.DummyWalkToExact((int)screen.X + 40, false, 1f, true);
-            screen.PlayerSprites.PlayerSprite.FlipX = player.Facing == Facings.Left;
-            screen.PlayerSprites.PlayerHairSprite.FlipX = player.Facing == Facings.Left;
-            player.Sprite.Visible = false;
-            player.Hair.Visible = false;
-            screen.PlayerSprites.PlayerSprite.Visible = true;
-            screen.PlayerSprites.PlayerHairSprite.Visible = true;
-            screen.PlayerSprites.PlayerSprite.Play("turnBackpack");
-            screen.PlayerSprites.PlayerHairSprite.Play("hairBackpack");
-            screen.PlayerSprites.PlayerSprite.OnLastFrame = delegate
+            if (component != null)
             {
-                level.Session.SetFlag(SceneAs<Level>().Session.Level + "_" + screen.ID.ID);
-            };
+                component.SetAnim("XaphanHelper_player_turnAround");
+                component.PlaySprite("turnBackpack", "hairBackpack", false);
+            }
+            level.Session.SetFlag(SceneAs<Level>().Session.Level + "_" + screen.ID.ID);
             yield return level.ZoomTo(new Vector2(160f, 92f), 1.75f, 2f);
             if (level.Session.Audio.Music.Event != music || !screen.showPortrait)
             {

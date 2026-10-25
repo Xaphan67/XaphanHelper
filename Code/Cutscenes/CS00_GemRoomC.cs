@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Triggers;
@@ -90,6 +91,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public IEnumerator Cutscene(Level level)
         {
+            PlayerCustomAnimation component = player.Components.Get<PlayerCustomAnimation>();
             if (!gemController.AllGemCollected())
             {
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch0_Gem_Room_First_Time"))
@@ -102,14 +104,11 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     }
                 }
                 yield return player.DummyWalkToExact((int)gemController.X);
-                gemController.PlayerSprite.FlipX = player.Facing == Facings.Left;
-                gemController.PlayerHairSprite.FlipX = player.Facing == Facings.Left;
-                player.Sprite.Visible = false;
-                player.Hair.Visible = false;
-                gemController.PlayerSprite.Visible = true;
-                gemController.PlayerHairSprite.Visible = true;
-                gemController.PlayerSprite.Play("turnBackpack");
-                gemController.PlayerHairSprite.Play("hairBackpack");
+                if (component != null)
+                {
+                    component.SetAnim("XaphanHelper_player_turnAround");
+                    component.PlaySprite("turnBackpack", "hairBackpack", false);
+                }
                 yield return gemController.ActivateGems();
                 if (!XaphanModule.ModSettings.AutoSkipCutscenes)
                 {
@@ -130,15 +129,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                         yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_b_" + missingGems);
                     }
                 }
-                gemController.PlayerSprite.Play("turnBackpack_reverse");
-                gemController.PlayerHairSprite.Play("hairBackpack_reverse");
-                gemController.PlayerSprite.OnLastFrame = delegate
+                if (component != null)
                 {
-                    gemController.PlayerSprite.Visible = false;
-                    gemController.PlayerHairSprite.Visible = false;
-                    player.Sprite.Visible = true;
-                    player.Hair.Visible = true;
-                };
+                    component.PlaySprite("turnBackpack", "hairBackpack", true, false);
+                }
             }
             else
             {
@@ -157,25 +151,17 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     yield return Textbox.Say("Xaphan_Ch0_A_Gem_Room_C_c_" + (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch0_Gem_Room_First_Time") ? "main" : "alt") + (playerRight ? "_flip" : ""));
                 }
                 yield return player.DummyWalkToExact((int)gemController.X);
-                gemController.PlayerSprite.FlipX = player.Facing == Facings.Left;
-                gemController.PlayerHairSprite.FlipX = player.Facing == Facings.Left;
-                player.Sprite.Visible = false;
-                player.Hair.Visible = false;
-                gemController.PlayerSprite.Visible = true;
-                gemController.PlayerHairSprite.Visible = true;
-                gemController.PlayerSprite.Play("turnBackpack");
-                gemController.PlayerHairSprite.Play("hairBackpack");
+                if (component != null)
+                {
+                    component.SetAnim("XaphanHelper_player_turnAround");
+                    component.PlaySprite("turnBackpack", "hairBackpack", false);
+                }
                 yield return gemController.ActivateGems();
                 yield return 0.25f;
-                gemController.PlayerSprite.Play("turnBackpack_reverse");
-                gemController.PlayerHairSprite.Play("hairBackpack_reverse");
-                gemController.PlayerSprite.OnLastFrame = delegate
+                if (component != null)
                 {
-                    gemController.PlayerSprite.Visible = false;
-                    gemController.PlayerHairSprite.Visible = false;
-                    player.Sprite.Visible = true;
-                    player.Hair.Visible = true;
-                };
+                    component.PlaySprite("turnBackpack", "hairBackpack", true, false);
+                }
                 Image white = new(GFX.Game["objects/Xaphan/heart_bwhite"]);
                 white.CenterOrigin();
                 white.Scale = Vector2.Zero;

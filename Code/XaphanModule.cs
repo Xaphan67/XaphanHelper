@@ -791,6 +791,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Mod.UI.OuiMapSearch.Enter += modOuiMapSeatchEnter;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave += modOuiMapSeatchLeave;
+            PlayerCustomAnimation.Load();
             PortraitTint.Load();
             Upgrade.LoadComponent();
             SaveUpdater.Load();
@@ -828,12 +829,10 @@ namespace Celeste.Mod.XaphanHelper
             CustomRefill.Load();
             MergedChaptersGoldenStrawberry.Load();
             Arrow.Load();
-            BigScreen.Load();
             BombSwitch.Load();
             MergeChaptersBCSideHeartCompleteArea.Load();
             Conveyor.Load();
             SolidMovingPlatform.Load();
-            AuxiliaryGenerator.Load();
             Detonator.Load();
             Lever.Load();
             LightManager.Load();
@@ -849,9 +848,6 @@ namespace Celeste.Mod.XaphanHelper
             Drone.Load();
             LevelShake.Load();
             Waterfall.Load();
-            GemController.Load();
-            Stele.Load();
-            AncientText.Load();
             CustomTempleGate.Load();
             CutscenesHelper.Load();
         }
@@ -923,6 +919,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Mod.UI.OuiMapSearch.Enter -= modOuiMapSeatchEnter;
             On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave -= modOuiMapSeatchLeave;
+            PlayerCustomAnimation.Unload();
             PortraitTint.Unload();
             Upgrade.UnloadComponent();
             SaveUpdater.Unload();
@@ -960,12 +957,10 @@ namespace Celeste.Mod.XaphanHelper
             CustomRefill.Unload();
             MergedChaptersGoldenStrawberry.Unload();
             Arrow.Unload();
-            BigScreen.Unload();
             BombSwitch.Unload();
             MergeChaptersBCSideHeartCompleteArea.Unload();
             Conveyor.Unload();
             SolidMovingPlatform.Unload();
-            AuxiliaryGenerator.Unload();
             Detonator.Unload();
             Lever.Unload();
             LightManager.Unload();
@@ -981,9 +976,6 @@ namespace Celeste.Mod.XaphanHelper
             Drone.Unload();
             LevelShake.Unload();
             Waterfall.Unload();
-            GemController.Unload();
-            Stele.Unload();
-            AncientText.Unload();
             CustomTempleGate.Unload();
             CutscenesHelper.Unload();
         }

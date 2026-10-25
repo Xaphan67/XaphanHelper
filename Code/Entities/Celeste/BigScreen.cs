@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Cutscenes;
-using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -14,64 +11,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/BigScreen")]
     public class BigScreen : Entity
     {
-        public class BigScreenSpriteRenderer : Entity
-        {
-            public Sprite PlayerSprite;
-
-            public Sprite PlayerHairSprite;
-
-            public BigScreenSpriteRenderer(BigScreen screen)
-            {
-                Position = screen.Position;
-                Add(PlayerSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
-                PlayerSprite.CenterOrigin();
-                PlayerSprite.Position += new Vector2(40f, 80f);
-                PlayerSprite.Visible = false;
-                Add(PlayerHairSprite = GFX.SpriteBank.Create("XaphanHelper_player_turnAround"));
-                PlayerHairSprite.CenterOrigin();
-                PlayerHairSprite.Position += new Vector2(40f, 80f);
-                PlayerHairSprite.Visible = false;
-                Depth = 0;
-            }
-
-            public override void Render()
-            {
-                base.Render();
-                Level level = SceneAs<Level>();
-                if (!XaphanModule.useMetroidGameplay && XaphanModule.useUpgrades && (VariaJacket.Active(level) || GravityJacket.Active(level)))
-                {
-                    string id = "";
-                    foreach (string name in XaphanModule.JacketPriorityNames)
-                    {
-                        var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
-                        if (data.Test != null && data.Test(level))
-                        {
-                            id = data.Id;
-                            break;
-                        }
-                    }
-                    Effect fxColorGrading = GFX.FxColorGrading;
-                    fxColorGrading.CurrentTechnique = fxColorGrading.Techniques["ColorGradeSingle"];
-                    Engine.Graphics.GraphicsDevice.Textures[1] = GFX.ColorGrades[id].Texture.Texture_Safe;
-                    Draw.SpriteBatch.End();
-                    Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, fxColorGrading, level.GameplayRenderer.Camera.Matrix);
-                    if (PlayerSprite != null && PlayerSprite.Visible)
-                    {
-
-                        PlayerSprite.Render();
-                    }
-                    Draw.SpriteBatch.End();
-                    Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, level.GameplayRenderer.Camera.Matrix);
-                }
-                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-                if (PlayerHairSprite != null && PlayerHairSprite.Visible && player != null)
-                {
-                    PlayerHairSprite.Color = player.Hair.Color;
-                    PlayerHairSprite.Render();
-                }
-            }
-        }
-
         public EntityID ID;
 
         public const int BGDepth = 9010;
@@ -112,8 +51,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string PortraitPath;
 
-        public BigScreenSpriteRenderer PlayerSprites;
-
         public BigScreen(EntityData data, Vector2 position, EntityID eID) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
@@ -129,30 +66,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             noInteract = data.Bool("noInteract");
             PortraitPath = data.Attr("portrait", "objects/Xaphan/BigScreen/Portrait");
             Add(new CustomBloom(RenderBloom));
-        }
-
-        public static void Load()
-        {
-            On.Celeste.Player.Die += OnPlayerDie;
-        }
-
-        public static void Unload()
-        {
-            On.Celeste.Player.Die -= OnPlayerDie;
-        }
-
-        private static PlayerDeadBody OnPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
-        {
-            foreach (BigScreen screen in self.SceneAs<Level>().Tracker.GetEntities<BigScreen>())
-            {
-                if (screen.PlayerSprites.PlayerSprite.Visible)
-                {
-                    screen.PlayerSprites.PlayerSprite.Visible = false;
-                    screen.PlayerSprites.PlayerHairSprite.Visible = false;
-                    self.Sprite.Visible = true;
-                }
-            }
-            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         public override void Added(Scene scene)
@@ -185,7 +98,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            scene.Add(PlayerSprites = new BigScreenSpriteRenderer(this));
             MTexture mTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlices"];
             tiles = new MTexture[mTexture.Width / 8, mTexture.Height / 8];
             for (int i = 0; i < mTexture.Width / 8; i++)
