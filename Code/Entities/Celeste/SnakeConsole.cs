@@ -17,26 +17,38 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public enum Status
             {
-                Inactive,
-                Active,
+                MainMenu,
+                Playing,
                 Defeat,
                 Victory
             }
 
             public readonly LinkedList<Point> Body = new LinkedList<Point>();
 
-            public Status CurrentStatus = Status.Inactive;
+            public Status CurrentStatus = Status.MainMenu;
 
-            public Point CurrentFood;
+            public Point CurrentStrawberry;
 
             private Point direction = new Point(1, 0);
 
             public Point nextDirection = new Point(1, 0);
 
+            private int InternalScore = 0;
+
+            public int InternalLevel = 1;
+
+            public string Score = "0";
+
+            public string Level = "1";
+
             public void StartGame()
             {
                 Body.Clear();
                 direction = new Point(1, 0);
+                InternalScore = 0;
+                InternalLevel = 1;
+                Score = "0";
+                Level = "1";
 
                 // Starting position for the snake
                 for (int x = 3; x >= 1; x--)
@@ -44,15 +56,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     AddSegmentAtEnd(new Point(x, GridSize / 2));
                 }
 
-                // Add one food
-                SpawnFood();
+                // Add one Strawberry
+                SpawnStrawberry();
 
-                CurrentStatus = Status.Active;
+                CurrentStatus = Status.Playing;
             }
 
             public void Tick()
             {
-                if (CurrentStatus != Status.Active)
+                if (CurrentStatus != Status.Playing)
                 {
                     return;
                 }
@@ -64,7 +76,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     direction = nextDirection;
                 }
 
-                // Check if the player collide with itself, a food or a wall
+                // Check if the player collide with itself, a strawberry or a wall
                 Point head = Body.First.Value;
                 Point next = new Point(head.X + direction.X, head.Y + direction.Y);
                 if (next.X < 0 || next.X >= GridSize || next.Y < 0 || next.Y >= GridSize)
@@ -72,7 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     CurrentStatus = Status.Defeat;
                     return;
                 }
-                if ((!Body.Contains(next) && next != CurrentFood) || next == Body.Last.Value)
+                if ((!Body.Contains(next) && next != CurrentStrawberry) || next == Body.Last.Value)
                 {
                     Body.RemoveLast();
                 }
@@ -82,13 +94,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     return;
                 }
                 AddSegmentAtStart(next);
-                if (next == CurrentFood)
+                if (next == CurrentStrawberry)
                 {
-                    SpawnFood();
+                    InternalScore++;
+                    Score = InternalScore.ToString();
+
+                    // Increase Level every 10 strawberries
+                    if (InternalScore % 10 == 0)
+                    {
+                        InternalLevel++;
+                        Level = InternalLevel.ToString();
+                    }
+                    SpawnStrawberry();
                 }
             }
 
-            public void SpawnFood()
+            public void SpawnStrawberry()
             {
                 // Check free spots and select one randomly
                 // If no free spôts left, player is victorious
@@ -107,7 +128,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     CurrentStatus = Status.Victory;
                     return;
                 }
-                CurrentFood = free[Calc.Random.Next(free.Count)];
+                CurrentStrawberry = free[Calc.Random.Next(free.Count)];
             }
 
             private void AddSegmentAtStart(Point p)
@@ -125,7 +146,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private const int CellSize = 8;
 
-        private const float TickTime = 0.75f;
+        private float TickTime;
 
         public Color BackgroundColor;
 
@@ -137,6 +158,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private MTexture onLedTexture;
 
+        private MTexture strawberryTexture;
+
         private string forceInactiveFlag;
 
         private float TickTimer;
@@ -147,11 +170,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool isOn;
 
+        private PixelFontSize pixelFont;
+
         public SnakeConsole(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
-            Collider = new Hitbox(88f, 88f);
+            Collider = new Hitbox(144f, 88f);
             forceInactiveFlag = data.Attr("forceInactiveFlag");
             onLedTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlicesOn"];
+            strawberryTexture = GFX.Game["objects/Xaphan/SnakeGame/strawberry"];
         }
 
         public override void Added(Scene scene)
@@ -161,7 +187,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             if (string.IsNullOrEmpty(forceInactiveFlag) || !SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
             {
-                Add(talk = new TalkComponent(new Rectangle(32, 104, 24, 8), new Vector2(44, 96f), Interact));
+                Add(talk = new TalkComponent(new Rectangle(60, 104, 24, 8), new Vector2(72, 96f), Interact));
                 talk.PlayerMustBeFacing = false;
                 if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_SnakeConsole"))
                 {
@@ -173,6 +199,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 Add(new Coroutine(NoiseRoutine()));
             }
+            PixelFont font = Fonts.Load("PICO-8 Regular");
+            pixelFont = font.Get(64f);
         }
 
         public override void Awake(Scene scene)
@@ -302,10 +330,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Seed++;
             }
 
-            if (game.CurrentStatus == SnakeGame.Status.Inactive)
+            if (game.CurrentStatus == SnakeGame.Status.MainMenu)
             {
                 return;
             }
+
+            TickTime = 0.85f - game.InternalLevel * 0.1f;
 
             // Register player direction input
             if (Input.MenuUp.Pressed)
@@ -326,7 +356,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
 
             // Progress the game each 'tick'
-            if (game.CurrentStatus == SnakeGame.Status.Active)
+            if (game.CurrentStatus == SnakeGame.Status.Playing)
             {
                 TickTimer -= Engine.DeltaTime;
                 if (TickTimer <= 0)
@@ -346,14 +376,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Draw.Rect(Collider, Color.Black);
             Draw.Rect(Collider, BackgroundColor);
 
-            if (game.CurrentStatus == SnakeGame.Status.Active)
+            if (game.CurrentStatus == SnakeGame.Status.Playing)
             {
                 // Grid
                 Vector2 Origin = Position + Vector2.One * 8f;
                 Draw.HollowRect(Origin.X - 1, Origin.Y - 1, 74, 74, Color.White);
 
-                // Food
-                Draw.Rect(Origin.X + game.CurrentFood.X * CellSize + 1, Origin.Y + game.CurrentFood.Y * CellSize + 1, CellSize - 2, CellSize - 2, Color.Red);
+                // Strawberry
+                strawberryTexture.Draw(Origin + new Vector2(game.CurrentStrawberry.X, game.CurrentStrawberry.Y) * CellSize);
 
                 // Snake
                 bool isHead = true;
@@ -362,6 +392,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Draw.Rect(Origin.X + segment.X * CellSize, Origin.Y + segment.Y * CellSize, CellSize, CellSize, isHead ? Color.LimeGreen : Color.Green);
                     isHead = false;
                 }
+
+                // HUD
+                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_player"), Position + new Vector2(88f, 6f), Vector2.Zero, Vector2.One * 0.1f, Color.Gold);
+                pixelFont.Draw(SaveData.Instance.Name, Position + new Vector2(88f, 14f), Vector2.Zero, Vector2.One * 0.1f, Color.White);
+                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_level"), Position + new Vector2(88f, 26f), Vector2.Zero, Vector2.One * 0.1f, Color.Gold);
+                pixelFont.Draw(game.Level, Position + new Vector2(88f, 34f), Vector2.Zero, Vector2.One * 0.1f, Color.White);
+                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_score"), Position + new Vector2(88f, 46f), Vector2.Zero, Vector2.One * 0.1f, Color.Gold);
+                pixelFont.Draw(game.Score, Position + new Vector2(88f, 54f), Vector2.Zero, Vector2.One * 0.1f, Color.White);
+                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_hiscore"), Position + new Vector2(88f, 66f), Vector2.Zero, Vector2.One * 0.1f, Color.Gold);
+                pixelFont.Draw('0', Position + new Vector2(88f, 74f), Vector2.Zero, Vector2.One * 0.1f, Color.White);
             }
 
             // Noise
@@ -441,6 +481,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private static float PseudoRandRange(ref uint seed, float min, float max)
         {
             return min + (PseudoRand(ref seed) % 1000u) / 1000f * (max - min);
+        }
+
+        public override void Removed(Scene scene)
+        {
+            base.Removed(scene);
+            Fonts.Unload("PICO-8 Regular");
         }
     }
 }
