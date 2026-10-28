@@ -250,6 +250,10 @@ namespace Celeste.Mod.XaphanHelper
 
         public Dictionary<string, LightModes> LightMode = new();
 
+        // Snake Console
+
+        public int SnakeHighScore = 0;
+
         // Golden Strawberry
 
         public int GoldenStartChapter = -999;

@@ -61,7 +61,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public Point CurrentStrawberry;
 
-            private Point direction = new Point(1, 0);
+            public Point direction = new Point(1, 0);
 
             public Point nextDirection = new Point(1, 0);
 
@@ -111,11 +111,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
 
                 // Redirect the snake based on player input
-                // But prevent opposite of current direction
-                if (!((nextDirection.Y == 0 && nextDirection.X == -direction.X) || (nextDirection.X == 0 && nextDirection.Y == -direction.Y)))
-                {
-                    direction = nextDirection;
-                }
+                direction = nextDirection;
 
                 // Check if the player collide with itself, a strawberry or a wall
                 Point head = Body.First.Value;
@@ -244,6 +240,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Add(talk = new TalkComponent(new Rectangle(60, 104, 24, 8), new Vector2(72, 96f), Interact));
                 talk.PlayerMustBeFacing = false;
+            }
+            if (XaphanModule.ModSaveData.SnakeHighScore != 0)
+            {
+                SubmitScore(XaphanModule.ModSaveData.SnakeHighScore);
             }
             PixelFont font = Fonts.Load("PICO-8 Regular");
             pixelFont = font.Get(64f);
@@ -418,6 +418,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 index = game.highScores.Count;
             }
             game.highScores.Insert(index, new SnakeGame.ScoreEntry(SaveData.Instance.Name, score, true));
+            XaphanModule.ModSaveData.SnakeHighScore = score;
         }
 
         public override void Update()
@@ -498,19 +499,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 TickTime = 0.85f - game.InternalLevel * 0.1f;
 
                 // Register player direction input
-                if (Input.MenuUp.Pressed)
+                if (Input.MenuUp.Pressed && game.direction != new Point(0, 1))
                 {
                     game.nextDirection = new Point(0, -1);
                 }
-                else if (Input.MenuDown.Pressed)
+                else if (Input.MenuDown.Pressed && game.direction != new Point(0, -1))
                 {
                     game.nextDirection = new Point(0, 1);
                 }
-                else if (Input.MenuLeft.Pressed)
+                else if (Input.MenuLeft.Pressed && game.direction != new Point(1, 0))
                 {
                     game.nextDirection = new Point(-1, 0);
                 }
-                else if (Input.MenuRight.Pressed)
+                else if (Input.MenuRight.Pressed && game.direction != new Point(-1, 0))
                 {
                     game.nextDirection = new Point(1, 0);
                 }
@@ -641,18 +642,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 pixelFont.Draw(game.currentBest, Position + new Vector2(88f, 74f), Vector2.Zero, Vector2.One * 0.1f, Color.White);
             }
 
-            if (game.CurrentStatus == SnakeGame.Status.Defeat)
+            if (game.CurrentStatus == SnakeGame.Status.Defeat || game.CurrentStatus == SnakeGame.Status.Victory)
             {
-                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_game_over"), Position + new Vector2(Width / 2, 10f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, Color.Gold);
-                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_final_score"), Position + new Vector2(Width / 2, 30f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, Color.White);
-                pixelFont.Draw(game.Score, Position + new Vector2(Width / 2, 40f), new Vector2(0.5f, 0f), Vector2.One * 0.2f, Color.White);
-                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_replay"), Position + new Vector2(Width / 2, 64f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, selection == 0 ? Color.LightGreen : Color.White);
-                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_menu"), Position + new Vector2(Width / 2, 71f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, selection == 1 ? Color.LightGreen : Color.White);
-            }
-
-            if (game.CurrentStatus == SnakeGame.Status.Victory)
-            {
-                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_congratulations"), Position + new Vector2(Width / 2, 10f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, Color.Gold);
+                pixelFont.Draw(Dialog.Clean(game.CurrentStatus == SnakeGame.Status.Defeat ? "Xaphan_Ch5_Snake_game_over" : "Xaphan_Ch5_Snake_congratulations"), Position + new Vector2(Width / 2, 10f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, Color.Gold);
                 pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_final_score"), Position + new Vector2(Width / 2, 30f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, Color.White);
                 pixelFont.Draw(game.Score, Position + new Vector2(Width / 2, 40f), new Vector2(0.5f, 0f), Vector2.One * 0.2f, Color.White);
                 pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_replay"), Position + new Vector2(Width / 2, 64f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, selection == 0 ? Color.LightGreen : Color.White);
