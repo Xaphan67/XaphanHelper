@@ -91,6 +91,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public void ShowMainMenu()
             {
                 CurrentStatus = Status.MainMenu;
+                Audio.SetMusic("event:/music/xaphan/snakegame/lvl_0_snakegame_menu", true, false);
             }
 
             public void StartGame()
@@ -104,6 +105,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Score = "0";
                 Level = "1";
                 currentBest = highScores.Find(e => e.IsPlayer)?.ScoreText ?? "0";
+                Audio.SetMusic("event:/music/xaphan/snakegame/lvl_0_snakegame_main", true, false);
 
                 // Starting position for the snake
                 for (int x = 3; x >= 1; x--)
@@ -132,7 +134,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Point next = new Point(head.X + direction.X, head.Y + direction.Y);
                 if (next.X < 0 || next.X >= GridSize || next.Y < 0 || next.Y >= GridSize)
                 {
-                    CurrentStatus = Status.Defeat;
+                    GameOver();
                     return;
                 }
                 if ((!Body.Contains(next) && next != CurrentStrawberry) || next == Body.Last.Value)
@@ -141,7 +143,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 if (Body.Contains(next))
                 {
-                    CurrentStatus = Status.Defeat;
+                    GameOver();
                     return;
                 }
                 AddSegmentAtStart(next);
@@ -157,14 +159,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         // 70 strawberries collected = victory
                         if (InternalScore == 70)
                         {
+                            Audio.SetMusic(null);
                             CurrentStatus = Status.Victory;
                             return;
                         }
+                        Audio.Play("event:/game/xaphan/snakegame/level_up");
                         InternalLevel++;
                         Level = InternalLevel.ToString();
+                        SpawnStrawberry();
                     }
-                    SpawnStrawberry();
+                    else
+                    {
+                        Audio.Play("event:/game/xaphan/snakegame/strawberry");
+                        SpawnStrawberry();
+                    }
                 }
+            }
+
+            public void GameOver()
+            {
+                CurrentStatus = Status.Defeat;
+                Audio.SetMusic(null);
+                Audio.Play("event:/game/xaphan/snakegame/game_over");
             }
 
             public void SpawnStrawberry()
@@ -261,6 +277,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Coroutine Noise = new Coroutine();
 
         private Coroutine MainMenuSelect = new Coroutine();
+
+        private string previousMusic;
 
         public SnakeConsole(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -396,6 +414,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Interact(Player player)
         {
+            previousMusic = SceneAs<Level>().Session.Audio.Music.Event;
             if (Noise != null && Noise.Active)
             {
                 Noise.Cancel();
@@ -411,6 +430,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator StartGame()
         {
+            Audio.Play("event:/game/xaphan/snakegame/menu_select");
             float blinktimer = 1f;
             while (blinktimer > 0f)
             {
@@ -433,11 +453,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             talk.Enabled = true;
             yield return 0.1f;
             player.StateMachine.State = Player.StNormal;
+            Audio.SetMusic(previousMusic);
         }
 
         private IEnumerator WaitBeforeStart()
         {
             yield return 1.2f;
+            Audio.SetMusic(null);
             game.ShowMainMenu();
         }
 
@@ -487,6 +509,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (Input.MenuUp.Pressed)
                 {
+                    Audio.Play("event:/game/xaphan/snakegame/menu_change");
                     selection--;
                     if (selection < 0)
                     {
@@ -495,6 +518,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else if (Input.MenuDown.Pressed)
                 {
+                    Audio.Play("event:/game/xaphan/snakegame/menu_change");
                     selection++;
                     if (selection > 3)
                     {
@@ -577,6 +601,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (Input.MenuUp.Pressed)
                 {
+                    Audio.Play("event:/game/xaphan/snakegame/menu_change");
                     selection--;
                     if (selection < 0)
                     {
@@ -585,6 +610,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else if (Input.MenuDown.Pressed)
                 {
+                    Audio.Play("event:/game/xaphan/snakegame/menu_change");
                     selection++;
                     if (selection > 1)
                     {
@@ -605,7 +631,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             case 1:
                                 Input.MenuConfirm.ConsumePress();
                                 selection = 0;
-                                game.CurrentStatus = SnakeGame.Status.MainMenu;
+                                game.ShowMainMenu();
                                 break;
                         }
                     }
