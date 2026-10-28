@@ -42,6 +42,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 new (Dialog.Clean("ORACCA"), 15),
             };
 
+            private Dictionary<int, Color> difficultyColors = new Dictionary<int, Color>
+            {
+                [0] = Color.DeepSkyBlue,
+                [10] = Color.LimeGreen,
+                [20] = Color.Yellow,
+                [30] = Color.Orange,
+                [40] = Color.Red,
+                [50] = Color.MediumPurple,
+                [60] = Color.Gray
+            };
+
             public const int GridSize = 9;
 
             public enum Status
@@ -75,6 +86,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public string currentBest;
 
+            public Color SnakeColor;
+
             public void ShowMainMenu()
             {
                 CurrentStatus = Status.MainMenu;
@@ -82,6 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public void StartGame()
             {
+                SnakeColor = GetSnakeColor(0);
                 Body.Clear();
                 direction = new Point(1, 0);
                 nextDirection = new Point(1, 0);
@@ -134,6 +148,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (next == CurrentStrawberry)
                 {
                     InternalScore++;
+                    SnakeColor = GetSnakeColor(InternalScore);
                     Score = InternalScore.ToString();
 
                     // Increase Level every 10 strawberries
@@ -178,6 +193,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Body.AddLast(p);
             }
+
+            private Color GetSnakeColor(int score)
+            {
+                int bestKey = -1;
+                Color color = Color.White;
+
+                foreach (KeyValuePair<int, Color> pair in difficultyColors)
+                {
+                    if (pair.Key <= score && pair.Key > bestKey)
+                    {
+                        bestKey = pair.Key;
+                        color = pair.Value;
+                    }
+                }
+
+                return color;
+            }
         }
 
         private readonly SnakeGame game = new SnakeGame();
@@ -197,6 +229,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private MTexture[,] tiles;
 
         private MTexture onLedTexture;
+
+        private MTexture headTexture;
+
+        private MTexture bodyTexture;
+
+        private MTexture cornerTexture;
+
+        private MTexture tailTexture;
 
         private MTexture strawberryTexture;
 
@@ -227,6 +267,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Collider = new Hitbox(144f, 88f);
             forceInactiveFlag = data.Attr("forceInactiveFlag");
             onLedTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlicesOn"];
+            headTexture = GFX.Game["objects/Xaphan/SnakeGame/head"];
+            bodyTexture = GFX.Game["objects/Xaphan/SnakeGame/body"];
+            cornerTexture = GFX.Game["objects/Xaphan/SnakeGame/corner"];
+            tailTexture = GFX.Game["objects/Xaphan/SnakeGame/tail"];
             strawberryTexture = GFX.Game["objects/Xaphan/SnakeGame/strawberry"];
             logoTexture = GFX.Game["objects/Xaphan/SnakeGame/logo"];
         }
@@ -624,11 +668,46 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 strawberryTexture.Draw(Origin + new Vector2(game.CurrentStrawberry.X, game.CurrentStrawberry.Y) * CellSize);
 
                 // Snake
-                bool isHead = true;
-                foreach (Point segment in game.Body)
+                for (LinkedListNode<Point> node = game.Body.First; node != null; node = node.Next)
                 {
-                    Draw.Rect(Origin.X + segment.X * CellSize, Origin.Y + segment.Y * CellSize, CellSize, CellSize, isHead ? Color.LimeGreen : Color.Green);
-                    isHead = false;
+                    Point current = node.Value;
+                    Vector2 center = Origin + new Vector2((current.X + 0.5f) * CellSize, (current.Y + 0.5f) * CellSize);
+                    MTexture texture;
+                    float rotation;
+                    Vector2 scale = Vector2.One;
+
+                    if (node.Previous == null) // Head
+                    {
+                        texture = headTexture;
+                        rotation = Angle(Diff(current, node.Next.Value));
+                    }
+                    else if (node.Next == null) // Tail
+                    {
+                        texture = tailTexture;
+                        rotation = Angle(Diff(node.Previous.Value, current));
+                    }
+                    else
+                    {
+                        Point inDir = Diff(current, node.Next.Value);
+                        Point outDir = Diff(node.Previous.Value, current);
+
+                        if (inDir == outDir) // Line body
+                        {
+                            texture = bodyTexture;
+                            rotation = Angle(inDir);
+                        }
+                        else // Corner body
+                        {
+                            texture = cornerTexture;
+                            rotation = Angle(inDir);
+                            if (inDir.X * outDir.Y - inDir.Y * outDir.X < 0)
+                            {
+                                scale = new Vector2(1f, -1f);
+                            }
+                        }
+                    }
+
+                    texture.DrawCentered(center, game.SnakeColor, scale, rotation);
                 }
 
                 // HUD
@@ -657,6 +736,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 DrawNoise(Collider.Bounds, ref seed, Color.White * noiseAlpha);
                 onLedTexture.Draw(Position + new Vector2(-8f, Height));
             }
+        }
+
+        private static Point Diff(Point a, Point b)
+        {
+            return new Point(a.X - b.X, a.Y - b.Y);
+        }
+
+        private static float Angle(Point d)
+        {
+            return (float)Math.Atan2(d.Y, d.X);
         }
 
         private IEnumerator NoiseRoutine()
