@@ -1258,6 +1258,20 @@ namespace Celeste.Mod.XaphanHelper
                     maxValue: StatsFlags.TotalStrawberries[5],
                     medals: 15
                 ));
+
+                if (XaphanModule.SoCMVersion >= new Version(3, 1, 0))
+                {
+                    list.Add(new AchievementData(
+                        achievementID: "heart5",
+                        categoryID: 5,
+                        icon: "achievements/Xaphan/HeartSilver",
+                        flag: "XaphanHelper_StatFlag_HeartCh5",
+                        currentValue: StatsFlags.ASideHearts[5] ? 1 : 0,
+                        maxValue: 1,
+                        medals: 20
+                    ));
+                }
+
                 list.Add(new AchievementData(
                     achievementID: "boss5-1",
                     categoryID: 5,

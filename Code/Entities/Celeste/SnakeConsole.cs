@@ -289,6 +289,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Parallax parallax;
 
+        private HeartGem heart;
+
         public SnakeConsole(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Collider = new Hitbox(144f, 88f);
@@ -442,6 +444,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             player.StateMachine.State = Player.StDummy;
             TickTimer = TickTime;
             Add(new Coroutine(WaitBeforeStart()));
+            heart = SceneAs<Level>().Entities.FindFirst<HeartGem>();
+            if (heart != null )
+            {
+                SceneAs<Level>().Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
+                heart.Visible = false;
+            }
         }
 
         private IEnumerator StartGame()
@@ -495,9 +503,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = 9010;
             yield return 0.1f;
             player.StateMachine.State = Player.StNormal;
-            if (SceneAs<Level>().Session.GetFlag("SnakeConsole_HasPlayed"))
+            if (SceneAs<Level>().Session.GetFlag("SnakeConsole_HasPlayed") && heart == null && !SceneAs<Level>().Session.HeartGem)
             {
                 Add(new Coroutine(RevealHeart()));
+            }
+            else if (heart != null)
+            {
+                SceneAs<Level>().Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
+                heart.Visible = true;
             }
         }
 
