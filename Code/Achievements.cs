@@ -1270,6 +1270,17 @@ namespace Celeste.Mod.XaphanHelper
                         maxValue: 1,
                         medals: 20
                     ));
+
+                    list.Add(new AchievementData(
+                        achievementID: "snake",
+                        categoryID: 5,
+                        icon: "achievements/Xaphan/Snake",
+                        flag: "SnakeConsole_Victory",
+                        currentValue: XaphanModule.ModSaveData.SnakeHighScore,
+                        maxValue: 70,
+                        medals: 25,
+                        hidden: true
+                    ));
                 }
 
                 list.Add(new AchievementData(

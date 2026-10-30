@@ -444,7 +444,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             player.StateMachine.State = Player.StDummy;
             TickTimer = TickTime;
             Add(new Coroutine(WaitBeforeStart()));
-            heart = SceneAs<Level>().Entities.FindFirst<HeartGem>();
+            foreach (HeartGem heart in SceneAs<Level>().Entities.FindAll<HeartGem>())
+            {
+                if (SceneAs<Level>().IsInBounds(heart))
+                {
+                    this.heart = heart;
+                    break;
+                }
+            }
             if (heart != null )
             {
                 SceneAs<Level>().Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
@@ -748,6 +755,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             // Game Over and Victory screens
             if (game.CurrentStatus == SnakeGame.Status.Defeat || game.CurrentStatus == SnakeGame.Status.Victory)
             {
+                // Give achievement if victory
+                if (game.CurrentStatus == SnakeGame.Status.Victory)
+                {
+                    SceneAs<Level>().Session.SetFlag("SnakeConsole_Victory");
+                }
+
                 if (Input.MenuUp.Pressed)
                 {
                     Audio.Play("event:/game/xaphan/snakegame/menu_change");
