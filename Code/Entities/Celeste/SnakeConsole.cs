@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -262,6 +263,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float TickTimer;
 
+        public float bgAlpha;
+
         public float noiseAlpha = 0.1f;
 
         private bool skipTurnOnAnim;
@@ -279,6 +282,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Coroutine MainMenuSelect = new Coroutine();
 
         private string previousMusic;
+
+        private string previousAmbiance;
+
+        private float previousParallaxAlpha;
+
+        private Parallax parallax;
 
         public SnakeConsole(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -300,7 +309,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             int chapterIndex = SceneAs<Level>().Session.Area.ChapterIndex;
             if (string.IsNullOrEmpty(forceInactiveFlag) || !SceneAs<Level>().Session.GetFlag(forceInactiveFlag))
             {
-                Add(talk = new TalkComponent(new Rectangle(60, 104, 24, 8), new Vector2(72, 96f), Interact));
+                Add(talk = new TalkComponent(new Rectangle(60, 120, 24, 8), new Vector2(72, 96f), Interact));
                 talk.PlayerMustBeFacing = false;
             }
             if (XaphanModule.ModSaveData.SnakeHighScore != 0)
@@ -309,6 +318,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             PixelFont font = Fonts.Load("PICO-8 Regular");
             pixelFont = font.Get(64f);
+            parallax = GetFogParallax();
+            previousParallaxAlpha = parallax.Alpha;
         }
 
         public override void Awake(Scene scene)
@@ -414,7 +425,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void Interact(Player player)
         {
+            Depth = -90000;
             previousMusic = SceneAs<Level>().Session.Audio.Music.Event;
+            previousAmbiance = SceneAs<Level>().Session.Audio.Ambience.Event;
             if (Noise != null && Noise.Active)
             {
                 Noise.Cancel();
@@ -424,7 +437,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.player = player;
             player.StateMachine.State = Player.StDummy;
             TickTimer = TickTime;
-            isOn = true;
             Add(new Coroutine(WaitBeforeStart()));
         }
 
@@ -447,20 +459,89 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator Exit()
         {
+            PlayerCustomAnimation component = player.Components.Get<PlayerCustomAnimation>();
             game.CurrentStatus = SnakeGame.Status.Inactive;
+            Audio.SetMusic(previousMusic);
+            Audio.SetAmbience(previousAmbiance);
             selection = 0;
             isOn = false;
+            while (bgAlpha > 0f)
+            {
+                bgAlpha -= Engine.RawDeltaTime;
+                if (parallax.Alpha < previousParallaxAlpha)
+                {
+                    parallax.Alpha += Engine.RawDeltaTime;
+                }
+                else
+                {
+                    parallax.Alpha = previousParallaxAlpha;
+                }
+                yield return null;
+            }
+            bgAlpha = 0f;
+            yield return SceneAs<Level>().ZoomBack(1f);
+            if (component != null)
+            {
+                component.PlaySprite("turnBackpack", "hairBackpack", true, true);
+            }
+            SceneAs<Level>().TimerHidden = false;
+            SceneAs<Level>().Session.SetFlag("SnakeConsole_Playing", false);
             talk.Enabled = true;
+            Depth = 9010;
             yield return 0.1f;
             player.StateMachine.State = Player.StNormal;
-            Audio.SetMusic(previousMusic);
         }
 
         private IEnumerator WaitBeforeStart()
         {
-            yield return 1.2f;
+            PlayerCustomAnimation component = player.Components.Get<PlayerCustomAnimation>();
+            SceneAs<Level>().TimerHidden = true;
+            yield return player.DummyWalkToExact((int)X + 72, false, 1f, true);
+            if (component != null)
+            {
+                component.SetAnim("XaphanHelper_player_turnAround");
+                component.PlaySprite("turnBackpack", "hairBackpack", false);
+            }
+            SceneAs<Level>().Session.SetFlag("SnakeConsole_Playing");
+            yield return SceneAs<Level>().ZoomTo(new Vector2(160f, 92f), 1.3f, 2f);
+            while (bgAlpha <= 0.85f)
+            {
+                bgAlpha += Engine.RawDeltaTime;
+                if (parallax.Alpha > 0f)
+                {
+                    parallax.Alpha -= Engine.RawDeltaTime;
+                }
+                else
+                {
+                    parallax.Alpha = 0f;
+                }
+                yield return null;
+            }
+            bgAlpha = 0.85f;
+            yield return 0.2f;
             Audio.SetMusic(null);
+            Audio.SetAmbience(null);
+            isOn = true;
+            yield return 1.2f;
             game.ShowMainMenu();
+        }
+
+        private Parallax GetFogParallax()
+        {
+            Parallax result = null;
+            foreach (Backdrop backdrop in SceneAs<Level>().Foreground.Backdrops)
+            {
+                if (backdrop is Parallax parallax)
+                {
+                    if (parallax.Tags.Contains("Fog"))
+                    {
+                        result = parallax;
+                        break;
+                    }
+                }
+            }
+
+            return result;
         }
 
         private void SubmitScore(int score)
@@ -641,6 +722,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Render()
         {
+            Draw.Rect(new Rectangle((int)Position.X - 80, (int)Position.Y - 80, 160 + (int)Width, 160 + (int)Height), Color.Black * bgAlpha);
             base.Render();
             uint seed = Seed;
 
