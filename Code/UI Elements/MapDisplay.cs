@@ -710,7 +710,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "moonberry", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY)), MapData.Area, entity.ID));
                     }
-                    else if ((entity.Name == "blackGem" || entity.Name == "XaphanHelper/Ch2HeartController" || entity.Name == "MaxHelpingHand/ReskinnableCrystalHeart") && IsInBounds(level, new Vector2(entity.Position.X, entity.Position.Y)))
+                    else if ((entity.Name == "blackGem" || entity.Name == "XaphanHelper/Ch2HeartController" || entity.Name == "MaxHelpingHand/ReskinnableCrystalHeart"|| entity.Name == "XaphanHelper/SnakeConsole") && IsInBounds(level, new Vector2(entity.Position.X, entity.Position.Y)))
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "heart", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
                     }

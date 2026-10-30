@@ -325,6 +325,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
+            if (!SceneAs<Level>().Session.HeartGem && SceneAs<Level>().Session.GetFlag("SnakeConsole_HasPlayed"))
+            {
+                Scene.Add(new HeartGem(Position + new Vector2(Width / 2f, Height / 2f)));
+            }
             MTexture mTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlices"];
             tiles = new MTexture[mTexture.Width / 8, mTexture.Height / 8];
             for (int i = 0; i < mTexture.Width / 8; i++)
@@ -455,6 +459,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             blink = false;
             selection = 0;
             game.StartGame();
+            SceneAs<Level>().Session.SetFlag("SnakeConsole_HasPlayed", true);
         }
 
         private IEnumerator Exit()
@@ -490,6 +495,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = 9010;
             yield return 0.1f;
             player.StateMachine.State = Player.StNormal;
+            if (SceneAs<Level>().Session.GetFlag("SnakeConsole_HasPlayed"))
+            {
+                Add(new Coroutine(RevealHeart()));
+            }
         }
 
         private IEnumerator WaitBeforeStart()
@@ -566,6 +575,52 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             game.highScores.Insert(index, new SnakeGame.ScoreEntry(SaveData.Instance.Name, score, true));
             XaphanModule.ModSaveData.SnakeHighScore = score;
+        }
+
+        private IEnumerator RevealHeart()
+        {
+            Audio.Play("event:/game/06_reflection/supersecret_heartappear");
+            Entity dummy = new(Position + new Vector2(Width / 2f, Height / 2f))
+            {
+                Depth = 1
+            };
+            Scene.Add(dummy);
+            Image white = new(GFX.Game["collectables/heartgem/white00"]);
+            white.CenterOrigin();
+            white.Scale = Vector2.Zero;
+            dummy.Add(white);
+            BloomPoint glow = new(0f, 16f);
+            dummy.Add(glow);
+            List<Entity> absorbs = new();
+            for (int i = 0; i < 20; i++)
+            {
+                AbsorbOrb orb = new(Position + new Vector2(Width / 2f, Height + 24f), dummy);
+                Scene.Add(orb);
+                absorbs.Add(orb);
+                yield return null;
+            }
+            yield return 0.8f;
+            float duration = 0.6f;
+            for (float p = 0f; p < 1f; p += Engine.DeltaTime / duration)
+            {
+                white.Scale = Vector2.One * p;
+                glow.Alpha = p;
+                (Scene as Level).Shake();
+                yield return null;
+            }
+            foreach (Entity orb2 in absorbs)
+            {
+                orb2.RemoveSelf();
+            }
+                (Scene as Level).Flash(Color.White);
+            Scene.Remove(dummy);
+            Scene.Add(new HeartGem(Position + new Vector2(Width / 2f, Height / 2f)));
+            float timer2 = 2f;
+            while (timer2 > 0f)
+            {
+                yield return null;
+                timer2 -= Engine.DeltaTime;
+            }
         }
 
         public override void Update()
