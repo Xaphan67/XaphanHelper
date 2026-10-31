@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
@@ -34,13 +35,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private static readonly Regex includeRegex = new Regex(@"\{\+(\w+)\}", RegexOptions.Compiled);
 
-            public NotePage(string dialogID, float scale = 0.7f)
+            public NotePage(string dialogID, string paperSprite = "poempage", float scale = 0.7f)
             {
                 Tag = Tags.HUD;
-                paper = GFX.Gui["others/note"];
+                paper = GFX.Gui[paperSprite];
                 textScale = scale;
-                string dialog = StripColors(dialogID);
-                text = FancyText.Parse(dialog, (int)((paper.Width - 120) / textScale), -1, 1f, Color.Black * 0.7f);
+                if (dialogID != null)
+                {
+                    string dialog = StripColors(dialogID);
+                    text = FancyText.Parse(dialog, (int)((paper.Width - 120) / textScale), -1, 1f, Color.Black * 0.7f);
+                }
+                else
+                {
+                    text = null;
+                }
                 Add(new BeforeRenderHook(BeforeRender));
             }
 
@@ -101,7 +109,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
                 Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
                 paper.Draw(Vector2.Zero);
-                text.DrawJustifyPerLine(new Vector2(paper.Width, paper.Height) / 2f, new Vector2(0.5f, 0.5f), Vector2.One * textScale, 1f);
+                if (text != null) {
+                    text.DrawJustifyPerLine(new Vector2(paper.Width, paper.Height) / 2f, new Vector2(0.5f, 0.5f), Vector2.One * textScale, 1f);
+                }
                 Draw.SpriteBatch.End();
             }
 
@@ -152,18 +162,36 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Image sprite;
 
+        private string paperSprite;
+
         private string dialogId;
 
         private float scale;
 
         private EntityID eid;
 
+        private Vector2 talkposition = new Vector2(0);
+
+        private string interactMode;
+
+        private bool setFlag;
+
+        private bool removeAfterUse;
+
         public CollectableNote(EntityData data, Vector2 offset, EntityID eid) : base(data.Position + offset)
         {
             sprite = new Image(GFX.Game[data.Attr("sprite") + "/Note00"]);
             sprite.Position = Position;
             dialogId = data.Attr("dialogId");
+            paperSprite = data.Attr("paperSprite", "poempage");
             scale = data.Float("textScale", 0.7f);
+            interactMode = data.Attr("interactMode", "DuckLeft");
+            setFlag = data.Bool("setFlag", true);
+            removeAfterUse = data.Bool("removeAfterUse", true);
+            if (data.Nodes.Count() > 0)
+            {
+                talkposition = data.Nodes[0] - data.Position;
+            }
             this.eid = eid;
         }
 
@@ -176,7 +204,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                Add(talk = new TalkComponent(new Rectangle(0, 0, 16, 8), new Vector2(8, -4f), Interact));
+                
+                Add(talk = new TalkComponent(new Rectangle((int)talkposition.X, (int)talkposition.Y, 16, 8), new Vector2(8, -4f), Interact));
                 talk.PlayerMustBeFacing = false;
             }
         }
@@ -191,16 +220,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
-            yield return player.DummyWalkToExact((int)BottomCenter.X);
-            player.Facing = Facings.Right;
+            if (interactMode == "DuckLeft")
+            {
+                yield return player.DummyWalkToExact((int)BottomCenter.X);
+                player.Facing = Facings.Right;
+                yield return 0.2f;
+                player.DummyAutoAnimate = false;
+                player.Sprite.Play("duck");
+                yield return 0.2f;
+            }
+            else if (interactMode == "StandRight")
+            {
+                yield return player.DummyWalkToExact((int)BottomCenter.X + 12);
+                player.Facing = Facings.Left;
+                yield return 0.2f;
+                player.DummyAutoAnimate = false;
+            }
             yield return 0.2f;
-            player.DummyAutoAnimate = false;
-            player.Sprite.Play("duck");
-            yield return 0.4f;
-            note = new NotePage(dialogId, scale);
+            note = new NotePage(dialogId, paperSprite, scale);
             Scene.Add(note);
-            SceneAs<Level>().Session.SetFlag(SceneAs<Level>().Session.Level + "_" + eid.ID);
-            XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.LevelSet + "_" + SceneAs<Level>().Session.Level + "_" + eid.ID);
+            if (setFlag)
+            {
+                SceneAs<Level>().Session.SetFlag(SceneAs<Level>().Session.Level + "_" + eid.ID);
+                XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.LevelSet + "_" + SceneAs<Level>().Session.Level + "_" + eid.ID);
+            }
             yield return note.EaseIn();
             while (!Input.MenuConfirm.Pressed)
             {
@@ -215,7 +258,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 note.RemoveSelf();
             }
-            RemoveSelf();
+            if (removeAfterUse)
+            {
+                RemoveSelf();
+            }
         }
 
         public override void Render()
