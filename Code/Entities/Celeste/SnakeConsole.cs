@@ -12,7 +12,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/SnakeConsole")]
     public class SnakeConsole : Entity
     {
-        private class SnakeGame()
+        private class SnakeGame
         {
             public class ScoreEntry
             {
@@ -59,6 +59,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             public enum Status
             {
                 Inactive,
+                Locked,
                 MainMenu,
                 Help,
                 Scores,
@@ -66,6 +67,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Defeat,
                 Victory
             }
+
+            private SnakeConsole console;
 
             public readonly LinkedList<Point> Body = new LinkedList<Point>();
 
@@ -89,10 +92,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public Color SnakeColor;
 
-            public void ShowMainMenu()
+            public SnakeGame(SnakeConsole console)
+            {
+                this.console = console;
+            }
+
+            public void ShowPasswordInput()
+            {
+                CurrentStatus = Status.Locked;
+                console.selection = 0;
+            }
+
+            public void ShowMainMenu(bool setMusic = false)
             {
                 CurrentStatus = Status.MainMenu;
-                Audio.SetMusic("event:/music/xaphan/snakegame/lvl_0_snakegame_menu", true, false);
+                console.selection = 0;
+                if (setMusic)
+                {
+                    Audio.SetMusic("event:/music/xaphan/snakegame/lvl_0_snakegame_menu", true, false);
+                }
             }
 
             public void StartGame()
@@ -229,7 +247,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private readonly SnakeGame game = new SnakeGame();
+        private readonly SnakeGame game;
 
         private Player player;
 
@@ -275,7 +293,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public int selection = 0;
 
+        private int passwordSelection = 0;
+
         private bool blink;
+
+        private bool inputPassword;
 
         private Coroutine Noise = new Coroutine();
 
@@ -291,9 +313,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private HeartGem heart;
 
+        private static string[] digits = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+
+        private int[] password = new int[6];
+
+        private string confirmPasswordDialogID = "";
+
         public SnakeConsole(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Collider = new Hitbox(144f, 88f);
+            game = new SnakeGame(this);
             forceInactiveFlag = data.Attr("forceInactiveFlag");
             onLedTexture = GFX.Game["objects/XaphanHelper/BigScreen/tvSlicesOn"];
             headTexture = GFX.Game["objects/Xaphan/SnakeGame/head"];
@@ -452,7 +481,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     break;
                 }
             }
-            if (heart != null )
+            if (heart != null)
             {
                 SceneAs<Level>().Displacement.AddBurst(heart.Center, 0.5f, 8f, 32f, 0.5f);
                 heart.Visible = false;
@@ -472,7 +501,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 blinktimer -= Engine.DeltaTime;
             }
             blink = false;
-            selection = 0;
             game.StartGame();
             SceneAs<Level>().Session.SetFlag("SnakeConsole_HasPlayed", true);
         }
@@ -481,9 +509,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             PlayerCustomAnimation component = player.Components.Get<PlayerCustomAnimation>();
             game.CurrentStatus = SnakeGame.Status.Inactive;
+            password = new int[6];
             Audio.SetMusic(previousMusic);
             Audio.SetAmbience(previousAmbiance);
-            selection = 0;
             isOn = false;
             while (bgAlpha > 0f)
             {
@@ -552,7 +580,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Audio.SetAmbience(null);
             isOn = true;
             yield return 1.2f;
-            game.ShowMainMenu();
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_SnakeConsoleUnlocked"))
+            {
+                game.ShowMainMenu(true);
+            }
+            else
+            {
+                game.ShowPasswordInput();
+            }
         }
 
         private Parallax GetFogParallax()
@@ -643,6 +678,54 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private IEnumerator ConfirmPassword()
+        {
+            bool showMainmenu = false;
+            float blinktimer = 1.5f;
+            if (CheckPassword())
+            {
+                Audio.Play("event:/game/xaphan/snakegame/menu_select");
+                XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch5_SnakeConsoleUnlocked");
+                confirmPasswordDialogID = "Xaphan_Ch5_Snake_password_correct";
+                showMainmenu = true;
+            }
+            else
+            {
+                Audio.Play("event:/game/xaphan/snakegame/error");
+                confirmPasswordDialogID = "Xaphan_Ch5_Snake_password_incorrect";
+            }
+            while (blinktimer > 0f && !Input.MenuConfirm.Pressed)
+            {
+                if (Scene.OnInterval(0.1f))
+                {
+                    blink = !blink;
+                }
+                yield return null;
+                blinktimer -= Engine.DeltaTime;
+            }
+            blink = false;
+            Input.MenuConfirm.ConsumePress();
+            if (showMainmenu)
+            {
+                game.ShowMainMenu(true);
+            }
+            confirmPasswordDialogID = "";
+        }
+
+        private bool CheckPassword()
+        {
+            int submittedPassword = 0;
+            foreach (int digit in password)
+            {
+                submittedPassword = submittedPassword * 10 + digit;
+            }
+            if (submittedPassword == 594628)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public override void Update()
         {
             base.Update();
@@ -660,26 +743,108 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 return;
             }
 
+            // Password screen
+            if (game.CurrentStatus == SnakeGame.Status.Locked && string.IsNullOrEmpty(confirmPasswordDialogID))
+            {
+                if (!inputPassword)
+                {
+                    if (Input.MenuUp.Pressed)
+                    {
+                        Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                        if (selection <= 5)
+                        {
+                            selection = 7;
+                        }
+                        else if (selection == 6)
+                        {
+                            selection = 0;
+                        }
+                        else
+                        {
+                            selection = 6;
+                        }
+                    }
+                    else if (Input.MenuDown.Pressed)
+                    {
+                        Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                        if (selection <= 5)
+                        {
+                            selection = 6;
+                        }
+                        else if (selection == 6)
+                        {
+                            selection = 7;
+                        }
+                        else
+                        {
+                            selection = 0;
+                        }
+                    }
+                    else if (selection <= 5)
+                    {
+                        if (Input.MenuLeft.Pressed)
+                        {
+                            Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                            selection = (selection + password.Length - 1) % 6;
+                        }
+                        else if (Input.MenuRight.Pressed)
+                        {
+                            Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                            selection = (selection + 1) % 6;
+                        }
+                        else if (Input.MenuConfirm.Pressed)
+                        {
+                            Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                            inputPassword = true;
+                            passwordSelection = password[selection];
+                        }
+                    }
+                    else if (Input.MenuConfirm.Pressed)
+                    {
+                        Input.MenuConfirm.ConsumePress();
+                        if (selection == 6)
+                        {
+                            Add(new Coroutine(ConfirmPassword()));
+                        }
+                        else if (selection == 7)
+                        {
+                            Add(new Coroutine(Exit()));
+                        }
+                    }
+                }
+                else
+                {
+                    if (Input.MenuLeft.Pressed)
+                    {
+                        Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                        passwordSelection = (passwordSelection + digits.Length - 1) % 10;
+                    }
+                    else if (Input.MenuRight.Pressed)
+                    {
+                        Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                        passwordSelection = (passwordSelection + 1) % 10;
+                    }
+                    else if (Input.MenuConfirm.Pressed)
+                    {
+                        Audio.Play("event:/game/xaphan/snakegame/menu_change");
+                        inputPassword = false;
+                        password[selection] = passwordSelection;
+                    }
+                }
+            }
+
             // Main Menu
             if (game.CurrentStatus == SnakeGame.Status.MainMenu && !MainMenuSelect.Active)
             {
                 if (Input.MenuUp.Pressed)
                 {
                     Audio.Play("event:/game/xaphan/snakegame/menu_change");
-                    selection--;
-                    if (selection < 0)
-                    {
-                        selection = 3;
-                    }
+                    selection = (selection + 3) % 4;
                 }
                 else if (Input.MenuDown.Pressed)
                 {
                     Audio.Play("event:/game/xaphan/snakegame/menu_change");
-                    selection++;
-                    if (selection > 3)
-                    {
-                        selection = 0;
-                    }
+                    selection = (selection + 1) % 4;
                 }
                 else
                 {
@@ -712,8 +877,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Input.MenuConfirm.Pressed)
                 {
                     Input.MenuConfirm.ConsumePress();
-                    selection = 0;
-                    game.CurrentStatus = SnakeGame.Status.MainMenu;
+                    game.ShowMainMenu();
                 }
             }
 
@@ -761,23 +925,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     SceneAs<Level>().Session.SetFlag("SnakeConsole_Victory");
                 }
 
-                if (Input.MenuUp.Pressed)
+                if (Input.MenuUp.Pressed || Input.MenuDown.Pressed)
                 {
                     Audio.Play("event:/game/xaphan/snakegame/menu_change");
-                    selection--;
-                    if (selection < 0)
-                    {
-                        selection = 1;
-                    }
-                }
-                else if (Input.MenuDown.Pressed)
-                {
-                    Audio.Play("event:/game/xaphan/snakegame/menu_change");
-                    selection++;
-                    if (selection > 1)
-                    {
-                        selection = 0;
-                    }
+                    selection = selection == 1 ? 0 : 1;
                 }
                 else
                 {
@@ -792,8 +943,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 break;
                             case 1:
                                 Input.MenuConfirm.ConsumePress();
-                                selection = 0;
-                                game.ShowMainMenu();
+                                game.ShowMainMenu(true);
                                 break;
                         }
                     }
@@ -810,6 +960,36 @@ namespace Celeste.Mod.XaphanHelper.Entities
             // Background
             Draw.Rect(Collider, Color.Black);
             Draw.Rect(Collider, BackgroundColor);
+
+            // Password screen
+            if (game.CurrentStatus == SnakeGame.Status.Locked)
+            {
+                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_access"), Position + new Vector2(Width / 2, 10f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, Color.Gold);
+                pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_password"), Position + new Vector2(Width / 2, 30f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, Color.White);
+                for (int i = 0; i < 6; i++)
+                {
+                    pixelFont.Draw((inputPassword && selection == i) ? digits[passwordSelection] : digits[password[i]], Position + new Vector2(Width / 2 + i * 10f - 24f, 40f), new Vector2(0.5f, 0f), Vector2.One * 0.2f, selection == i ? (inputPassword ? Color.Gold : Color.LightGreen) : Color.White);
+                }
+                if (string.IsNullOrEmpty(confirmPasswordDialogID))
+                {
+                    if (!inputPassword)
+                    {
+                        pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_confirm"), Position + new Vector2(Width / 2, 64f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, selection == 6 ? Color.LightGreen : Color.White);
+                        pixelFont.Draw(Dialog.Clean("Xaphan_Ch5_Snake_exit"), Position + new Vector2(Width / 2, 71f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, selection == 7 ? Color.LightGreen : Color.White);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < 10; i++)
+                        {
+                            pixelFont.Draw(digits[i], Position + new Vector2(Width / 2 + i * 10f - 44f, 64f), new Vector2(0.5f, 0f), Vector2.One * 0.2f, passwordSelection == i ? Color.LightGreen : Color.White);
+                        }
+                    }
+                }
+                else
+                {
+                    pixelFont.Draw(Dialog.Clean(confirmPasswordDialogID), Position + new Vector2(Width / 2, 67f), new Vector2(0.5f, 0f), Vector2.One * 0.1f, blink ? Color.LightYellow : (CheckPassword() ? Color.Green : Color.Red));
+                }
+            }
 
             if (game.CurrentStatus == SnakeGame.Status.MainMenu)
             {
