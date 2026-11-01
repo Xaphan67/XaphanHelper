@@ -1999,6 +1999,29 @@ namespace Celeste.Mod.XaphanHelper
                 if (useMergeChaptersController)
                 {
                     self.FurthestArea = 99999999;
+
+                    // Clear the list of cassettes and hearts
+                    // and re-generate it without stoping if an area is not complete yet
+                    // Cassettes and hearts lists must have the same numbers of elements else it will crash in Render()
+                    SaveData previousInstance = SaveData.Instance;
+                    SaveData.Instance = self.SaveData;
+                    self.Cassettes.Clear();
+                    self.HeartGems.Clear();
+                    foreach (AreaStats item in self.SaveData.Areas_Safe)
+                    {
+                        AreaData areaData = AreaData.Areas[item.ID_Safe];
+                        if (!areaData.Interlude_Safe && areaData.CanFullClear)
+                        {
+                            bool[] hearts = new bool[3];
+                            for (int i = 0; i < hearts.Length; i++)
+                            {
+                                hearts[i] = item.Modes[i].HeartGem;
+                            }
+                            self.Cassettes.Add(item.Cassette);
+                            self.HeartGems.Add(hearts);
+                        }
+                    }
+                    SaveData.Instance = previousInstance;
                 }
             }
         }
