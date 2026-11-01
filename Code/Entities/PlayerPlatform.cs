@@ -398,10 +398,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool InView()
         {
-            Camera camera = (base.Scene as Level).Camera;
-            if (base.X > camera.X - 16f && base.Y > camera.Y - 16f && base.X < camera.X + 320f + 16f)
+            Camera camera = (Scene as Level).Camera;
+            if (X > camera.X - 16f && Y > camera.Y - 16f && X < camera.X + 320f + 16f)
             {
-                return base.Y < camera.Y + 180f + 16f;
+                return Y < camera.Y + 180f + 16f;
             }
             return false;
         }
@@ -430,8 +430,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         bool wasNearOrBelow = float.IsNaN(previousPlayerTop) || previousPlayerTop >= Bottom - verticalMargin;
                         bool isNear = player.Top >= Bottom - verticalMargin;
-                        if (player.Top >= Bottom - (4 + verticalMargin))
+                        if (player.Top >= Bottom - verticalMargin)
                         {
+                            if (CollideCheck(player))
+                            {
+                                player.Top = Bottom;
+                            }
                             Collidable = isNear || (wasNearOrBelow && player.Speed.Y <= 0f);
                         }
                         else
