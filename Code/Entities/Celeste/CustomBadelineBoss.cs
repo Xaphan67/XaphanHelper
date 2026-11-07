@@ -208,7 +208,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 });
             }
             light.Position = ((Sprite != null) ? Sprite : NormalSprite).Position + new Vector2(0f, -10f);
-            Add(new PostUpdateHook(() => {
+            Add(new PostUpdateHook(() =>
+            {
                 if (Sprite is { } sprite)
                 {
                     sprite.Scale.X = facing;

@@ -233,7 +233,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             level = SceneAs<Level>();
         }
 
-        private static readonly Dictionary<string, CooldownMask> masks = new Dictionary<string, CooldownMask>();
+        private static readonly Dictionary<string, CooldownMask> masks = new();
 
         private static CooldownMask GetMask(MTexture texture, string key)
         {
@@ -451,7 +451,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (type == "One Dash")
                 {
 
-                    player.Dashes+= 1;
+                    player.Dashes += 1;
                 }
                 else
                 {

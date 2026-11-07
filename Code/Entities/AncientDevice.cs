@@ -343,7 +343,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     break;
                 }
             }
-            Add(talk = new TalkComponent(new Rectangle(-8, -16, 16, 8), new Vector2(0, hasSymbol  ? -38f : - 28f), Interact));
+            Add(talk = new TalkComponent(new Rectangle(-8, -16, 16, 8), new Vector2(0, hasSymbol ? -38f : -28f), Interact));
             talk.PlayerMustBeFacing = false;
             talk.Enabled = false;
         }
@@ -357,7 +357,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             player.StateMachine.State = 11;
             yield return player.DummyWalkToExact((int)BottomCenter.X);
-            player.Facing = index <= 1 ? Facings.Right  : Facings.Left;
+            player.Facing = index <= 1 ? Facings.Right : Facings.Left;
             SceneAs<Level>().Add(symbolPrompt = new SelectSymbolPrompt(Vector2.Zero, currentSymbol == -1 ? 0 : currentSymbol));
             bool canceled = false;
             yield return 0.3f;
@@ -436,7 +436,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         talk.Enabled = true;
                     }
                 }
-                else 
+                else
                 {
                     if (speed > 0f)
                     {

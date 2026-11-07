@@ -233,7 +233,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 ReadLoreBookEntries = new int[3];
                 TotalLoreBookEntries = new int[3];
-                for(int i = 0; i < 3; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     ReadLoreBookEntries[i] = GetReadLoreBookEntries(i);
                     TotalLoreBookEntries[i] = GetTotalLoreBookEntries(i);

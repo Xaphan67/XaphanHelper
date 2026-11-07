@@ -106,7 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 player.StateMachine.State = 0;
                 player.Speed = Vector2.Zero;
-                Vector2 speed = new Vector2();
+                Vector2 speed = new();
                 Scale = new Vector2(1.3f, 0.7f);
                 if (Facing == Facings.Up)
                 {
@@ -155,7 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void HitByMissile(Missile missile)
         {
-            if (Position != nodes[0] && ((missile.Direction.X <0 && Facing == Facings.Right) || (missile.Direction.X > 0 && Facing == Facings.Left) || (missile.Direction.Y < 0 && Facing == Facings.Up) || (missile.Direction.Y > 0 && Facing == Facings.Down)))
+            if (Position != nodes[0] && ((missile.Direction.X < 0 && Facing == Facings.Right) || (missile.Direction.X > 0 && Facing == Facings.Left) || (missile.Direction.Y < 0 && Facing == Facings.Up) || (missile.Direction.Y > 0 && Facing == Facings.Down)))
             {
                 Add(new Coroutine(BounceCooldownRoutine()));
             }
@@ -438,7 +438,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (direction.X != 0)
                 {
                     Vector2 targetPosition = Position + Vector2.UnitX * (direction.X * GrowSpeed * Engine.DeltaTime);
-                    if (Scene.CollideCheck<VinePath>(new Rectangle ((int)targetPosition.X + (direction.X > 0 ? 8 : 0), (int)targetPosition.Y, 1, (int)Height)))
+                    if (Scene.CollideCheck<VinePath>(new Rectangle((int)targetPosition.X + (direction.X > 0 ? 8 : 0), (int)targetPosition.Y, 1, (int)Height)))
                     {
                         MoveH(direction.X * GrowSpeed * Engine.DeltaTime);
                     }

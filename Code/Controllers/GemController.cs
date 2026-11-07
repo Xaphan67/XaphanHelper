@@ -42,7 +42,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
         {
             SceneAs<Level>().Session.SetFlag("Open_End_Area", true);
             XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_End_Area_Open");
-            for (int i = 0; i <= 2; i ++)
+            for (int i = 0; i <= 2; i++)
             {
                 yield return 0.1f;
                 foreach (EndBlock block in SceneAs<Level>().Tracker.GetEntities<EndBlock>())

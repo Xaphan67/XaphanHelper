@@ -33,7 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void modNormalUpdate(ILContext il)
         {
-            ILCursor cursor = new ILCursor(il);
+            ILCursor cursor = new(il);
 
             while (cursor.TryGotoNext(
                 instr => instr.OpCode == OpCodes.Ldloc_S,
@@ -44,7 +44,8 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 cursor.Index++;
                 cursor.Emit(OpCodes.Ldarg_0);
 
-                cursor.EmitDelegate<Func<float, float, Player, float>>((target, gravity, player) => {
+                cursor.EmitDelegate<Func<float, float, Player, float>>((target, gravity, player) =>
+                {
                     bool detectedPlayer = false;
                     if (Engine.Scene is Level)
                     {

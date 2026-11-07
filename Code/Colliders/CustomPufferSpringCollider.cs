@@ -35,7 +35,7 @@ namespace Celeste.Mod.XaphanHelper.Colliders
         private static void onSpringCtor(On.Celeste.Spring.orig_ctor_Vector2_Orientations_bool orig, Spring self, Vector2 position, Spring.Orientations orientation, bool playerCanUse)
         {
             orig(self, position, orientation, playerCanUse);
-            CustomPufferSpringCollider pufferCollider = new CustomPufferSpringCollider(OnPuffer);
+            CustomPufferSpringCollider pufferCollider = new(OnPuffer);
             self.Add(pufferCollider);
             switch (orientation)
             {

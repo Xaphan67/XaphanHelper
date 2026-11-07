@@ -7,7 +7,7 @@ namespace Celeste.Mod.XaphanHelper.Data
         public int ChapterIndex;
 
         public string Room;
-        
+
         public Vector2 Position;
 
         public string Type;

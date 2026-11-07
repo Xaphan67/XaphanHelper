@@ -24,7 +24,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             bc.Collider = new Hitbox(16f, 16f, -5f, -5f);
             Clockwise = data.Bool("clockwise");
             speedValue = data.Float("speed", 20f);
-            Sprite body = new Sprite(GFX.Game, "enemies/Xaphan/Geemer/");
+            Sprite body = new(GFX.Game, "enemies/Xaphan/Geemer/");
             body.AddLoop("walk", "walk", 0.05f);
             body.Position += new Vector2(-3f, -5f);
             body.Play("walk");

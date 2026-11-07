@@ -94,7 +94,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 float selfWidth = tileWidth * 8;
                 float selfHeight = tileHeight * 8;
 
-                Rectangle cellRect = new Rectangle((int)cellPos.X, (int)cellPos.Y, 1, 1);
+                Rectangle cellRect = new((int)cellPos.X, (int)cellPos.Y, 1, 1);
 
                 FuseSection other = Scene.CollideFirst<FuseSection>(cellRect);
                 if (other != null)

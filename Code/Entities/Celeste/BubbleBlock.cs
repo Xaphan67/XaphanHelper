@@ -258,7 +258,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 for (int j = 0; j < Height; j += 8)
                 {
-                    Vector2 vector = new Vector2(X + i + 4f, Y + j + 4f);
+                    Vector2 vector = new(X + i + 4f, Y + j + 4f);
                     Vector2 mult = new Vector2(Math.Abs(vector.X - Center.X) / (Width / 2), Math.Abs(vector.Y - Center.Y) / (Height / 2)) + Vector2.One * 1.25f;
                     Image debrisImage = null;
                     foreach (Component component in Components)
@@ -320,7 +320,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 for (int j = 0; j < Height; j += 8)
                 {
-                    Vector2 vector = new Vector2(X + i + 4f, Y + j + 4f);
+                    Vector2 vector = new(X + i + 4f, Y + j + 4f);
                     Vector2 mult = new Vector2(Math.Abs(vector.X - Center.X) / (Width / 2), Math.Abs(vector.Y - Center.Y) / (Height / 2)) + Vector2.One * 1.25f;
                     Image debrisImage = null;
                     foreach (Component component in Components)

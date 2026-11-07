@@ -17,7 +17,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private bool PlayerBounced;
 
-        private Coroutine StopRoutine = new ();
+        private Coroutine StopRoutine = new();
 
         private int MaxBounces;
 

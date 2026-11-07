@@ -178,7 +178,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         fuse = CollideFirst<Fuse>(Position - Vector2.UnitX);
                     }
                     break;
-            };
+            }
+            ;
             return fuse;
         }
 
@@ -211,7 +212,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         fuse = CollideFirst<Fuse.FuseSection>(Position - Vector2.UnitX);
                     }
                     break;
-            };
+            }
+            ;
             return fuse;
         }
 

@@ -3,10 +3,8 @@ using System.Collections;
 using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
-using Celeste.Mod.XaphanHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
-using static Celeste.Spring;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {

@@ -68,7 +68,8 @@ namespace Celeste.Mod.XaphanHelper.Components
             {
                 foreach (Component component in Entity.Components)
                 {
-                    if (component.GetType() == typeof(VertexLight)) {
+                    if (component.GetType() == typeof(VertexLight))
+                    {
                         component.Visible = false;
                         break;
                     }

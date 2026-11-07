@@ -266,7 +266,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 Level level = (Level)Engine.Scene;
                 if (determineIfInLiquid() && (!Active(level)))
                 {
-                    return  0.7f;
+                    return 0.7f;
                 }
             }
             return Waterfall.determineIfInWaterfall() ? 0.7f : 1f;

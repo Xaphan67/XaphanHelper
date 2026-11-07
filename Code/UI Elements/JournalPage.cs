@@ -15,7 +15,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private const float rowHeight = 60f;
 
-            private List<Row> rows = new List<Row>();
+            private List<Row> rows = new();
 
             public int Rows => rows.Count;
 
@@ -43,14 +43,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             public Row AddRow()
             {
-                Row row = new Row();
+                Row row = new();
                 rows.Add(row);
                 return row;
             }
 
             public float Height()
             {
-                return 100f + 60f * (float)(rows.Count - 1);
+                return 100f + 60f * (rows.Count - 1);
             }
 
             public void Render(Vector2 position)
@@ -89,7 +89,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     {
                                         center.X += Header[l].Width() * 0.5f;
                                     }
-                                    center.X += (float)(cell.SpreadOverColumns - 1) * 20f * 0.5f;
+                                    center.X += (cell.SpreadOverColumns - 1) * 20f * 0.5f;
                                 }
                                 rows[k][j].Render(center, num3);
                             }
@@ -109,7 +109,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public class Row
         {
-            public List<Cell> Entries = new List<Cell>();
+            public List<Cell> Entries = new();
 
             public int Count => Entries.Count;
 
@@ -247,9 +247,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 float num = 0f;
                 for (int i = 0; i < icons.Length; i++)
                 {
-                    num += (float)MTN.Journal[icons[i]].Width;
+                    num += MTN.Journal[icons[i]].Width;
                 }
-                return num + (float)(icons.Length - 1) * iconSpacing;
+                return num + (icons.Length - 1) * iconSpacing;
             }
 
             public override void Render(Vector2 center, float columnWidth)
@@ -260,7 +260,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     MTexture mTexture = MTN.Journal[icons[i]];
                     mTexture.DrawJustified(position, new Vector2(0f, 0.5f));
-                    position.X += (float)mTexture.Width + iconSpacing;
+                    position.X += mTexture.Width + iconSpacing;
                 }
             }
         }
@@ -269,7 +269,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public const int PageHeight = 1000;
 
-        public readonly Vector2 TextJustify = new Vector2(0.5f, 0.5f);
+        public readonly Vector2 TextJustify = new(0.5f, 0.5f);
 
         public const float TextScale = 0.5f;
 

@@ -1453,7 +1453,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (collider is Hitbox hitbox && IsInLiquid(hitbox.AbsoluteLeft + hitbox.Width / 2f, hitbox.AbsoluteTop + hitbox.Height / 2f))
                         {
-                            Draw.Rect(hitbox.AbsoluteLeft -4f, hitbox.AbsoluteTop, hitbox.Width + 4f, hitbox.Height, new(0.5f, 0.5f, 0f, 1f));
+                            Draw.Rect(hitbox.AbsoluteLeft - 4f, hitbox.AbsoluteTop, hitbox.Width + 4f, hitbox.Height, new(0.5f, 0.5f, 0f, 1f));
                         }
                     }
                 }

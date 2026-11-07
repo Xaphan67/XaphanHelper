@@ -56,7 +56,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             if (Settings.Instance.ScreenShake == ScreenshakeAmount.Off && XaphanModule.IgnoreShakeSettings)
             {
                 self.Camera.Position = (Vector2)Level_cameraPreShake.GetValue(self);
-                float x =self.ShakeVector.X / 2;
+                float x = self.ShakeVector.X / 2;
                 float y = self.ShakeVector.Y / 2;
                 self.Camera.Position += new Vector2(x, y);
                 self.Camera.Position = self.Camera.Position.Floor();

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -73,7 +72,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 case 5:
                     soundIndex = 5;
                     break;
-            }                
+            }
             Audio.Play("event:/game/07_summit/gem_unlock_" + soundIndex);
             Sprite.Play("spin");
             while (Sprite.CurrentAnimationID == "spin")

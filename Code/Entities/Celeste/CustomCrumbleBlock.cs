@@ -102,8 +102,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         continue;
                     }
-                    List<CustomCrumbleBlock> cluster = new List<CustomCrumbleBlock>();
-                    Stack<CustomCrumbleBlock> stack = new Stack<CustomCrumbleBlock>();
+                    List<CustomCrumbleBlock> cluster = new();
+                    Stack<CustomCrumbleBlock> stack = new();
                     stack.Push(start);
                     visited.Add(start);
                     while (stack.Count > 0)
@@ -246,25 +246,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X + i, (int)Position.Y - 8 + j, 8, 8)))
                         {
-                            VertexLight light = new VertexLight(new Vector2(4 + i, -4f + j), Color.White, 1f, 8, 12);
+                            VertexLight light = new(new Vector2(4 + i, -4f + j), Color.White, 1f, 8, 12);
                             Add(light);
                             lights.Add(light);
                         }
                         if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X + 8 + i, (int)Position.Y + j, 8, 8)))
                         {
-                            VertexLight light = new VertexLight(new Vector2(12 + i, 4f + j), Color.White, 1f, 8, 12);
+                            VertexLight light = new(new Vector2(12 + i, 4f + j), Color.White, 1f, 8, 12);
                             Add(light);
                             lights.Add(light);
                         }
                         if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X + i, (int)Position.Y + 8 + j, 8, 8)))
                         {
-                            VertexLight light = new VertexLight(new Vector2(4 + i, 12f + j), Color.White, 1f, 8, 12);
+                            VertexLight light = new(new Vector2(4 + i, 12f + j), Color.White, 1f, 8, 12);
                             Add(light);
                             lights.Add(light);
                         }
                         if (!Scene.CollideCheck<Solid>(new Rectangle((int)Position.X - 8 + i, (int)Position.Y + j, 8, 8)))
                         {
-                            VertexLight light = new VertexLight(new Vector2(-4 + i, 4f + j), Color.White, 1f, 8, 12);
+                            VertexLight light = new(new Vector2(-4 + i, 4f + j), Color.White, 1f, 8, 12);
                             Add(light);
                             lights.Add(light);
                         }

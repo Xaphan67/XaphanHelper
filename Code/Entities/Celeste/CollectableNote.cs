@@ -31,9 +31,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private bool easingOut;
 
-            private static readonly Regex colorRegex = new Regex(@"\{#\s*(?:[0-9a-fA-F]{6})?\s*\}", RegexOptions.Compiled);
+            private static readonly Regex colorRegex = new(@"\{#\s*(?:[0-9a-fA-F]{6})?\s*\}", RegexOptions.Compiled);
 
-            private static readonly Regex includeRegex = new Regex(@"\{\+(\w+)\}", RegexOptions.Compiled);
+            private static readonly Regex includeRegex = new(@"\{\+(\w+)\}", RegexOptions.Compiled);
 
             public NotePage(string dialogID, string paperSprite = "poempage", float scale = 0.7f)
             {
@@ -109,7 +109,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
                 Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
                 paper.Draw(Vector2.Zero);
-                if (text != null) {
+                if (text != null)
+                {
                     text.DrawJustifyPerLine(new Vector2(paper.Width, paper.Height) / 2f, new Vector2(0.5f, 0.5f), Vector2.One * textScale, 1f);
                 }
                 Draw.SpriteBatch.End();
@@ -170,7 +171,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private EntityID eid;
 
-        private Vector2 talkposition = new Vector2(0);
+        private Vector2 talkposition = new(0);
 
         private string interactMode;
 
@@ -204,7 +205,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                
+
                 Add(talk = new TalkComponent(new Rectangle((int)talkposition.X, (int)talkposition.Y, 16, 8), new Vector2(8, -4f), Interact));
                 talk.PlayerMustBeFacing = false;
             }

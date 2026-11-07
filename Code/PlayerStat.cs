@@ -1,13 +1,13 @@
-﻿using Celeste.Mod.XaphanHelper.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Celeste.Mod.XaphanHelper.Data;
 
 namespace Celeste.Mod.XaphanHelper
 {
-    static class PlayerStat 
+    static class PlayerStat
     {
-        static readonly HttpClient client = new HttpClient();
+        static readonly HttpClient client = new();
 
         public static string PlayersClearsList;
 

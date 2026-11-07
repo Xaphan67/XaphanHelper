@@ -11,7 +11,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
     class TeleportToChapterTrigger : Trigger
     {
         private string DestinationChapter;
-        
+
         private int ToChapter;
 
         private int SpawnRoomX;
@@ -214,18 +214,18 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 }
                 if (XaphanModule.useMergeChaptersController)
                 {
-                        long currentTime = SceneAs<Level>().Session.Time;
-                        LevelEnter.Go(new Session(new AreaKey(string.IsNullOrEmpty(DestinationChapter) ? (currentChapterID + chapterOffset) : (int)destinationID))
-                        {
-                            Time = currentTime,
-                            DoNotLoad = XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedNoLoadEntities[SceneAs<Level>().Session.Area.LevelSet] : new HashSet<EntityID>(),
-                            Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[SceneAs<Level>().Session.Area.LevelSet] : new HashSet<EntityID>()
-                        }
-                        , fromSaveData: false);
+                    long currentTime = SceneAs<Level>().Session.Time;
+                    LevelEnter.Go(new Session(new AreaKey(string.IsNullOrEmpty(DestinationChapter) ? (currentChapterID + chapterOffset) : (int)destinationID))
+                    {
+                        Time = currentTime,
+                        DoNotLoad = XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedNoLoadEntities[SceneAs<Level>().Session.Area.LevelSet] : new HashSet<EntityID>(),
+                        Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[SceneAs<Level>().Session.Area.LevelSet] : new HashSet<EntityID>()
+                    }
+                    , fromSaveData: false);
                 }
                 else
                 {
-                        LevelEnter.Go(new Session(new AreaKey(string.IsNullOrEmpty(DestinationChapter) ? (currentChapterID + chapterOffset) : (int)destinationID)), fromSaveData: false);
+                    LevelEnter.Go(new Session(new AreaKey(string.IsNullOrEmpty(DestinationChapter) ? (currentChapterID + chapterOffset) : (int)destinationID)), fromSaveData: false);
                 }
             }
         }

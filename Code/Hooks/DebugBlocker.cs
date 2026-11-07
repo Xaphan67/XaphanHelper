@@ -29,7 +29,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void onCommandsE(On.Celeste.Commands.orig_CmdE orig, int index, int mode)
         {
-            AreaKey area = new AreaKey(index, (AreaMode)mode);
+            AreaKey area = new(index, (AreaMode)mode);
             if (area.LevelSet != "Xaphan/0" || (area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && XaphanModule.ModSettings.AllowDebug))
             {
                 orig(index, mode);

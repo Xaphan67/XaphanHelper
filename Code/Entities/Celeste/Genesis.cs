@@ -518,7 +518,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Coroutine HitRoutine = new();
 
-        public  Sprite Sprite;
+        public Sprite Sprite;
 
         public Vector2 BeamOrigin;
 

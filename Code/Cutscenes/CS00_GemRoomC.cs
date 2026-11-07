@@ -21,7 +21,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         private GemController gemController;
 
         private Coroutine EndRoutine;
-        
+
         public EventInstance shakeSoundSource;
 
         public CS00_GemRoomC(Player player)
@@ -50,7 +50,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 }
             }
             if (badeline != null)
-                {
+            {
                 badeline.RemoveSelf();
             }
             if (WasSkipped)
@@ -244,7 +244,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             if (EndRoutine != null)
             {
-                while(EndRoutine.Active)
+                while (EndRoutine.Active)
                 {
                     yield return null;
                 }

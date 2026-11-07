@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
 using Microsoft.Xna.Framework;

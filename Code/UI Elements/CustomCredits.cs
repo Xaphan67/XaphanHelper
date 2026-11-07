@@ -356,7 +356,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             float spacing = 15f * scale;
             float sectionSpacing = 15f * scale;
             int padding = (int)(123 * scale);
-            list.Add(new Thanks(0, spacing,"Author",
+            list.Add(new Thanks(0, spacing, "Author",
                 "Xaphan"));
             list.Add(new Thanks(0, spacing, "Co-author",
                 "Spekio"));

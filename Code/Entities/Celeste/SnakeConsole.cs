@@ -33,7 +33,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
-            public List<ScoreEntry> highScores = new List<ScoreEntry>
+            public List<ScoreEntry> highScores = new()
             {
                 new (Dialog.Clean("LAMBERT"), 67),
                 new (Dialog.Clean("KANE"), 50),
@@ -43,7 +43,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 new (Dialog.Clean("ORACCA"), 15),
             };
 
-            private Dictionary<int, Color> difficultyColors = new Dictionary<int, Color>
+            private Dictionary<int, Color> difficultyColors = new()
             {
                 [0] = Color.DeepSkyBlue,
                 [10] = Color.LimeGreen,
@@ -70,15 +70,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private SnakeConsole console;
 
-            public readonly LinkedList<Point> Body = new LinkedList<Point>();
+            public readonly LinkedList<Point> Body = new();
 
             public Status CurrentStatus = Status.Inactive;
 
             public Point CurrentStrawberry;
 
-            public Point direction = new Point(1, 0);
+            public Point direction = new(1, 0);
 
-            public Point nextDirection = new Point(1, 0);
+            public Point nextDirection = new(1, 0);
 
             public int InternalScore = 0;
 
@@ -150,7 +150,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
                 // Check if the player collide with itself, a strawberry or a wall
                 Point head = Body.First.Value;
-                Point next = new Point(head.X + direction.X, head.Y + direction.Y);
+                Point next = new(head.X + direction.X, head.Y + direction.Y);
                 if (next.X < 0 || next.X >= GridSize || next.Y < 0 || next.Y >= GridSize)
                 {
                     GameOver();
@@ -206,12 +206,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 // Check free spots and select one randomly
                 // If no free spôts left, player is victorious
-                List<Point> free = new List<Point>();
+                List<Point> free = new();
                 for (int x = 0; x < GridSize; x++)
                 {
                     for (int y = 0; y < GridSize; y++)
                     {
-                        if (!Body.Contains(new Point(x, y))) {
+                        if (!Body.Contains(new Point(x, y)))
+                        {
                             free.Add(new Point(x, y));
                         }
                     }
@@ -299,9 +300,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool inputPassword;
 
-        private Coroutine Noise = new Coroutine();
+        private Coroutine Noise = new();
 
-        private Coroutine MainMenuSelect = new Coroutine();
+        private Coroutine MainMenuSelect = new();
 
         private string previousMusic;
 
@@ -494,7 +495,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             float blinktimer = 1f;
             while (blinktimer > 0f)
             {
-                if (Scene.OnInterval(0.1f)) {
+                if (Scene.OnInterval(0.1f))
+                {
                     blink = !blink;
                 }
                 yield return null;

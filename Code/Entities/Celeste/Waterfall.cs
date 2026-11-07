@@ -117,7 +117,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 float height = Calc.Random.Next(4);
                 if ((CollideCheck<WaterWheel>(Position + Vector2.UnitY) ? (result == 0.25f || result == 0.75f) : result == 0.5f) && CullHelper.IsRectangleVisible(X, Y, Width, Height))
                 {
-                    Vector2 position = new Vector2(X, Y + Collider.Height + height + verticalOffset);
+                    Vector2 position = new(X, Y + Collider.Height + height + verticalOffset);
                     if (SceneAs<Level>().IsInBounds(position))
                     {
                         SceneAs<Level>().Particles.Emit(Waterfall.P_Splash, 1, position, Vector2.UnitX * 4f, new Vector2(0f, -1f).Angle());
@@ -170,15 +170,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public WaterfallSection[] Sections;
 
-        private Dictionary<Entity, FloorEntry> WatchedFloorEntities = new Dictionary<Entity, FloorEntry>();
+        private Dictionary<Entity, FloorEntry> WatchedFloorEntities = new();
 
         public ParticleType P_Splash;
 
         public Color CurrentColor;
 
-        private List<PlayerPlatform> CachedPlatforms = new List<PlayerPlatform>();
+        private List<PlayerPlatform> CachedPlatforms = new();
 
-        private List<Spikes> CachedSpikes = new List<Spikes>();
+        private List<Spikes> CachedSpikes = new();
 
         private FieldInfo PlayerVarJumpTimer = typeof(Player).GetField("varJumpTimer", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -249,7 +249,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void modVarJumpTimer(ILContext il)
         {
-            ILCursor cursor = new ILCursor(il);
+            ILCursor cursor = new(il);
 
             while (cursor.TryGotoNext(instr => instr.MatchStfld<Player>("varJumpTimer")))
             {
@@ -300,7 +300,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sections = new WaterfallSection[(int)Width];
             for (int i = 0; i < Width; i++)
             {
-                WaterfallSection section = new WaterfallSection(Position + Vector2.UnitX * i, this, i);
+                WaterfallSection section = new(Position + Vector2.UnitX * i, this, i);
                 Sections[i] = section;
                 scene.Add(section);
             }
@@ -450,10 +450,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private HashSet<int> DetectFloorChanges()
         {
-            HashSet<int> dirty = new HashSet<int>();
+            HashSet<int> dirty = new();
             Level level = SceneAs<Level>();
-            Rectangle watchArea = new Rectangle((int)X - 4, (int)Y, (int)Width + 8, (int)Height + 32);
-            HashSet<Entity> currentEntities = new HashSet<Entity>();
+            Rectangle watchArea = new((int)X - 4, (int)Y, (int)Width + 8, (int)Height + 32);
+            HashSet<Entity> currentEntities = new();
 
             void CheckEntities<T>() where T : Entity
             {
@@ -463,7 +463,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     float right = entity.Collider != null ? entity.Right : entity.X + 1;
                     float top = entity.Collider != null ? entity.Top : entity.Y;
                     float bottom = entity.Collider != null ? entity.Bottom : entity.Y + 1;
-                    Rectangle bounds = new Rectangle((int)left, (int)top, (int)Math.Max(1, right - left), (int)Math.Max(1, bottom - top));
+                    Rectangle bounds = new((int)left, (int)top, (int)Math.Max(1, right - left), (int)Math.Max(1, bottom - top));
                     if (!watchArea.Intersects(bounds))
                     {
                         if (WatchedFloorEntities.TryGetValue(entity, out FloorEntry leaving))
@@ -474,12 +474,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         continue;
                     }
                     currentEntities.Add(entity);
-                    FloorEntry current = new FloorEntry { Left = left, Right = right, Top = top, Bottom = bottom, Collidable = entity.Collidable };
+                    FloorEntry current = new() { Left = left, Right = right, Top = top, Bottom = bottom, Collidable = entity.Collidable };
                     if (!WatchedFloorEntities.TryGetValue(entity, out FloorEntry previous))
                     {
                         MarkSectionsInRange(left, right, dirty);
                     }
-                    else if (previous.Left != current.Left || previous.Right != current.Right|| previous.Top != current.Top || previous.Bottom != current.Bottom || previous.Collidable != current.Collidable)
+                    else if (previous.Left != current.Left || previous.Right != current.Right || previous.Top != current.Top || previous.Bottom != current.Bottom || previous.Collidable != current.Collidable)
                     {
                         MarkSectionsInRange(Math.Min(previous.Left, current.Left), Math.Max(previous.Right, current.Right), dirty);
                     }
@@ -606,7 +606,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (Engine.Scene is Level level)
             {
-                HashSet<Waterfall> checkedWaterfalls = new HashSet<Waterfall>();
+                HashSet<Waterfall> checkedWaterfalls = new();
                 foreach (WaterfallSection section in level.Tracker.GetEntities<WaterfallSection>())
                 {
                     if (checkedWaterfalls.Add(section.Waterfall) && section.Waterfall.PlayerInside())

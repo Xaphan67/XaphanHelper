@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {

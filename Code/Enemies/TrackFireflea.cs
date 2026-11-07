@@ -117,7 +117,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         protected override void OnSquish(CollisionData data)
         {
-            
+
         }
 
         private void OnBounce(Player player)

@@ -14,7 +14,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private new bool Left;
 
-        private MTexture[,] texture = new MTexture[2,4];
+        private MTexture[,] texture = new MTexture[2, 4];
 
         private int Variation;
 

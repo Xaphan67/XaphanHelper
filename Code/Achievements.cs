@@ -1083,16 +1083,16 @@ namespace Celeste.Mod.XaphanHelper
                     medals: 5,
                     hidden: true
                 ));
-               list.Add(new AchievementData(
-                    achievementID: "lock5-2",
-                    categoryID: 5,
-                    icon: "achievements/Xaphan/LockTerminalGreen",
-                    flag: "XaphanHelper_StatFlag_LockGreenCh5",
-                    currentValue: session.GetFlag("XaphanHelper_StatFlag_LockGreenCh5") ? 1 : 0,
-                    maxValue: 1,
-                    medals: 5,
-                    hidden: true
-                ));
+                list.Add(new AchievementData(
+                     achievementID: "lock5-2",
+                     categoryID: 5,
+                     icon: "achievements/Xaphan/LockTerminalGreen",
+                     flag: "XaphanHelper_StatFlag_LockGreenCh5",
+                     currentValue: session.GetFlag("XaphanHelper_StatFlag_LockGreenCh5") ? 1 : 0,
+                     maxValue: 1,
+                     medals: 5,
+                     hidden: true
+                 ));
                 list.Add(new AchievementData(
                     achievementID: "lock5-3",
                     categoryID: 5,

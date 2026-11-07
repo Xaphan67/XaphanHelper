@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 

@@ -56,7 +56,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                 }
-                
+
                 level.InCutscene = false;
                 level.CancelCutscene();
                 while (!level.Session.GetFlag("reactor_glass_broken") || !playerHasMoved)
@@ -174,7 +174,7 @@ namespace Celeste.Mod.XaphanHelper.Events
         private void TriggerExplosion()
         {
             Level CurrentLevel = SceneAs<Level>();
-            Vector2 ExplosionCenter = new Vector2(CurrentLevel.Bounds.Center.X + CurrentLevel.Bounds.Width / 2 + 160f, CurrentLevel.Bounds.Center.Y);
+            Vector2 ExplosionCenter = new(CurrentLevel.Bounds.Center.X + CurrentLevel.Bounds.Width / 2 + 160f, CurrentLevel.Bounds.Center.Y);
 
             if (CurrentLevel.Session.Level == "X-07")
             {

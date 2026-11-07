@@ -417,7 +417,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else if (Direction.Y < 0)
             {
-                Speed.Y = -beamSpeed ;
+                Speed.Y = -beamSpeed;
             }
             if (wideOffset != 0 && !waving)
             {
@@ -545,7 +545,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void onCollideSolid(CollisionData data)
         {
-            if (data.Hit.GetType() == typeof(DroneSwitch)) 
+            if (data.Hit.GetType() == typeof(DroneSwitch))
             {
                 CollideDroneSwitch(data.Hit, data.Direction);
             }

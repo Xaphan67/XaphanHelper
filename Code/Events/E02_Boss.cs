@@ -107,7 +107,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru4 = new JumpthruPlatform(bounds, 24, "Xaphan/abyss_a", 8);
             jumpThru5 = new JumpthruPlatform(bounds, 24, "Xaphan/abyss_a", 8);
             crumblePlatform1 = new CustomCrumbleBlock(bounds, Vector2.Zero, 24, 8, 2f, 0.6f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f, canBypassSideCrumbleDelay: true);
-            crumblePlatform2 = new CustomCrumbleBlock(bounds, Vector2.Zero, 24, 8, 2f, 0.6f, 0.6f,false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f, canBypassSideCrumbleDelay: true);
+            crumblePlatform2 = new CustomCrumbleBlock(bounds, Vector2.Zero, 24, 8, 2f, 0.6f, 0.6f, false, -1, texture: "objects/Xaphan/CustomCrumbleBlock/abyss_c", lightOccludeValue: 0.2f, canBypassSideCrumbleDelay: true);
             spikes = new Spikes(bounds, 48, Spikes.Directions.Down, "Xaphan/abyss_b");
             arrowUp = new Decal("Xaphan/Common/arrow_up00.png", bounds, new Vector2(1f, 1f), 1);
             arrowDown = new Decal("Xaphan/Common/arrow_down00.png", bounds, new Vector2(1f, 1f), 1);

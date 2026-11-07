@@ -2,9 +2,7 @@
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Entities;
 using Microsoft.Xna.Framework;
-using Mono.Cecil.Cil;
 using Monocle;
-using MonoMod.Cil;
 
 namespace Celeste.Mod.XaphanHelper.Enemies
 {
@@ -73,7 +71,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 {
                     Offset = new Vector2(0f, 2f);
                 }
-                else if(Skultera.direction == Skultera.Direction.Right)
+                else if (Skultera.direction == Skultera.Direction.Right)
                 {
                     Offset = new Vector2(10f, 2f);
                 }
@@ -291,7 +289,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 for (int i = 0; i < particles.Length; i++)
                 {
-                    
+
                     Vector2 particlePosition = default(Vector2);
                     particlePosition.X = mod(particles[i].Position.X, Collider.Width);
                     particlePosition.Y = mod(particles[i].Position.Y, Collider.Height);

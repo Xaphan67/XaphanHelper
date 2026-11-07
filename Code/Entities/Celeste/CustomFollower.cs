@@ -40,25 +40,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Sprite sprite = new(GFX.Game, "collectables/XaphanHelper/CustomFollower/collectText/");
                     // start
-                    if (text[i] == ' ') {
+                    if (text[i] == ' ')
+                    {
                         sprite.Add("start", "_", 0.08f, 0, 0, 0);
                     }
-                    else {
+                    else
+                    {
                         sprite.Add("start", sprite.Width == 7 ? "startLarger" : (sprite.Width == 6 ? "startLarge" : "start"), 0.08f);
                     }
                     // char
-                    if (text[i] == '<') {
+                    if (text[i] == '<')
+                    {
                         i++;
                         string cipher = null; // put font on a safe path by encrypt and decode it for translators
-                        for (; i < text.Length; i++) {
-                            if (text[i] == '>') {
+                        for (; i < text.Length; i++)
+                        {
+                            if (text[i] == '>')
+                            {
                                 break;
                             }
                             cipher += text[i];
                         }
                         sprite.Add("char", cipher, 1f);
                     }
-                    else {
+                    else
+                    {
                         sprite.Add("char", text[i] == ' ' ? "_" : text[i].ToString(), 1f);
                     }
                     // end

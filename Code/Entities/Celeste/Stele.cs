@@ -119,7 +119,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 shakeSoundSource.stop(STOP_MODE.ALLOWFADEOUT);
                 SceneAs<Level>().CanRetry = true;
-                XaphanModule.IgnoreShakeSettings = false;               
+                XaphanModule.IgnoreShakeSettings = false;
             }
             else
             {

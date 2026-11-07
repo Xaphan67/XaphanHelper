@@ -448,8 +448,8 @@ namespace Celeste.Mod.XaphanHelper
         [Command("reset_campaign", "Delete all progress on the current campaign and restart it from the beggining (Campaigns that use a Merge Chapter Controller only)")]
         public static void Cmd_Reset_Campaign()
         {
-            if (XaphanModule.isInLevel && level != null  && XaphanModule.useMergeChaptersController)
-                {
+            if (XaphanModule.isInLevel && level != null && XaphanModule.useMergeChaptersController)
+            {
                 Cmd_Clear_InGameMap(true, true);
                 Cmd_Clear_Warps();
                 Cmd_Remove_Upgrades();

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Components;
-using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
@@ -86,7 +83,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         else if (letter != '{')
                         {
-                            Sprite sprite = new Sprite(GFX.Game, "objects/Xaphan/AncientText/symbols/" + letter);
+                            Sprite sprite = new(GFX.Game, "objects/Xaphan/AncientText/symbols/" + letter);
                             sprite.Add("letter", "", 0);
                             sprite.Color = Tint;
                             sprite.Position += new Vector2(col, row);
@@ -118,7 +115,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     sprite.Position -= new Vector2(LinesLength[(int)sprite.Position.Y / 8] / 2, 0);
                     Add(sprite);
 
-                    Sprite reveal = new Sprite(GFX.Game, "objects/Xaphan/AncientText/letters/" + Utils.GetLetter(sprite.Path[sprite.Path.Length - 1]));
+                    Sprite reveal = new(GFX.Game, "objects/Xaphan/AncientText/letters/" + Utils.GetLetter(sprite.Path[sprite.Path.Length - 1]));
                     reveal.Add("letter", "", 0);
                     reveal.Position = sprite.Position;
                     reveal.Visible = false;
@@ -138,7 +135,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
 
-            
+
 
             public override void Update()
             {

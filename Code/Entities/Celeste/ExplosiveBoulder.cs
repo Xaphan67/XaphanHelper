@@ -1,11 +1,11 @@
-﻿using Monocle;
-using Microsoft.Xna.Framework;
-using Celeste.Mod.Entities;
+﻿using System;
 using System.Collections;
-using Celeste.Mod.XaphanHelper.Colliders;
 using System.Reflection;
-using System;
+using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Celeste.Mod.XaphanHelper.Enemies;
+using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {

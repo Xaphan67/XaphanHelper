@@ -242,7 +242,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private List<Image> BuildSprite(MTexture source)
         {
-            List<Image> list = new List<Image>();
+            List<Image> list = new();
             int num = source.Width / 8;
             int num2 = source.Height / 8;
             for (int i = 0; i < Width; i += 8)
@@ -251,7 +251,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     int num3 = ((i != 0) ? ((!(i >= Width - 8f)) ? Calc.Random.Next(1, num - 1) : (num - 1)) : 0);
                     int num4 = ((j != 0) ? ((!(j >= Height - 8f)) ? Calc.Random.Next(1, num2 - 1) : (num2 - 1)) : 0);
-                    Image image = new Image(source.GetSubtexture(num3 * 8, num4 * 8, 8, 8));
+                    Image image = new(source.GetSubtexture(num3 * 8, num4 * 8, 8, 8));
                     image.Position = new Vector2(i, j);
                     list.Add(image);
                     Add(image);
@@ -468,10 +468,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         for (int j = 0; j < Height; j += 8)
                         {
-                            Vector2 vector6 = new Vector2(X + i + 4f, Y + j + 4f);
+                            Vector2 vector6 = new(X + i + 4f, Y + j + 4f);
                             Scene.Add(Engine.Pooler.Create<RespawnDebris>().Init(vector6 + (vector6 - Center).SafeNormalize() * 12f, vector6, iceMode, duration));
                         }
-                    }                   
+                    }
                 }
             }
         }
@@ -571,7 +571,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Collidable = false;
             DisableStaticMovers();
             respawnTimer = respawnTime;
-            Vector2 direction = new Vector2(0f, 1f);
+            Vector2 direction = new(0f, 1f);
             if (!iceMode)
             {
                 direction = debrisDirection;

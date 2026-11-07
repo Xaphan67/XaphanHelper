@@ -126,7 +126,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Vector2 offset = player.Center - anchorPoint;
             length = Calc.Clamp(offset.Length(), MinLength, MaxLength);
             theta = (float)Math.Atan2(offset.X, offset.Y);
-            Vector2 tangent = new Vector2((float)Math.Cos(theta), -(float)Math.Sin(theta));
+            Vector2 tangent = new((float)Math.Cos(theta), -(float)Math.Sin(theta));
             omega = Vector2.Dot(player.Speed, tangent) / length;
             player.StateMachine.State = XaphanModule.StGrapple;
         }
@@ -160,10 +160,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             omega *= 1f - Calc.Clamp(AngularDamping * dt, 0f, 1f);
             omega = Calc.Clamp(omega, -MaxAngularSpeed, MaxAngularSpeed);
             theta += omega * dt;
-            Vector2 offset = new Vector2(length * (float)Math.Sin(theta), length * (float)Math.Cos(theta));
+            Vector2 offset = new(length * (float)Math.Sin(theta), length * (float)Math.Cos(theta));
             Vector2 targetPosition = anchorPoint + offset;
-            Vector2 radialDir = new Vector2((float)Math.Sin(theta), (float)Math.Cos(theta));
-            Vector2 tangentDir = new Vector2((float)Math.Cos(theta), -(float)Math.Sin(theta));
+            Vector2 radialDir = new((float)Math.Sin(theta), (float)Math.Cos(theta));
+            Vector2 tangentDir = new((float)Math.Cos(theta), -(float)Math.Sin(theta));
             float lengthRate = (length - previousLength) / dt;
             Vector2 velocity = tangentDir * (length * omega) + radialDir * lengthRate;
 
@@ -204,7 +204,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (data.Direction.Y < 0f)
             {
                 omega = Calc.Clamp(-omega * CeilingBounceFactor, -MaxAngularSpeed, MaxAngularSpeed);
-                Vector2 tangentDir = new Vector2((float)Math.Cos(theta), -(float)Math.Sin(theta));
+                Vector2 tangentDir = new((float)Math.Cos(theta), -(float)Math.Sin(theta));
                 player.Speed = tangentDir * (length * omega);
             }
         }
@@ -274,7 +274,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (State != States.Breaked && State != States.Failed)
             {
-                Vector2 origin = new Vector2(0f, hook.Height / 2f);
+                Vector2 origin = new(0f, hook.Height / 2f);
                 Vector2 tip = Position + direction;
                 MTexture currentFrame = hook.Texture;
                 Draw.SineTextureH(

@@ -30,7 +30,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             Flag = data.Attr("flag");
             Time = data.Float("time");
             WalkCenter = data.Bool("walkCenter");
-            EndFacing = data.Enum< EndFacings>("endFacing");
+            EndFacing = data.Enum<EndFacings>("endFacing");
         }
 
         public override void Added(Scene scene)

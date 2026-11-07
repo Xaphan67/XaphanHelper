@@ -203,7 +203,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private IEnumerator FreezedSequence()
         {
-            for (int i = 0; i <= sprites.Count -1; i++)
+            for (int i = 0; i <= sprites.Count - 1; i++)
             {
                 sprites[i].Active = false;
             }

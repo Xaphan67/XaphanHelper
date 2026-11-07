@@ -367,7 +367,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         LorebookDisplay.EntryInfo infoDisplay = SceneAs<Level>().Tracker.GetEntity<LorebookDisplay.EntryInfo>();
                         if (infoDisplay != null)
                         {
-                            infoDisplay.Visible= false;
+                            infoDisplay.Visible = false;
                             if (infoDisplay.TextRoutine.Active)
                             {
                                 infoDisplay.TextRoutine.Cancel();

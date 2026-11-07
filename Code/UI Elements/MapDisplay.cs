@@ -90,7 +90,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         int chapterIndex = int.Parse(marker.Split(':')[0]);
                         string room = marker.Split(':')[1];
-                        Vector2 position = new Vector2(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
+                        Vector2 position = new(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
                         if (chapterIndex == mapDisplay.chapterIndex && (mapDisplay.CalcRoomPosition(mapDisplay.RoomData[room].Position + (mapDisplay.roomIsAdjusted(room) ? mapDisplay.GetAdjustedPosition(room) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + position * 40f) == selectorPosition)
                         {
                             HoverExistingMarker = true;
@@ -690,7 +690,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-            foreach(InGameMapHintControllerData hintData in HintControllerData)
+            foreach (InGameMapHintControllerData hintData in HintControllerData)
             {
                 Add(hintData.Sprite);
             }
@@ -710,7 +710,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "moonberry", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY)), MapData.Area, entity.ID));
                     }
-                    else if ((entity.Name == "blackGem" || entity.Name == "XaphanHelper/Ch2HeartController" || entity.Name == "MaxHelpingHand/ReskinnableCrystalHeart"|| entity.Name == "XaphanHelper/SnakeConsole") && IsInBounds(level, new Vector2(entity.Position.X, entity.Position.Y)))
+                    else if ((entity.Name == "blackGem" || entity.Name == "XaphanHelper/Ch2HeartController" || entity.Name == "MaxHelpingHand/ReskinnableCrystalHeart" || entity.Name == "XaphanHelper/SnakeConsole") && IsInBounds(level, new Vector2(entity.Position.X, entity.Position.Y)))
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "heart", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
                     }
@@ -2048,7 +2048,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     int chapterIndex = int.Parse(marker.Split(':')[0]);
                     string room = marker.Split(':')[1];
-                    Vector2 position = new Vector2(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
+                    Vector2 position = new(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
                     string type = marker.Split(':')[4];
                     Markers.Add(new InGameMapMarkersData(chapterIndex, room, position * 40f, type));
                 }
@@ -2998,7 +2998,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             Draw.Rect(RoomPosition + entrance.Position, entrance.Width, entrance.Height, entrance.Color * Opacity);
                         }
                     }
-                }               
+                }
 
                 // Tiles (only if the room is using a TilesController)
 
@@ -3050,7 +3050,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         continue;
                     }
                     Image iconImage = null;
-                    HashSet<string> SOCMIcons = new HashSet<string>()
+                    HashSet<string> SOCMIcons = new()
                     {
                         "ancientText", "boss", "journalPedestal", "stele", "waterWheel"
                     };

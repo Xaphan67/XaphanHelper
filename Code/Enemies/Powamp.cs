@@ -85,7 +85,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         private IEnumerator GrowSpikes()
         {
             yield return GrownDelay;
-            
+
             Grown = true;
             scaleWiggler.Start();
             Audio.Play("event:/new_content/game/10_farewell/puffer_expand", Position);

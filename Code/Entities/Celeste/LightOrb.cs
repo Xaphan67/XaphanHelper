@@ -66,7 +66,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Added(scene);
             LightManager manager = SceneAs<Level>().Tracker.GetEntity<LightManager>();
-            if(manager != null)
+            if (manager != null)
             {
                 Manager = manager;
             }

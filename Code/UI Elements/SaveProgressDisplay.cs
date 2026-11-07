@@ -543,7 +543,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             int currentHearts = 0;
             foreach (AchievementData achievement in Achievements.GenerateAchievementsList(SceneAs<Level>().Session))
             {
-                if (achievement.AchievementID.Contains("boss")  && achievement.AchievementID.Contains("cm"))
+                if (achievement.AchievementID.Contains("boss") && achievement.AchievementID.Contains("cm"))
                 {
                     if (SceneAs<Level>().Session.GetFlag(achievement.Flag))
                     {

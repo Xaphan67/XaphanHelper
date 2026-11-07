@@ -30,7 +30,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             for (int i = 0; i < particles.Length; i++)
             {
                 Vector2 position = particles[i].Position;
-                if ((position.X > (float)rect.Left && position.Y > (float)rect.Top && position.X < (float)rect.Right && position.Y < (float)rect.Bottom) == inside)
+                if ((position.X > rect.Left && position.Y > rect.Top && position.X < rect.Right && position.Y < rect.Bottom) == inside)
                 {
                     particles[i].Active = false;
                 }

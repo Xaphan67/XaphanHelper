@@ -244,7 +244,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 speed = 240f * speedMult / lengths[lengths.Length - 1];
                 NoLiftBoostTimer = 0.2f;
             }
-            
+
             if (Input.GrabCheck && direction.Y == 0)
             {
                 player.StateMachine.State = Player.StClimb;
@@ -387,7 +387,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             0,
             data.Float("speedMult", 1f),
             data.Bool("drawTrack", true),
-            data.Bool("particles", true), 
+            data.Bool("particles", true),
             data.Bool("canDash", true),
             data.Bool("playerMomentum", false),
             data.Bool("noReturn", false),
@@ -413,7 +413,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (NoLiftBoostTimer > 0f)
             {
-                NoLiftBoostTimer -=Engine.DeltaTime;
+                NoLiftBoostTimer -= Engine.DeltaTime;
             }
             alpha += Engine.DeltaTime * 4f;
             if ((Scene as Level).Transitioning)
@@ -457,7 +457,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     CanShake = false;
                 }
-                if (!(percent <= 0 && direction == -1 && !rewind) && !(percent >=1 && direction == 1 && rewind) && direction != 0)
+                if (!(percent <= 0 && direction == -1 && !rewind) && !(percent >= 1 && direction == 1 && rewind) && direction != 0)
                 {
                     if (speed > 0)
                     {

@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Enemies
@@ -44,7 +44,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             center = data.Nodes[0] + offset;
             Clockwise = data.Bool("clockwise");
             RotationTime = data.Float("rotationTime", 1.8f);
-            StaticMover staticMover = new StaticMover();
+            StaticMover staticMover = new();
             staticMover.SolidChecker = (Solid s) => s.CollidePoint(center);
             staticMover.JumpThruChecker = (JumpThru jt) => jt.CollidePoint(center);
             staticMover.OnMove = delegate (Vector2 v)

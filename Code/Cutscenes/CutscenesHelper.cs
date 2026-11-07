@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Microsoft.Xna.Framework;
 
 namespace Celeste.Mod.XaphanHelper.Cutscenes
@@ -28,7 +27,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         public static BadelineDummy BadelineAppears(Level level, Vector2 position)
         {
             Player player = level.Tracker.GetEntity<Player>();
-            BadelineDummy badeline = new BadelineDummy(position);
+            BadelineDummy badeline = new(position);
             level.Add(badeline);
             badeline.Appear(level);
             level.Session.Inventory.Dashes = 1;
@@ -38,7 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public static BadelineDummy BadelineSplit(Level level, Player player)
         {
-            BadelineDummy badeline = new BadelineDummy(player.Position);
+            BadelineDummy badeline = new(player.Position);
             Audio.Play("event:/char/badeline/maddy_split", player.Position);
             level.Add(badeline);
             level.Displacement.AddBurst(badeline.Center, 0.5f, 8f, 32f, 0.5f);
@@ -49,7 +48,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public static IEnumerator BadelineFloat(CutsceneEntity cutscene, int x, int y, BadelineDummy badeline, int? turnAtEndTo, bool faceDirection, bool fadeLight, bool quickEnd)
         {
-            Vector2 badelineEndPosition = new Vector2(badeline.Position.X + x, badeline.Position.Y + y);
+            Vector2 badelineEndPosition = new(badeline.Position.X + x, badeline.Position.Y + y);
             yield return badeline.FloatTo(badelineEndPosition, turnAtEndTo, faceDirection, fadeLight, quickEnd);
             while (badeline.Position != badelineEndPosition)
             {

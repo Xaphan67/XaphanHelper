@@ -10,7 +10,6 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.XaphanHelper.Upgrades
 {

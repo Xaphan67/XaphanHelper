@@ -181,7 +181,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 PlayerSprite.OnLastFrame = delegate
                 {
                     startedWakeUpAnim = false;
-                };  
+                };
             }
             else if (Sprite.Has("wakeUp"))
             {

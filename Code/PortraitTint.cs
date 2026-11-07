@@ -36,7 +36,7 @@ public static class PortraitTint
 
     private static void modTextboxRender(ILContext il)
     {
-        ILCursor c = new ILCursor(il);
+        ILCursor c = new(il);
         if (c.TryGotoNext(MoveType.After,
                 i => i.MatchLdarg(0),
                 i => i.MatchLdfld<Textbox>("portraitSprite"),
@@ -50,7 +50,7 @@ public static class PortraitTint
 
     private static void modMiniTextboxRender(ILContext il)
     {
-        ILCursor c = new ILCursor(il);
+        ILCursor c = new(il);
         if (c.TryGotoNext(MoveType.After,
                 i => i.MatchLdarg(0),
                 i => i.MatchLdfld<MiniTextbox>("portrait"),

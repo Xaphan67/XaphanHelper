@@ -53,7 +53,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (direction == "Top")
             {
                 burstDirection = Calc.AngleToVector((1 - Calc.Random.NextFloat(0.5f)) * ((float)Math.PI * 2f), 1f);
-            } else if (direction == "Bottom")
+            }
+            else if (direction == "Bottom")
             {
                 burstDirection = Calc.AngleToVector(Calc.Random.NextFloat(0.5f) * ((float)Math.PI * 2f), 1f);
             }

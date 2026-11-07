@@ -44,7 +44,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             LineSprite.AddLoop("on", "on", 0.08f);
             LineSprite.AddLoop("off", "off", 0.08f);
             LineSprite.Play("off");
-            Depth = data.Bool("background")  ? 9999 : -19999;
+            Depth = data.Bool("background") ? 9999 : -19999;
         }
 
         public override void Awake(Scene scene)
@@ -67,7 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool HasAdjacentThinSide(Vector2 cellPos, string axis)
         {
-            Rectangle cellRect = new Rectangle((int)cellPos.X, (int)cellPos.Y, 1, 1);
+            Rectangle cellRect = new((int)cellPos.X, (int)cellPos.Y, 1, 1);
 
             PowerLine other = Scene.CollideFirst<PowerLine>(cellRect);
             if (other != null)

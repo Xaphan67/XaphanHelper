@@ -421,7 +421,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                         drone.ForceDestroy();
                     }
-                        return null;
+                    return null;
                 }
             }
             else
@@ -1287,7 +1287,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (dead)
             {
-               yield break;
+                yield break;
             }
             if (!SaveData.Instance.Assists.Invincible || forced)
             {

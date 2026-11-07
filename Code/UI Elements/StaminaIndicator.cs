@@ -89,7 +89,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (player != null && (player.Sprite.Visible || !player.Sprite.Visible && (SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") || startedScrewAttack)) && !XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     MTexture staminaIndicator = GFX.Gui["upgrades/staminaindicator"];
-                    Vector2 Position = player.Center + new Vector2(player.Facing == Facings.Right ? (player.StateMachine.State != Player.StClimb ? -14f : - 12f) : (player.StateMachine.State != Player.StClimb ? 7f : 5f), -10f);
+                    Vector2 Position = player.Center + new Vector2(player.Facing == Facings.Right ? (player.StateMachine.State != Player.StClimb ? -14f : -12f) : (player.StateMachine.State != Player.StClimb ? 7f : 5f), -10f);
                     staminaIndicator.Draw(Position);
                     Position += new Vector2(3f, 3f);
                     float Percent = player.Stamina * 100 / BaseStamina;

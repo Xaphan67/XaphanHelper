@@ -682,7 +682,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 int num = (int)Math.Floor((0f - (Calc.AngleToVector(angle, 1f) * new Vector2(-1f, 1f)).Angle() + (float)Math.PI * 2f) % ((float)Math.PI * 2f) / ((float)Math.PI * 2f) * 8f + 0.5f);
                 moveSfx.Param("arrow_influence", num + 1);
             }
-            if (border != null )
+            if (border != null)
             {
                 border.Visible = state != MovementState.Breaking;
             }

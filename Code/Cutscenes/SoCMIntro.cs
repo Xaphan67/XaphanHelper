@@ -403,18 +403,20 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 XaphanModule.ModSettings.AutoSkipCutscenes = b;
             }));
             menu.Add(new TextMenu.SubHeader(Dialog.Clean("options_controls")));
-            menu.Add(new TextMenu.Button(Dialog.Clean("options_keyconfig")).Pressed(() => {
+            menu.Add(new TextMenu.Button(Dialog.Clean("options_keyconfig")).Pressed(() =>
+            {
                 menu.Focused = false;
                 Engine.Scene.Add(CreateKeyboardConfigUI(menu));
                 Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
             }));
-            menu.Add(new TextMenu.Button(Dialog.Clean("options_btnconfig")).Pressed(() => {
+            menu.Add(new TextMenu.Button(Dialog.Clean("options_btnconfig")).Pressed(() =>
+            {
                 menu.Focused = false;
                 Engine.Scene.Add(CreateButtonConfigUI(menu));
                 Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
             }));
             menu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Others")));
-            TextMenu.OnOff DebugSetting = new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Others_Debug"), XaphanModule.ModSettings.AllowDebug);
+            TextMenu.OnOff DebugSetting = new(Dialog.Clean("Xaphan_0_Options_Others_Debug"), XaphanModule.ModSettings.AllowDebug);
             DebugSetting.Disabled = !XaphanModule.ModSettings.WatchedCredits;
             menu.Add(DebugSetting.Change(delegate (bool b)
             {

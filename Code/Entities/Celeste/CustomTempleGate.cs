@@ -134,7 +134,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static DashCollisionResults onDashSwitchOnDashed(On.Celeste.DashSwitch.orig_OnDashed orig, DashSwitch self, Player player, Vector2 direction)
         {
-            DynamicData data = new DynamicData(self);
+            DynamicData data = new(self);
             bool wasPressed = data.Get<bool>("pressed");
             chosenGate = null;
             DashCollisionResults result = orig(self, player, direction);
@@ -150,7 +150,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             chosenGate = null;
             orig(self, scene);
-            DynamicData data = new DynamicData(self);
+            DynamicData data = new(self);
             if (data.Get<bool>("pressed"))
             {
                 OpenFlagGates(self, data, true);

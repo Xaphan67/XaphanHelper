@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System;
-using Monocle;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
@@ -269,7 +269,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 int count = Pages.Count;
                 MTexture mTexture2 = GFX.Gui["dot_outline"];
                 int num3 = mTexture2.Width * count;
-                Vector2 vector2 = new Vector2(960f, 1040f - 40f * Ease.CubeOut(dotEase));
+                Vector2 vector2 = new(960f, 1040f - 40f * Ease.CubeOut(dotEase));
                 for (int i = 0; i < count; i++)
                 {
                     mTexture2.DrawCentered(vector2 + new Vector2((-num3 / 2) + mTexture2.Width * (i + 0.5f), 0f), Color.White * 0.25f);

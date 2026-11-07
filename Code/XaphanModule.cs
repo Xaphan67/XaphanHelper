@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Xml;
 using Celeste.Mod.Meta;
@@ -21,7 +19,6 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
-using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -1477,7 +1474,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     onCreatePauseMenuButtons(self, textMenu, minimal);
                 }
-            }            
+            }
         }
 
         private void onReturnMapHintRender(On.Celeste.ReturnMapHint.orig_Render orig, ReturnMapHint self)
@@ -2007,17 +2004,17 @@ namespace Celeste.Mod.XaphanHelper
                     SaveData.Instance = self.SaveData;
                     self.Cassettes.Clear();
                     self.HeartGems.Clear();
-                    foreach (AreaStats item in self.SaveData.Areas_Safe)
+                    foreach (AreaStats areaStat in self.SaveData.Areas_Safe)
                     {
-                        AreaData areaData = AreaData.Areas[item.ID_Safe];
+                        AreaData areaData = AreaData.Areas[areaStat.ID_Safe];
                         if (!areaData.Interlude_Safe && areaData.CanFullClear)
                         {
                             bool[] hearts = new bool[3];
                             for (int i = 0; i < hearts.Length; i++)
                             {
-                                hearts[i] = item.Modes[i].HeartGem;
+                                hearts[i] = areaStat.Modes[i].HeartGem;
                             }
-                            self.Cassettes.Add(item.Cassette);
+                            self.Cassettes.Add(areaStat.Cassette);
                             self.HeartGems.Add(hearts);
                         }
                     }
@@ -3267,7 +3264,7 @@ namespace Celeste.Mod.XaphanHelper
                     if (item.GetType() == typeof(TextMenu.Button) || !item.GetType().ToString().Contains("Celeste"))
                     {
                         TextMenu.Button button = (TextMenu.Button)item;
-                        if(button.Label != Dialog.Clean("MENU_PAUSE_RESUME") &&
+                        if (button.Label != Dialog.Clean("MENU_PAUSE_RESUME") &&
                             button.Label != Dialog.Clean("MENU_PAUSE_SKIP_CUTSCENE") &&
                             button.Label != Dialog.Clean("MENU_PAUSE_RETRY") &&
                             button.Label != Dialog.Clean("MENU_PAUSE_ASSIST") &&
@@ -4194,7 +4191,7 @@ namespace Celeste.Mod.XaphanHelper
                             ModSaveData.SavedTime[self.Session.Area.LevelSet] = self.Session.Time;
                         }
                     }
-                }                
+                }
             }
 
             // Spawn a Golden Strawberry when entering a new chapter if one was collected in another chapter of a merged campaign
@@ -4414,7 +4411,7 @@ namespace Celeste.Mod.XaphanHelper
                         break;
                     }
                 }
-                
+
                 // Backward saves compatibility
 
                 SaveUpdater.RemoveUpgrades();

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -442,7 +441,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private static void onPlayerClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
         {
             orig(self);
-            
+
             foreach (Arrow arrow in self.Scene.Tracker.GetEntities<Arrow>())
             {
                 if (arrow.inWall && self.CollideRect(new Rectangle((int)arrow.Position.X + 3, (int)arrow.Position.Y, 2, 22), self.Position + Vector2.UnitX * 2f * (float)self.Facing))

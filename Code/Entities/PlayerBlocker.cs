@@ -1,5 +1,4 @@
-﻿using Celeste.Mod.XaphanHelper.Colliders;
-using Celeste.Mod.XaphanHelper.Enemies;
+﻿using Celeste.Mod.XaphanHelper.Enemies;
 using Microsoft.Xna.Framework;
 using Monocle;
 

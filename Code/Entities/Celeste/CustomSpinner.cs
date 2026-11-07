@@ -324,7 +324,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Image image = new(Calc.Random.Choose(atlasSubtextures));
             image.Rotation = Calc.Random.Choose(0, 1, 2, 3) * ((float)Math.PI / 2f);
             image.CenterOrigin();
-            Filler filler = new Filler(Position + offset);
+            Filler filler = new(Position + offset);
             filler.Add(image);
             Scene.Add(filler);
             fillers.Add(filler);

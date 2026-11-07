@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using static Celeste.Session;
 
 namespace Celeste.Mod.XaphanHelper
 {

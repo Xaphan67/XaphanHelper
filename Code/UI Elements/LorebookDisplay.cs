@@ -391,7 +391,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 {
                                     foreach (FancyText.Node node in Text.Nodes)
                                     {
-                                        if (node.GetType() == typeof(FancyText.Char)) {
+                                        if (node.GetType() == typeof(FancyText.Char))
+                                        {
                                             FancyText.Char letter = (FancyText.Char)node;
                                             letter.Character = Utils.GetLetter((char)letter.Character);
                                         }
@@ -533,7 +534,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 154f : 355f, 245f), 0, "XaphanHelper_UI_Locations", LorebookEntriesData.FindAll(entry => entry.CategoryID == 0), "XaphanHelper_UI_Locations_Desc"));
             Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 558f : 760f, 245f), 1, "XaphanHelper_UI_Equipment", LorebookEntriesData.FindAll(entry => entry.CategoryID == 1), "XaphanHelper_UI_Equipment_Desc"));
             Scene.Add(new CategoryDisplay(level, new Vector2(ShowLoreTab ? 962f : 1165f, 245f), 2, "XaphanHelper_UI_Adventure", LorebookEntriesData.FindAll(entry => entry.CategoryID == 2), "XaphanHelper_UI_Adventure_Desc"));
-            
+
             if (ShowLoreTab)
             {
                 Scene.Add(new CategoryDisplay(level, new Vector2(1366f, 245f), 3, "XaphanHelper_UI_Lore", LorebookEntriesData.FindAll(entry => entry.CategoryID == 3), "XaphanHelper_UI_Lore_Desc"));

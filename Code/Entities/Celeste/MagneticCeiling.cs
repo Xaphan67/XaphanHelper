@@ -136,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (self.SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && player != null)
             {
-                return (Collide.Check(self, player, self.Position  + Vector2.UnitY * 5)) ? player : null;
+                return (Collide.Check(self, player, self.Position + Vector2.UnitY * 5)) ? player : null;
             }
             return orig(self);
         }

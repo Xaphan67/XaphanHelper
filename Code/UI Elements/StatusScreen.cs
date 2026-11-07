@@ -47,7 +47,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int SelectedRow;
 
-        private List<UpgradeDisplay> avaiableDisplays = new List<UpgradeDisplay>();
+        private List<UpgradeDisplay> avaiableDisplays = new();
 
         public StatusScreen(Level level, bool fromMap)
         {
@@ -284,7 +284,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         if (firstCol == 0)
                         {
                             break;
-                        }   
+                        }
                     }
                 }
                 SelectedRow = firstRow;
@@ -408,7 +408,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             avaiableDisplays.Clear();
                             foreach (UpgradeDisplay display in statusDisplay.Displays)
                             {
-                                if(display.row == SelectedRow && display.col > SelectedCol)
+                                if (display.row == SelectedRow && display.col > SelectedCol)
                                 {
                                     avaiableDisplays.Add(display);
                                 }

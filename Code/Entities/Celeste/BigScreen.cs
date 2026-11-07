@@ -305,5 +305,5 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             return min + (PseudoRand(ref seed) % 1000u) / 1000f * (max - min);
         }
-    }    
+    }
 }

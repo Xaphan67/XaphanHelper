@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using Monocle;
+﻿using System;
 using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.Colliders;
+using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -219,7 +219,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Player player = CollideFirst<Player>();
             if (player != null && !Scene.CollideCheck<Solid>(Position, player.Center))
             {
-                ExplodeLaunch(player, Position, false,true);
+                ExplodeLaunch(player, Position, false, true);
             }
             TheoCrystal theoCrystal = CollideFirst<TheoCrystal>();
             if (theoCrystal != null && !Scene.CollideCheck<Solid>(Position, theoCrystal.Center))
@@ -498,7 +498,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
         }
-        
+
         public bool HitSpring(Spring spring)
         {
             switch (spring.Orientation)

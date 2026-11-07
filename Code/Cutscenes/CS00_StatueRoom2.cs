@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Cutscenes

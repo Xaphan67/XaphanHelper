@@ -171,7 +171,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             FireballTimer = data.Float("fireballTimer", 0.7f);
             Fireballs = data.Int("fireballs", 3);
             IdleTimer = data.Float("idleTimer", 2f);
-            ShootDirection = data.Enum< ShootDirections>("shootDirection", ShootDirections.Both);
+            ShootDirection = data.Enum<ShootDirections>("shootDirection", ShootDirections.Both);
             ShootStrength = data.Float("shootStrength", 1f);
             Add(MainRoutine = new Coroutine(Routine()));
         }

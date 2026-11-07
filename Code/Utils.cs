@@ -117,7 +117,7 @@ namespace Celeste.Mod.XaphanHelper
         {
             PixelFontSize size = text.Font.Get(text.BaseSize);
             float currentPosition = 0f;
-            List<FancyText.Char> currentLineChars = new List<FancyText.Char>();
+            List<FancyText.Char> currentLineChars = new();
 
             void FlushLine()
             {

@@ -311,7 +311,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
 
             mapDisplay.Display = false;
-            
+
             // FIXME: hackfix for now, MapDisplay.UpdateMap should be refactored to use area IDs
             int chapterIndex = new AreaKey(SelectedWarp.AreaId).ChapterIndex;
             mapDisplay.UpdateMap(Math.Max(0, chapterIndex), SelectedWarp.Room, 0);
