@@ -72,10 +72,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     string spriteStr = "";
                     switch (type)
                     {
+                        case "One Dash":
+                            spriteStr = "Dash";
+                            break;
+                        case "Two Dashes":
+                            spriteStr = "DashTwo";
+                            break;
                         case "Max Jumps":
                             spriteStr = "Jumps";
                             break;
-                        case "Two Dashes":
+                        case "All (Two Dashes)":
                             spriteStr = "Two";
                             break;
                         case "Missiles":
@@ -116,10 +122,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 p_glow = Refill.P_Glow;
                 switch (type)
                 {
+                    case "One Dash":
+                        spriteStr = "Dash";
+                        break;
+                    case "Two Dashes":
+                        spriteStr = "DashTwo";
+                        p_shatter = Refill.P_ShatterTwo;
+                        p_regen = Refill.P_RegenTwo;
+                        p_glow = Refill.P_GlowTwo;
+                        break;
                     case "Max Jumps":
                         spriteStr = "Jumps";
                         break;
-                    case "Two Dashes":
+                    case "All (Two Dashes)":
                         spriteStr = "Two";
                         p_shatter = Refill.P_ShatterTwo;
                         p_regen = Refill.P_RegenTwo;
@@ -343,7 +358,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 sprite.Visible = true;
                 Depth = -100;
                 wiggler.Start();
-                Audio.Play(type == "Two Dashes" ? "event:/new_content/game/10_farewell/pinkdiamond_return" : "event:/game/general/diamond_return", Position);
+                Audio.Play(type.Contains("Two") ? "event:/new_content/game/10_farewell/pinkdiamond_return" : "event:/game/general/diamond_return", Position);
                 level.ParticlesFG.Emit(p_regen, 16, Position, Vector2.One * 2f);
             }
         }
@@ -426,9 +441,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     airRegen = manager.currentMaxAir;
                 }
             }
-            if ((((type == "One Dash" || type == "Two Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) || (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null || (type.Contains("Missiles") && drone != null) || (type.Contains("Oxygen") && manager != null && manager.air < manager.currentMaxAir && manager.air != -1) || (!type.Contains("Oxygen") && player.Stamina <= 20))
+            if ((((type == "One Dash" || type == "Two Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) ||
+               ((type == "All" || type == "All (Two Dashes)") && player.Dashes < (type == "All (Two Dashes)" ? 2 : player.MaxDashes)) ||
+               (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null ||
+               (type.Contains("Missiles") && drone != null) ||
+               (type.Contains("Oxygen") && manager != null && manager.air < manager.currentMaxAir && manager.air != -1) ||
+               (!type.Contains("Oxygen") && player.Stamina <= 20))
             {
-                Audio.Play(type == "Two Dashes" ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
+                Audio.Play(type.Contains("Two") ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                 Collidable = false;
                 Add(new Coroutine(RefillRoutine(player, drone, manager, maxMissileCount, maxSuperMissileCount, airRegen)));
@@ -446,18 +466,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             float num = player.Speed.Angle();
             level.ParticlesFG.Emit(p_shatter, 5, Position, Vector2.One * 4f, num - (float)Math.PI / 2f);
             level.ParticlesFG.Emit(p_shatter, 5, Position, Vector2.One * 4f, num + (float)Math.PI / 2f);
-            if (type == "One Dash" || type == "Two Dashes")
+            if (type.Contains("All"))
             {
-                if (type == "One Dash")
-                {
-
-                    player.Dashes += 1;
-                }
-                else
-                {
-                    player.Dashes = 2;
-                }
+                RefillDashes(player);
                 SpaceJump.SetJumpBuffer(XaphanModule.ModSettings.SpaceJump - 1);
+                player.RefillStamina();
+            }
+            else if (type == "One Dash" || type == "Two Dashes")
+            {
+                RefillDashes(player);
                 player.RefillStamina();
             }
             else if (type.Contains("Jumps"))
@@ -484,6 +501,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (oneUse)
             {
                 RemoveSelf();
+            }
+        }
+
+        private void RefillDashes(Player player)
+        {
+            if (type.Contains("Two"))
+            {
+
+                player.Dashes = 2;
+            }
+            else
+            {
+                player.Dashes += 1;
             }
         }
     }
