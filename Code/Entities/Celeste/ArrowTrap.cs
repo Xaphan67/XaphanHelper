@@ -253,6 +253,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool active;
 
+        public bool enabled = true;
+
         public Vector2 spriteOffset;
 
         public Coroutine SequenceRoutine = new();
@@ -322,7 +324,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void OnDisable()
         {
             Active = true;
-            Visible = Collidable = active = false;
+            Visible = Collidable = active = enabled = false;
             if (nextArrow != null)
             {
                 nextArrow.Visible = nextArrow.Collidable = false;
@@ -335,7 +337,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnEnable()
         {
-            Visible = Collidable = active = true;
+            Visible = Collidable = active = enabled = true;
             if (side == "Right" || side == "Left")
             {
                 Scene.Add(nextArrow = new Arrow(Position + new Vector2(-11, 4), this, side, directory)
