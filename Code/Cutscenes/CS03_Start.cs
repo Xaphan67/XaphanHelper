@@ -47,7 +47,14 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
-            yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);
+            if (Level.Session.Level == "L-23")
+            {
+                yield return Level.ZoomTo(new Vector2(210f, 88f), 1.5f, 1f);
+            }
+            else
+            {
+                yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);
+            }
             yield return 0.2f;
             yield return Textbox.Say("Xaphan_Ch3_A_Start");
             if (Level.Session.Level == "L-00")
@@ -58,13 +65,20 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return CutscenesHelper.BadelineFloat(this, -30, -18, badeline, 1, true, false, true);
                 yield return Textbox.Say("Xaphan_Ch3_A_Start_b_main");
             }
-            else
+            else if (Level.Session.Level == "L-16")
             {
                 yield return player.DummyWalkTo(player.Position.X - 20f, false, 0.65f);
                 player.Facing = Facings.Right;
                 badeline = CutscenesHelper.BadelineSplit(Level, player);
                 yield return CutscenesHelper.BadelineFloat(this, 30, -18, badeline, -1, true, false, true);
                 yield return Textbox.Say("Xaphan_Ch3_A_Start_b_alt");
+            }
+            else
+            {
+                player.Facing = Facings.Left;
+                badeline = CutscenesHelper.BadelineSplit(Level, player);
+                yield return CutscenesHelper.BadelineFloat(this, -30, -18, badeline, 1, true, false, true);
+                yield return Textbox.Say("Xaphan_Ch3_A_Start_b_main");
             }
             yield return CutscenesHelper.BadelineMerge(Level, player, badeline);
             yield return Level.ZoomBack(0.5f);
