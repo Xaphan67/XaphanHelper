@@ -122,6 +122,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 SceneAs<Level>().Session.DoNotLoad.Add(eid);
             }
+            RemoveSelf();
         }
 
         private void OnTransitionOutBegin()
