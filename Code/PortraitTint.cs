@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Celeste;
 using Celeste.Mod.XaphanHelper;
+using Celeste.Mod.XaphanHelper.Data;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -36,59 +37,73 @@ public static class PortraitTint
 
     private static void modTextboxRender(ILContext il)
     {
-        ILCursor c = new(il);
-        if (c.TryGotoNext(MoveType.After,
-                i => i.MatchLdarg(0),
-                i => i.MatchLdfld<Textbox>("portraitSprite"),
-                i => i.MatchCallOrCallvirt(out var m) && m.Name == "Render"))
+        ILCursor cursor = new(il);
+
+        if (cursor.TryGotoNext(MoveType.After,
+                instr => instr.MatchLdarg(0),
+                instr => instr.MatchLdfld<Textbox>("portraitSprite"),
+                instr => instr.MatchCallOrCallvirt(out var value) && value.Name == "Render"))
         {
-            c.Emit(OpCodes.Ldarg_0);
-            c.Emit(OpCodes.Ldfld, portraitSpriteField);
-            c.EmitDelegate<Action<Image>>(drawOverlays);
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, portraitSpriteField);
+            cursor.EmitDelegate<Action<Image>>(DrawOverlays);
         }
     }
 
     private static void modMiniTextboxRender(ILContext il)
     {
-        ILCursor c = new(il);
-        if (c.TryGotoNext(MoveType.After,
-                i => i.MatchLdarg(0),
-                i => i.MatchLdfld<MiniTextbox>("portrait"),
-                i => i.MatchCallOrCallvirt(out var m) && m.Name == "Render"))
+        ILCursor cursor = new(il);
+
+        if (cursor.TryGotoNext(MoveType.After,
+                instr => instr.MatchLdarg(0),
+                instr => instr.MatchLdfld<MiniTextbox>("portrait"),
+                instr => instr.MatchCallOrCallvirt(out var value) && value.Name == "Render"))
         {
-            c.Emit(OpCodes.Ldarg_0);
-            c.Emit(OpCodes.Ldfld, miniPortraitField);
-            c.EmitDelegate<Action<Image>>(drawOverlays);
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, miniPortraitField);
+            cursor.EmitDelegate<Action<Image>>(DrawOverlays);
         }
     }
 
-    public static void drawOverlays(Image sprite)
+    public static void DrawOverlays(Image sprite)
     {
-        MTexture tex = sprite?.Texture;
-        if (tex?.AtlasPath == null) return;
-
-        if (!ReferenceEquals(tex, lastBase))
+        if ((Engine.Scene as Level)?.Session.Area.LevelSet != "Xaphan/0")
         {
-            lastBase = tex;
-            lastHair = GFX.Portraits.Has(tex.AtlasPath + "_hair") ? GFX.Portraits[tex.AtlasPath + "_hair"] : null;
-            lastJacket = GFX.Portraits.Has(tex.AtlasPath + "_jacket") ? GFX.Portraits[tex.AtlasPath + "_jacket"] : null;
+            return;
         }
-        if (lastHair == null && lastJacket == null) return;
 
+        MTexture texture = sprite?.Texture;
+
+        if (texture?.AtlasPath == null)
+        {
+            return;
+        }
+        if (!ReferenceEquals(texture, lastBase))
+        {
+            lastBase = texture;
+            lastHair = GFX.Portraits.Has(texture.AtlasPath + "_hair") ? GFX.Portraits[texture.AtlasPath + "_hair"] : null;
+            lastJacket = GFX.Portraits.Has(texture.AtlasPath + "_jacket") ? GFX.Portraits[texture.AtlasPath + "_jacket"] : null;
+        }
+        if (lastHair == null && lastJacket == null)
+        {
+            return;
+        }
         float alpha = sprite.Color.A / 255f;
-
-        if (lastJacket != null && JacketTintProvider() is Color jt)
-            lastJacket.Draw(sprite.RenderPosition, sprite.Origin, jt * alpha, sprite.Scale, sprite.Rotation, sprite.Effects);
-
-        if (lastHair != null && HairTintProvider() is Color ht)
-            lastHair.Draw(sprite.RenderPosition, sprite.Origin, ht * alpha, sprite.Scale, sprite.Rotation, sprite.Effects);
+        if (lastJacket != null && JacketTintProvider() is Color jacketTint)
+        {
+            lastJacket.Draw(sprite.RenderPosition, sprite.Origin, jacketTint * alpha, sprite.Scale, sprite.Rotation, sprite.Effects);
+        }
+        if (lastHair != null && HairTintProvider() is Color hairTint)
+        {
+            lastHair.Draw(sprite.RenderPosition, sprite.Origin, hairTint * alpha, sprite.Scale, sprite.Rotation, sprite.Effects);
+        }
     }
 
     private static Color? DefaultHairTint()
     {
         Player player = (Engine.Scene as Level)?.Tracker.GetEntity<Player>();
-        Color c = player?.Hair?.Color ?? Calc.HexToColor("AC3232");
-        return NormalizeBrightness(c);
+        Color color = player?.Hair?.Color ?? Calc.HexToColor("AC3232");
+        return NormalizeBrightness(color);
     }
 
     private static Color? DefaultJacketTint()
@@ -99,24 +114,27 @@ public static class PortraitTint
             string id = "";
             foreach (string name in XaphanModule.JacketPriorityNames)
             {
-                var data = XaphanModule.JacketPriority.FirstOrDefault(n => n.Name == name);
-                if (data.Test != null && data.Test(level))
+                JacketPriorityData jacketData = XaphanModule.JacketPriority.FirstOrDefault(data => data.Name == name);
+                if (jacketData.Test != null && jacketData.Test(level))
                 {
-                    id = data.Id;
+                    id = jacketData.Id;
                     break;
                 }
             }
-            Color c = Calc.HexToColor(id == "varia" ? "C97044" : "9345CE");
-            return NormalizeBrightness(c);
+            Color color = Calc.HexToColor(id == "varia" ? "C97044" : "9345CE");
+            return NormalizeBrightness(color);
         }
         return null;
     }
 
-    public static Color NormalizeBrightness(Color c)
+    public static Color NormalizeBrightness(Color color)
     {
-        int m = Math.Max(c.R, Math.Max(c.G, c.B));
-        if (m <= 0) return Color.White;
-        float s = 255f / m;
-        return new Color((byte)Math.Min(255f, c.R * s), (byte)Math.Min(255f, c.G * s), (byte)Math.Min(255f, c.B * s));
+        int max = Math.Max(color.R, Math.Max(color.G, color.B));
+        if (max <= 0)
+        {
+            return Color.White;
+        }
+        float scale = 255f / max;
+        return new Color((byte)Math.Min(255f, color.R * scale), (byte)Math.Min(255f, color.G * scale), (byte)Math.Min(255f, color.B * scale));
     }
 }
