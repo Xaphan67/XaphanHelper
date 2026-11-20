@@ -53,6 +53,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public CustomTempleGate(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, true)
         {
+            AllowStaticMovers = false;
             LevelID = data.Level.Name;
             horizontal = data.Bool("horizontal", false);
             attachRight = data.Bool("attachRight", false);
