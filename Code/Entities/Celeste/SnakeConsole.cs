@@ -286,8 +286,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float noiseAlpha = 0.1f;
 
-        private bool skipTurnOnAnim;
-
         public bool isOn;
 
         private PixelFontSize pixelFont;
@@ -1131,7 +1129,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         justTurnedOn = true;
                     }
-                    if (justTurnedOn && !vasJustTurnedOn && !skipTurnOnAnim)
+                    if (justTurnedOn && !vasJustTurnedOn)
                     {
                         noiseAlpha = 0.8f;
                         yield return 1.2f;
