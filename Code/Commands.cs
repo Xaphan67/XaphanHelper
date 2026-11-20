@@ -524,5 +524,49 @@ namespace Celeste.Mod.XaphanHelper
                 Engine.Commands.Log("This command cannot be used outside of a map or campaign. Aborting...");
             }
         }
+
+        [Command("give_double_dash", "Give double dash to the player (Campaigns that use a Merge Chapter Controller only)")]
+        public static void Cmg_Cive_Double_Dash(bool state = true)
+        {
+            if (XaphanModule.isInLevel && level != null && XaphanModule.useMergeChaptersController)
+            {
+                AreaKey area = level.Session.Area;
+                MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
+                EntityData UpgradeController = XaphanModule.GetUpgradeController(MapData);
+                string doubleDashFlag = UpgradeController.Attr("doubleDashFlag");
+                Player player = level.Tracker.GetEntity<Player>();
+
+                if (player != null)
+                {
+                    if (state)
+                    {
+                        level.Session.Inventory.Dashes = 2;
+                        player.Dashes = 2;
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(prefix + "_" + doubleDashFlag))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Add(prefix + "_" + doubleDashFlag);
+                        }
+                    }
+                    else
+                    {
+                        level.Session.Inventory.Dashes = 1;
+                        player.Dashes = 1;
+                        if (XaphanModule.ModSaveData.SavedFlags.Contains(prefix + "_" + doubleDashFlag))
+                        {
+                            XaphanModule.ModSaveData.SavedFlags.Remove(prefix + "_" + doubleDashFlag);
+                        }
+                    }
+                    level.Session.SetFlag(doubleDashFlag, state);
+                }
+                else
+                {
+                    Engine.Commands.Log("Player cannot be found. Aborting...");
+                }
+            }
+            else
+            {
+                Engine.Commands.Log("You are not currently in a campaign, or this campaign do not use a Merge Chapter Controller. Aborting...");
+            }
+        }
     }
 }
