@@ -63,7 +63,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             SceneAs<Level>().Add(new Slope(Position, new Vector2(1f, 16f), true, "Right", 8, 1, "Horizontal", "Horizontal", "cement", "cement", false, false, "", "", false, true, false, false, false, "", true));
             SceneAs<Level>().Add(new Slope(Position, new Vector2(-25f, 16f), true, "Left", 8, 1, "Horizontal", "Horizontal", "cement", "cement", false, false, "", "", false, true, false, false, false, "", true));
-            SceneAs<Level>().Add(new InvisibleBarrier(Position + new Vector2(-16f, 18f), 32f, 6f));
+            InvisibleBarrier floor = new InvisibleBarrier(Position + new Vector2(-16f, 18f), 32f, 6f);
+            floor.SurfaceSoundIndex = 8;
+            SceneAs<Level>().Add(floor);
 
             Add(talk = new TalkComponent(new Rectangle(-12, 10, 24, 8), new Vector2(0, -24f), Interact));
             talk.PlayerMustBeFacing = false;
