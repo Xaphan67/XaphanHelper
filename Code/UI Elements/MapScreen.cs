@@ -1062,10 +1062,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         if (Input.MenuLeft.Pressed && prompt.Selection > 0)
                         {
                             prompt.Selection--;
+                            Audio.Play("event:/ui/main/rollover_up");
                         }
                         if (Input.MenuRight.Pressed && prompt.Selection < prompt.maxSelection)
                         {
                             prompt.Selection++;
+                            Audio.Play("event:/ui/main/rollover_up");
                         }
                         if ((Input.MenuConfirm.Pressed || Input.Pause.Pressed) && prompt.drawContent && !promptChoice)
                         {
@@ -1329,10 +1331,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (Input.MenuLeft.Pressed && markerPrompt.Selection > 0)
                 {
                     markerPrompt.Selection--;
+                    Audio.Play("event:/ui/main/rollover_up");
                 }
                 if (Input.MenuRight.Pressed && markerPrompt.Selection < markerPrompt.maxSelection)
                 {
                     markerPrompt.Selection++;
+                    Audio.Play("event:/ui/main/rollover_up");
                 }
                 if (Input.MenuCancel.Pressed)
                 {
@@ -1344,7 +1348,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             yield return 0.2f;
             if (canceled)
             {
-                Audio.Play("event:/ui/main/button_toggle_off");
+                Audio.Play("event:/ui/main/button_back");
                 markerPrompt = null;
                 yield break;
             }

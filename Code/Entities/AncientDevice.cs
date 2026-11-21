@@ -366,10 +366,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (Input.MenuLeft.Pressed && symbolPrompt.Selection > 0)
                 {
                     symbolPrompt.Selection--;
+                    Audio.Play("event:/ui/main/rollover_up");
                 }
                 if (Input.MenuRight.Pressed && symbolPrompt.Selection < symbolPrompt.maxSelection)
                 {
                     symbolPrompt.Selection++;
+                    Audio.Play("event:/ui/main/rollover_up");
                 }
                 if (Input.MenuCancel.Pressed)
                 {
@@ -381,7 +383,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return 0.2f;
             if (canceled)
             {
-                Audio.Play("event:/ui/main/button_toggle_off");
+                Audio.Play("event:/ui/main/button_back");
                 symbolPrompt = null;
                 yield return 0.1f;
                 player.StateMachine.State = 0;

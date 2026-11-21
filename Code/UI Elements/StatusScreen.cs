@@ -312,6 +312,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 prompt.Selection--;
                             }
+                            Audio.Play("event:/ui/main/rollover_up");
                         }
                         if (Input.MenuRight.Pressed && prompt.Selection < prompt.maxSelection)
                         {
@@ -320,6 +321,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 prompt.Selection++;
                             }
+                            Audio.Play("event:/ui/main/rollover_up");
                         }
                         if ((Input.MenuConfirm.Pressed || Input.Pause.Pressed) && prompt.drawContent && !promptChoice)
                         {
