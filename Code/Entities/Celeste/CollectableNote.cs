@@ -13,6 +13,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private class NotePage : Entity
         {
+            public enum TextPosition
+            {
+                Left,
+                Middle,
+                Right
+            }
+
+            private TextPosition textPosition;
+
             private MTexture paper;
 
             private VirtualRenderTarget target;
@@ -35,7 +44,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private static readonly Regex includeRegex = new(@"\{\+(\w+)\}", RegexOptions.Compiled);
 
-            public NotePage(string dialogID, string paperSprite = "poempage", float scale = 0.7f)
+            public NotePage(string dialogID, TextPosition position, string paperSprite = "poempage", float scale = 0.7f)
             {
                 Tag = Tags.HUD;
                 paper = GFX.Gui[paperSprite];
@@ -43,13 +52,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (dialogID != null)
                 {
                     string dialog = StripColors(dialogID);
-                    text = FancyText.Parse(dialog, (int)((paper.Width - 120) / textScale), -1, 1f, Color.Black * 0.7f);
+                    text = FancyText.Parse(dialog, (int)((paper.Width - 150) / textScale), -1, 1f, Color.Black * 0.7f);
                 }
                 else
                 {
                     text = null;
                 }
                 Add(new BeforeRenderHook(BeforeRender));
+                textPosition = position;
             }
 
             private static string StripColors(string dialogID)
@@ -111,7 +121,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 paper.Draw(Vector2.Zero);
                 if (text != null)
                 {
-                    text.DrawJustifyPerLine(new Vector2(paper.Width, paper.Height) / 2f, new Vector2(0.5f, 0.5f), Vector2.One * textScale, 1f);
+                    text.DrawJustifyPerLine(
+                        textPosition == TextPosition.Left ? new Vector2(75f, paper.Height / 2f) : textPosition == TextPosition.Middle ? new Vector2(paper.Width, paper.Height) / 2f : new Vector2(paper.Width - 75f, paper.Height / 2f),
+                        new Vector2(textPosition == TextPosition.Left ? 0 : textPosition == TextPosition.Middle ? 0.5f : 1f, 0.5f),
+                        Vector2.One * textScale,
+                        1f
+                    );
                 }
                 Draw.SpriteBatch.End();
             }
@@ -179,6 +194,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool removeAfterUse;
 
+        private NotePage.TextPosition position;
+
         public CollectableNote(EntityData data, Vector2 offset, EntityID eid) : base(data.Position + offset)
         {
             sprite = new Image(GFX.Game[data.Attr("sprite") + "/Note00"]);
@@ -189,6 +206,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             interactMode = data.Attr("interactMode", "DuckLeft");
             setFlag = data.Bool("setFlag", true);
             removeAfterUse = data.Bool("removeAfterUse", true);
+            position = data.Enum<NotePage.TextPosition>("position", NotePage.TextPosition.Middle);
             if (data.Nodes.Count() > 0)
             {
                 talkposition = data.Nodes[0] - data.Position;
@@ -238,7 +256,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 player.DummyAutoAnimate = false;
             }
             yield return 0.2f;
-            note = new NotePage(dialogId, paperSprite, scale);
+            note = new NotePage(dialogId, position, paperSprite, scale);
             Scene.Add(note);
             if (setFlag)
             {
