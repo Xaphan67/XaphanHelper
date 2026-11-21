@@ -39,7 +39,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float actionWiggleDelay;
 
-        private bool fromMap;
+        private bool fromOther;
 
         private float switchTimer;
 
@@ -49,10 +49,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private List<UpgradeDisplay> avaiableDisplays = new();
 
-        public StatusScreen(Level level, bool fromMap)
+        public StatusScreen(Level level, bool fromOther)
         {
             this.level = level;
-            this.fromMap = fromMap;
+            this.fromOther = fromOther;
             Tag = Tags.HUD;
             Title = (SaveData.Instance == null || !Dialog.Language.CanDisplay(SaveData.Instance.Name)) ? "FILE_DEFAULT" : SaveData.Instance.Name;
             Add(mapWiggle = Wiggler.Create(0.4f, 4f));
@@ -68,7 +68,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Level level = Scene as Level;
             level.PauseLock = true;
             level.Session.SetFlag("Map_Opened", true);
-            if (!fromMap)
+            if (!fromOther)
             {
                 Audio.Play("event:/ui/game/pause");
             }
@@ -115,7 +115,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private IEnumerator TransitionToStatus(Level level)
         {
             float duration = 0.5f;
-            if (!fromMap)
+            if (!fromOther)
             {
                 FadeWipe Wipe = new(SceneAs<Level>(), false)
                 {
@@ -251,7 +251,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     duration -= Engine.DeltaTime;
                 }
                 Add(new Coroutine(CloseStatus(true)));
-                level.Add(new LorebookScreen(level));
+                level.Add(new LorebookScreen(level, true));
             }
         }
 

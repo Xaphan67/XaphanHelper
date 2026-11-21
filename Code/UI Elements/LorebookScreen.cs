@@ -38,6 +38,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float closeWiggleDelay;
 
+        private bool fromOther;
+
         private float switchTimer;
 
         public int categorySelection;
@@ -46,9 +48,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int entrySelection = -1;
 
-        public LorebookScreen(Level level, LorebookData lorebookData = null)
+        public LorebookScreen(Level level, bool fromOther, LorebookData lorebookData = null)
         {
             this.level = level;
+            this.fromOther = fromOther;
             this.lorebookData = lorebookData;
             Tag = Tags.HUD;
             Title = Dialog.Clean("XaphanHelper_UI_lorebook");
@@ -64,6 +67,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Level level = Scene as Level;
             level.PauseLock = true;
             level.Session.SetFlag("Map_Opened", true);
+            if (!fromOther)
+            {
+                Audio.Play("event:/ui/game/pause");
+            }
             Add(new Coroutine(TransitionToLorebook(level)));
         }
 
@@ -98,6 +105,20 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private IEnumerator TransitionToLorebook(Level level)
         {
             float duration = 0.5f;
+            if (!fromOther)
+            {
+                FadeWipe Wipe = new(SceneAs<Level>(), false)
+                {
+                    Duration = duration
+                };
+                SceneAs<Level>().Add(Wipe);
+                duration = duration - 0.25f;
+                while (duration > 0f)
+                {
+                    yield return null;
+                    duration -= Engine.DeltaTime;
+                }
+            }
             CountdownDisplay timerDisplay = SceneAs<Level>().Tracker.GetEntity<CountdownDisplay>();
             if (timerDisplay != null)
             {

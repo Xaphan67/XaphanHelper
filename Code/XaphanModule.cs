@@ -3895,7 +3895,7 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             player.Sprite.Play("idle");
                         }
-                        self.Add(new LorebookScreen(self, popup.LorebookData));
+                        self.Add(new LorebookScreen(self, false, popup.LorebookData));
                     }
                     else if (useIngameMap && ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room) && CanOpenMap(self))
                     {

@@ -186,7 +186,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     duration -= Engine.DeltaTime;
                 }
                 Add(new Coroutine(CloseAchievements(true)));
-                level.Add(new LorebookScreen(level));
+                level.Add(new LorebookScreen(level, true));
             }
         }
 
