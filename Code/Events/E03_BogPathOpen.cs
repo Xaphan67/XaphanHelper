@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.XaphanHelper.Enemies;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Triggers;
@@ -33,16 +34,23 @@ namespace Celeste.Mod.XaphanHelper.Events
         public IEnumerator Cutscene(Level level)
         {
             WaterWheel waterwheel = level.Tracker.GetEntity<WaterWheel>();
+            DroneSwitch droneSwitch = level.Tracker.GetEntities<DroneSwitch>().OfType<DroneSwitch>().FirstOrDefault(droneSwitch => droneSwitch.resetOnDeath);
             string flag = waterwheel.flag;
+            string switchFlag = droneSwitch.flag;
 
             string Prefix = level.Session.Area.LevelSet;
             int chapterIndex = level.Session.Area.ChapterIndex;
 
             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
             {
-                while (waterwheel.acceleration == 0 || !player.OnSafeGround)
+                while (waterwheel.acceleration == 0 || !level.Session.GetFlag(switchFlag) || !player.OnSafeGround)
                 {
                     yield return null;
+                }
+                if (player.Dead || player == null)
+                {
+                    EndCutscene(level);
+                    yield break;
                 }
                 player.StateMachine.State = 11;
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
@@ -87,7 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public override void OnEnd(Level level)
         {
-
+            RemoveSelf();
         }
 
         private void RegisterExistingEntities(Level level)
