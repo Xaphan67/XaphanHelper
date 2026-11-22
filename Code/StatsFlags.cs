@@ -308,6 +308,15 @@ namespace Celeste.Mod.XaphanHelper
         private static void onLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)
         {
             orig(self);
+            if (!initialized)
+            {
+                CheckStatsFlagsController(AreaData.Areas[SaveData.Instance.LevelSetStats.AreaOffset].Mode[0].MapData);
+                if (useStatsFlagsController)
+                {
+                    GetStats(self.Session);
+                    initialized = true;
+                }
+            }
             if (useStatsFlagsController && initialized)
             {
                 string Prefix = self.Session.Area.LevelSet;
