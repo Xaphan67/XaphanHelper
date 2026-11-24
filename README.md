@@ -1046,6 +1046,7 @@ A lever that will set or unset a flag when the player touches it. Can be attache
 | **Side** | The side of the lever. |
 | **Group** | All levers with the same group will activate when the player touches one. Leave at 0 for no group. |
 | **Flag** | The flag that will be true when the lever is activated. |
+| **Active Sound** | The sound event that plays when the player active the lever. |
 | **Can Swap Flag** | If true, the player can touch the lever multiple times, each time inverting the flag state. |
 | **Register In Save Data** | If true, the flag will be registered in the player Save file and will be set forever. (No effect if Can Swap Flag is true) |
 | **Save Data Only After Checkpoint** | If true, the flag will be registered in the player Save file and will be set forever only after the player gets to a checkpoint in the current room or exits the room.<br>(Register In Save Data must be set to true. No effect if Can Swap Flag is true) |

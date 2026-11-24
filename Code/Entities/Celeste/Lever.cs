@@ -20,6 +20,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public string Flag;
 
+        public string ActiveSound;
+
         public bool CanSwapFlag;
 
         private bool PlayerOnTop;
@@ -50,10 +52,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag);
         }
 
-        public Lever(Vector2 position, Vector2[] nodes, string directory, string flag, bool canSwapFlag, string side, bool registerInSaveData, bool saveDataOnlyAfterCheckpoint) : base(position)
+        public Lever(Vector2 position, Vector2[] nodes, string directory, string flag, bool canSwapFlag, string side, bool registerInSaveData, bool saveDataOnlyAfterCheckpoint, string activeSound = "event:/game/xaphan/lever") : base(position)
         {
             Tag = Tags.TransitionUpdate;
             Directory = directory;
+            ActiveSound = activeSound;
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Sprite.Add("start", "lever", 0);
             Sprite.Add("toEnd", "lever", 0.08f, 1, 2);
@@ -101,7 +104,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Add(new PlayerCollider(onPlayer, Collider));
         }
 
-        public Lever(EntityData data, Vector2 offset) : this(data.Position + offset, data.NodesWithPosition(offset), data.Attr("directory"), data.Attr("flag"), data.Bool("canSwapFlag", false), data.Attr("side", "Up"), data.Bool("registerInSaveData", false), data.Bool("saveDataOnlyAfterCheckpoint", false))
+        public Lever(EntityData data, Vector2 offset) : this(data.Position + offset, data.NodesWithPosition(offset), data.Attr("directory"), data.Attr("flag"), data.Bool("canSwapFlag", false), data.Attr("side", "Up"), data.Bool("registerInSaveData", false), data.Bool("saveDataOnlyAfterCheckpoint", false), data.Attr("activeSound", "event:/game/xaphan/lever"))
         {
 
         }
@@ -198,6 +201,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!PlayerOnTop && (CanSwapFlag || canSwitch))
             {
+                Audio.Play(ActiveSound, Position);
                 Add(new Coroutine(AnimateRoutine(true)));
             }
             PlayerOnTop = true;

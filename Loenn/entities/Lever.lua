@@ -7,7 +7,7 @@ Lever.nodeLimits = {0, -1}
 Lever.nodeLineRenderType = "fan"
 
 Lever.fieldOrder = {
-    "x", "y", "directory", "side", "group", "flag", "canSwapFlag", "registerInSaveData", "saveDataOnlyAfterCheckpoint"
+    "x", "y", "directory", "side", "group", "flag", "activeSound", "canSwapFlag", "registerInSaveData", "saveDataOnlyAfterCheckpoint"
 }
 Lever.ignoredFields = {
     "_id", "_name", "width", "height"
@@ -28,6 +28,7 @@ Lever.placements = {
         side = "Up",
         group = 0,
         flag = "",
+        activeSound = "event:/game/xaphan/lever",
         canSwapFlag = false,
         registerInSaveData = false,
         saveDataOnlyAfterCheckpoint = false
