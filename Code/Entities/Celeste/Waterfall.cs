@@ -86,7 +86,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 base.Added(scene);
                 sectionSprite.Color = Waterfall.CurrentColor * Waterfall.currentTransparency;
                 Collider = new Hitbox(1, 1, 0f, 0f);
-                while (CollideCheck<Solid>())
+                while (CollideCheck<SolidTiles>())
                 {
                     Collider.Position.Y += 1f;
                     verticalOffset += 1;
