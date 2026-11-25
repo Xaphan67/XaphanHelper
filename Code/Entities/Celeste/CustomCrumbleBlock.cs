@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
@@ -17,7 +18,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private List<VertexLight> lights;
 
-        private List<List<OutlinePoint>> outlineLoops;
+        private List<List<OutlinePoint>> outlines;
 
         private List<Coroutine> falls;
 
@@ -55,7 +56,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool light;
 
-        private HashSet<CustomCrumbleBlock> groupedCustomCrumbleBlocks = new();
+        private List<CustomCrumbleBlock> groupedCustomCrumbleBlocks = new();
 
         public bool IsOutlineLeader = true;
 
@@ -93,83 +94,73 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Awake(scene);
             if (Group != -1)
             {
-                HashSet<CustomCrumbleBlock> members = new(scene.Tracker.GetEntities<CustomCrumbleBlock>().Cast<CustomCrumbleBlock>().Where(p => p.Group == Group));
+                List<CustomCrumbleBlock> blocks = new(scene.Tracker.GetEntities<CustomCrumbleBlock>().Cast<CustomCrumbleBlock>().Where(block => block.Group == Group));
 
-                var visited = new HashSet<CustomCrumbleBlock>();
-                foreach (CustomCrumbleBlock start in members)
+                HashSet<CustomCrumbleBlock> checkedBlocks = new();
+                foreach (CustomCrumbleBlock block in blocks)
                 {
-                    if (visited.Contains(start))
+                    if (!checkedBlocks.Add(block))
                     {
                         continue;
                     }
-                    List<CustomCrumbleBlock> cluster = new();
-                    Stack<CustomCrumbleBlock> stack = new();
-                    stack.Push(start);
-                    visited.Add(start);
-                    while (stack.Count > 0)
+                    List<CustomCrumbleBlock> adjacentsBlocks = new() { block };
+                    for (int i = 0; i < adjacentsBlocks.Count; i++)
                     {
-                        CustomCrumbleBlock current = stack.Pop();
-                        cluster.Add(current);
-                        foreach (CustomCrumbleBlock other in members)
+                        foreach (CustomCrumbleBlock other in blocks)
                         {
-                            if (!visited.Contains(other) && AreAdjacent(current, other))
+                            if (!checkedBlocks.Contains(other) && AreAdjacent(adjacentsBlocks[i], other))
                             {
-                                visited.Add(other);
-                                stack.Push(other);
+                                checkedBlocks.Add(other);
+                                adjacentsBlocks.Add(other);
                             }
                         }
                     }
-                    if (cluster.Count > 1)
+                    if (adjacentsBlocks.Count > 1)
                     {
-                        float minCrumbleDelay = cluster.Min(b => b.crumbleDelay);
-                        float minSideCrumbleDelay = cluster.Min(b => b.sideCrumbleDelay);
-                        bool anyCanBypassCrumbleDelay = cluster.Any(b => b.canBypassCrumbleDelay);
-                        bool anyCanBypassSideCrumbleDelay = cluster.Any(b => b.canBypassSideCrumbleDelay);
-                        float minRespawnTime = cluster.Min(b => b.respawnTime);
-                        foreach (CustomCrumbleBlock block in cluster)
+                        float minCrumbleDelay = adjacentsBlocks.Min(block => block.crumbleDelay);
+                        float minSideCrumbleDelay = adjacentsBlocks.Min(block => block.sideCrumbleDelay);
+                        bool anyCanBypassCrumbleDelay = adjacentsBlocks.Any(block => block.canBypassCrumbleDelay);
+                        bool anyCanBypassSideCrumbleDelay = adjacentsBlocks.Any(block => block.canBypassSideCrumbleDelay);
+                        float minRespawnTime = adjacentsBlocks.Min(block => block.respawnTime);
+                        foreach (CustomCrumbleBlock adjacentBlock in adjacentsBlocks)
                         {
-                            block.crumbleDelay = minCrumbleDelay;
-                            block.sideCrumbleDelay = minSideCrumbleDelay;
-                            block.canBypassCrumbleDelay = anyCanBypassCrumbleDelay;
-                            block.canBypassSideCrumbleDelay = anyCanBypassSideCrumbleDelay;
-                            block.respawnTime = minRespawnTime;
+                            adjacentBlock.crumbleDelay = minCrumbleDelay;
+                            adjacentBlock.sideCrumbleDelay = minSideCrumbleDelay;
+                            adjacentBlock.canBypassCrumbleDelay = anyCanBypassCrumbleDelay;
+                            adjacentBlock.canBypassSideCrumbleDelay = anyCanBypassSideCrumbleDelay;
+                            adjacentBlock.respawnTime = minRespawnTime;
                         }
                     }
                 }
 
-                foreach (CustomCrumbleBlock block in members)
+                foreach (CustomCrumbleBlock block in blocks)
                 {
-                    block.groupedCustomCrumbleBlocks = members;
+                    block.groupedCustomCrumbleBlocks = blocks;
                 }
             }
             else
             {
-                groupedCustomCrumbleBlocks = new HashSet<CustomCrumbleBlock>
-                {
-                    this
-                };
+                groupedCustomCrumbleBlocks = new List<CustomCrumbleBlock> { this };
             }
             scene.OnEndOfFrame += RefreshGroupOutline;
         }
 
         private void RefreshGroupOutline()
         {
-            List<CustomCrumbleBlock> outlineCandidates = groupedCustomCrumbleBlocks.Where(b => !b.oneUse).ToList();
-            List<CustomCrumbleBlock> cluster = GetAdjacentCluster(this, outlineCandidates);
-            if (cluster.Count == 0)
+            List<CustomCrumbleBlock> blocks = GetAdjacentBlocks(this, groupedCustomCrumbleBlocks.Where(block => !block.oneUse).ToList());
+            if (blocks.Count == 0)
             {
                 IsOutlineLeader = false;
                 return;
             }
-            CustomCrumbleBlock leader = cluster.OrderBy(b => b.Position.Y).ThenBy(b => b.Position.X).First();
+            CustomCrumbleBlock leader = blocks.OrderBy(block => block.Position.Y).ThenBy(block => block.Position.X).First();
             IsOutlineLeader = leader == this;
             if (IsOutlineLeader)
             {
-                List<Solid> solids = cluster.Cast<Solid>().ToList();
-                List<List<OutlinePoint>> loops = OutlinePoint.GenerateGroupOutlines(solids, this);
-                if (loops.Count > 0)
+                List<List<OutlinePoint>> outlines = OutlinePoint.GenerateGroupOutlines(blocks.Cast<Solid>().ToList(), this);
+                if (outlines.Count > 0)
                 {
-                    outlineLoops = loops;
+                    this.outlines = outlines;
                 }
             }
         }
@@ -183,30 +174,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return horizontallyTouching || verticallyTouching;
         }
 
-        private static List<CustomCrumbleBlock> GetAdjacentCluster(CustomCrumbleBlock start, List<CustomCrumbleBlock> candidates)
+        private static List<CustomCrumbleBlock> GetAdjacentBlocks(CustomCrumbleBlock adjacentTo, List<CustomCrumbleBlock> blocks)
         {
-            if (!candidates.Contains(start))
+            if (!blocks.Contains(adjacentTo))
             {
                 return new List<CustomCrumbleBlock>();
             }
-            var visited = new HashSet<CustomCrumbleBlock> { start };
-            Stack<CustomCrumbleBlock> stack = new();
-            stack.Push(start);
-            List<CustomCrumbleBlock> cluster = new();
-            while (stack.Count > 0)
+            List<CustomCrumbleBlock> adjacentsBlocks = new() { adjacentTo };
+            List<CustomCrumbleBlock> checkedBlocks = new() { adjacentTo };
+            for (int i = 0; i < adjacentsBlocks.Count; i++)
             {
-                CustomCrumbleBlock current = stack.Pop();
-                cluster.Add(current);
-                foreach (CustomCrumbleBlock other in candidates)
+                foreach (CustomCrumbleBlock block in blocks)
                 {
-                    if (!visited.Contains(other) && AreAdjacent(current, other))
+                    if (!checkedBlocks.Contains(block) && AreAdjacent(adjacentsBlocks[i], block))
                     {
-                        visited.Add(other);
-                        stack.Push(other);
+                        checkedBlocks.Add(block);
+                        adjacentsBlocks.Add(block);
                     }
                 }
             }
-            return cluster;
+            return adjacentsBlocks;
         }
 
         public override void Added(Scene scene)
@@ -503,11 +490,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Render()
         {
             base.Render();
-            if (!IsOutlineLeader || outlineLoops == null)
+            if (!IsOutlineLeader || outlines == null)
             {
                 return;
             }
-            foreach (List<OutlinePoint> loop in outlineLoops)
+            foreach (List<OutlinePoint> loop in outlines)
             {
                 float colorTimer = respawnTime / loop.Count;
                 for (int i = 0; i < loop.Count; i++)
