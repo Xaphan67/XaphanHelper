@@ -298,20 +298,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 return false;
             }
 
-            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
-                for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
                 {
                     int index = y * width + x;
                     bool opaque = mask.Colors[index].A > 0;
                     mask.IsEdge[index] = !opaque && HasOpaqueNeighbor(x, y);
                     if (opaque || mask.IsEdge[index])
                     {
-                        float dx = x + 0.5f + mask.Offset.X;
-                        float dy = y + 0.5f + mask.Offset.Y;
-                        float angle = (float)Math.Atan2(dx, -dy);
-                        if (angle < 0) angle += MathHelper.TwoPi;
-                        mask.Angle[index] = angle / MathHelper.TwoPi;
+                        float angle = (float)Math.Atan2(x + mask.Offset.X, -(y + mask.Offset.Y));
+                        if (angle < 0)
+                        {
+                            angle += Calc.Circle;
+                        }
+                        mask.Angle[index] = angle / Calc.Circle;
                     }
                     else
                     {
