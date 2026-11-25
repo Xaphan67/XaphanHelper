@@ -789,7 +789,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Mod.UI.OuiMapSearch.Inspect += modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave += modOuiMapSeatchLeave;
             PlayerCustomAnimation.Load();
-            PortraitTint.Load();
+            PortraitOverlays.Load();
             Upgrade.LoadComponent();
             SaveUpdater.Load();
             MetroidGameplayController.Load();
@@ -917,7 +917,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Mod.UI.OuiMapSearch.Inspect -= modOuiMapSearchInspect;
             On.Celeste.Mod.UI.OuiMapSearch.Leave -= modOuiMapSeatchLeave;
             PlayerCustomAnimation.Unload();
-            PortraitTint.Unload();
+            PortraitOverlays.Unload();
             Upgrade.UnloadComponent();
             SaveUpdater.Unload();
             MetroidGameplayController.Unload();
